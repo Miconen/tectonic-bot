@@ -10,3 +10,7 @@ npm install
 npm run build
 npm run start
 ```
+
+
+### Discordx
+Boilerplate and template from https://github.com/oceanroleplay/discordx-templates/
