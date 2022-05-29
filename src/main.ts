@@ -5,7 +5,8 @@ import { Koa } from '@discordx/koa';
 import type { Interaction, Message } from 'discord.js';
 import { Intents } from 'discord.js';
 import { Client } from 'discordx';
-import { validateUserExists, populateGuild } from './data/usermapping.js';
+import { validateUserExists } from './data/usermapping.js';
+import attemptConnection from './data/connection.js';
 
 export const bot = new Client({
 	// To only use global commands (use @Guild for specific guild command), comment this line
@@ -63,6 +64,9 @@ bot.on('messageCreate', (message: Message) => {
 });
 
 async function run() {
+	// Establish database connection
+	await attemptConnection();
+
 	// The following syntax should be used in the ECMAScript environment
 	await importx(
 		dirname(import.meta.url) + '/{events,commands,api}/**/*.{ts,js}'
