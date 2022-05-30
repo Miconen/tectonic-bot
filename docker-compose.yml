@@ -4,11 +4,11 @@ services:
         image: postgres
         restart: always
         environment:
-            - POSTGRES_USER=root
-            - POSTGRES_PASSWORD=root
-            - POSTGRES_DB=tectonic_bot
+            POSTGRES_PASSWORD: root
+            POSTGRES_USER: root
+            POSTGRES_DB: tectonic
         volumes:
-            - .phdata:/var/lib/postgresql/data
+            - .pgdata:/var/lib/postgresql/data
         ports:
             - 5432:5432
 
@@ -16,10 +16,10 @@ services:
         image: dpage/pgadmin4
         restart: always
         environment:
-            - PGADMIN_DEFAULT_EMAIL=root@root.com
-            - PGADMIN_DEFAULT_PASSWORD=root
-        depends_on:
-            - db
+            PGADMIN_DEFAULT_EMAIL: root@root.com
+            PGADMIN_DEFAULT_PASSWORD: root
+        volumes:
+            - .pgadmin:/var/lib/pgadmin/data
         ports:
             - 5050:80
 
@@ -27,6 +27,6 @@ services:
         build: .
         command: node build/main.js
         environment:
-            - BOT_TOKEN=
+            BOT_TOKEN: ${BOT_TOKEN}
         depends_on:
             - db

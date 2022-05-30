@@ -1,5 +1,5 @@
 import type { Interaction } from 'discord.js';
-import User from './User.js';
+import User from './User';
 
 export const Guild = new Map<string, User>();
 const ENABLE_LOGGING = true;

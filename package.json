@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"license": "MIT",
-	"type": "module",
+	"type": "commonjs",
 	"main": "build/main.js",
 	"scripts": {
 		"build": "tsc",
@@ -20,15 +20,18 @@
 		"discord-api-types": "^0.30.0",
 		"discord.js": "^13.7.0",
 		"discordx": "^9.6.0",
+		"dotenv": "^16.0.1",
 		"koa": "^2.13.4",
 		"mongodb": "^4.6.0",
 		"npm": "^8.11.0",
+		"pg": "^8.7.3",
 		"reflect-metadata": "^0.1.13"
 	},
 	"devDependencies": {
 		"@types/koa": "^2.13.4",
 		"@types/koa__router": "^8.0.11",
 		"@types/node": "^17.0.33",
+		"@types/pg": "^8.6.5",
 		"nodemon": "^2.0.16",
 		"prettier": "^2.6.2",
 		"ts-node": "^10.7.0",
