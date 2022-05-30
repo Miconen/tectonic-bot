@@ -1,20 +1,11 @@
-const { Client } = require('pg');
-
-const client = new Client({
-	// TODO: Figure out a static ip for postgres server
-	host: '127.0.0.1',
-	user: 'root',
-	port: 5432,
-	password: 'root',
-	database: 'tectonic',
-});
+import pool from './pooling.js';
 
 async function createConnection() {
 	let retries = 5;
 	let interval = 5000;
 	while (retries) {
 		try {
-			await client.connect();
+			await pool.connect();
 			console.log('Connected to database');
 			break;
 		} catch (err) {
@@ -25,9 +16,6 @@ async function createConnection() {
 			retries--;
 		}
 	}
-	client.query('SELECT * from users', (err: any, res: any) => {
-		console.log(err ? err : res);
-	});
 }
 
 export default createConnection;

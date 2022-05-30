@@ -1,10 +1,10 @@
 import type { Interaction } from 'discord.js';
-import User from './User';
+import User from './User.js';
 
 export const Guild = new Map<string, User>();
 const ENABLE_LOGGING = true;
 
-export const validateUserExists = (interaction: Interaction) => {
+export const cacheUser = (interaction: Interaction) => {
 	let guildId = interaction.guildId;
 	let userId = interaction.user.id;
 	let userName = interaction.user.username;

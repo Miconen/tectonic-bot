@@ -6,8 +6,8 @@ import { Koa } from '@discordx/koa';
 import type { Interaction, Message } from 'discord.js';
 import { Intents } from 'discord.js';
 import { Client } from 'discordx';
-import { validateUserExists } from './data/usermapping';
-import createConnection from './data/connection';
+import { cacheUser } from './data/usermapping.js';
+import createConnection from './data/database/connection.js';
 
 export const bot = new Client({
 	// To only use global commands (use @Guild for specific guild command), comment this line
@@ -55,7 +55,7 @@ bot.once('ready', async () => {
 bot.on('interactionCreate', (interaction: Interaction) => {
 	// Map non-mapped users in to memory when they interact with the bot
 	// This should only catch new users since we load the existing user mapping on startup from database
-	validateUserExists(interaction);
+	// cacheUser(interaction);
 
 	bot.executeInteraction(interaction);
 });
@@ -68,13 +68,10 @@ async function run() {
 	// Establish database connection
 	await createConnection();
 
-	// The following syntax should be used in the commonjs environment
-	await importx(__dirname + '/{events,commands,api}/**/*.{ts,js}');
-
 	// The following syntax should be used in the ECMAScript environment
-	// await importx(
-	// 	dirname(import.meta.url) + '/{events,commands,api}/**/*.{ts,js}'
-	// );
+	await importx(
+		dirname(import.meta.url) + '/{events,commands,api}/**/*.{ts,js}'
+	);
 
 	// Let's start the bot
 	if (!process.env.BOT_TOKEN) {

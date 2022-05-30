@@ -1,7 +1,7 @@
 import { Get, Router } from '@discordx/koa';
 import type { Context } from 'koa';
 
-import { bot } from '../main';
+import { bot } from '../main.js';
 
 @Router()
 export class API {
