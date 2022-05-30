@@ -3,12 +3,25 @@
 Install:
 
 ```
-git pull (url of this repo)
-cd (name of repo)
-set BOT_TOKEN=(bot token from https://discord.com/developers/applications)
+git clone https://github.com/Miconen/tectonic-bot
+cd tectonic-bot
+```
+Set bot token in .env file
+```
+BOT_TOKEN=BOT_TOKEN_HERE
+```
+Install:
+```
 npm install
-npm run build
+```
+Development build:
+```
 npm run start
+```
+Production build:
+```
+npm run build
+npm run serve
 ```
 
 
