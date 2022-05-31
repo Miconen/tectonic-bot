@@ -1,8 +1,8 @@
 import pool from './pooling.js';
 
 async function createConnection() {
-	let retries = 5;
-	let interval = 1000;
+	let retries = 3;
+	let interval = 100;
 	while (retries) {
 		try {
 			await pool.connect();
