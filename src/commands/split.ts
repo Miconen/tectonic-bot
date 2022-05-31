@@ -38,7 +38,7 @@ class split {
 
     // Create a MessageActionRow and add the button to that row.
     const row = new MessageActionRow().addComponents(helloBtn, YellowBtn)
-    const msg = `You have submitend for ${value} point please wait for admin aproval, and make sure you have posted the apropriate screenshots` 
+    const msg = `You have submitted a request for ${value} points please wait for admin approval, and make sure you have posted the appropriate screenshots` 
     interaction.editReply({
       content: msg,
       components: [row],
