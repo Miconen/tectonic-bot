@@ -51,12 +51,7 @@ class Example {
       //  interaction.user.is     User ID
       //  interaction.guild?.id   Guild ID
       interaction.reply(
-        `${interaction.user} has recived ${value} rank-points \n
-        DEV info \n
-        ${interaction.user.id} \n
-        ${interaction.guild?.id}`).then((res) =>{
-          res;
-        });
+        `${interaction.user} has recived ${value} rank-points}`);
       
       
     }
