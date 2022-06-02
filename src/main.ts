@@ -6,7 +6,6 @@ import { Koa } from '@discordx/koa';
 import type { Interaction, Message } from 'discord.js';
 import { Intents } from 'discord.js';
 import { Client } from 'discordx';
-import { cacheUser } from './data/usermapping.js';
 import createConnection from './data/database/connection.js';
 
 export const bot = new Client({
@@ -53,10 +52,6 @@ bot.once('ready', async () => {
 });
 
 bot.on('interactionCreate', (interaction: Interaction) => {
-	// Map non-mapped users in to memory when they interact with the bot
-	// This should only catch new users since we load the existing user mapping on startup from database
-	// cacheUser(interaction);
-
 	bot.executeInteraction(interaction);
 });
 
