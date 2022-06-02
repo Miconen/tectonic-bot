@@ -12,7 +12,6 @@ import {
 	SlashOption,
 } from 'discordx';
 import IsAdmin from '../utility/isAdmin.js';
-import newUser from '../data/database/updateUserPoints.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 
 /*
