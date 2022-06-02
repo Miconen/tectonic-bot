@@ -12,8 +12,10 @@ const getPoints = async (
 	connection
 		.query(SELECT_QUERY, [guild_id, user_id])
 		.then((res) => {
-			if (res.rows[0].points) result = res.rows[0].points;
+			console.log(res.rows[0].points);
 
+			//if (res.rows[0].points) result = res.rows[0].points;
+			result = res.rows[0].points
 			callback(result);
 		})
 		.catch((err) => {
