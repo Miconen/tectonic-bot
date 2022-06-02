@@ -5,8 +5,9 @@ const INSERT_QUERY = `INSERT INTO users (guild_id, user_id)
 						WHERE NOT EXISTS (SELECT guild_id FROM users WHERE guild_id = $1 AND user_id = $2) LIMIT 1;`;
 
 const newUser = async (guild_id: string, user_id: string) => {
-	await pool.connect();
-	pool.query(INSERT_QUERY, [guild_id, user_id])
+	const connection = await pool.connect();
+	connection
+		.query(INSERT_QUERY, [guild_id, user_id])
 		.then((res) => {
 			if (res.rowCount === 0) {
 				console.log(
@@ -18,6 +19,9 @@ const newUser = async (guild_id: string, user_id: string) => {
 		})
 		.catch((err) => {
 			console.error(err);
+		})
+		.finally(() => {
+			connection.release();
 		});
 };
 

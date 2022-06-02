@@ -1,24 +1,30 @@
-import { Discord, Slash, SlashOption, SlashChoice } from "discordx";
-import { TextChannel, VoiceChannel, CommandInteraction, GuildMember, Client, User } from "discord.js";
+import { Discord, Slash, SlashOption, SlashChoice } from 'discordx';
+import {
+	TextChannel,
+	VoiceChannel,
+	CommandInteraction,
+	GuildMember,
+	Client,
+	User,
+} from 'discord.js';
 
 @Discord()
 class Example {
-    @Slash("split-bob")
-    async split(
-      @SlashChoice({ name: "2-100m",    value: 10 })
-      @SlashChoice({ name: "100-500m",  value: 20 })
-      @SlashChoice({ name: "500m+",     value: 30 })
-      @SlashOption("value", { description: "Value of the split drop?" })
-      value: number,
-      interaction: CommandInteraction
-    ) {
-      //logic and stuff have fun implementing it
-      
+	@Slash('split-bob')
+	async split(
+		@SlashChoice({ name: '2-100m', value: 10 })
+		@SlashChoice({ name: '100-500m', value: 20 })
+		@SlashChoice({ name: '500m+', value: 30 })
+		@SlashOption('value', { description: 'Value of the split drop?' })
+		value: number,
+		interaction: CommandInteraction
+	) {
+		//logic and stuff have fun implementing it
 
-      //printing everything
-      //console.log(interaction);
+		//printing everything
+		//console.log(interaction);
 
-      /*
+		/*
       //define the variables for database queries
       const user_id     = interaction.user.id;
       const guild_id    = interaction.guild?.id;
@@ -43,16 +49,11 @@ class Example {
       }
       */
 
-
-
-
-    
-      // "interaction.user"       @mention somehow
-      //  interaction.user.is     User ID
-      //  interaction.guild?.id   Guild ID
-      interaction.reply(
-        `${interaction.user} has recived ${value} rank-points}`);
-      
-      
-    }
-  }
+		// "interaction.user"       @mention somehow
+		//  interaction.user.is     User ID
+		//  interaction.guild?.id   Guild ID
+		interaction.reply(
+			`${interaction.user} has recived ${value} rank-points}`
+		);
+	}
+}
