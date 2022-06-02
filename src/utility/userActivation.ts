@@ -62,19 +62,6 @@ class Activation {
 		removeUser(interaction.guildId!, channel.user.id);
 	}
 
-	@Slash('points')
-	points(
-		// DO NOT CHANGE ANY OF THIS OR RISK DEBUGGING FOR 3 HOURS WORTH OF SHIT UNEXPLAINABLE BUGS
-		@SlashOption('username')
-		channel: User,
-		interaction: CommandInteraction
-	) {
-		// let points = getUserPoints(channel, interaction);
-		//TODO: Get points from database with database/getPoints.ts
-		let points = 0;
-		interaction.reply(`${points} points`);
-	}
-
 	@Slash('checkstatus')
 	Checkstatus(
 		@SlashOption('username', { description: '@User tag to check' })
