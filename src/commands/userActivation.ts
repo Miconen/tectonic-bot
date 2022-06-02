@@ -4,12 +4,14 @@ import IsAdmin from '../utility/isAdmin.js';
 import User from '../data/User.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
+import checkIfActivated from '../data/database/checkIfActivated.js';
 
-const validateInput = (interaction: CommandInteraction) => {
+const isValid = (interaction: CommandInteraction, channel: User) => {
 	if (!IsAdmin(Number(interaction.member?.permissions))) {
 		interaction.reply('❌ Lacking permissions for this command.');
 		return false;
 	}
+	// TODO: Check if user is a bot
 
 	return true;
 };
@@ -22,7 +24,7 @@ class Activation {
 		channel: User,
 		interaction: CommandInteraction
 	) {
-		if (!validateInput(interaction)) return;
+		if (!isValid(interaction, channel)) return;
 
 		interaction.reply(
 			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
@@ -32,8 +34,9 @@ class Activation {
 
 		// @ts-ignore channel.user doesn't have type delcarations from discord.ts
 		// so we have to use @ts-ignore to tell typescript to ignore the error
-		newUser(channel.user.id, interaction.guildId!);
+		newUser(interaction.guildId!, channel.user.id);
 	}
+
 	@Slash('deactivate')
 	Deactivate(
 		@SlashOption('username', {
@@ -43,7 +46,7 @@ class Activation {
 		channel: User,
 		interaction: CommandInteraction
 	) {
-		if (!validateInput(interaction)) return;
+		if (!isValid(interaction, channel)) return;
 
 		interaction.reply(
 			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
@@ -53,6 +56,42 @@ class Activation {
 
 		// @ts-ignore channel.user doesn't have type delcarations from discord.ts
 		// so we have to use @ts-ignore to tell typescript to ignore the error
-		removeUser(channel.user.id, interaction.guildId!);
+		removeUser(interaction.guildId!, channel.user.id);
+	}
+
+	@Slash('checkstatus')
+	Checkstatus(
+		@SlashOption('username', { description: '@User tag to check' })
+		channel: User,
+		interaction: CommandInteraction
+	) {
+		if (!isValid(interaction, channel)) return;
+
+		let result = false;
+		const callback = (resultBoolean: boolean) => {
+			result = resultBoolean;
+
+			if (!result) {
+				interaction.reply(
+					// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+					// so we have to use @ts-ignore to tell typescript to ignore the error
+					`❌ ${channel.user} Is not an activated user.`
+				);
+				return;
+			}
+			interaction.reply(
+				// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+				// so we have to use @ts-ignore to tell typescript to ignore the error
+				`✔️ ${channel.user} is an activated user.`
+			);
+		};
+
+		checkIfActivated(
+			interaction.member!.user.id,
+			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+			// so we have to use @ts-ignore to tell typescript to ignore the error
+			channel.user.id,
+			callback
+		);
 	}
 }
