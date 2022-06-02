@@ -1,14 +1,5 @@
 import { Discord, Slash, SlashOption, SlashChoice } from 'discordx';
-import {
-	TextChannel,
-	VoiceChannel,
-	CommandInteraction,
-	GuildMember,
-	Client,
-	User,
-	AutocompleteInteraction,
-	Interaction,
-} from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 
 enum TextChoices {
 	// WhatDiscordShows = value
