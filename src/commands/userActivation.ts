@@ -1,7 +1,6 @@
 import { Discord, Slash, SlashOption } from 'discordx';
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, User } from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
-import User from '../data/User.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
 import checkIfActivated from '../data/database/checkIfActivated.js';
@@ -25,6 +24,10 @@ class Activation {
 		interaction: CommandInteraction
 	) {
 		if (!isValid(interaction, channel)) return;
+
+		// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+		// so we have to use @ts-ignore to tell typescript to ignore the error
+		console.log(channel.user);
 
 		interaction.reply(
 			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
@@ -87,7 +90,7 @@ class Activation {
 		};
 
 		checkIfActivated(
-			interaction.member!.user.id,
+			interaction.guildId!,
 			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
 			// so we have to use @ts-ignore to tell typescript to ignore the error
 			channel.user.id,
