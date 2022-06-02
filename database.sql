@@ -3,9 +3,10 @@ CREATE TABLE "public"."users"
  "id"       integer NOT NULL GENERATED ALWAYS AS IDENTITY,
  "guild_id" varchar(32) NOT NULL,
  "user_id"  varchar(32) NOT NULL,
- "points"   integer NOT NULL,
+ "points"   integer NOT NULL DEFAULT 0,
  CONSTRAINT "PK_7" PRIMARY KEY ( "id" )
 );
+
 
 CREATE TABLE "public"."splits"
 (
