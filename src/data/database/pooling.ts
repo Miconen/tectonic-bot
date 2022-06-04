@@ -1,5 +1,3 @@
-// import postgres from 'pg';
-// const { Pool } = postgres;
 import mysql from 'mysql';
 const pool = mysql.createPool({
 	connectionLimit: 10,

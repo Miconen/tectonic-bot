@@ -1,4 +1,3 @@
-import { Connection } from 'pg';
 import pool from './pooling.js';
 
 async function createConnection() {
