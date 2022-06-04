@@ -23,13 +23,14 @@
 		"dotenv": "^16.0.1",
 		"koa": "^2.13.4",
 		"mongodb": "^4.6.0",
+		"mysql": "^2.18.1",
 		"npm": "^8.11.0",
-		"pg": "^8.7.3",
 		"reflect-metadata": "^0.1.13"
 	},
 	"devDependencies": {
 		"@types/koa": "^2.13.4",
 		"@types/koa__router": "^8.0.11",
+		"@types/mysql": "^2.15.21",
 		"@types/node": "^17.0.33",
 		"@types/pg": "^8.6.5",
 		"nodemon": "^2.0.16",
