@@ -1,3 +1,4 @@
+import { Connection } from 'pg';
 import pool from './pooling.js';
 
 async function createConnection() {
@@ -5,8 +6,10 @@ async function createConnection() {
 	let interval = 100;
 	while (retries) {
 		try {
-			await pool.connect();
-			console.log('Connected to database');
+			pool.getConnection((err, connection) => {
+				console.log('Connected to database');
+				connection.release();
+			});
 			break;
 		} catch (err) {
 			console.log(
