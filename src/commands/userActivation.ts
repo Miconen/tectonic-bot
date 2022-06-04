@@ -73,28 +73,29 @@ class Activation {
 	) {
 		// let points = getUserPoints(channel, interaction);
 		//TODO: Get points from database with database/getPoints.ts
-	
-		const getUserPoints = (channel: User, interaction: CommandInteraction) => {
-		let result = 0;
-		
-		const callback = (resultNumber: number) => {
-			result = resultNumber;
+
+		const getUserPoints = (
+			channel: User,
+			interaction: CommandInteraction
+		) => {
+			let result = 0;
+
+			const callback = (resultNumber: number) => {
+				result = resultNumber;
+			};
+
+			getPoints(
+				interaction.guildId!,
+				// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+				// so we have to use @ts-ignore to tell typescript to ignore the error
+				channel.user.id
+			);
+			console.log('result: ', result);
+
+			return result;
 		};
-
-		getPoints(
-			interaction.guildId!,
-			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
-			// so we have to use @ts-ignore to tell typescript to ignore the error
-			channel.user.id,
-			callback
-		);
-		console.log("result: ",result);
-
-		return result;
-	};
-		console.log(getUserPoints(channel,interaction));
-		interaction.reply(`${getUserPoints(channel,interaction)} points`);
-
+		console.log(getUserPoints(channel, interaction));
+		interaction.reply(`${getUserPoints(channel, interaction)} points`);
 	}
 
 	@Slash('checkstatus')
@@ -128,8 +129,7 @@ class Activation {
 			interaction.guildId!,
 			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
 			// so we have to use @ts-ignore to tell typescript to ignore the error
-			channel.user.id,
-			callback
+			channel.user.id
 		);
 	}
 }

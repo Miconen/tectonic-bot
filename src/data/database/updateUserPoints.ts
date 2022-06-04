@@ -1,37 +1,14 @@
-import pool from './pooling.js';
+import dbQuery from './dbQuery.js';
 
-const UPDATE_QUERY =
-	'UPDATE users SET points=points+$3 WHERE (guild_id=$1 AND user_id=$2) RETURNING points';
+const QUERY = `UPDATE users SET points=points+ ? WHERE (guild_id= ? AND user_id= ?)`;
 
 const updateUserPoints = async (
 	guild_id: string,
 	user_id: string,
-	points: number,
-	callback: (arg0: number) => void
+	points: number
 ) => {
-	let result = 0;
-	const connection = await pool.connect();
-	await connection
-		.query(UPDATE_QUERY, [guild_id, user_id, points])
-		.then((res) => {
-			if (res.rowCount === 0) {
-				console.log(
-					`User ${user_id} does not exist in guild ${guild_id}`
-				);
-				result = 0;
-			} else {
-				console.log(`Updated user ${user_id} in guild ${guild_id}`);
-				result = res.rows[0].points;
-			}
-
-			callback(result);
-		})
-		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			connection.release();
-		});
+	const result = await dbQuery(QUERY, [guild_id, user_id]);
+	return result;
 };
 
 export default updateUserPoints;

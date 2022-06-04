@@ -13,6 +13,7 @@ import {
 } from 'discordx';
 import IsAdmin from '../utility/isAdmin.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
+import getPoints from '../data/database/getPoints.js';
 
 /*
 TODO
@@ -118,8 +119,12 @@ class split {
 		updateUserPoints(
 			interaction.guild!.id,
 			interaction.message.interaction!.user.id,
-			points!,
-			callback
+			points!
+		);
+		getPoints(
+			interaction.guild!.id,
+			interaction.message.interaction!.user.id,
+			points!
 		);
 	}
 
