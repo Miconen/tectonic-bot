@@ -14,7 +14,7 @@ const updateUserPoints = async (
 	let isInDb = await checkIfActivated(guild_id, user_id);
 	if (!isInDb) return false;
 	await queryUpdateUserPoints(guild_id, user_id, points);
-	let newPoints = await getPoints(guild_id, user_id, points);
+	let newPoints = await getPoints(guild_id, user_id);
 	return newPoints;
 };
 
