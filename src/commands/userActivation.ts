@@ -1,11 +1,10 @@
 import { Discord, Slash, SlashOption } from 'discordx';
-import { CommandInteraction, SystemChannelFlags, User } from 'discord.js';
+import { CommandInteraction, User } from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
 import checkIfActivated from '../data/database/checkIfActivated.js';
 import getPoints from '../data/database/getPoints.js';
-import { waitForDebugger } from 'inspector';
 
 const isValid = (interaction: CommandInteraction, channel: User) => {
 	if (!IsAdmin(Number(interaction.member?.permissions))) {
