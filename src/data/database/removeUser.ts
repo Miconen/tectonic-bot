@@ -1,23 +1,21 @@
-import pool from './pooling.js';
+import createQuery from './createQuery.js';
 
-const DELETE_QUERY = `DELETE FROM users WHERE (guild_id=$1 AND user_id=$2)`;
+const QUERY = `DELETE FROM users WHERE (guild_id= ? AND user_id= ?)`;
 
+/**
+ * Remove user from database
+ * @param guild_id
+ * @param user_id
+ * @todo RETURN VALUES NOT IMPLEMENTED YET, ONLY RETURNS TRUE
+ * @returns true if user was removed, false if user was not removed
+ */
 const removeUser = async (guild_id: string, user_id: string) => {
-	const connection = await pool.connect();
-	connection
-		.query(DELETE_QUERY, [guild_id, user_id])
-		.then((res) => {
-			if (res.rowCount === 0) {
-				console.log(`Did not remove anything, did something go wrong?`);
-			} else {
-				console.log(`Removed user ${user_id} in guild ${guild_id}`);
-			}
+	return await createQuery(QUERY, [guild_id, user_id])
+		.then((res: any) => {
+			return true;
 		})
 		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			connection.release();
+			throw err;
 		});
 };
 

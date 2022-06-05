@@ -13,13 +13,7 @@ import {
 } from 'discordx';
 import IsAdmin from '../utility/isAdmin.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
-
-/*
-TODO
-Implement bob
-do database stuff
-make it into a slash choice thingy
-*/
+import getPoints from '../data/database/getPoints.js';
 
 const interactionMap = new Map<string, CommandInteraction>();
 const interactionState = new Map<string, boolean>();
@@ -99,28 +93,28 @@ class split {
 
 		let points = pointsMap.get(getInteractionId(interaction));
 
-		let result = 0;
-		const callback = (resultPoints: number) => {
-			result = resultPoints;
-
-			if (!result) {
-				interaction.reply(
-					`❌ ${interaction.message.interaction?.user} Is not an activated user.`
-				);
-				return;
-			}
-			interaction.reply(
-				// Show who approved the points
-				`✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${result} points.`
-			);
-		};
-
-		updateUserPoints(
+		let result = updateUserPoints(
 			interaction.guild!.id,
 			interaction.message.interaction!.user.id,
-			points!,
-			callback
+			points!
 		);
+
+		let response = '';
+		result
+			.then((res) => {
+				if (Number.isInteger(res)) {
+					response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
+				}
+				if (res == false) {
+					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			})
+			.finally(() => {
+				interaction.reply(response);
+			});
 	}
 
 	// register a handler for the button with id: "deny-btn"

@@ -1,36 +1,34 @@
-import pool from './pooling.js';
+import checkIfActivated from './checkIfActivated.js';
+import createQuery from './createQuery.js';
+import getPoints from './getPoints.js';
 
-const UPDATE_QUERY =
-	'UPDATE users SET points=points+$3 WHERE (guild_id=$1 AND user_id=$2) RETURNING points';
+const QUERY = `UPDATE users SET points=points+ ? WHERE (guild_id= ? AND user_id= ?)`;
 
 const updateUserPoints = async (
 	guild_id: string,
 	user_id: string,
-	points: number,
-	callback: (arg0: number) => void
+	points: number
 ) => {
-	let result = 0;
-	const connection = await pool.connect();
-	await connection
-		.query(UPDATE_QUERY, [guild_id, user_id, points])
-		.then((res) => {
-			if (res.rowCount === 0) {
-				console.log(
-					`User ${user_id} does not exist in guild ${guild_id}`
-				);
-				result = 0;
-			} else {
-				console.log(`Updated user ${user_id} in guild ${guild_id}`);
-				result = res.rows[0].points;
-			}
+	// userInDb = true/false based on if the user is in the database
+	// Return = number/false based on new points value or false if user is not in the database
+	let isInDb = await checkIfActivated(guild_id, user_id);
+	if (!isInDb) return false;
+	await queryUpdateUserPoints(guild_id, user_id, points);
+	let newPoints = await getPoints(guild_id, user_id, points);
+	return newPoints;
+};
 
-			callback(result);
+const queryUpdateUserPoints = async (
+	guild_id: string,
+	user_id: string,
+	points: number
+) => {
+	return await createQuery(QUERY, [points, guild_id, user_id])
+		.then((res: any) => {
+			return;
 		})
 		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			connection.release();
+			throw err;
 		});
 };
 

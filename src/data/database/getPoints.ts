@@ -1,28 +1,20 @@
-import pool from './pooling.js';
+import createQuery from './createQuery.js';
 
-const SELECT_QUERY = `SELECT points FROM users WHERE (guild_id=$1 AND user_id=$2)`;
+const QUERY = `SELECT points FROM users WHERE (guild_id= ? AND user_id= ?)`;
 
 const getPoints = async (
 	guild_id: string,
 	user_id: string,
-	callback: (arg0: number) => void
+	points: number = 0
 ) => {
-	let result = 0;
-	const connection = await pool.connect();
-	connection
-		.query(SELECT_QUERY, [guild_id, user_id])
-		.then((res) => {
-			console.log(res.rows[0].points);
-
-			//if (res.rows[0].points) result = res.rows[0].points;
-			result = res.rows[0].points
-			callback(result);
+	return await createQuery(QUERY, [guild_id, user_id])
+		.then((res: any) => {
+			// if (res[0].points) throw new Error('User not found');
+			console.log(res[0].points);
+			return res[0].points + points;
 		})
 		.catch((err) => {
-			console.error(err);
-		})
-		.finally(() => {
-			connection.release();
+			throw err;
 		});
 };
 
