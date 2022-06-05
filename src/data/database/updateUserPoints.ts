@@ -12,7 +12,7 @@ const updateUserPoints = async (
 	// userInDb = true/false based on if the user is in the database
 	// Return = number/false based on new points value or false if user is not in the database
 	let isInDb = await checkIfActivated(guild_id, user_id);
-	if (!isInDb) return false;
+	if (false == isInDb) return false;
 	await queryUpdateUserPoints(guild_id, user_id, points);
 	let newPoints = await getPoints(guild_id, user_id);
 	return newPoints;

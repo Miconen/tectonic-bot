@@ -2,6 +2,7 @@ import { Discord, Slash, SlashOption, SlashGroup } from 'discordx';
 import { CommandInteraction, User } from 'discord.js';
 import getPoints from '../data/database/getPoints.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
+import IsAdmin from '../utility/isAdmin.js';
 
 @Discord()
 @SlashGroup({ name: 'points', description: 'Points related commands' })
@@ -36,6 +37,8 @@ class Points {
 		points: number,
 		interaction: CommandInteraction
 	) {
+		if (!IsAdmin(Number(interaction.member?.permissions))) return;
+
 		let result = updateUserPoints(
 			interaction.guildId!,
 			// @ts-ignore
@@ -51,9 +54,8 @@ class Points {
 					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
 				}
 				if (res == false) {
-					// @ts-ignore channel.user doesn't have type delcarations from discord.ts
-					// so we have to use @ts-ignore to tell typescript to ignore the error
-					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;
+					// @ts-ignore
+					response = `❌ ${channel.user} Is not an activated user.`;
 				}
 			})
 			.catch((err) => {
