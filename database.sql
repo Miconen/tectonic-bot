@@ -34,3 +34,15 @@ PRIMARY KEY (`id`),
 KEY `FK_28` (`user`),
 CONSTRAINT `FK_26` FOREIGN KEY `FK_28` (`user`) REFERENCES `users` (`id`)
 );
+
+CREATE TABLE `rsn`
+(
+ `id`      integer NOT NULL AUTO_INCREMENT ,
+ `id_1`    integer NOT NULL ,
+ `rsn`     varchar(32) NOT NULL ,
+ `ironman` bit NOT NULL ,
+
+PRIMARY KEY (`id`),
+KEY `FK_29` (`id_1`),
+CONSTRAINT `FK_27` FOREIGN KEY `FK_29` (`id_1`) REFERENCES `splits` (`id`)
+);
