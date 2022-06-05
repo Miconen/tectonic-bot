@@ -4,7 +4,6 @@ import IsAdmin from '../utility/isAdmin.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
 import checkIfActivated from '../data/database/checkIfActivated.js';
-import getPoints from '../data/database/getPoints.js';
 
 const isValid = (interaction: CommandInteraction, channel: User) => {
 	if (!IsAdmin(Number(interaction.member?.permissions))) {
@@ -33,7 +32,6 @@ class Activation {
 		let response = '';
 		result
 			.then((res: any) => {
-				console.log(res);
 				if (res) {
 					// @ts-ignore channel.user doesn't have type delcarations from discord.ts
 					// so we have to use @ts-ignore to tell typescript to ignore the error
@@ -87,31 +85,6 @@ class Activation {
 			})
 			.finally(() => {
 				interaction.reply(response);
-			});
-	}
-
-	@Slash('points')
-	points(
-		// DO NOT CHANGE ANY OF THIS OR RISK DEBUGGING FOR 3 HOURS WORTH OF SHIT UNEXPLAINABLE BUGS
-		@SlashOption('username')
-		channel: User,
-		interaction: CommandInteraction
-	) {
-		// let points = getUserPoints(channel, interaction);
-		//TODO: Get points from database with database/getPoints.ts
-		let result = getPoints(
-			interaction.guildId!,
-			// @ts-ignore channel.user doesn't have type delcarations from discord.ts
-			// so we have to use @ts-ignore to tell typescript to ignore the error
-			channel.user.id
-		);
-
-		result
-			.then((points) => {
-				interaction.reply(`${points} points`);
-			})
-			.catch((err) => {
-				interaction.reply('Error getting points');
 			});
 	}
 
