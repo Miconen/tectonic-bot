@@ -11,6 +11,7 @@ class RSN {
 		username: string,
 		interaction: CommandInteraction
 	) {
+		// TODO: SANITISE THE USERNAME INPUT TO AVOID SQL INJECTION
 		interaction.reply(`${username}`);
 	}
 	@Slash('setiron')
