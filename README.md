@@ -4,7 +4,8 @@
 
 ### Requirements:
 
--   [Node.js 16+](https://nodejs.org/en/)
+-   [Node.js](https://nodejs.org/en/)
+-   [TypeScript	>= 4.4.4](https://www.npmjs.com/package/typescript)
 -   [Discord Bot](https://discord.com/developers/applications)
 -   [Docker](https://www.docker.com/)
 
