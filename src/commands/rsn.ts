@@ -2,6 +2,7 @@ import { Discord, Slash, SlashOption, SlashGroup, SlashChoice } from 'discordx';
 import { CommandInteraction, User } from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
 import setRsn from '../data/database/setRsn.js';
+import getRsn from '../data/database/getRsn.js';
 
 @Discord()
 @SlashGroup({ name: 'rsn', description: 'Runescape name related commands' })
@@ -52,15 +53,36 @@ class RSN {
 				interaction.reply(response);
 			});
 	}
-	@Slash('setiron')
+	@Slash('lookup')
 	setiron(
-		@SlashChoice({ name: 'I am a main', value: 0 })
-		@SlashChoice({ name: 'I am an ironman', value: 1 })
-		@SlashOption('ironman', {
-			description: 'Is your account an ironman or a main',
-		})
-		value: number
+		@SlashOption('username')
+		channel: User,
+		interaction: CommandInteraction
 	) {
-		// Verify user has rsn set
+		if (!IsAdmin(Number(interaction.member?.permissions))) return;
+
+		let result = getRsn(
+			interaction.guildId!,
+			// @ts-ignore
+			channel.user.id
+		);
+
+		let response = 'Error getting rsn, maybe the user is not activated?';
+		result
+			.then((res: any) => {
+				console.log(res);
+				if (res[0]) {
+					response = '';
+					res.forEach((account: any) => {
+						response += `Name: ${account.rsn} Type: ${account.type}\n`;
+					});
+				}
+			})
+			.catch((err: any) => {
+				console.log(err);
+			})
+			.finally(() => {
+				interaction.reply(response);
+			});
 	}
 }
