@@ -43,6 +43,6 @@ CREATE TABLE `rsn`
  `type` varchar(8) NOT NULL ,
 
 PRIMARY KEY (`id`),
-KEY `FK_29` (`id_1`),
-CONSTRAINT `FK_27` FOREIGN KEY `FK_29` (`id_1`) REFERENCES `splits` (`id`)
+KEY `FK_29` (`user`),
+CONSTRAINT `FK_27` FOREIGN KEY `FK_29` (`user`) REFERENCES `users` (`id`)
 );
