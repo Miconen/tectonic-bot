@@ -48,3 +48,12 @@ PRIMARY KEY (`id`),
 KEY `FK_29` (`user`),
 CONSTRAINT `FK_27` FOREIGN KEY `FK_29` (`user`) REFERENCES `users` (`id`)
 );
+
+CREATE TABLE `guilds`
+(
+ `id`       integer NOT NULL AUTO_INCREMENT,
+ `guild_id` varchar(32) NOT NULL ,
+ `multiplier`   integer NOT NULL DEFAULT 1 ,
+
+PRIMARY KEY (`id`)
+)
