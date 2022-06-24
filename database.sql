@@ -55,5 +55,6 @@ CREATE TABLE `guilds`
  `guild_id` varchar(32) NOT NULL ,
  `multiplier`   integer NOT NULL DEFAULT 1 ,
 
+UNIQUE (guild_id),
 PRIMARY KEY (`id`)
 )
