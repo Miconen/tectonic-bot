@@ -40,7 +40,7 @@ CREATE TABLE `rsn`
  `id`      integer NOT NULL AUTO_INCREMENT ,
  `id_1`    integer NOT NULL ,
  `rsn`     varchar(32) NOT NULL ,
- `ironman` bit NOT NULL ,
+ `ironman` varchar(8) NOT NULL ,
 
 PRIMARY KEY (`id`),
 KEY `FK_29` (`id_1`),
