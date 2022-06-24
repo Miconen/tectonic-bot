@@ -73,7 +73,6 @@ class Points {
 	leaderboard(interaction: CommandInteraction) {
 		let result = getLeaderboard(
 			interaction.guildId!,
-			interaction.guild?.members.cache
 		);
 
 		let botIconUrl = interaction.client.user?.avatarURL() ?? '';
@@ -98,11 +97,12 @@ class Points {
 				const pageMaker = (i: number) => {
 					let fields = res.slice(i, i + 10);
 
+					console.log(fields);
 					return {
 						embeds: [
 							embedMaker()
 								.setFooter({
-									text: `Page ${i + 1} (${i + 1}-${i + 10})`,
+									text: `Page ${i + 1} (${i + 1}-${i + 10}) - /rsn set if you're not on the list.`,
 								})
 								.addFields(
 									// -1 cause dealing with array indexes starting at 0
@@ -114,10 +114,12 @@ class Points {
 				for (let i = 0; i <= res.length; i++) {
 					if (i % 10 == 0) pages.push(pageMaker(i));
 				}
-
+				
 				new Pagination(interaction, [...pages]).send();
 			})
 			.catch((err) => {
+				console.log(err);
+				
 				interaction.reply('Error getting leaderboard');
 			});
 	}
