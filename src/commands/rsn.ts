@@ -36,17 +36,13 @@ class RSN {
 			type
 		);
 
-		let response = 'Error settings rsn';
+		let response = 'Error setting rsn, maybe the user is not activated?';
 		result
 			.then((res: any) => {
 				console.log(res);
-				if (Number.isInteger(res)) {
+				if (res) {
 					// @ts-ignore
-					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
-				}
-				if (res == false) {
-					// @ts-ignore
-					response = `❌ ${channel.user} Is not an activated user.`;
+					response = `✔️ RSN Has been set.`;
 				}
 			})
 			.catch((err: any) => {
