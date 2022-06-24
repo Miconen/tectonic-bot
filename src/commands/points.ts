@@ -1,8 +1,12 @@
 import { Discord, Slash, SlashOption, SlashGroup } from 'discordx';
-import { CommandInteraction, User } from 'discord.js';
+import { Pagination } from '@discordx/pagination';
+import { CommandInteraction, User, MessageEmbed } from 'discord.js';
 import getPoints from '../data/database/getPoints.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 import IsAdmin from '../utility/isAdmin.js';
+import getLeaderboard from '../data/database/getLeaderboard.js';
+import * as util from 'util';
+import { inspect } from 'util';
 
 @Discord()
 @SlashGroup({ name: 'points', description: 'Points related commands' })
@@ -63,6 +67,58 @@ class Points {
 			})
 			.finally(() => {
 				interaction.reply(response);
+			});
+	}
+	@Slash('leaderboard')
+	leaderboard(interaction: CommandInteraction) {
+		let result = getLeaderboard(
+			interaction.guildId!,
+			interaction.guild?.members.cache
+		);
+
+		let botIconUrl = interaction.client.user?.avatarURL() ?? '';
+
+		const embedMaker = (): MessageEmbed => {
+			return new MessageEmbed()
+				.setTitle('Tectonic Leaderboard')
+				.setAuthor({
+					name: 'Tectonic Bot',
+					url: 'https://github.com/Miconen/tectonic-bot',
+					iconURL: botIconUrl,
+				})
+				.setColor('#0099ff')
+				.setTimestamp();
+		};
+
+		result
+			.then((res) => {
+				console.log(res);
+
+				let pages: any = [];
+				const pageMaker = (i: number) => {
+					let fields = res.slice(i, i + 10);
+
+					return {
+						embeds: [
+							embedMaker()
+								.setFooter({
+									text: `Page ${i + 1} (${i + 1}-${i + 10})`,
+								})
+								.addFields(
+									// -1 cause dealing with array indexes starting at 0
+									...fields
+								),
+						],
+					};
+				};
+				for (let i = 0; i <= res.length; i++) {
+					if (i % 10 == 0) pages.push(pageMaker(i));
+				}
+
+				new Pagination(interaction, [...pages]).send();
+			})
+			.catch((err) => {
+				interaction.reply('Error getting leaderboard');
 			});
 	}
 }
