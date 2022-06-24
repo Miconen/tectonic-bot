@@ -3,6 +3,7 @@ import { CommandInteraction, User } from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
 import setRsn from '../data/database/setRsn.js';
 import getRsn from '../data/database/getRsn.js';
+import IronmanIconMap from '../data/IronmanIconMap.js';
 
 @Discord()
 @SlashGroup({ name: 'rsn', description: 'Runescape name related commands' })
@@ -72,9 +73,9 @@ class RSN {
 			.then((res: any) => {
 				console.log(res);
 				if (res[0]) {
-					response = '';
+					response = '**Accounts:**\n';
 					res.forEach((account: any) => {
-						response += `Name: ${account.rsn} Type: ${account.type}\n`;
+						response += `${account.rsn} ${IronmanIconMap.get(account.type)}\n`;
 					});
 				}
 			})
