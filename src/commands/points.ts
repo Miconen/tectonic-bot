@@ -5,6 +5,7 @@ import getPoints from '../data/database/getPoints.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 import IsAdmin from '../utility/isAdmin.js';
 import getLeaderboard from '../data/database/getLeaderboard.js';
+import setPointMultiplier from '../data/database/setPointMultiplier.js';
 
 @Discord()
 @SlashGroup({ name: 'points', description: 'Points related commands' })
@@ -120,5 +121,25 @@ class Points {
 				
 				interaction.reply('Error getting leaderboard');
 			});
+	}
+	@Slash('setmultiplier')
+	setmultiplier (
+		@SlashOption('multiplier')
+		multiplier: number,
+		interaction: CommandInteraction
+		) {
+		if (!IsAdmin(Number(interaction.member?.permissions))) return;
+
+		let response = 'Something went wrong...';
+		
+		let result = setPointMultiplier(multiplier, interaction.guild!.id);
+		
+		result.then((res: any) => {
+			response = 'Updated server point multiplier';
+		}).catch((err: any) => {
+			console.log(err);
+		}).finally(() => {
+			interaction.reply(response);
+		})
 	}
 }

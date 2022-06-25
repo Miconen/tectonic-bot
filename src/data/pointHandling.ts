@@ -1,6 +1,6 @@
 // TRY TO HAVE THIS AS THE MAIN HUB FOR ADJUSTING POINT VALUES
 
-import getPointMultiplier from "./database/getPointMultiplier";
+import getPointMultiplier from "./database/getPointMultiplier.js";
 
 /**
  * @info object that stores all point values in one neat place for easy maintaining.
@@ -18,18 +18,11 @@ PointRewardsMap.set('split_high', 30)
 
 // TODO: Cache point multiplier instead of performing a database query each time
 // Return multiplied pointReward, if ANYTHING goes wrong just return pointReward
-const pointsHandler = (points: number, guild_id: string) => {
-    let result = 0;
-    let pointMultiplier = getPointMultiplier(guild_id);
-    pointMultiplier.then((res: any) => {
-        console.log(res);
-        if (!res[0]) result = points;
-        if (res[0]) result = points * res[0];
-    }).catch((err: any) => {
-        result = points;
-    }).finally(() => {
-        return result;
-    })
+const pointsHandler = async (points: number = 0, guild_id: string) => {
+    let res = await getPointMultiplier(guild_id);
+     
+    if (isNaN(res[0].multiplier) || res[0].multiplier == 0) return points;
+    return points * res[0].multiplier;
 }
 
 export default pointsHandler;
