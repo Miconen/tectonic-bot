@@ -107,7 +107,7 @@ class split {
 			.then((res) => {
 				if (Number.isInteger(res)) {
 					response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
-                    rankUpHandler(interactionMap.get(getInteractionId(interaction)), interaction.member as GuildMember, res - points!, res);
+                    rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res - points!, res);
 				}
 				if (res == false) {
 					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;
