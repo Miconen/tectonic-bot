@@ -1,7 +1,8 @@
-import { CommandInteraction, User } from "discord.js";
+import { CommandInteraction, GuildMember } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
 import updateUserPoints from "../data/database/updateUserPoints.js";
 import pointsHandler, { PointRewardsMap } from "../data/pointHandling.js";
+import { rankUpHandler } from "../data/roleHandling.js";
 import IsAdmin from "../utility/isAdmin.js";
 
 @Discord()
@@ -11,7 +12,7 @@ class Learner {
     @Slash('half')
     async half(
 		@SlashOption('username')
-		channel: User,
+		channel: GuildMember,
         interaction: CommandInteraction
     ) {
 		if (!IsAdmin(Number(interaction.member?.permissions))) return;
@@ -28,6 +29,7 @@ class Learner {
 				if (Number.isInteger(res)) {
 					// @ts-ignore
 					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
+                    rankUpHandler(interaction, channel, res - points, res);
 				}
 				if (res == false) {
 					// @ts-ignore
@@ -44,7 +46,7 @@ class Learner {
     @Slash('full')
     async full(
 		@SlashOption('username')
-		channel: User,
+		channel: GuildMember,
         interaction: CommandInteraction
     ) {
 		if (!IsAdmin(Number(interaction.member?.permissions))) return;
@@ -61,6 +63,7 @@ class Learner {
 				if (Number.isInteger(res)) {
 					// @ts-ignore
 					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
+                    rankUpHandler(interaction, channel, res - points, res);
 				}
 				if (res == false) {
 					// @ts-ignore

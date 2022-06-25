@@ -6,6 +6,7 @@ import updateUserPoints from '../data/database/updateUserPoints.js';
 import IsAdmin from '../utility/isAdmin.js';
 import getLeaderboard from '../data/database/getLeaderboard.js';
 import setPointMultiplier from '../data/database/setPointMultiplier.js';
+import { rankUpHandler } from '../data/roleHandling.js';
 
 @Discord()
 @SlashGroup({ name: 'points', description: 'Points related commands' })
@@ -35,7 +36,7 @@ class Points {
 	@Slash('give')
 	give(
 		@SlashOption('username')
-		channel: User,
+		channel: GuildMember,
 		@SlashOption('points', { description: 'Points to give' })
 		points: number,
 		interaction: CommandInteraction
@@ -55,6 +56,7 @@ class Points {
 				if (Number.isInteger(res)) {
 					// @ts-ignore
 					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
+                    rankUpHandler(interaction, channel, res - points, res);
 				}
 				if (res == false) {
 					// @ts-ignore

@@ -1,6 +1,7 @@
 import {
 	ButtonInteraction,
 	CommandInteraction,
+	GuildMember,
 	MessageActionRow,
 	MessageButton
 } from 'discord.js';
@@ -14,6 +15,7 @@ import {
 import IsAdmin from '../utility/isAdmin.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 import pointsHandler, { PointRewardsMap } from '../data/pointHandling.js';
+import { rankUpHandler } from '../data/roleHandling.js';
 
 const interactionMap = new Map<string, CommandInteraction>();
 const interactionState = new Map<string, boolean>();
@@ -105,6 +107,7 @@ class split {
 			.then((res) => {
 				if (Number.isInteger(res)) {
 					response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
+                    rankUpHandler(interactionMap.get(getInteractionId(interaction)), interaction.member as GuildMember, res - points!, res);
 				}
 				if (res == false) {
 					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;

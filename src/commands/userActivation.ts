@@ -4,7 +4,7 @@ import IsAdmin from '../utility/isAdmin.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
 import checkIfActivated from '../data/database/checkIfActivated.js';
-import { addDefaultRole } from '../data/addRole.js';
+import { addRole } from '../data/roleHandling.js';
 
 const isValid = (interaction: CommandInteraction) => {
 	if (!IsAdmin(Number(interaction.member?.permissions))) {
@@ -38,7 +38,8 @@ class Activation {
 					// @ts-ignore user.user doesn't have type delcarations from discord.ts
 					// so we have to use @ts-ignore to tell typescript to ignore the error
 					response = `${user.user} has been activated by ${interaction.member}.`;
-					addDefaultRole(interaction, user)
+					// Set default role
+					addRole(interaction, user, 'jade')
 				}
 				if (!res) {
 					// @ts-ignore user.user doesn't have type delcarations from discord.ts
