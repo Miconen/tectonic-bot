@@ -9,9 +9,19 @@ const rankUp = (oldPoints: number, newPoints: number) => {
     return result;
 }
 
+const rankDown = (oldPoints: number, newPoints: number) => {
+    let result: boolean | string = false;
+    for (let [key, value] of RoleValueMap.entries()) {
+        if (oldPoints >= key && newPoints < key) result = value;
+    }
+    return result;
+}
+
 const rankUpHandler = (interaction: CommandInteraction, target: GuildMember, oldPoints: number, newPoints: number) => {
     // Check if range between old and new points falls on a rankup
-    let newRank = rankUp(oldPoints, newPoints);
+    // Handle rankUp and rankDown depending on if oldPoints is bigger or smaller than newPoints
+    let newRank = (oldPoints < newPoints ? rankUp(oldPoints, newPoints) : rankDown(oldPoints, newPoints))
+    // If rankup line not between point values return
     if (!newRank) return;
     // Remove all old roles
     removeAllRoles(interaction, target) 
