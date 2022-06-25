@@ -11,11 +11,14 @@ const rankUp = (oldPoints: number, newPoints: number) => {
 
 const rankDown = (oldPoints: number, newPoints: number) => {
     let result: boolean | string = false;
+    // Janky way to get "lower" rank without using indexes
+    let loopPreviousValue = '';
     for (let [key, value] of RoleValueMap.entries()) {
         if (oldPoints >= key && newPoints < key) {
-            result = value;
+            result = loopPreviousValue;
             break;
-        }    
+        }
+        loopPreviousValue = value;
     }
     return result;
 }
