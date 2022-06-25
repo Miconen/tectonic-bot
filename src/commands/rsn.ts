@@ -14,6 +14,7 @@ class RSN {
 		@SlashOption('username')
 		channel: User,
 
+		// SANITIZE INPUT WHEN MOVING AWAY FROM NON ADMIN COMMAND
 		@SlashOption('rsname', { description: 'Users RSN' })
 		rsname: string,
 
