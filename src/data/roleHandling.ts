@@ -12,7 +12,10 @@ const rankUp = (oldPoints: number, newPoints: number) => {
 const rankDown = (oldPoints: number, newPoints: number) => {
     let result: boolean | string = false;
     for (let [key, value] of RoleValueMap.entries()) {
-        if (oldPoints >= key && newPoints < key) result = value;
+        if (oldPoints >= key && newPoints < key) {
+            result = value;
+            break;
+        }    
     }
     return result;
 }
