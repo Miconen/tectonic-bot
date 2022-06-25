@@ -75,7 +75,7 @@ class split {
 			denyButton
 		);
 
-		const msg = `You have submitted a request for ${value} points please wait for admin approval, and make sure you have posted the appropriate screenshots`;
+		const msg = `You have submitted a request for ${value} points please wait for admin approval, and make sure you have posted appropriate screenshots as proof.`;
 		interaction.editReply({
 			content: msg,
 			components: [row],
