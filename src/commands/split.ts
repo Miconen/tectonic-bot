@@ -2,7 +2,7 @@ import {
 	ButtonInteraction,
 	CommandInteraction,
 	MessageActionRow,
-	MessageButton,
+	MessageButton
 } from 'discord.js';
 import {
 	Discord,
@@ -13,7 +13,7 @@ import {
 } from 'discordx';
 import IsAdmin from '../utility/isAdmin.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
-import { PointRewardsMap } from '../data/pointHandling.js';
+import pointsHandler, { PointRewardsMap } from '../data/pointHandling.js';
 
 const interactionMap = new Map<string, CommandInteraction>();
 const interactionState = new Map<string, boolean>();
@@ -56,6 +56,7 @@ class split {
 		interaction: CommandInteraction
 	) {
 		await interaction.deferReply();
+		value = await pointsHandler(value, interaction.guild!.id);
 
 		// Create the button, giving it the id: "approve-btn"
 		const approveButton = new MessageButton()
@@ -89,8 +90,9 @@ class split {
 	// register a handler for the button with id: "approve-btn"
 	@ButtonComponent('approve-btn')
 	approveButton(interaction: ButtonInteraction) {
-		if (!isValid(interaction)) return;
 
+		if (!isValid(interaction)) return;
+		
 		let points = pointsMap.get(getInteractionId(interaction));
 
 		let result = updateUserPoints(
@@ -98,7 +100,6 @@ class split {
 			interaction.message.interaction!.user.id,
 			points!
 		);
-
 		let response = '';
 		result
 			.then((res) => {
@@ -114,7 +115,7 @@ class split {
 			})
 			.finally(() => {
 				interaction.reply(response);
-			});
+			})
 	}
 
 	// register a handler for the button with id: "deny-btn"
