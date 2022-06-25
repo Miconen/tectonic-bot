@@ -32,6 +32,12 @@ class Help {
 	) {
 		interaction.reply(`Admin only command, used to activate new member of the community. This command handles all automation for new users and allows them to gain points/ranks. This should be used on all new users that are a part of the clan.`)
 	}
+	@Slash('github')
+	github(
+		interaction: CommandInteraction
+	) {
+		interaction.reply('Link to Tectonic Bot repository: https://github.com/Miconen/tectonic-bot if you want to contribute @ Comfy hug')
+	}
 }
 
 @Discord()
