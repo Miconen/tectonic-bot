@@ -1,3 +1,4 @@
+import pointsHandler from '../pointHandling.js';
 import checkIfActivated from './checkIfActivated.js';
 import createQuery from './createQuery.js';
 import getPoints from './getPoints.js';

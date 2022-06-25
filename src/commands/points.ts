@@ -5,8 +5,6 @@ import getPoints from '../data/database/getPoints.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 import IsAdmin from '../utility/isAdmin.js';
 import getLeaderboard from '../data/database/getLeaderboard.js';
-import * as util from 'util';
-import { inspect } from 'util';
 
 @Discord()
 @SlashGroup({ name: 'points', description: 'Points related commands' })

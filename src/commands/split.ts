@@ -13,7 +13,7 @@ import {
 } from 'discordx';
 import IsAdmin from '../utility/isAdmin.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
-import getPoints from '../data/database/getPoints.js';
+import { PointRewardsMap } from '../data/pointHandling.js';
 
 const interactionMap = new Map<string, CommandInteraction>();
 const interactionState = new Map<string, boolean>();
@@ -48,9 +48,9 @@ const isValid = (interaction: ButtonInteraction) => {
 class split {
 	@Slash('split')
 	async split(
-		@SlashChoice({ name: '2-100m', value: 10 })
-		@SlashChoice({ name: '100-500m', value: 20 })
-		@SlashChoice({ name: '500m+', value: 30 })
+		@SlashChoice({ name: '2-100m', value: PointRewardsMap.get('split_low') })
+		@SlashChoice({ name: '100-500m', value: PointRewardsMap.get('split_medium') })
+		@SlashChoice({ name: '500m+', value: PointRewardsMap.get('split_high') })
 		@SlashOption('value', { description: 'Value of the split drop?' })
 		value: number,
 		interaction: CommandInteraction

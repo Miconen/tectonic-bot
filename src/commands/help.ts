@@ -4,10 +4,11 @@ import { CommandInteraction, User } from 'discord.js'
 @Discord()
 @SlashGroup({ name: 'help', description: 'Commands to help you use commands' })
 @SlashGroup('points')
-class Points {
+class Help {
 	@Slash('bump')
 	lookup(
 		interaction: CommandInteraction
 	) {
+        interaction.reply('Points for activity: ');
     }
 }
