@@ -31,7 +31,7 @@ Currently we give out points like so.
 - Forum
     - Bumping: 5
 
-### Commands<a name="commands"></a>
+### Commands (TODO)<a name="commands"></a>
 
 #### Points
 #### Activate
