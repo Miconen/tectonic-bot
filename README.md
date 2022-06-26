@@ -3,7 +3,10 @@
 # Table of contents
 1. [Introduction](#introduction)
 2. [Usage](#usage)
-3. [Instatllation](#installation)
+    1. [Points](#points)
+    2. [Commands](#commands)
+    3. [New users](#newusers)
+4. [Instatllation](#installation)
     1. [Initial setup](#installation__initialsetup)
     2. [Project folder](#installation__projectfolder)
     3. [Docker & MySql](#installation__docker&mysql)
@@ -11,6 +14,38 @@
 ## Introduction<a name="introduction"></a>
 
 ## Usage<a name="usage"></a>
+This section will go over the usage of the bot and is mostly meant for those managing users with it.
+
+### Points<a name="points"></a>
+Currently we give out points like so.
+- Splits
+    - Low value: 10
+    - Medium value: 20
+    - High value: 30
+- Events
+    - Participation: 5
+    - Hosting: 10
+- Learners
+    - Half: 5
+    - Full: 10
+- Forum
+    - Bumping: 5
+
+### Commands<a name="commands"></a>
+
+#### Points
+#### Activate
+#### Deactivate
+#### Checkstatus
+#### Split
+#### Event
+#### Learner
+#### Quote
+#### Rsn
+#### Help
+
+### New users<a name="newusers"></a>
+For new users we will use /activate (username). This will automatically assign them with the Jade rank and add them to the database. This allows activated users to start recieving rank points.
 
 ## Installation<a name="installation"></a>
 
