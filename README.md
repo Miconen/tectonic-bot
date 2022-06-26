@@ -1,8 +1,20 @@
 # Tectonic bot
 
-## Installation
+# Table of contents
+1. [Introduction](#introduction)
+2. [Usage](#usage)
+3. [Instatllation](#installation)
+    1. [Initial setup](#installation__initialsetup)
+    2. [Project folder](#installation__projectfolder)
+    3. [Docker & MySql](#installation__docker&mysql)
 
-### Requirements:
+## Introduction<a name="introduction"></a>
+
+## Usage<a name="usage"></a>
+
+## Installation<a name="installation"></a>
+
+### Requirements:<a name="installation__requirements"></a>
 
 -   [Node.js Version >= 16.6.0](https://nodejs.org/en/)
 -   [TypeScript	Version >= 4.4.4](https://www.npmjs.com/package/typescript)
@@ -11,7 +23,7 @@
 
 ### Beginner friendly guide
 
-#### Initial setup
+#### Initial setup<a name="installation__initialsetup"></a>
 
 Git clone the project or manually download and extract.
 
@@ -19,7 +31,7 @@ Git clone the project or manually download and extract.
 git clone https://github.com/Miconen/tectonic-bot
 ```
 
-#### Project folder
+#### Project folder<a name="installation__projectfolder"></a>
 
 For this step you will need your bots token, if you haven't yet made a bot or got a token you can do so from [Discords developer website](https://discord.com/developers/applications).
 Once you have your bot token, create a file in the projects root folder, name it .env and paste your bot token inside as shown below.
@@ -36,7 +48,7 @@ npm install
 
 Edit passwords and usernames to your liking in docker-compose.yml
 
-#### Docker & MySql
+#### Docker & MySql<a name="installation__docker&mysql"></a>
 
 Build and start your docker instance, open a terminal window and make sure you're in your project folder.
 
