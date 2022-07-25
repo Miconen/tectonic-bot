@@ -56,7 +56,7 @@ class Points {
 				if (Number.isInteger(res)) {
 					// @ts-ignore
 					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
-                    rankUpHandler(interaction, channel, res - points, res);
+          rankUpHandler(interaction, channel, res - points, res);
 				}
 				if (res == false) {
 					// @ts-ignore
