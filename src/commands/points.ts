@@ -1,6 +1,6 @@
 import { Discord, Slash, SlashOption, SlashGroup } from 'discordx';
 import { Pagination } from '@discordx/pagination';
-import { CommandInteraction, User, MessageEmbed, GuildMember } from 'discord.js';
+import { CommandInteraction, User, EmbedBuilder, GuildMember } from 'discord.js';
 import getPoints from '../data/database/getPoints.js';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 import IsAdmin from '../utility/isAdmin.js';
@@ -78,8 +78,8 @@ class Points {
 
 		let botIconUrl = interaction.client.user?.avatarURL() ?? '';
 
-		const embedMaker = (): MessageEmbed => {
-			return new MessageEmbed()
+		const embedMaker = (): EmbedBuilder => {
+			return new EmbedBuilder()
 				.setTitle('Tectonic Leaderboard')
 				.setAuthor({
 					name: 'Tectonic Bot',

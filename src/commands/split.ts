@@ -2,8 +2,10 @@ import {
 	ButtonInteraction,
 	CommandInteraction,
 	GuildMember,
-	MessageActionRow,
-	MessageButton
+	ActionRowBuilder,
+	ButtonBuilder,
+  ButtonStyle,
+  MessageActionRowComponentBuilder,
 } from 'discord.js';
 import {
 	Discord,
@@ -61,19 +63,19 @@ class split {
 		value = await pointsHandler(value, interaction.guild!.id);
 
 		// Create the button, giving it the id: "approve-btn"
-		const approveButton = new MessageButton()
+		const approveButton = new ButtonBuilder()
 			.setLabel('Approve')
-			.setStyle('SUCCESS')
+			.setStyle(ButtonStyle.Primary)
 			.setCustomId('approve-btn');
 
 		// Create a button, giving it the id: "deny-btn"
-		const denyButton = new MessageButton()
+		const denyButton = new ButtonBuilder()
 			.setLabel('Deny')
-			.setStyle('DANGER')
+			.setStyle(ButtonStyle.Danger)
 			.setCustomId('deny-btn');
 
 		// Create a MessageActionRow and add the button to that row.
-		const row = new MessageActionRow().addComponents(
+		const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 			approveButton,
 			denyButton
 		);
