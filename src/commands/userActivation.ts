@@ -25,8 +25,7 @@ class Activation {
 		interaction: CommandInteraction
 	) {
 		if (!isValid(interaction)) return;
-		console.log(user.roles);
-		
+
 		// @ts-ignore user.user doesn't have type delcarations from discord.ts
 		// so we have to use @ts-ignore to tell typescript to ignore the error
 		let result = newUser(interaction.guildId!, user.user.id);
@@ -39,7 +38,7 @@ class Activation {
 					// so we have to use @ts-ignore to tell typescript to ignore the error
 					response = `${user.user} has been activated by ${interaction.member}.`;
 					// Set default role
-					addRole(interaction, user, 'jade')
+					addRole(interaction, user, 'jade');
 				}
 				if (!res) {
 					// @ts-ignore user.user doesn't have type delcarations from discord.ts
