@@ -43,8 +43,6 @@ const isValid = (interaction: ButtonInteraction) => {
 		interaction.reply('❌ Points already handled');
 		return false;
 	}
-
-	interactionState.set(interactionId, true);
 	return true;
 };
 
@@ -109,7 +107,9 @@ class split {
 			.then((res) => {
 				if (Number.isInteger(res)) {
 					response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
-                    rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res - points!, res);
+          rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res - points!, res);
+	        let interactionId = getInteractionId(interaction);
+	        interactionState.set(interactionId, true);
 				}
 				if (res == false) {
 					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;
@@ -131,5 +131,7 @@ class split {
 			// Don't show who denied the points
 			`❌ ${interaction.message.interaction?.user} Points denied by admin.`
 		);
+	  let interactionId = getInteractionId(interaction);
+	  interactionState.set(interactionId, true);
 	}
 }
