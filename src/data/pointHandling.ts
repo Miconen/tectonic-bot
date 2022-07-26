@@ -22,7 +22,11 @@ PointRewardsMap.set('split_high', 30)
 const pointsHandler = async (points: number = 0, guild_id: string) => {
     let res = await getPointMultiplier(guild_id);
      
+    if (!res) return points;
+    if (!res[0]) return points;
+    if (!res[0].multiplier) return points;
     if (isNaN(res[0].multiplier) || res[0].multiplier == 0) return points;
+
     return points * res[0].multiplier;
 }
 

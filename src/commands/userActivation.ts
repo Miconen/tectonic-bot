@@ -4,7 +4,7 @@ import IsAdmin from '../utility/isAdmin.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
 import checkIfActivated from '../data/database/checkIfActivated.js';
-import { addRole } from '../data/roleHandling.js';
+import { addRole, removeAllRoles } from '../data/roleHandling.js';
 
 const isValid = (interaction: CommandInteraction) => {
 	if (!IsAdmin(Number(interaction.member?.permissions))) {
@@ -61,27 +61,29 @@ class Activation {
 			description:
 				'@User tag to deactivate, WARNING USERS POINTS WILL BE DELETED',
 		})
-		channel: User,
+    user: GuildMember,
 		interaction: CommandInteraction
 	) {
 		if (!isValid(interaction)) return;
 
-		// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+		// @ts-ignore user.user doesn't have type delcarations from discord.ts
 		// so we have to use @ts-ignore to tell typescript to ignore the error
-		let result = removeUser(interaction.guildId!, channel.user.id);
+		let result = removeUser(interaction.guildId!, user.user.id);
 
 		let response = '';
 		result
 			.then((res) => {
 				if (res) {
-					// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+					// @ts-ignore user.user doesn't have type delcarations from discord.ts
 					// so we have to use @ts-ignore to tell typescript to ignore the error
-					response = `${channel.user} has been deactivated by ${interaction.member}, this command currently can't tell if a user existed or not.`;
+					response = `${user.user} has been deactivated by ${interaction.member}, this command currently can't tell if a user existed or not.`;
+					// Remove all rank roles
+          removeAllRoles(interaction, user)
 				}
 				if (!res) {
-					// @ts-ignore channel.user doesn't have type delcarations from discord.ts
+					// @ts-ignore user.user doesn't have type delcarations from discord.ts
 					// so we have to use @ts-ignore to tell typescript to ignore the error
-					response = `❌ ${channel.user} is not an activated user.`;
+					response = `❌ ${user.user} is not an activated user.`;
 				}
 			})
 			.catch((err) => {

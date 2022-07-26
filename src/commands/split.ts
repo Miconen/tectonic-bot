@@ -2,8 +2,10 @@ import {
 	ButtonInteraction,
 	CommandInteraction,
 	GuildMember,
-	MessageActionRow,
-	MessageButton
+	ActionRowBuilder,
+	ButtonBuilder,
+  ButtonStyle,
+  MessageActionRowComponentBuilder,
 } from 'discord.js';
 import {
 	Discord,
@@ -41,8 +43,6 @@ const isValid = (interaction: ButtonInteraction) => {
 		interaction.reply('❌ Points already handled');
 		return false;
 	}
-
-	interactionState.set(interactionId, true);
 	return true;
 };
 
@@ -61,19 +61,19 @@ class split {
 		value = await pointsHandler(value, interaction.guild!.id);
 
 		// Create the button, giving it the id: "approve-btn"
-		const approveButton = new MessageButton()
+		const approveButton = new ButtonBuilder()
 			.setLabel('Approve')
-			.setStyle('SUCCESS')
+			.setStyle(ButtonStyle.Primary)
 			.setCustomId('approve-btn');
 
 		// Create a button, giving it the id: "deny-btn"
-		const denyButton = new MessageButton()
+		const denyButton = new ButtonBuilder()
 			.setLabel('Deny')
-			.setStyle('DANGER')
+			.setStyle(ButtonStyle.Danger)
 			.setCustomId('deny-btn');
 
 		// Create a MessageActionRow and add the button to that row.
-		const row = new MessageActionRow().addComponents(
+		const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 			approveButton,
 			denyButton
 		);
@@ -107,7 +107,9 @@ class split {
 			.then((res) => {
 				if (Number.isInteger(res)) {
 					response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
-                    rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res - points!, res);
+          rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res - points!, res);
+	        let interactionId = getInteractionId(interaction);
+	        interactionState.set(interactionId, true);
 				}
 				if (res == false) {
 					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;
@@ -129,5 +131,7 @@ class split {
 			// Don't show who denied the points
 			`❌ ${interaction.message.interaction?.user} Points denied by admin.`
 		);
+	  let interactionId = getInteractionId(interaction);
+	  interactionState.set(interactionId, true);
 	}
 }

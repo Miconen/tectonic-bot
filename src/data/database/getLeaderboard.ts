@@ -1,4 +1,3 @@
-import { EmbedFieldData } from 'discord.js';
 import createQuery from './createQuery.js';
 import IronmanIconMap from '../IronmanIconMap.js';
 
@@ -7,7 +6,7 @@ const QUERY = `SELECT rsn, points, type FROM rsn INNER JOIN users ON users.id = 
 const getLeaderboard = async (guild_id: string) => {
 	return await createQuery(QUERY, [guild_id])
 		.then((res: any) => {
-			let leaderboard: EmbedFieldData[] = [];
+			let leaderboard: any[] = [];
 			res.forEach((row: any, index: number) => {
 				// TODO: Use rsn instead of pinging the user
 				leaderboard.push({
