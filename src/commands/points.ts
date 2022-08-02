@@ -1,5 +1,5 @@
-import { Discord, Slash, SlashOption, SlashGroup } from 'discordx';
-import { CommandInteraction, User, EmbedBuilder, GuildMember } from 'discord.js';
+import { Discord, Slash, SlashOption } from 'discordx';
+import { CommandInteraction, GuildMember } from 'discord.js';
 import getPoints from '../data/database/getPoints.js';
 
 @Discord()
