@@ -11,12 +11,14 @@ import IsAdmin from "../utility/isAdmin.js";
 
 @Discord()
 @SlashGroup({ name: "learner", description: "Learner specific point commands" })
+@SlashGroup("learner")
 class Learner {
     @Slash({ name: "half", description: "Halved learner points" })
     async half(
         @SlashOption({
             name: "username",
             description: "Users discord profile",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         channel: GuildMember,
@@ -58,6 +60,7 @@ class Learner {
         @SlashOption({
             name: "username",
             description: "Users discord profile",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         channel: GuildMember,
@@ -95,4 +98,3 @@ class Learner {
             });
     }
 }
-

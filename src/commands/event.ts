@@ -21,6 +21,7 @@ class Event {
         @SlashOption({
             name: "username",
             description: "Participation point rewards",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         channel: GuildMember,
@@ -62,6 +63,7 @@ class Event {
         @SlashOption({
             name: "username",
             description: "Event hosting point rewards",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         channel: GuildMember,
@@ -99,4 +101,3 @@ class Event {
             });
     }
 }
-

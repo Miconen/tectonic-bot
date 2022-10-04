@@ -32,6 +32,7 @@ class Activation {
         @SlashOption({
             name: "username",
             description: "@User tag to activate",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         user: GuildMember,
@@ -68,15 +69,16 @@ class Activation {
     }
 
     @Slash({
-        name: "username",
+        name: "deactivate",
         description:
-            "Deactivate and remove users. This also removes all points/data entries associated with them",
+            "Deactivate and remove all points/data entries associated with a user",
     })
-    Deactivate(
+    async Deactivate(
         @SlashOption({
             name: "username",
             description:
                 "@User tag to deactivate, WARNING USERS POINTS WILL BE DELETED",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         user: GuildMember,
@@ -116,10 +118,11 @@ class Activation {
         name: "checkstatus",
         description: "Checks if a user is activated or not",
     })
-    Checkstatus(
+    async Checkstatus(
         @SlashOption({
             name: "username",
             description: "@User tag to check",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
         channel: User,
