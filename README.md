@@ -1,16 +1,19 @@
 # Tectonic bot
 
 ## Branches
-- main branch: Deployed version of the bot
-- dev branch: Most up to date branch
+
+-   main branch: Deployed version of the bot
+-   dev branch: Most up to date branch
 
 # Table of contents
+
 1. [Introduction](#introduction)
 2. [Usage](#usage)
     1. [Points](#points)
     2. [Commands](#commands)
-    3. [New users](#newusers)
-4. [Instatllation](#installation)
+    3. [Moderation Commands](#modcommands)
+    4. [Handling users](#newusers)
+3. [Instatllation](#installation)
     1. [Initial setup](#installation__initialsetup)
     2. [Project folder](#installation__projectfolder)
     3. [Docker & MySql](#installation__docker&mysql)
@@ -18,45 +21,188 @@
 ## Introduction<a name="introduction"></a>
 
 ## Usage<a name="usage"></a>
+
 This section will go over the usage of the bot and is mostly meant for those managing users with it.
 
 ### Points<a name="points"></a>
+
 Currently we give out points like so.
-- Splits
-    - Low value: 10
-    - Medium value: 20
-    - High value: 30
-- Events
-    - Participation: 5
-    - Hosting: 10
-- Learners
-    - Half: 5
-    - Full: 10
-- Forum
-    - Bumping: 5
 
-### Commands (TODO)<a name="commands"></a>
+-   Splits
+    -   Low value: 10
+    -   Medium value: 20
+    -   High value: 30
+-   Events
+    -   Participation: 5
+    -   Hosting: 10
+-   Learners
+    -   Half: 5
+    -   Full: 10
+-   Forum
+    -   Bumping: 5
 
-#### Points
-#### Activate
-#### Deactivate
-#### Checkstatus
-#### Split
-#### Event
-#### Learner
-#### Quote
-#### Rsn
-#### Help
+### User Commands<a name="commands"></a>
 
-### New users<a name="newusers"></a>
+---
+
+#### /help
+
+##### Info:
+
+Help on different commands and topics relating to the clan.
+
+##### Usage:
+
+```
+/help (command/topic)
+```
+
+Use the discord slash command autocomplete to browse through options.
+
+---
+
+#### /points
+
+##### Info:
+
+Points is a command that returns the points of a specified user, takes in an optional username which will default to the user calling the command if left blank.
+
+##### Usage:
+
+Get own points:
+
+```
+/points
+```
+
+Get someone elses points:
+
+```
+/points @User
+```
+
+---
+
+#### /split
+
+##### Info:
+
+Used for gaining rank points after splitting with clan members. You must accompany using this command with a screenshot of a drop that you split with your clan members.
+
+##### Usage:
+
+```
+/split (value range)
+```
+
+Select the correct value range corresponding to the item value at the time.
+
+---
+
+### Moderation Commands<a name="modcommands"></a>
+
+---
+
+#### /activate
+
+##### Info:
+
 For new users we will use /activate (username). This will automatically assign them with the Jade rank and add them to the database. This allows activated users to start recieving rank points.
+
+##### Usage:
+
+```
+/activate @User
+```
+
+---
+
+#### /deactivate
+
+##### Info:
+
+For users that are no longer a part of the community we have /deactivate (username) which will delete all points values associated with them from the database.
+
+##### Usage:
+
+```
+/deactivate @User
+```
+
+---
+
+#### /checkstatus
+
+##### Info:
+
+Used for checking if a user is activated or not, just a simple and useful utility mod command.
+
+##### Usage:
+
+```
+/checkstatus @User
+```
+
+---
+
+#### /event
+
+##### Info:
+
+Event is used for rewarding points for either participating or hosting an event.
+
+##### Usage:
+
+Rewarding a user for hosting an event:
+
+```
+/event hosting @User
+```
+
+Rewarding a user for participating in an event:
+
+```
+/event participation @User
+```
+
+---
+
+#### /learner
+
+##### Info:
+
+Used for rewarding players that teach other clan members. Depending on the activity, players can be awarder either half or full points.
+
+##### Usage:
+
+Half points:
+
+```
+/learner half @User
+```
+
+Full points:
+
+```
+/learner full @User
+```
+
+---
+
+### Handling users<a name="newusers"></a>
+
+For new users we will use /activate (username). This will automatically assign them with the Jade rank and add them to the database. This allows activated users to start recieving rank points.
+
+For users that are no longer a part of the community we have /deactivate (username) which will delete all points values associated with them from the database.
+
+Checking if a particular user is activated or not can be done with /checkstatus (username).
 
 ## Installation<a name="installation"></a>
 
 ### Requirements:<a name="installation__requirements"></a>
 
 -   [Node.js Version >= 16.6.0](https://nodejs.org/en/)
--   [TypeScript	Version >= 4.4.4](https://www.npmjs.com/package/typescript)
+-   [TypeScript Version >= 4.4.4](https://www.npmjs.com/package/typescript)
 -   [Discord Bot](https://discord.com/developers/applications)
 -   [Docker](https://www.docker.com/)
 
