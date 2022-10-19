@@ -8,7 +8,10 @@ import getPoints from '../data/database/getPoints.js';
 
 @Discord()
 class Points {
-	@Slash({ name: 'points', description: 'Point checking utility' })
+	@Slash({
+		name: 'points',
+		description: 'Check your or someone elses points',
+	})
 	points(
 		@SlashOption({
 			name: 'username',
