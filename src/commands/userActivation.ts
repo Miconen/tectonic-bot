@@ -1,5 +1,10 @@
 import { Discord, Slash, SlashOption } from 'discordx';
-import { CommandInteraction, GuildMember, User } from 'discord.js';
+import {
+	ApplicationCommandOptionType,
+	CommandInteraction,
+	GuildMember,
+	User,
+} from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
 import newUser from '../data/database/newUser.js';
 import removeUser from '../data/database/removeUser.js';
@@ -18,9 +23,18 @@ const isValid = (interaction: CommandInteraction) => {
 
 @Discord()
 class Activation {
-	@Slash('activate')
+	@Slash({
+		name: 'activate',
+		description:
+			'Used for activating new guild members and giving access to rank points',
+	})
 	async Activate(
-		@SlashOption('username', { description: '@User tag to activate' })
+		@SlashOption({
+			name: 'username',
+			description: '@User tag to activate',
+			required: true,
+			type: ApplicationCommandOptionType.User,
+		})
 		user: GuildMember,
 		interaction: CommandInteraction
 	) {
@@ -54,13 +68,20 @@ class Activation {
 			});
 	}
 
-	@Slash('deactivate')
-	Deactivate(
-		@SlashOption('username', {
+	@Slash({
+		name: 'deactivate',
+		description:
+			'Deactivate and remove all points/data entries associated with a user',
+	})
+	async Deactivate(
+		@SlashOption({
+			name: 'username',
 			description:
 				'@User tag to deactivate, WARNING USERS POINTS WILL BE DELETED',
+			required: true,
+			type: ApplicationCommandOptionType.User,
 		})
-    user: GuildMember,
+		user: GuildMember,
 		interaction: CommandInteraction
 	) {
 		if (!isValid(interaction)) return;
@@ -77,7 +98,7 @@ class Activation {
 					// so we have to use @ts-ignore to tell typescript to ignore the error
 					response = `${user.user} has been deactivated by ${interaction.member}, this command currently can't tell if a user existed or not.`;
 					// Remove all rank roles
-          removeAllRoles(interaction, user)
+					removeAllRoles(interaction, user);
 				}
 				if (!res) {
 					// @ts-ignore user.user doesn't have type delcarations from discord.ts
@@ -93,9 +114,17 @@ class Activation {
 			});
 	}
 
-	@Slash('checkstatus')
-	Checkstatus(
-		@SlashOption('username', { description: '@User tag to check' })
+	@Slash({
+		name: 'checkstatus',
+		description: 'Checks if a user is activated or not',
+	})
+	async Checkstatus(
+		@SlashOption({
+			name: 'username',
+			description: '@User tag to check',
+			required: true,
+			type: ApplicationCommandOptionType.User,
+		})
 		channel: User,
 		interaction: CommandInteraction
 	) {
