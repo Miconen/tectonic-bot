@@ -41,7 +41,7 @@ Currently we give out points like so.
 -   Forum
     -   Bumping: 5
 
-### User Commands (TODO)<a name="commands"></a>
+### User Commands<a name="commands"></a>
 
 ---
 
@@ -99,7 +99,7 @@ Select the correct value range corresponding to the item value at the time.
 
 ---
 
-### Moderation Commands (TODO)<a name="modcommands"></a>
+### Moderation Commands<a name="modcommands"></a>
 
 ---
 
