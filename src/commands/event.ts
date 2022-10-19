@@ -21,12 +21,11 @@ class Event {
 		@SlashOption({
 			name: 'username',
 			description: 'Participation point rewards',
+			required: true,
 			type: ApplicationCommandOptionType.User,
 		})
 		channel: GuildMember,
-		interaction: CommandInteraction,
-		required: true,
-		type: ApplicationCommandOptionType.User
+		interaction: CommandInteraction
 	) {
 		if (!IsAdmin(Number(interaction.member?.permissions))) return;
 		let points = await pointsHandler(
@@ -64,12 +63,11 @@ class Event {
 		@SlashOption({
 			name: 'username',
 			description: 'Event hosting point rewards',
+			required: true,
 			type: ApplicationCommandOptionType.User,
 		})
 		channel: GuildMember,
-		interaction: CommandInteraction,
-		required: true,
-		type: ApplicationCommandOptionType.User
+		interaction: CommandInteraction
 	) {
 		if (!IsAdmin(Number(interaction.member?.permissions))) return;
 		let points = await pointsHandler(

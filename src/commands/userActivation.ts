@@ -69,11 +69,11 @@ class Activation {
 	}
 
 	@Slash({
-		name: 'username',
+		name: 'deactivate',
 		description:
-			'Deactivate and remove users. This also removes all points/data entries associated with them',
+			'Deactivate and remove all points/data entries associated with a user',
 	})
-	Deactivate(
+	async Deactivate(
 		@SlashOption({
 			name: 'username',
 			description:
@@ -118,7 +118,7 @@ class Activation {
 		name: 'checkstatus',
 		description: 'Checks if a user is activated or not',
 	})
-	Checkstatus(
+	async Checkstatus(
 		@SlashOption({
 			name: 'username',
 			description: '@User tag to check',
