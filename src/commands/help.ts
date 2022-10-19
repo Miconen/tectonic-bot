@@ -7,6 +7,15 @@ import pointsHandler, { PointRewardsMap } from '../data/pointHandling.js';
 @SlashGroup('help')
 class Help {
 	@Slash({
+		name: 'commands',
+		description: 'Information about all commands',
+	})
+	commands(interaction: CommandInteraction) {
+		interaction.reply(
+			`Information on how to use the bot along with it's commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands`
+		);
+	}
+	@Slash({
 		name: 'bump',
 		description: 'Information about bumping the forum post',
 	})
@@ -18,7 +27,7 @@ class Help {
 
 		points.then((res: any) => {
 			interaction.reply(
-				`You can gain points for bumping our forum post here: (insert link).\nPoint reward: ${res}`
+				`You can gain points for bumping our forum post here: https://secure.runescape.com/m=forum/a=13/c=tuplIA8cxpE/forums?320,321,794,66254540,goto,1\nPoint reward: ${res}`
 			);
 		});
 	}
