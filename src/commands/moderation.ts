@@ -1,5 +1,11 @@
 import { Discord, Slash, SlashOption, SlashGroup } from 'discordx';
-import { CommandInteraction, User, EmbedBuilder, GuildMember } from 'discord.js';
+import {
+	CommandInteraction,
+	User,
+	EmbedBuilder,
+	GuildMember,
+	ApplicationCommandOptionType,
+} from 'discord.js';
 import { Pagination } from '@discordx/pagination';
 import updateUserPoints from '../data/database/updateUserPoints.js';
 import IsAdmin from '../utility/isAdmin.js';
@@ -11,11 +17,21 @@ import { rankUpHandler } from '../data/roleHandling.js';
 @SlashGroup({ name: 'moderation', description: 'Moderation related commands' })
 @SlashGroup('moderation')
 class Moderation {
-	@Slash('give')
+	@Slash({ name: 'give', description: 'Give points to a user' })
 	give(
-		@SlashOption('username')
+		@SlashOption({
+			name: 'username',
+			description: '@User tag to give points to',
+			required: true,
+			type: ApplicationCommandOptionType.User,
+		})
+		@SlashOption({
+			name: 'amount',
+			description: 'Amount of points to give',
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
 		channel: GuildMember,
-		@SlashOption('points', { description: 'Give points to a user' })
 		points: number,
 		interaction: CommandInteraction
 	) {
@@ -34,7 +50,7 @@ class Moderation {
 				if (Number.isInteger(res)) {
 					// @ts-ignore
 					response = `✔️ ${channel.user} was granted ${points} points by ${interaction.member} and now has a total of ${res} points.`;
-          rankUpHandler(interaction, channel, res - points, res);
+					rankUpHandler(interaction, channel, res - points, res);
 				}
 				if (res == false) {
 					// @ts-ignore
@@ -94,33 +110,44 @@ class Moderation {
 	// 			for (let i = 0; i <= res.length; i++) {
 	// 				if (i % 10 == 0) pages.push(pageMaker(i));
 	// 			}
-				
+
 	// 			new Pagination(interaction, [...pages]).send();
 	// 		})
 	// 		.catch((err) => {
 	// 			console.log(err);
-				
+
 	// 			interaction.reply('Error getting leaderboard');
 	// 		});
 	// }
-	@Slash('setmultiplier')
-	setmultiplier (
-		@SlashOption('multiplier', {description: 'Set server wise multiplier for all sources of points except the give command.'})
+	@Slash({
+		name: 'setmultiplier',
+		description: 'Set a server vide point multiplier',
+	})
+	setmultiplier(
+		@SlashOption({
+			name: 'multiplier',
+			description: 'Number that all points given will get multiplied by',
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
 		multiplier: number,
 		interaction: CommandInteraction
-		) {
+	) {
 		if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
 		let response = 'Something went wrong...';
-		
+
 		let result = setPointMultiplier(multiplier, interaction.guild!.id);
-		
-		result.then((res: any) => {
-			response = 'Updated server point multiplier';
-		}).catch((err: any) => {
-			console.log(err);
-		}).finally(() => {
-			interaction.reply(response);
-		})
+
+		result
+			.then((res: any) => {
+				response = 'Updated server point multiplier';
+			})
+			.catch((err: any) => {
+				console.log(err);
+			})
+			.finally(() => {
+				interaction.reply(response);
+			});
 	}
 }

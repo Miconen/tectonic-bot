@@ -4,8 +4,9 @@ import {
 	GuildMember,
 	ActionRowBuilder,
 	ButtonBuilder,
-  ButtonStyle,
-  MessageActionRowComponentBuilder,
+	ButtonStyle,
+	MessageActionRowComponentBuilder,
+	ApplicationCommandOptionType,
 } from 'discord.js';
 import {
 	Discord,
@@ -48,12 +49,26 @@ const isValid = (interaction: ButtonInteraction) => {
 
 @Discord()
 class split {
-	@Slash('split')
+	@Slash({ name: 'split', description: 'Receive points for splitting' })
 	async split(
-		@SlashChoice({ name: '2-100m', value: PointRewardsMap.get('split_low') })
-		@SlashChoice({ name: '100-500m', value: PointRewardsMap.get('split_medium') })
-		@SlashChoice({ name: '500m+', value: PointRewardsMap.get('split_high') })
-		@SlashOption('value', { description: 'Value of the split drop?' })
+		@SlashChoice({
+			name: '2-100m',
+			value: PointRewardsMap.get('split_low'),
+		})
+		@SlashChoice({
+			name: '100-500m',
+			value: PointRewardsMap.get('split_medium'),
+		})
+		@SlashChoice({
+			name: '500m+',
+			value: PointRewardsMap.get('split_high'),
+		})
+		@SlashOption({
+			name: 'value',
+			description: 'Value of the split drop?',
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
 		value: number,
 		interaction: CommandInteraction
 	) {
@@ -73,10 +88,11 @@ class split {
 			.setCustomId('deny-btn');
 
 		// Create a MessageActionRow and add the button to that row.
-		const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-			approveButton,
-			denyButton
-		);
+		const row =
+			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				approveButton,
+				denyButton
+			);
 
 		const msg = `You have submitted a request for ${value} points please wait for admin approval, and make sure you have posted appropriate screenshots as proof.`;
 		interaction.editReply({
@@ -90,11 +106,10 @@ class split {
 	}
 
 	// register a handler for the button with id: "approve-btn"
-	@ButtonComponent('approve-btn')
+	@ButtonComponent({ id: 'approve-btn' })
 	approveButton(interaction: ButtonInteraction) {
-
 		if (!isValid(interaction)) return;
-		
+
 		let points = pointsMap.get(getInteractionId(interaction));
 
 		let result = updateUserPoints(
@@ -107,9 +122,14 @@ class split {
 			.then((res) => {
 				if (Number.isInteger(res)) {
 					response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
-          rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res - points!, res);
-	        let interactionId = getInteractionId(interaction);
-	        interactionState.set(interactionId, true);
+					rankUpHandler(
+						interactionMap.get(getInteractionId(interaction))!,
+						interaction.member as GuildMember,
+						res - points!,
+						res
+					);
+					let interactionId = getInteractionId(interaction);
+					interactionState.set(interactionId, true);
 				}
 				if (res == false) {
 					response = `❌ ${interaction.message.interaction?.user} Is not an activated user.`;
@@ -120,18 +140,18 @@ class split {
 			})
 			.finally(() => {
 				interaction.reply(response);
-			})
+			});
 	}
 
 	// register a handler for the button with id: "deny-btn"
-	@ButtonComponent('deny-btn')
+	@ButtonComponent({ id: 'deny-btn' })
 	denyButton(interaction: ButtonInteraction) {
 		if (!isValid(interaction)) return;
 		interaction.reply(
 			// Don't show who denied the points
 			`❌ ${interaction.message.interaction?.user} Points denied by admin.`
 		);
-	  let interactionId = getInteractionId(interaction);
-	  interactionState.set(interactionId, true);
+		let interactionId = getInteractionId(interaction);
+		interactionState.set(interactionId, true);
 	}
 }
