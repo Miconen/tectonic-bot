@@ -1,14 +1,9 @@
-import {
-    CommandInteraction,
-    GuildMember,
-    Role,
-    RoleResolvable,
-} from "discord.js";
-import { RoleIdMap, RoleValueMap } from "./RoleIdMap.js";
+import {CommandInteraction, GuildMember, Role, RoleResolvable,} from "discord.js";
+import {roleIds, roleValues} from "./roleData.js";
 
 const rankUp = (oldPoints: number, newPoints: number) => {
     let result: boolean | string = false;
-    for (let [key, value] of RoleValueMap.entries()) {
+    for (let [key, value] of roleValues.entries()) {
         if (oldPoints < key && newPoints >= key) result = value;
     }
     return result;
@@ -18,7 +13,7 @@ const rankDown = (oldPoints: number, newPoints: number) => {
     let result: boolean | string = false;
     // Janky way to get "lower" rank without using indexes
     let loopPreviousValue = "";
-    for (let [key, value] of RoleValueMap.entries()) {
+    for (let [key, value] of roleValues.entries()) {
         if (oldPoints >= key && newPoints < key) {
             result = loopPreviousValue;
             break;
@@ -52,7 +47,7 @@ const removeAllRoles = async (
     interaction: CommandInteraction,
     target: GuildMember,
 ) => {
-    for (let [key, value] of RoleIdMap.entries()) {
+    for (let [key, value] of roleIds.entries()) {
         removeRole(interaction, target, key);
     }
 };
@@ -83,9 +78,8 @@ const getRole = (
 ): Role | undefined => {
     let guild = interaction.guild;
     if (guild?.id != "979445890064470036") return undefined;
-    let roleId = RoleIdMap.get(roleName) ?? "0";
-    let role = guild?.roles.cache.get(roleId);
-    return role;
+    let roleId = roleIds.get(roleName) ?? "0";
+    return guild?.roles.cache.get(roleId);
 };
 
 export { addRole, removeRole, removeAllRoles, rankUpHandler };

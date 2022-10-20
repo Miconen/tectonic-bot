@@ -1,6 +1,8 @@
 import { Discord, Slash, SlashGroup } from 'discordx';
 import { CommandInteraction } from 'discord.js';
 import pointsHandler, { PointRewardsMap } from '../data/pointHandling.js';
+import { roleIcon } from '../data/iconData.js';
+import { roleValuesByName } from '../data/roleData.js';
 
 @Discord()
 @SlashGroup({ name: 'help', description: 'Commands to help you use commands' })
@@ -15,6 +17,57 @@ class Help {
 			`Information on how to use the bot along with it's commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands`
 		);
 	}
+
+	@Slash({
+		name: 'ranks',
+		description: 'Information about all the ranks',
+	})
+	ranks(interaction: CommandInteraction) {
+
+		let response = `**Ranks**:\n\n`
+			+ `${roleIcon.get("jade")} Jade - ${roleValuesByName.get("jade")} points\n`
+			+ `${roleIcon.get("red_topaz")} Red Topaz - ${roleValuesByName.get("red_topaz")} points\n`
+			+ `${roleIcon.get("sapphire")} Sapphire - ${roleValuesByName.get("sapphire")} points\n`
+			+ `${roleIcon.get("emerald")} Emerald - ${roleValuesByName.get("emerald")} points\n`
+			+ `${roleIcon.get("ruby")} Ruby - ${roleValuesByName.get("ruby")} points\n`
+			+ `${roleIcon.get("diamond")} Diamond - ${roleValuesByName.get("diamond")} points\n`
+			+ `${roleIcon.get("dragonstone")} Dragonstone - ${roleValuesByName.get("dragonstone")} points\n`
+			+ `${roleIcon.get("onyx")} Onyx - ${roleValuesByName.get("onyx")} points\n`
+			+ `${roleIcon.get("zenyte")} Zenyte - ${roleValuesByName.get("zenyte")} points\n`
+
+		interaction.reply(
+			response
+		);
+	}
+
+	@Slash({
+		name: 'points',
+		description: 'Information about points',
+	})
+	points(interaction: CommandInteraction) {
+
+		let response = `**Point sources**:\n\n`
+			+ `Splits:\n`
+			+ `    Low value: ${PointRewardsMap.get('split_low')}\n`
+			+ `    Medium value: ${PointRewardsMap.get('split_medium')}\n`
+			+ `    High value: ${PointRewardsMap.get('split_high')}`
+			+ `\n\n`
+			+ `Events:\n`
+			+ `    Participation: ${PointRewardsMap.get('event_participation')}\n`
+			+ `    Hosting: ${PointRewardsMap.get('event_hosting')}`
+			+ `\n\n`
+			+ `Learners:\n`
+			+ `    Half: ${PointRewardsMap.get('learner_half')}\n`
+			+ `    Full: ${PointRewardsMap.get('learner_full')}`
+			+ `\n\n`
+			+ `Forum:\n`
+			+ `    Bumping: ${PointRewardsMap.get('forum_bump')}`;
+
+		interaction.reply(
+			response
+		);
+	}
+
 	@Slash({
 		name: 'bump',
 		description: 'Information about bumping the forum post',
