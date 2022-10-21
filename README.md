@@ -26,6 +26,15 @@ This section will go over the usage of the bot and is mostly meant for those man
 
 ### Points<a name="points"></a>
 
+Points info command:
+```
+/help points
+```
+Ranks info command:
+```
+/help ranks
+```
+
 Currently we give out points like so.
 
 -   Splits
