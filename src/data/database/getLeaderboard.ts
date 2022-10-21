@@ -1,5 +1,5 @@
 import createQuery from './createQuery.js';
-import IronmanIconMap from '../IronmanIconMap.js';
+import { ironmanIcon } from '../iconData';
 
 const QUERY = `SELECT rsn, points, type FROM rsn INNER JOIN users ON users.id = rsn.user AND users.guild_id=? ORDER BY points DESC LIMIT 50`;
 
@@ -10,7 +10,7 @@ const getLeaderboard = async (guild_id: string) => {
 			res.forEach((row: any, index: number) => {
 				// TODO: Use rsn instead of pinging the user
 				leaderboard.push({
-					name: `**${row.rsn}** ${IronmanIconMap.get(row.type)}`,
+					name: `**${row.rsn}** ${ironmanIcon.get(row.type)}`,
 					value: `${row.points} points.`,
 				});
 			});
