@@ -4,7 +4,9 @@ import {
 	CommandInteraction,
 	GuildMember,
 } from 'discord.js';
-import getPoints from '../data/database/getPoints.js';
+import {getPoints} from '../data/database/getUser.js';
+import {getRankByPoints, pointsToNextRank} from "../data/roleHandling.js";
+import {roleIcon} from "../data/iconData.js";
 
 @Discord()
 class Points {
@@ -12,7 +14,7 @@ class Points {
 		name: 'points',
 		description: 'Check your or someone elses points',
 	})
-	points(
+	async points(
 		@SlashOption({
 			name: 'username',
 			description:
@@ -20,20 +22,31 @@ class Points {
 			required: false,
 			type: ApplicationCommandOptionType.User,
 		})
-		user: GuildMember,
+		user: GuildMember | null,
 		interaction: CommandInteraction
 	) {
 		let targetUser = user?.user?.id ?? interaction.user.id;
-		let result = getPoints(interaction.guildId!, targetUser);
+		let points = await getPoints(interaction.guildId!, targetUser);
 
-		result
-			.then((points) => {
-				interaction.reply(`${points} points`);
-			})
-			.catch((err) => {
-				interaction.reply(
-					'Error getting points, selected user is not activated'
-				);
-			});
+		let response: string;
+		if (points || points === 0) {
+			let helper: string;
+			if (targetUser == user?.user?.id) {
+				helper = "User has";
+			}
+			else {
+				helper = "You have";
+			}
+
+			let nextRankUntil = pointsToNextRank(points);
+			let nextRankIcon = roleIcon.get(getRankByPoints(points + nextRankUntil));
+
+			response = `${roleIcon.get(getRankByPoints(points))} ${helper}: ${points} points. (${nextRankIcon} Points to next level: ${nextRankUntil})`;
+		}
+		else {
+			response = `❌ User is not activated.`;
+		}
+
+		await interaction.reply(response);
 	}
 }

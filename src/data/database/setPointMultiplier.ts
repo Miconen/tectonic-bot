@@ -1,15 +1,12 @@
-import createQuery from './createQuery.js';
+import prisma from "./client.js";
 
-const QUERY = `REPLACE INTO guilds(guild_id, multiplier) VALUES (?,?)`;
+async function main(guildId: string, newMultiplier: number) {
+    let response = await prisma.guilds.upsert({
+        where: {guild_id: guildId},
+        update: {multiplier: newMultiplier},
+        create: {guild_id: guildId, multiplier: newMultiplier}
+    });
+    return response.multiplier;
+}
 
-const setPointMultiplier = async (multiplier: number, guild_id: string) => {
-	return await createQuery(QUERY, [guild_id, multiplier])
-		.then((res: any) => {
-			return res;
-		})
-		.catch((err) => {
-			throw err;
-		});
-};
-
-export default setPointMultiplier;
+export {main as default}

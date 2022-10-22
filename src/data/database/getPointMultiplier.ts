@@ -1,15 +1,8 @@
-import createQuery from './createQuery.js';
+import prisma from "./client.js";
 
-const QUERY = `SELECT multiplier FROM guilds WHERE guild_id=?`;
+async function main(guildId: string) {
+	let response = await prisma.guilds.findFirst({where: {guild_id: guildId}})
+	return response?.multiplier;
+}
 
-const getPointMultiplier = async (guild_id: string) => {
-	return await createQuery(QUERY, [guild_id])
-		.then((res: any) => {
-			return res;
-		})
-		.catch((err) => {
-			throw err;
-		});
-};
-
-export default getPointMultiplier;
+export { main as default }

@@ -23,7 +23,7 @@ const rankDown = (oldPoints: number, newPoints: number) => {
     return result;
 };
 
-const rankUpHandler = (
+const rankUpHandler = async (
     interaction: CommandInteraction,
     target: GuildMember,
     oldPoints: number,
@@ -38,17 +38,17 @@ const rankUpHandler = (
     // If rankup line not between point values return
     if (!newRank) return;
     // Remove all old roles
-    removeAllRoles(interaction, target);
+    await removeAllRoles(interaction, target);
     // Add new role
-    addRole(interaction, target, newRank);
+    await addRole(interaction, target, newRank);
 };
 
 const removeAllRoles = async (
     interaction: CommandInteraction,
     target: GuildMember,
 ) => {
-    for (let [key, value] of roleIds.entries()) {
-        removeRole(interaction, target, key);
+    for (let [key, _] of roleIds.entries()) {
+        await removeRole(interaction, target, key);
     }
 };
 
@@ -82,5 +82,24 @@ const getRole = (
     return guild?.roles.cache.get(roleId);
 };
 
-export { addRole, removeRole, removeAllRoles, rankUpHandler };
+const getRankByPoints = (points: number) => {
+    let rank = "jade";
+    for (let [key, value] of roleValues.entries()) {
+        if (points < key) break;
+        rank = value;
+    }
+    return rank;
+}
 
+const pointsToNextRank = (points: number) => {
+    let pointsToNext = 0;
+    for (let [key, value] of roleValues.entries()) {
+        if (points < key) {
+            pointsToNext = key - points;
+            break;
+        }
+    }
+    return pointsToNext;
+}
+
+export { addRole, removeRole, removeAllRoles, rankUpHandler, getRankByPoints, pointsToNextRank };
