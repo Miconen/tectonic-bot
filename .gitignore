@@ -11,3 +11,5 @@ node_modules
 .pgdata
 .pgadmin
 .mysqldata
+
+.idea
