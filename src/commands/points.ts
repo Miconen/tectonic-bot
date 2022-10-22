@@ -26,14 +26,14 @@ class Points {
 		interaction: CommandInteraction
 	) {
 		let targetUser = user?.user?.id ?? interaction.user.id ?? "0";
-		let targetUserName = user?.user?.username ?? interaction.user.username ?? "???";
+		let targetUserName = user?.displayName ?? (interaction.member as GuildMember).displayName ?? "???";
 		let points = await getPoints(interaction.guildId!, targetUser);
 
 		let response: string;
 		if (points || points === 0) {
 			let helper: string;
 			if (targetUser == user?.user?.id) {
-				helper = `${user.user.username} has`;
+				helper = `${user?.displayName} has`;
 			}
 			else {
 				helper = "You have";
