@@ -25,14 +25,15 @@ class Points {
 		user: GuildMember | null,
 		interaction: CommandInteraction
 	) {
-		let targetUser = user?.user?.id ?? interaction.user.id;
+		let targetUser = user?.user?.id ?? interaction.user.id ?? "0";
+		let targetUserName = user?.user?.username ?? interaction.user.username ?? "???";
 		let points = await getPoints(interaction.guildId!, targetUser);
 
 		let response: string;
 		if (points || points === 0) {
 			let helper: string;
 			if (targetUser == user?.user?.id) {
-				helper = "User has";
+				helper = `${user.user.username} has`;
 			}
 			else {
 				helper = "You have";
@@ -45,7 +46,7 @@ class Points {
 			if (getRankByPoints(points) != "Zenyte") response += `(${nextRankIcon} Points to next level: ${nextRankUntil})`;
 		}
 		else {
-			response = `❌ User is not activated.`;
+			response = `❌ ${targetUserName} is not activated.`;
 		}
 
 		await interaction.reply(response);
