@@ -1,25 +1,25 @@
-import createQuery from './createQuery.js';
-import { ironmanIcon } from '../iconData';
+// const QUERY = `SELECT rsn, points, type
+//                FROM rsn
+//                         INNER JOIN users ON users.id = rsn.user AND users.guild_id = ?
+//                ORDER BY points DESC
+//                LIMIT 50`;
 
-const QUERY = `SELECT rsn, points, type FROM rsn INNER JOIN users ON users.id = rsn.user AND users.guild_id=? ORDER BY points DESC LIMIT 50`;
+import prisma from "./client.js";
 
-const getLeaderboard = async (guild_id: string) => {
-	return await createQuery(QUERY, [guild_id])
-		.then((res: any) => {
-			let leaderboard: any[] = [];
-			res.forEach((row: any, index: number) => {
-				// TODO: Use rsn instead of pinging the user
-				leaderboard.push({
-					name: `**${row.rsn}** ${ironmanIcon.get(row.type)}`,
-					value: `${row.points} points.`,
-				});
-			});
+async function main(guildId: string, userId: string) {
+    let response = await prisma.users.findMany({distinct: ["guild_id", "user_id"], orderBy: {points: "desc"}});
+    console.log(response);
 
-			return leaderboard;
-		})
-		.catch((err) => {
-			throw err;
-		});
-};
+    // let leaderboard: any[] = [];
+    // res.forEach((row: any, index: number) => {
+    //     // TODO: Use rsn instead of pinging the user
+    //     leaderboard.push({
+    //         name: `**${row.rsn}** ${ironmanIcon.get(row.type)}`,
+    //         value: `${row.points} points.`,
+    //     });
+    // });
+    //
+    // return leaderboard;
+}
 
-export default getLeaderboard;
+export {main as default};
