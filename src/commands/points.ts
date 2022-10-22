@@ -41,7 +41,8 @@ class Points {
 			let nextRankUntil = pointsToNextRank(points);
 			let nextRankIcon = roleIcon.get(getRankByPoints(points + nextRankUntil));
 
-			response = `${roleIcon.get(getRankByPoints(points))} ${helper}: ${points} points. (${nextRankIcon} Points to next level: ${nextRankUntil})`;
+			response = `${roleIcon.get(getRankByPoints(points))} ${helper}: ${points} points.`;
+			if (getRankByPoints(points) != "Zenyte") response += `(${nextRankIcon} Points to next level: ${nextRankUntil})`;
 		}
 		else {
 			response = `❌ User is not activated.`;
