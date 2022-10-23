@@ -43,12 +43,12 @@ class Activation {
 
         let response: string;
         if (result) {
-            response = `${user.user} has been activated by ${interaction.member}.`;
+            response = `**${user.user}** has been activated by **${interaction.member}**.`;
             // Set default role
             await addRole(interaction, user, 'jade');
         }
         else {
-            response = `❌ User is already activated.`;
+            response = `❌ **${user.displayName}** is already activated.`;
         }
         // response = 'Error checking if user is activated';
 
@@ -77,11 +77,11 @@ class Activation {
 
         let response: string;
         if (result) {
-            response = `✔ User has been deactivated.`;
+            response = `✔ **${user.displayName}** has been deactivated.`;
             // Remove all rank roles
             await removeAllRoles(interaction, user);
         } else {
-            response = `❌ User is not activated.`;
+            response = `❌ **${user.displayName}** is not activated.`;
         }
         // response = 'Error checking if user is activated';
 
@@ -108,9 +108,9 @@ class Activation {
 
         let response: string;
         if (result) {
-            response = `✔ User is activated.`;
+            response = `✔ **${user.displayName}** is activated.`;
         } else {
-            response = `❌ User is not activated.`;
+            response = `❌ **${user.displayName}** is not activated.`;
         }
         // response = 'Error checking if user is activated';
 
