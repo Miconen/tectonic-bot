@@ -1,10 +1,10 @@
 import updateUserPoints from "../data/database/updateUserPoints.js";
-import {CommandInteraction, GuildMember} from "discord.js";
+import type {CommandInteraction, GuildMember} from "discord.js";
 import {rankUpHandler} from "../data/roleHandling.js";
 
 async function givePoints(addedPoints: number, user: GuildMember, interaction: CommandInteraction) {
-    let receivingUser = user.displayName;
-    let grantingUser = (interaction.member as GuildMember).displayName;
+    let receivingUser = user?.displayName ?? "???";
+    let grantingUser = (interaction?.member as GuildMember)?.displayName ?? "???";
     let totalPoints = await updateUserPoints(interaction.guild!.id, user.user.id, addedPoints);
 
     let response: string;
