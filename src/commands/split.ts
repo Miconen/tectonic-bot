@@ -93,7 +93,7 @@ class split {
                 denyButton
             );
 
-        const msg = `${(interaction.member as GuildMember).displayName} has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
+        const msg = `**${(interaction.member as GuildMember).displayName}** has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
         await interaction.editReply({
             content: msg,
             components: [row],
