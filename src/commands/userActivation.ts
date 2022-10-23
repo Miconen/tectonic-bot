@@ -48,7 +48,7 @@ class Activation {
             await addRole(interaction, user, 'jade');
         }
         else {
-            response = `❌ ${(interaction.member as GuildMember).displayName} is already activated.`;
+            response = `❌ ${user.displayName} is already activated.`;
         }
         // response = 'Error checking if user is activated';
 
@@ -77,11 +77,11 @@ class Activation {
 
         let response: string;
         if (result) {
-            response = `✔ ${(interaction.member as GuildMember).displayName} has been deactivated.`;
+            response = `✔ ${user.displayName} has been deactivated.`;
             // Remove all rank roles
             await removeAllRoles(interaction, user);
         } else {
-            response = `❌ ${(interaction.member as GuildMember).displayName} is not activated.`;
+            response = `❌ ${user.displayName} is not activated.`;
         }
         // response = 'Error checking if user is activated';
 
@@ -108,9 +108,9 @@ class Activation {
 
         let response: string;
         if (result) {
-            response = `✔ ${(interaction.member as GuildMember).displayName} is activated.`;
+            response = `✔ ${user.displayName} is activated.`;
         } else {
-            response = `❌ ${(interaction.member as GuildMember).displayName} is not activated.`;
+            response = `❌ ${user.displayName} is not activated.`;
         }
         // response = 'Error checking if user is activated';
 
