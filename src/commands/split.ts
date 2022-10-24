@@ -131,11 +131,21 @@ class split {
         if (totalPoints || totalPoints === 0) {
             response = `✔ **${receivingUserName}** was granted ${addedPoints} points by **${grantingUserName}** and now has a total of ${totalPoints} points.`;
             await rankUpHandler(receivingInteraction, receivingUser, totalPoints - addedPoints, totalPoints);
-            // Handle interaction state
-            interactionState.set(interactionId, true);
-        } else if (totalPoints === false) {
+
+            // Remove buttons on successful button press
+            await receivingInteraction.editReply({
+                components: [],
+            })
+
+            // Free up memory on point approval
+            interactionMap.delete(interactionId);
+            interactionState.delete(interactionId);
+            pointsMap.delete(interactionId);
+        }
+        else if (totalPoints === false) {
             response = `❌ **${receivingUser}** is not an activated user.`;
-        } else {
+        }
+        else {
             response = "Error giving points";
         }
 
@@ -146,10 +156,29 @@ class split {
     @ButtonComponent({id: 'deny-btn'})
     async denyButton(interaction: ButtonInteraction) {
         if (!await isValid(interaction)) return;
-        await interaction.reply(
-            `❌ ${interaction.message.interaction?.user} Points denied by admin.`
-        );
+
         let interactionId = getInteractionId(interaction);
-        interactionState.set(interactionId, true);
+        let receivingInteraction = interactionMap.get(interactionId) as CommandInteraction;
+        let receivingUser = receivingInteraction.member as GuildMember;
+        if (!receivingUser) {
+            await interaction.reply("Error parsing interaction map");
+            console.log("ERROR: Couldn't get interaction from interactionMap");
+            return;
+        }
+        let receivingUserName = receivingUser.displayName;
+
+        // Remove buttons on successful button press
+        await receivingInteraction.editReply({
+            components: [],
+        })
+
+        // Free up memory on point denial
+        interactionMap.delete(interactionId);
+        interactionState.delete(interactionId);
+        pointsMap.delete(interactionId);
+
+        await interaction.reply(
+            `❌ **${receivingUserName}** point request was denied.`
+        );
     }
 }
