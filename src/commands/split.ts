@@ -17,14 +17,15 @@ import {
 } from 'discordx';
 import IsAdmin from '../utility/isAdmin.js';
 import pointsHandler, {PointRewardsMap} from '../data/pointHandling.js';
-import givePoints from "../utility/givePoints.js";
+import updateUserPoints from '../data/database/updateUserPoints.js';
+import {rankUpHandler} from "../data/roleHandling.js";
 
 const interactionMap = new Map<string, CommandInteraction>();
 const interactionState = new Map<string, boolean>();
 const pointsMap = new Map<string, number>();
 
 const getInteractionId = (interaction: ButtonInteraction) => {
-    if (interaction.message.interaction?.id) console.log("ERROR: Interaction ID defaulted to 0");
+    if (!interaction.message.interaction?.id) console.log("ERROR: Interaction ID defaulted to 0");
     return interaction.message.interaction?.id ?? '0';
 };
 
@@ -68,7 +69,7 @@ class split {
             required: true,
             type: ApplicationCommandOptionType.Number,
         })
-        value: number,
+            value: number,
         interaction: CommandInteraction
     ) {
         await interaction.deferReply();
@@ -109,20 +110,45 @@ class split {
     async approveButton(interaction: ButtonInteraction) {
         if (!await isValid(interaction)) return;
 
-        let addedPoints = pointsMap.get(getInteractionId(interaction)) ?? 0;
+        let interactionId = getInteractionId(interaction);
 
-        // let points = await updateUserPoints(interaction.guild!.id, interaction.message.interaction!.user.id, addedPoints);
-        //
-        // if (points) {
-        //     response = `✔️ ${interaction.message.interaction?.user} Points approved by ${interaction.member}. ${interaction.message.interaction?.user} recieved ${points} points and now has a total of ${res} points.`;
-        //     rankUpHandler(interactionMap.get(getInteractionId(interaction))!, interaction.member as GuildMember, res.points - points!, res.points);
-        //
-        //     let interactionId = getInteractionId(interaction);
-        //     interactionState.set(interactionId, true);
-        // }
-        //
-        // Handle giving of points, returns a string to be sent as a message.
-        let response = await givePoints(addedPoints, interaction.member as GuildMember, interaction.message.interaction as CommandInteraction);
+        let receivingInteraction = interactionMap.get(interactionId) as CommandInteraction;
+        let grantingUser = interaction.member as GuildMember
+        let receivingUser = receivingInteraction.member as GuildMember;
+        if (!receivingUser) {
+            await interaction.reply("Error parsing interaction map");
+            console.log("ERROR: Couldn't get interaction from interactionMap");
+            return;
+        }
+        let grantingUserName = grantingUser.displayName;
+        let receivingUserName = receivingUser.displayName;
+
+        let addedPoints = pointsMap.get(interactionId) ?? 0;
+        let totalPoints = await updateUserPoints(interaction.guild!.id, interaction.message.interaction!.user.id, addedPoints);
+
+        let response: string;
+        // Check for 0 since it evaluates to false otherwise
+        if (totalPoints || totalPoints === 0) {
+            response = `✔ **${receivingUserName}** was granted ${addedPoints} points by **${grantingUserName}** and now has a total of ${totalPoints} points.`;
+            await rankUpHandler(receivingInteraction, receivingUser, totalPoints - addedPoints, totalPoints);
+
+            // Remove buttons on successful button press
+            await receivingInteraction.editReply({
+                components: [],
+            })
+
+            // Free up memory on point approval
+            interactionMap.delete(interactionId);
+            interactionState.delete(interactionId);
+            pointsMap.delete(interactionId);
+        }
+        else if (totalPoints === false) {
+            response = `❌ **${receivingUser}** is not an activated user.`;
+        }
+        else {
+            response = "Error giving points";
+        }
+
         await interaction.reply(response);
     }
 
@@ -130,10 +156,29 @@ class split {
     @ButtonComponent({id: 'deny-btn'})
     async denyButton(interaction: ButtonInteraction) {
         if (!await isValid(interaction)) return;
-        await interaction.reply(
-            `❌ ${interaction.message.interaction?.user} Points denied by admin.`
-        );
+
         let interactionId = getInteractionId(interaction);
-        interactionState.set(interactionId, true);
+        let receivingInteraction = interactionMap.get(interactionId) as CommandInteraction;
+        let receivingUser = receivingInteraction.member as GuildMember;
+        if (!receivingUser) {
+            await interaction.reply("Error parsing interaction map");
+            console.log("ERROR: Couldn't get interaction from interactionMap");
+            return;
+        }
+        let receivingUserName = receivingUser.displayName;
+
+        // Remove buttons on successful button press
+        await receivingInteraction.editReply({
+            components: [],
+        })
+
+        // Free up memory on point denial
+        interactionMap.delete(interactionId);
+        interactionState.delete(interactionId);
+        pointsMap.delete(interactionId);
+
+        await interaction.reply(
+            `❌ **${receivingUserName}** point request was denied.`
+        );
     }
 }
