@@ -4,17 +4,19 @@ FROM node:lts-alpine as build-runner
 # Set temp directory
 WORKDIR /tmp/app
 
-# Move package.json
-COPY package.json .
+# Move package.json and package-lock.json
+COPY package.json package-lock.json* ./
+# Install dependencies
+RUN npm ci && npm cache clean --force
+
+# Move prisma
+COPY prisma ./prisma
+# Generate prisma
+RUN npx prisma generate
 
 # Move source files
 COPY src ./src
 COPY tsconfig.json .
-COPY prisma ./prisma
-
-# Install dependencies
-RUN npm install
-RUN npx prisma generate
 
 # Build project
 RUN npm run build
