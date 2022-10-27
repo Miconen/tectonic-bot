@@ -27,10 +27,13 @@ This section will go over the usage of the bot and is mostly meant for those man
 ### Points<a name="points"></a>
 
 Points info command:
+
 ```
 /help points
 ```
+
 Ranks info command:
+
 ```
 /help ranks
 ```
@@ -270,3 +273,33 @@ Find the database specified in docker-compose.yml, click on it and select "SQL" 
 Now paste the contents of the database.sql file inside. You should now have a working development build of the bot running.
 
 _Boilerplate and template for the bot from https://github.com/oceanroleplay/discordx-templates/_
+
+### Installation issues
+
+#### MySql database refuses connection
+
+I had this issue on a Mac. The solution to fix it was to create a new user with a host of % in the database.
+First user docker ps to list your containers.
+
+```
+docker ps
+```
+
+Copy your databases id and run:
+
+```
+docker exec -it (database_id) bash
+```
+
+Log in to your databse through the command line by running the following command and inserting your password. The default password is most likely either root or just blank.
+
+```
+mysql -u root -p
+```
+
+After logging in run these commands and the database connection should be fixed.
+
+```sql
+CREATE USER 'root'@'%' IDENTIFIED BY 'root';
+grant all on *.* to 'root'@'%';
+```
