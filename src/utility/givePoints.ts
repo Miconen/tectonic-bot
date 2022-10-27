@@ -9,6 +9,8 @@ async function givePoints(
     user: GuildMember,
     interaction: CommandInteraction,
 ) {
+    await interaction.deferReply();
+
     let receivingUser = user?.displayName ?? "???";
     let grantingUser =
         (interaction?.member as GuildMember)?.displayName ?? "???";
@@ -40,7 +42,8 @@ async function givePoints(
     } else {
         response = "Error giving points";
     }
-    return response;
+
+    await interaction.editReply(response);
 }
 
 export default givePoints;
