@@ -1,5 +1,10 @@
-import {CommandInteraction, GuildMember, Role, RoleResolvable,} from "discord.js";
-import {roleIds, roleValues} from "./roleData.js";
+import {
+    CommandInteraction,
+    GuildMember,
+    Role,
+    RoleResolvable,
+} from "discord.js";
+import { roleIds, roleValues } from "./roleData.js";
 
 const rankUp = (oldPoints: number, newPoints: number) => {
     let result: boolean | string = false;
@@ -41,6 +46,7 @@ const rankUpHandler = async (
     await removeAllRoles(interaction, target);
     // Add new role
     await addRole(interaction, target, newRank);
+    return newRank;
 };
 
 const removeAllRoles = async (
@@ -89,7 +95,7 @@ const getRankByPoints = (points: number) => {
         rank = value;
     }
     return rank;
-}
+};
 
 const pointsToNextRank = (points: number) => {
     let pointsToNext = 0;
@@ -100,6 +106,13 @@ const pointsToNextRank = (points: number) => {
         }
     }
     return pointsToNext;
-}
+};
 
-export { addRole, removeRole, removeAllRoles, rankUpHandler, getRankByPoints, pointsToNextRank };
+export {
+    addRole,
+    removeRole,
+    removeAllRoles,
+    rankUpHandler,
+    getRankByPoints,
+    pointsToNextRank,
+};
