@@ -13,10 +13,11 @@
     2. [Commands](#commands)
     3. [Moderation Commands](#modcommands)
     4. [Handling users](#newusers)
-3. [Instatllation](#installation)
+3. [Installation](#installation)
     1. [Initial setup](#installation__initialsetup)
     2. [Project folder](#installation__projectfolder)
     3. [Docker & MySql](#installation__docker&mysql)
+    4. [Installation issues](#installation__issues)
 
 ## Introduction<a name="introduction"></a>
 
@@ -274,7 +275,7 @@ Now paste the contents of the database.sql file inside. You should now have a wo
 
 _Boilerplate and template for the bot from https://github.com/oceanroleplay/discordx-templates/_
 
-### Installation issues
+### Installation issues<a name="installation__issues"></a>
 
 #### MySql database refuses connection
 
