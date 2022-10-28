@@ -7,7 +7,7 @@
 import prisma from "./client.js";
 
 async function main(guildId: string) {
-    return await prisma.users.findMany({where: {guild_id: guildId}});
+    return await prisma.users.findMany({take: 50, orderBy: [{points: 'desc'}], where: {guild_id: guildId}});
 }
 
 export {main as default};

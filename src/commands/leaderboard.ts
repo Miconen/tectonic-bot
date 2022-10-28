@@ -1,27 +1,31 @@
-import { Discord, Slash, SlashOption } from 'discordx';
+import {Discord, Guard, Slash } from 'discordx';
 import {
     ApplicationCommandOptionType,
     CommandInteraction, EmbedBuilder,
-    GuildMember,
 } from 'discord.js';
 import IsAdmin from "../utility/isAdmin.js";
 import getLeaderboard from '../data/database/getLeaderboard.js';
 import {Pagination} from "@discordx/pagination";
-import {getRankByPoints} from "../data/roleHandling";
-import {roleIcon} from "../data/iconData";
+import {getRankByPoints} from "../data/roleHandling.js";
+import {roleIcon} from "../data/iconData.js";
+import {RateLimit, TIME_UNIT} from '@discordx/utilities';
 
 @Discord()
 class Leaderboard {
-    //     let hana = await interaction.guild?.members.fetch("161226317570899968");
-    //     await interaction.reply(hana?.displayName ?? "undefined");
     @Slash({name: "leaderboard", description: "Check the top 50 leaderboard"})
+	@Guard(RateLimit(TIME_UNIT.seconds, 60))
     async leaderboard(interaction: CommandInteraction) {
 		if (!interaction.guildId) return;
     	if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
+		await interaction.deferReply();
+
 		let users = await getLeaderboard(
 			interaction.guildId,
 		);
+		let userIds = users.map(user => user.user_id);
+		let usersData = await interaction.guild?.members.fetch({user: userIds})
+		if (!usersData) return;
 
 		interface ILeaderboardUser {
 			name: string;
@@ -29,15 +33,17 @@ class Leaderboard {
 		}
 
 		let leaderboard: ILeaderboardUser[] = [];
+		let serverRank = 0;
 		for (let user of users) {
-			let userData = await interaction.guild?.members.fetch(user.user_id.toString())
+			let userData = usersData.get(user.user_id)
 			if (!userData) continue;
 
 			let rank = getRankByPoints(user.points);
+			serverRank++;
 
 			leaderboard.push({
-				name: `${roleIcon.get(rank)} **${userData.displayName}**`,
-				value: `${user.points} points`,
+				name: `#${serverRank} **${userData.displayName}**`,
+				value: `${roleIcon.get(rank)} ${user.points} points`,
 			});
 		}
 
@@ -55,8 +61,6 @@ class Leaderboard {
     			.setTimestamp();
     	};
 
-		let response: string;
-
 		let pages: any = [];
 		const pageMaker = (i: number) => {
 			let fields = leaderboard.slice(i, i + 10);
@@ -68,7 +72,6 @@ class Leaderboard {
 							text: `Page ${i + 1} (${i + 1}-${i + 10})`,
 						})
 						.addFields(
-							// -1 cause dealing with array indexes starting at 0
 							...fields
 						),
 				],
@@ -79,7 +82,5 @@ class Leaderboard {
 		}
 
 		await new Pagination(interaction, [...pages]).send();
-        response = 'Error getting leaderboard';
-        await interaction.reply(response);
     }
 }
