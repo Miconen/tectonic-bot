@@ -1,5 +1,10 @@
-import {CommandInteraction, GuildMember, Role, RoleResolvable,} from "discord.js";
-import {roleIds, roleValues} from "./roleData.js";
+import {
+    CommandInteraction,
+    GuildMember,
+    Role,
+    RoleResolvable,
+} from "discord.js";
+import { roleIds, roleValues } from "./roleData.js";
 
 const rankUp = (oldPoints: number, newPoints: number) => {
     let result: boolean | string = false;
@@ -41,15 +46,15 @@ const rankUpHandler = async (
     await removeAllRoles(interaction, target);
     // Add new role
     await addRole(interaction, target, newRank);
+    return newRank;
 };
 
 const removeAllRoles = async (
     interaction: CommandInteraction,
     target: GuildMember,
 ) => {
-    for (let [key, _] of roleIds.entries()) {
-        await removeRole(interaction, target, key);
-    }
+    // Remove all roles
+    await target.roles.remove(Object.values(roleIds));
 };
 
 const addRole = async (
@@ -60,16 +65,6 @@ const addRole = async (
     let role = getRole(interaction, roleName);
     if (role == undefined) return;
     await target.roles.add(role as RoleResolvable);
-};
-
-const removeRole = async (
-    interaction: CommandInteraction,
-    target: GuildMember,
-    roleName: string,
-) => {
-    let role = getRole(interaction, roleName);
-    if (role == undefined) return;
-    await target.roles.remove(role as RoleResolvable);
 };
 
 const getRole = (
@@ -89,7 +84,7 @@ const getRankByPoints = (points: number) => {
         rank = value;
     }
     return rank;
-}
+};
 
 const pointsToNextRank = (points: number) => {
     let pointsToNext = 0;
@@ -100,6 +95,12 @@ const pointsToNextRank = (points: number) => {
         }
     }
     return pointsToNext;
-}
+};
 
-export { addRole, removeRole, removeAllRoles, rankUpHandler, getRankByPoints, pointsToNextRank };
+export {
+    addRole,
+    removeAllRoles,
+    rankUpHandler,
+    getRankByPoints,
+    pointsToNextRank,
+};
