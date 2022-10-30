@@ -29,7 +29,7 @@ class Event {
         if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
         let addedPoints = await pointsHandler(
-            PointRewardsMap.get("event_hosting"),
+            PointRewardsMap.get("event_participation"),
             interaction.guild!.id,
         );
 
