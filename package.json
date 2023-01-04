@@ -17,8 +17,8 @@
         "@discordx/pagination": "^3.2.0",
         "@discordx/utilities": "^5.1.0",
         "@prisma/client": "^4.5.0",
-        "discord.js": "^14.4.0",
-        "discordx": "^11.3.0",
+        "discord.js": "^14.7.1",
+        "discordx": "^11.5.2",
         "dotenv": "^16.0.1"
     },
     "devDependencies": {
