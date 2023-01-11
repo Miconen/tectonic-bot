@@ -17,14 +17,21 @@ PointRewardsMap.set('split_low', 10)
 PointRewardsMap.set('split_medium', 20)
 PointRewardsMap.set('split_high', 30)
 
-// TODO: Cache point multiplier instead of performing a database query each time
-// Return multiplied pointReward, if ANYTHING goes wrong just return pointReward
+let pointMultiplierCache: Map<string, number> = new Map();
+
 const pointsHandler = async (points: number = 0, guild_id: string) => {
+    // Check if the multiplier is already cached
+    if (pointMultiplierCache.has(guild_id)) {
+        let cachedMultiplier = pointMultiplierCache.get(guild_id);
+        if (!cachedMultiplier) return points;
+        return points * cachedMultiplier;
+    }
+
     let res = await getPointMultiplier(guild_id);
-     
     if (!res) return points;
     if (isNaN(res) || res == 0) return points;
 
+    pointMultiplierCache.set(guild_id, res);
     return points * res;
 }
 
