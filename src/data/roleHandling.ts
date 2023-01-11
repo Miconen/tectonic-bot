@@ -7,25 +7,19 @@ import {
 import { roleIds, roleValues } from "./roleData.js";
 
 const rankUp = (oldPoints: number, newPoints: number) => {
-    let result: boolean | string = false;
-    for (let [key, value] of roleValues.entries()) {
-        if (oldPoints < key && newPoints >= key) result = value;
-    }
-    return result;
+    const newRank = [...roleValues.entries()].find(([minPoints, role]) => oldPoints <= minPoints && newPoints > minPoints);
+    return newRank ? newRank[1] : false;
 };
 
 const rankDown = (oldPoints: number, newPoints: number) => {
-    let result: boolean | string = false;
-    // Janky way to get "lower" rank without using indexes
-    let loopPreviousValue = "";
-    for (let [key, value] of roleValues.entries()) {
-        if (oldPoints >= key && newPoints < key) {
-            result = loopPreviousValue;
+    let newRole: boolean | string = false;
+    for (let [minPoints, role] of [...roleValues.entries()].reverse()) {
+        if (oldPoints >= minPoints && newPoints < minPoints) {
+            newRole = role;
             break;
         }
-        loopPreviousValue = value;
     }
-    return result;
+    return newRole;
 };
 
 const rankUpHandler = async (
@@ -36,17 +30,20 @@ const rankUpHandler = async (
 ) => {
     // Check if range between old and new points falls on a rankup
     // Handle rankUp and rankDown depending on if oldPoints is bigger or smaller than newPoints
-    let newRank =
-        oldPoints < newPoints
-            ? rankUp(oldPoints, newPoints)
-            : rankDown(oldPoints, newPoints);
+    let newRank = (oldPoints < newPoints) ? rankUp(oldPoints, newPoints) : rankDown(oldPoints, newPoints);
     // If rankup line not between point values return
     if (!newRank) return;
     // Remove all old roles
-    await removeAllRoles(interaction, target);
+    await removeOldRoles(target);
     // Add new role
     await addRole(interaction, target, newRank);
     return newRank;
+};
+
+const removeOldRoles = async (target: GuildMember) => {
+    const oldRoles = target.roles.cache.filter(role => roleValues.has(Number(role.id)));
+    if (oldRoles.size === 0) return;
+    await target.roles.remove(oldRoles);
 };
 
 const removeAllRoles = async (
@@ -87,19 +84,15 @@ const getRankByPoints = (points: number) => {
 };
 
 const pointsToNextRank = (points: number) => {
-    let pointsToNext = 0;
-    for (let [key, value] of roleValues.entries()) {
-        if (points < key) {
-            pointsToNext = key - points;
-            break;
-        }
-    }
-    return pointsToNext;
+    const nextRank = [...roleValues.entries()].find(([minPoints]) => minPoints > points);
+    return nextRank ? nextRank[0] - points : -1;
 };
+
 
 export {
     addRole,
     removeAllRoles,
+    removeOldRoles,
     rankUpHandler,
     getRankByPoints,
     pointsToNextRank,
