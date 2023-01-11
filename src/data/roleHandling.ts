@@ -50,9 +50,8 @@ const removeAllRoles = async (
     interaction: CommandInteraction,
     target: GuildMember,
 ) => {
-    for (let [key, _] of roleIds.entries()) {
-        await removeRole(interaction, target, key);
-    }
+    // Remove all roles
+    await target.roles.remove(Object.values(roleIds));
 };
 
 const addRole = async (
@@ -63,16 +62,6 @@ const addRole = async (
     let role = getRole(interaction, roleName);
     if (role == undefined) return;
     await target.roles.add(role as RoleResolvable);
-};
-
-const removeRole = async (
-    interaction: CommandInteraction,
-    target: GuildMember,
-    roleName: string,
-) => {
-    let role = getRole(interaction, roleName);
-    if (role == undefined) return;
-    await target.roles.remove(role as RoleResolvable);
 };
 
 const getRole = (
@@ -102,7 +91,6 @@ const pointsToNextRank = (points: number) => {
 
 export {
     addRole,
-    removeRole,
     removeAllRoles,
     removeOldRoles,
     rankUpHandler,

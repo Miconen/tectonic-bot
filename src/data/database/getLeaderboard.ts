@@ -6,20 +6,8 @@
 
 import prisma from "./client.js";
 
-async function main(guildId: string, userId: string) {
-    let response = await prisma.users.findMany({distinct: ["guild_id", "user_id"], orderBy: {points: "desc"}});
-    console.log(response);
-
-    // let leaderboard: any[] = [];
-    // res.forEach((row: any, index: number) => {
-    //     // TODO: Use rsn instead of pinging the user
-    //     leaderboard.push({
-    //         name: `**${row.rsn}** ${ironmanIcon.get(row.type)}`,
-    //         value: `${row.points} points.`,
-    //     });
-    // });
-    //
-    // return leaderboard;
+async function main(guildId: string) {
+    return await prisma.users.findMany({take: 50, orderBy: [{points: 'desc'}], where: {guild_id: guildId}});
 }
 
 export {main as default};
