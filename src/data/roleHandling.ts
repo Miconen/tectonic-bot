@@ -75,12 +75,8 @@ const getRole = (
 };
 
 const getRankByPoints = (points: number) => {
-    let rank = "jade";
-    for (let [key, value] of roleValues.entries()) {
-        if (points < key) break;
-        rank = value;
-    }
-    return rank;
+    const rank = [...roleValues.entries()].reverse().find(([key]) => points >= key);
+    return rank ? rank[1] : [...roleValues.values()][0];
 };
 
 const pointsToNextRank = (points: number) => {
