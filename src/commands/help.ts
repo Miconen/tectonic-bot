@@ -1,8 +1,7 @@
 import { Discord, Slash, SlashGroup } from "discordx";
 import { CommandInteraction } from "discord.js";
-import pointsHandler, { PointRewardsMap } from "../data/pointHandling.js";
-import { roleIcon } from "../data/iconData.js";
-import { roleValuesByName } from "../data/roleData.js";
+import * as pointUtils from "../utility/pointUtils";
+import * as rankUtils from "../utility/rankUtils";
 
 @Discord()
 @SlashGroup({ name: "help", description: "Commands to help you use commands" })
@@ -25,31 +24,31 @@ class Help {
     async ranks(interaction: CommandInteraction) {
         let response =
             `**Ranks**:\n\n` +
-            `${roleIcon.get("jade")} Jade - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("jade")} Jade - ${rankUtils.roleValuesByName.get(
                 "jade",
             )} points\n` +
-            `${roleIcon.get("red_topaz")} Red Topaz - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("red_topaz")} Red Topaz - ${rankUtils.roleValuesByName.get(
                 "red_topaz",
             )} points\n` +
-            `${roleIcon.get("sapphire")} Sapphire - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("sapphire")} Sapphire - ${rankUtils.roleValuesByName.get(
                 "sapphire",
             )} points\n` +
-            `${roleIcon.get("emerald")} Emerald - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("emerald")} Emerald - ${rankUtils.roleValuesByName.get(
                 "emerald",
             )} points\n` +
-            `${roleIcon.get("ruby")} Ruby - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("ruby")} Ruby - ${rankUtils.roleValuesByName.get(
                 "ruby",
             )} points\n` +
-            `${roleIcon.get("diamond")} Diamond - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("diamond")} Diamond - ${rankUtils.roleValuesByName.get(
                 "diamond",
             )} points\n` +
-            `${roleIcon.get(
+            `${rankUtils.rankIcon.get(
                 "dragonstone",
-            )} Dragonstone - ${roleValuesByName.get("dragonstone")} points\n` +
-            `${roleIcon.get("onyx")} Onyx - ${roleValuesByName.get(
+            )} Dragonstone - ${rankUtils.roleValuesByName.get("dragonstone")} points\n` +
+            `${rankUtils.rankIcon.get("onyx")} Onyx - ${rankUtils.roleValuesByName.get(
                 "onyx",
             )} points\n` +
-            `${roleIcon.get("zenyte")} Zenyte - ${roleValuesByName.get(
+            `${rankUtils.rankIcon.get("zenyte")} Zenyte - ${rankUtils.roleValuesByName.get(
                 "zenyte",
             )} points\n`;
 
@@ -64,20 +63,20 @@ class Help {
         let response =
             `**Point sources**:\n\n` +
             `**Splits**:\n` +
-            `Low value: ${PointRewardsMap.get("split_low")}\n` +
-            `Medium value: ${PointRewardsMap.get("split_medium")}\n` +
-            `High value: ${PointRewardsMap.get("split_high")}` +
+            `Low value: ${pointUtils.pointRewards.get("split_low")}\n` +
+            `Medium value: ${pointUtils.pointRewards.get("split_medium")}\n` +
+            `High value: ${pointUtils.pointRewards.get("split_high")}` +
             `\n\n` +
             `**Events**:\n` +
-            `Participation: ${PointRewardsMap.get("event_participation")}\n` +
-            `Hosting: ${PointRewardsMap.get("event_hosting")}` +
+            `Participation: ${pointUtils.pointRewards.get("event_participation")}\n` +
+            `Hosting: ${pointUtils.pointRewards.get("event_hosting")}` +
             `\n\n` +
             `**Learners**:\n` +
-            `Half: ${PointRewardsMap.get("learner_half")}\n` +
-            `Full: ${PointRewardsMap.get("learner_full")}` +
+            `Half: ${pointUtils.pointRewards.get("learner_half")}\n` +
+            `Full: ${pointUtils.pointRewards.get("learner_full")}` +
             `\n\n` +
             `**Forum**:\n` +
-            `Bumping: ${PointRewardsMap.get("forum_bump")}`;
+            `Bumping: ${pointUtils.pointRewards.get("forum_bump")}`;
 
         await interaction.reply(response);
     }
@@ -87,8 +86,8 @@ class Help {
         description: "Information about bumping the forum post",
     })
     async bump(interaction: CommandInteraction) {
-        let points = await pointsHandler(
-            PointRewardsMap.get("forum_bump"),
+        let points = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("forum_bump"),
             interaction.guild!.id,
         );
 
@@ -99,16 +98,16 @@ class Help {
 
     @Slash({ name: "split", description: "Information about splitting" })
     async split(interaction: CommandInteraction) {
-        let points_low = await pointsHandler(
-            PointRewardsMap.get("split_low"),
+        let points_low = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("split_low"),
             interaction.guild!.id,
         );
-        let points_medium = await pointsHandler(
-            PointRewardsMap.get("split_medium"),
+        let points_medium = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("split_medium"),
             interaction.guild!.id,
         );
-        let points_high = await pointsHandler(
-            PointRewardsMap.get("split_high"),
+        let points_high = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("split_high"),
             interaction.guild!.id,
         );
 

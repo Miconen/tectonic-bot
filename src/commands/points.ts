@@ -4,9 +4,10 @@ import {
 	CommandInteraction,
 	GuildMember,
 } from 'discord.js';
-import {getPoints} from '../data/database/getUser.js';
-import {getRankByPoints, pointsToNextRank} from "../data/roleHandling.js";
-import {roleIcon} from "../data/iconData.js";
+import { getPoints } from '../database/getUser.js';
+import { getRankByPoints } from "../data/rankUtils/getRankByPoints";
+import { pointsToNextRank } from "../data/rankUtils/pointsToNextRank";
+import { rankIcon } from "../data/rankUtils/iconData.js";
 
 @Discord()
 class Points {
@@ -32,9 +33,9 @@ class Points {
 		let response: string;
 		if (points || points === 0) {
 			let nextRankUntil = pointsToNextRank(points);
-			let nextRankIcon = roleIcon.get(getRankByPoints(points + nextRankUntil));
+			let nextRankIcon = rankIcon.get(getRankByPoints(points + nextRankUntil));
 
-			response = `${roleIcon.get(getRankByPoints(points))} **${targetUserName}** has: ${points} points`;
+			response = `${rankIcon.get(getRankByPoints(points))} **${targetUserName}** has: ${points} points`;
 			if (getRankByPoints(points) != "zenyte") response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`;
 		}
 		else {

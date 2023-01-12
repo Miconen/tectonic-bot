@@ -4,9 +4,8 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import pointsHandler, { PointRewardsMap } from "../data/pointHandling.js";
+import * as pointUtils from "../utility/pointUtils";
 import IsAdmin from "../utility/isAdmin.js";
-import givePoints from "../utility/givePoints.js";
 
 @Discord()
 @SlashGroup({ name: "learner", description: "Learner specific point commands" })
@@ -25,13 +24,13 @@ class Learner {
     ) {
         if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
-        let addedPoints = await pointsHandler(
-            PointRewardsMap.get("learner_half"),
+        let addedPoints = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("learner_half"),
             interaction.guild!.id,
         );
 
         // Handle giving of points, returns a string to be sent as a message.
-        await givePoints(addedPoints, channel, interaction);
+        await pointUtils.givePoints(addedPoints, channel, interaction);
     }
 
     @Slash({ name: "full", description: "Full learner points" })
@@ -47,12 +46,12 @@ class Learner {
     ) {
         if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
-        let addedPoints = await pointsHandler(
-            PointRewardsMap.get("learner_full"),
+        let addedPoints = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("learner_full"),
             interaction.guild!.id,
         );
 
         // Handle giving of points and reply to interaction.
-        await givePoints(addedPoints, channel, interaction);
+        await pointUtils.givePoints(addedPoints, channel, interaction);
     }
 }
