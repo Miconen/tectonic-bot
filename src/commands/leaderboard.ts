@@ -1,22 +1,22 @@
-import {Discord, Guard, Slash } from 'discordx';
+import { Discord, Guard, Slash } from 'discordx';
 import {
-    ApplicationCommandOptionType,
-    CommandInteraction, EmbedBuilder,
+	ApplicationCommandOptionType,
+	CommandInteraction, EmbedBuilder,
 } from 'discord.js';
 import IsAdmin from "../utility/isAdmin.js";
-import getLeaderboard from '../data/database/getLeaderboard.js';
-import {Pagination} from "@discordx/pagination";
-import {getRankByPoints} from "../data/roleHandling.js";
-import {roleIcon} from "../data/iconData.js";
-import {RateLimit, TIME_UNIT} from '@discordx/utilities';
+import getLeaderboard from '../database/getLeaderboard.js';
+import { Pagination } from "@discordx/pagination";
+import { getRankByPoints } from "../data/rankUtils/getRankByPoints";
+import { rankIcon } from "../data/rankUtils/iconData.js";
+import { RateLimit, TIME_UNIT } from '@discordx/utilities';
 
 @Discord()
 class Leaderboard {
-    @Slash({name: "leaderboard", description: "Check the top 50 leaderboard"})
+	@Slash({ name: "leaderboard", description: "Check the top 50 leaderboard" })
 	@Guard(RateLimit(TIME_UNIT.seconds, 60))
-    async leaderboard(interaction: CommandInteraction) {
+	async leaderboard(interaction: CommandInteraction) {
 		if (!interaction.guildId) return;
-    	if (!IsAdmin(Number(interaction.member?.permissions))) return;
+		if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
 		await interaction.deferReply();
 
@@ -24,7 +24,7 @@ class Leaderboard {
 			interaction.guildId,
 		);
 		let userIds = users.map(user => user.user_id);
-		let usersData = await interaction.guild?.members.fetch({user: userIds})
+		let usersData = await interaction.guild?.members.fetch({ user: userIds })
 		if (!usersData) return;
 
 		interface ILeaderboardUser {
@@ -43,23 +43,23 @@ class Leaderboard {
 
 			leaderboard.push({
 				name: `#${serverRank} **${userData.displayName}**`,
-				value: `${roleIcon.get(rank)} ${user.points} points`,
+				value: `${rankIcon.get(rank)} ${user.points} points`,
 			});
 		}
 
-    	let botIconUrl = interaction.client.user?.avatarURL() ?? '';
+		let botIconUrl = interaction.client.user?.avatarURL() ?? '';
 
-    	const embedMaker = (): EmbedBuilder => {
-    		return new EmbedBuilder()
-    			.setTitle('Tectonic Leaderboard')
-    			.setAuthor({
-    				name: 'Tectonic Bot',
-    				url: 'https://github.com/Miconen/tectonic-bot',
-    				iconURL: botIconUrl,
-    			})
-    			.setColor('#0099ff')
-    			.setTimestamp();
-    	};
+		const embedMaker = (): EmbedBuilder => {
+			return new EmbedBuilder()
+				.setTitle('Tectonic Leaderboard')
+				.setAuthor({
+					name: 'Tectonic Bot',
+					url: 'https://github.com/Miconen/tectonic-bot',
+					iconURL: botIconUrl,
+				})
+				.setColor('#0099ff')
+				.setTimestamp();
+		};
 
 		let pages: any = [];
 		const pageMaker = (i: number) => {
@@ -82,5 +82,5 @@ class Leaderboard {
 		}
 
 		await new Pagination(interaction, [...pages]).send();
-    }
+	}
 }

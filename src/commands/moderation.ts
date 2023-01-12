@@ -7,9 +7,8 @@ import {
 } from "discord.js";
 import { Pagination } from "@discordx/pagination";
 import IsAdmin from "../utility/isAdmin.js";
-import getLeaderboard from "../data/database/getLeaderboard.js";
-import setPointMultiplier from "../data/database/setPointMultiplier.js";
-import givePoints from "../utility/givePoints.js";
+import getLeaderboard from "../database/getLeaderboard.js";
+import setPointMultiplier from "../database/setPointMultiplier.js";
 
 @Discord()
 @SlashGroup({ name: "moderation", description: "Moderation related commands" })
@@ -36,7 +35,7 @@ class Moderation {
         if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
         // Handle giving of points, returns a string to be sent as a message.
-        await givePoints(addedPoints, channel, interaction);
+        await pointUtils.givePoints(addedPoints, channel, interaction);
     }
 
     @Slash({

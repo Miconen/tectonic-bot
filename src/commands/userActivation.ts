@@ -1,14 +1,15 @@
-import {Discord, Slash, SlashOption} from 'discordx';
+import { Discord, Slash, SlashOption } from 'discordx';
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
     GuildMember,
 } from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
-import newUser from '../data/database/newUser.js';
-import removeUser from '../data/database/removeUser.js';
-import getUser from '../data/database/getUser.js';
-import {addRole, removeAllRoles} from '../data/roleHandling.js';
+import newUser from '../database/newUser.js';
+import removeUser from '../database/removeUser.js';
+import getUser from '../database/getUser.js';
+import { removeAllRoles } from '../data/rankUtils/rankHandling.js';
+import { addRole } from "../data/rankUtils/addRole";
 
 const isValid = async (interaction: CommandInteraction) => {
     if (!IsAdmin(Number(interaction.member?.permissions))) {
@@ -34,7 +35,7 @@ class Activation {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction
     ) {
         if (!await isValid(interaction)) return;
@@ -68,7 +69,7 @@ class Activation {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction
     ) {
         if (!await isValid(interaction)) return;
@@ -99,7 +100,7 @@ class Activation {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction
     ) {
         if (!await isValid(interaction)) return;
