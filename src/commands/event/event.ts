@@ -4,8 +4,7 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import * as pointUtils from "../../utility/pointUtils/index.js";
-import IsAdmin from "../../utility/isAdmin.js";
+import learnerHelper from "./func/eventHelper";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
@@ -22,18 +21,10 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-        channel: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction,
     ) {
-        if (!IsAdmin(Number(interaction.member?.permissions))) return;
-
-        let addedPoints = await pointUtils.pointsHandler(
-            pointUtils.pointRewards.get("event_participation"),
-            interaction.guild!.id,
-        );
-
-        // Handle giving of points and reply to interaction.
-        await pointUtils.givePoints(addedPoints, channel, interaction);
+        return learnerHelper(user, interaction, "event_participation");
     }
 
     @Slash({ name: "hosting", description: "Event hosting specific command" })
@@ -44,17 +35,9 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-        channel: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction,
     ) {
-        if (!IsAdmin(Number(interaction.member?.permissions))) return;
-
-        let addedPoints = await pointUtils.pointsHandler(
-            pointUtils.pointRewards.get("event_hosting"),
-            interaction.guild!.id,
-        );
-
-        // Handle giving of points and reply to interaction.
-        await pointUtils.givePoints(addedPoints, channel, interaction);
+        return learnerHelper(user, interaction, "event_participation");
     }
 }
