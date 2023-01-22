@@ -16,8 +16,8 @@ import {
     SlashOption,
 } from "discordx";
 import IsAdmin from "../utility/isAdmin.js";
-import * as pointUtils from "../utility/pointUtils";
-import * as rankUtils from "../utility/rankUtils";
+import * as pointUtils from "../utility/pointUtils/index.js";
+import * as rankUtils from "../utility/rankUtils/index.js";
 import updateUserPoints from "../database/updateUserPoints.js";
 import capitalizeFirstLetter from "../utility/capitalizeFirstLetter.js";
 
@@ -155,16 +155,16 @@ class split {
             await receivingInteraction.editReply({
                 components: [],
             });
-
-            // Free up memory on point approval
-            interactionMap.delete(interactionId);
-            interactionState.delete(interactionId);
-            pointsMap.delete(interactionId);
         } else if (totalPoints === false) {
             response = `❌ **${receivingUser}** is not an activated user.`;
         } else {
             response = "Error giving points";
         }
+
+        // Free up memory on point approval
+        interactionMap.delete(interactionId);
+        interactionState.delete(interactionId);
+        pointsMap.delete(interactionId);
 
         await interaction.reply(response);
     }

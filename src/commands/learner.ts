@@ -4,7 +4,7 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import * as pointUtils from "../utility/pointUtils";
+import * as pointUtils from "../utility/pointUtils/index.js";
 import IsAdmin from "../utility/isAdmin.js";
 
 @Discord()

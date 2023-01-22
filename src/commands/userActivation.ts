@@ -8,8 +8,7 @@ import IsAdmin from '../utility/isAdmin.js';
 import newUser from '../database/newUser.js';
 import removeUser from '../database/removeUser.js';
 import getUser from '../database/getUser.js';
-import { removeAllRoles } from '../data/rankUtils/rankHandling.js';
-import { addRole } from "../data/rankUtils/addRole";
+import * as rankUtils from '../utility/rankUtils/index.js';
 
 const isValid = async (interaction: CommandInteraction) => {
     if (!IsAdmin(Number(interaction.member?.permissions))) {
@@ -46,7 +45,7 @@ class Activation {
         if (result) {
             response = `**${user.user}** has been activated by **${interaction.member}**.`;
             // Set default role
-            await addRole(interaction, user, 'jade');
+            await rankUtils.addRole(interaction, user, 'jade');
         }
         else {
             response = `❌ **${user.displayName}** is already activated.`;
@@ -80,7 +79,7 @@ class Activation {
         if (result) {
             response = `✔ **${user.displayName}** has been deactivated.`;
             // Remove all rank roles
-            await removeAllRoles(interaction, user);
+            await rankUtils.removeOldRoles(user);
         } else {
             response = `❌ **${user.displayName}** is not activated.`;
         }

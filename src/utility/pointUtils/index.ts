@@ -1,3 +1,3 @@
-export * from "./givePoints";
-export * from "./pointData";
-export * from "./pointHandling";
+export * from "./givePoints.js";
+export * from "./pointData.js";
+export * from "./pointHandling.js";
