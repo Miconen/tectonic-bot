@@ -6,7 +6,6 @@ import * as rankUtils from "../../../utility/rankUtils/index.js";
 
 const leaderboardHelper = async (interaction: CommandInteraction) => {
     if (!interaction.guildId) return;
-    if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
     await interaction.deferReply();
 
