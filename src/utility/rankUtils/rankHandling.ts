@@ -6,10 +6,10 @@ import { rankUpdater } from './rankUpdater.js';
 import { removeOldRoles } from "./removeOldRoles.js";
 import { addRole } from "./addRole.js";
 
-interface IRankData { interaction: CommandInteraction; target: GuildMember; oldPoints: number; newPoints: number; }
+type RankData = { interaction: CommandInteraction; target: GuildMember; oldPoints: number; newPoints: number; }
 
 const rankUpHandler = async (
-    { interaction, target, oldPoints, newPoints }: IRankData,
+    { interaction, target, oldPoints, newPoints }: RankData,
 ) => {
     // Determine if user received a new rank
     let newRank = rankUpdater(oldPoints, newPoints);
