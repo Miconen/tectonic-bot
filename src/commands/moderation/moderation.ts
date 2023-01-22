@@ -1,15 +1,11 @@
 import { Discord, Slash, SlashOption, SlashGroup } from "discordx";
 import {
     CommandInteraction,
-    EmbedBuilder,
     GuildMember,
     ApplicationCommandOptionType,
 } from "discord.js";
-import { Pagination } from "@discordx/pagination";
-import IsAdmin from "../../utility/isAdmin.js";
-import getLeaderboard from "../../database/getLeaderboard";
-import setPointMultiplier from "../../database/setPointMultiplier.js";
-import * as pointUtils from "../../utility/pointUtils/index.js";
+import multiplierHelper from "./func/multiplierHelper.js";
+import giveHelper from "./func/giveHelper.js";
 
 @Discord()
 @SlashGroup({ name: "moderation", description: "Moderation related commands" })
@@ -29,14 +25,11 @@ class Moderation {
             required: true,
             type: ApplicationCommandOptionType.Number,
         })
-        channel: GuildMember,
+        user: GuildMember,
         addedPoints: number,
         interaction: CommandInteraction,
     ) {
-        if (!IsAdmin(Number(interaction.member?.permissions))) return;
-
-        // Handle giving of points, returns a string to be sent as a message.
-        await pointUtils.givePoints(addedPoints, channel, interaction);
+        return giveHelper(user, addedPoints, interaction);
     }
 
     @Slash({
@@ -53,20 +46,6 @@ class Moderation {
         multiplier: number,
         interaction: CommandInteraction,
     ) {
-        if (!IsAdmin(Number(interaction.member?.permissions))) return;
-
-        let newMultiplier = await setPointMultiplier(
-            interaction.guild!.id,
-            multiplier,
-        );
-
-        let response: string;
-        if (newMultiplier) {
-            response = `Updated server point multiplier to ${newMultiplier}`;
-        } else {
-            response = "Something went wrong...";
-        }
-
-        await interaction.reply(response);
+        return multiplierHelper(multiplier, interaction);
     }
 }
