@@ -4,7 +4,7 @@ import {
 	CommandInteraction,
 	GuildMember,
 } from 'discord.js';
-import giveHelper from "./func/giveHelper";
+import giveHelper from "./func/pointsHelper.js";
 
 @Discord()
 class Points {
