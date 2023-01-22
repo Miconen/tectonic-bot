@@ -4,7 +4,7 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import learnerHelper from "./func/eventHelper";
+import learnerHelper from "./func/eventHelper.js";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
