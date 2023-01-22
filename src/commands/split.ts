@@ -16,10 +16,9 @@ import {
     SlashOption,
 } from "discordx";
 import IsAdmin from "../utility/isAdmin.js";
-import pointsHandler, { PointRewardsMap } from "../data/pointHandling.js";
-import updateUserPoints from "../data/database/updateUserPoints.js";
-import { rankUpHandler } from "../data/roleHandling.js";
-import { roleIcon } from "../data/iconData.js";
+import * as pointUtils from "../utility/pointUtils/index.js";
+import * as rankUtils from "../utility/rankUtils/index.js";
+import updateUserPoints from "../database/updateUserPoints.js";
 import capitalizeFirstLetter from "../utility/capitalizeFirstLetter.js";
 
 const interactionMap = new Map<string, CommandInteraction>();
@@ -56,15 +55,15 @@ class split {
     async split(
         @SlashChoice({
             name: "2-100m",
-            value: PointRewardsMap.get("split_low"),
+            value: pointUtils.pointRewards.get("split_low"),
         })
         @SlashChoice({
             name: "100-500m",
-            value: PointRewardsMap.get("split_medium"),
+            value: pointUtils.pointRewards.get("split_medium"),
         })
         @SlashChoice({
             name: "500m+",
-            value: PointRewardsMap.get("split_high"),
+            value: pointUtils.pointRewards.get("split_high"),
         })
         @SlashOption({
             name: "value",
@@ -76,7 +75,7 @@ class split {
         interaction: CommandInteraction,
     ) {
         await interaction.deferReply();
-        value = await pointsHandler(value, interaction.guild!.id);
+        value = await pointUtils.pointsHandler(value, interaction.guild!.id);
 
         // Create the button, giving it the id: "approve-btn"
         const approveButton = new ButtonBuilder()
@@ -97,9 +96,8 @@ class split {
                 denyButton,
             );
 
-        const msg = `**${
-            (interaction.member as GuildMember).displayName
-        }** has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
+        const msg = `**${(interaction.member as GuildMember).displayName
+            }** has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
         await interaction.editReply({
             content: msg,
             components: [row],
@@ -141,16 +139,13 @@ class split {
         // Check for 0 since it evaluates to false otherwise
         if (totalPoints || totalPoints === 0) {
             response = `✔ **${receivingUserName}** was granted ${addedPoints} points by **${grantingUserName}** and now has a total of ${totalPoints} points.`;
-            let newRank = await rankUpHandler(
-                receivingInteraction,
-                receivingUser,
-                totalPoints - addedPoints,
-                totalPoints,
+            let newRank = await rankUtils.rankUpHandler(
+                { interaction: receivingInteraction, target: receivingUser, oldPoints: totalPoints - addedPoints, newPoints: totalPoints },
             );
 
             // Concatenate level up message to response if user leveled up
             if (newRank) {
-                let newRankIcon = roleIcon.get(newRank);
+                let newRankIcon = rankUtils.rankIcon.get(newRank);
                 response += `\n**${receivingUser}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
                     newRank,
                 )}!`;
@@ -160,16 +155,16 @@ class split {
             await receivingInteraction.editReply({
                 components: [],
             });
-
-            // Free up memory on point approval
-            interactionMap.delete(interactionId);
-            interactionState.delete(interactionId);
-            pointsMap.delete(interactionId);
         } else if (totalPoints === false) {
             response = `❌ **${receivingUser}** is not an activated user.`;
         } else {
             response = "Error giving points";
         }
+
+        // Free up memory on point approval
+        interactionMap.delete(interactionId);
+        interactionState.delete(interactionId);
+        pointsMap.delete(interactionId);
 
         await interaction.reply(response);
     }

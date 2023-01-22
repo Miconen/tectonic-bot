@@ -1,14 +1,14 @@
-import {Discord, Slash, SlashOption} from 'discordx';
+import { Discord, Slash, SlashOption } from 'discordx';
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
     GuildMember,
 } from 'discord.js';
 import IsAdmin from '../utility/isAdmin.js';
-import newUser from '../data/database/newUser.js';
-import removeUser from '../data/database/removeUser.js';
-import getUser from '../data/database/getUser.js';
-import {addRole, removeAllRoles} from '../data/roleHandling.js';
+import newUser from '../database/newUser.js';
+import removeUser from '../database/removeUser.js';
+import getUser from '../database/getUser.js';
+import * as rankUtils from '../utility/rankUtils/index.js';
 
 const isValid = async (interaction: CommandInteraction) => {
     if (!IsAdmin(Number(interaction.member?.permissions))) {
@@ -34,7 +34,7 @@ class Activation {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction
     ) {
         if (!await isValid(interaction)) return;
@@ -45,7 +45,7 @@ class Activation {
         if (result) {
             response = `**${user.user}** has been activated by **${interaction.member}**.`;
             // Set default role
-            await addRole(interaction, user, 'jade');
+            await rankUtils.addRole(interaction, user, 'jade');
         }
         else {
             response = `❌ **${user.displayName}** is already activated.`;
@@ -68,7 +68,7 @@ class Activation {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction
     ) {
         if (!await isValid(interaction)) return;
@@ -79,7 +79,7 @@ class Activation {
         if (result) {
             response = `✔ **${user.displayName}** has been deactivated.`;
             // Remove all rank roles
-            await removeAllRoles(interaction, user);
+            await rankUtils.removeOldRoles(user);
         } else {
             response = `❌ **${user.displayName}** is not activated.`;
         }
@@ -99,7 +99,7 @@ class Activation {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction
     ) {
         if (!await isValid(interaction)) return;

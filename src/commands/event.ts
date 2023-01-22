@@ -4,9 +4,8 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import pointsHandler, { PointRewardsMap } from "../data/pointHandling.js";
+import * as pointUtils from "../utility/pointUtils/index.js";
 import IsAdmin from "../utility/isAdmin.js";
-import givePoints from "../utility/givePoints.js";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
@@ -28,13 +27,13 @@ class Event {
     ) {
         if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
-        let addedPoints = await pointsHandler(
-            PointRewardsMap.get("event_participation"),
+        let addedPoints = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("event_participation"),
             interaction.guild!.id,
         );
 
         // Handle giving of points and reply to interaction.
-        await givePoints(addedPoints, channel, interaction);
+        await pointUtils.givePoints(addedPoints, channel, interaction);
     }
 
     @Slash({ name: "hosting", description: "Event hosting specific command" })
@@ -50,12 +49,12 @@ class Event {
     ) {
         if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
-        let addedPoints = await pointsHandler(
-            PointRewardsMap.get("event_hosting"),
+        let addedPoints = await pointUtils.pointsHandler(
+            pointUtils.pointRewards.get("event_hosting"),
             interaction.guild!.id,
         );
 
         // Handle giving of points and reply to interaction.
-        await givePoints(addedPoints, channel, interaction);
+        await pointUtils.givePoints(addedPoints, channel, interaction);
     }
 }
