@@ -6,10 +6,10 @@ import {
     ApplicationCommandOptionType,
 } from "discord.js";
 import { Pagination } from "@discordx/pagination";
-import IsAdmin from "../utility/isAdmin.js";
-import getLeaderboard from "../database/getLeaderboard.js";
-import setPointMultiplier from "../database/setPointMultiplier.js";
-import * as pointUtils from "../utility/pointUtils/index.js";
+import IsAdmin from "../../utility/isAdmin.js";
+import getLeaderboard from "../../database/getLeaderboard";
+import setPointMultiplier from "../../database/setPointMultiplier.js";
+import * as pointUtils from "../../utility/pointUtils/index.js";
 
 @Discord()
 @SlashGroup({ name: "moderation", description: "Moderation related commands" })

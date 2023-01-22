@@ -59,7 +59,7 @@ bot.on("messageCreate", (message: Message) => {
 async function run() {
     // Import commands
     await importx(
-        dirname(import.meta.url) + "/{events,commands,api}/**/*.{ts,js}",
+        dirname(import.meta.url) + "/commands/*/**/*.{ts,js}",
     );
 
     // Let's start the bot

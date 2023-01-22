@@ -1,7 +1,7 @@
 import { Discord, Slash, SlashGroup } from "discordx";
 import { CommandInteraction } from "discord.js";
-import * as pointUtils from "../utility/pointUtils/index.js";
-import * as rankUtils from "../utility/rankUtils/index.js";
+import * as pointUtils from "../../utility/pointUtils/index.js";
+import * as rankUtils from "../../utility/rankUtils/index.js";
 
 @Discord()
 @SlashGroup({ name: "help", description: "Commands to help you use commands" })
