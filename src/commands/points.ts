@@ -5,9 +5,7 @@ import {
 	GuildMember,
 } from 'discord.js';
 import { getPoints } from '../database/getUser.js';
-import { getRankByPoints } from "../data/rankUtils/getRankByPoints";
-import { pointsToNextRank } from "../data/rankUtils/pointsToNextRank";
-import { rankIcon } from "../data/rankUtils/iconData.js";
+import * as rankUtils from "../utility/rankUtils/index.js";
 
 @Discord()
 class Points {
@@ -32,11 +30,11 @@ class Points {
 
 		let response: string;
 		if (points || points === 0) {
-			let nextRankUntil = pointsToNextRank(points);
-			let nextRankIcon = rankIcon.get(getRankByPoints(points + nextRankUntil));
+			let nextRankUntil = rankUtils.pointsToNextRank(points);
+			let nextRankIcon = rankUtils.rankIcon.get(rankUtils.getRankByPoints(points + nextRankUntil));
 
-			response = `${rankIcon.get(getRankByPoints(points))} **${targetUserName}** has: ${points} points`;
-			if (getRankByPoints(points) != "zenyte") response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`;
+			response = `${rankUtils.rankIcon.get(rankUtils.getRankByPoints(points))} **${targetUserName}** has: ${points} points`;
+			if (rankUtils.getRankByPoints(points) != "zenyte") response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`;
 		}
 		else {
 			response = `❌ ${targetUserName} is not activated.`;

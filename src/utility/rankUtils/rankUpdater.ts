@@ -1,4 +1,4 @@
-import { roleValues } from './rankData';
+import { roleValues } from './rankData.js';
 
 // Returns new if there is one, returns false if no rank up happened
 const rankUpdater = (oldPoints: number, newPoints: number) => {

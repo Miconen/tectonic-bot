@@ -2,9 +2,9 @@ import {
     CommandInteraction,
     GuildMember,
 } from "discord.js";
-import { rankUpdater } from './rankUpdater';
-import { removeOldRoles } from "./removeOldRoles";
-import { addRole } from "./addRole";
+import { rankUpdater } from './rankUpdater.js';
+import { removeOldRoles } from "./removeOldRoles.js";
+import { addRole } from "./addRole.js";
 
 interface IRankData { interaction: CommandInteraction; target: GuildMember; oldPoints: number; newPoints: number; }
 

@@ -1,6 +1,6 @@
 import updateUserPoints from "../../database/updateUserPoints.js";
 import type { CommandInteraction, Guild, GuildMember } from "discord.js";
-import * as rankUtils from "../rankUtils";
+import * as rankUtils from "../rankUtils/index.js";
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js";
 
 async function givePoints(

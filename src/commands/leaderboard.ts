@@ -6,8 +6,7 @@ import {
 import IsAdmin from "../utility/isAdmin.js";
 import getLeaderboard from '../database/getLeaderboard.js';
 import { Pagination } from "@discordx/pagination";
-import { getRankByPoints } from "../data/rankUtils/getRankByPoints";
-import { rankIcon } from "../data/rankUtils/iconData.js";
+import * as rankUtils from "../utility/rankUtils/index.js";
 import { RateLimit, TIME_UNIT } from '@discordx/utilities';
 
 @Discord()
@@ -38,12 +37,12 @@ class Leaderboard {
 			let userData = usersData.get(user.user_id)
 			if (!userData) continue;
 
-			let rank = getRankByPoints(user.points);
+			let rank = rankUtils.getRankByPoints(user.points);
 			serverRank++;
 
 			leaderboard.push({
 				name: `#${serverRank} **${userData.displayName}**`,
-				value: `${rankIcon.get(rank)} ${user.points} points`,
+				value: `${rankUtils.rankIcon.get(rank)} ${user.points} points`,
 			});
 		}
 
