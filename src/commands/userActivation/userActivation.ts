@@ -4,21 +4,9 @@ import {
     CommandInteraction,
     GuildMember,
 } from 'discord.js';
-import IsAdmin from '../../utility/isAdmin.js';
-import newUser from '../../database/newUser.js';
-import removeUser from '../../database/removeUser.js';
-import getUser from '../../database/getUser.js';
-import * as rankUtils from '../../utility/rankUtils/index.js';
-
-const isValid = async (interaction: CommandInteraction) => {
-    if (!IsAdmin(Number(interaction.member?.permissions))) {
-        await interaction.reply('❌ Lacking permissions for this command.');
-        return false;
-    }
-    // TODO: Check if user is a bot
-
-    return true;
-};
+import activationHelper from "./func/activationHelper.js";
+import deactivationHelper from "./func/deactivationHelper.js";
+import statusHelper from "./func/statusHelper.js";
 
 @Discord()
 class Activation {
@@ -37,22 +25,7 @@ class Activation {
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        if (!await isValid(interaction)) return;
-
-        let result = await newUser(interaction.guildId!, user.user.id);
-
-        let response: string;
-        if (result) {
-            response = `**${user.user}** has been activated by **${interaction.member}**.`;
-            // Set default role
-            await rankUtils.addRole(interaction, user, 'jade');
-        }
-        else {
-            response = `❌ **${user.displayName}** is already activated.`;
-        }
-        // response = 'Error checking if user is activated';
-
-        await interaction.reply(response);
+        return activationHelper(user, interaction);
     }
 
     @Slash({
@@ -71,21 +44,7 @@ class Activation {
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        if (!await isValid(interaction)) return;
-
-        let result = await removeUser(interaction.guildId!, user.user.id);
-
-        let response: string;
-        if (result) {
-            response = `✔ **${user.displayName}** has been deactivated.`;
-            // Remove all rank roles
-            await rankUtils.removeOldRoles(user);
-        } else {
-            response = `❌ **${user.displayName}** is not activated.`;
-        }
-        // response = 'Error checking if user is activated';
-
-        await interaction.reply(response);
+        return deactivationHelper(user, interaction);
     }
 
     @Slash({
@@ -102,18 +61,6 @@ class Activation {
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        if (!await isValid(interaction)) return;
-
-        let result = await getUser(interaction.guildId!, user.user.id);
-
-        let response: string;
-        if (result) {
-            response = `✔ **${user.displayName}** is activated.`;
-        } else {
-            response = `❌ **${user.displayName}** is not activated.`;
-        }
-        // response = 'Error checking if user is activated';
-
-        await interaction.reply(response);
+        return statusHelper(user, interaction);
     }
 }
