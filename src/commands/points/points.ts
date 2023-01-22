@@ -4,8 +4,8 @@ import {
 	CommandInteraction,
 	GuildMember,
 } from 'discord.js';
-import { getPoints } from '../database/getUser.js';
-import * as rankUtils from "../utility/rankUtils/index.js";
+import { getPoints } from '../../database/getUser.js';
+import * as rankUtils from "../../utility/rankUtils/index.js";
 
 @Discord()
 class Points {

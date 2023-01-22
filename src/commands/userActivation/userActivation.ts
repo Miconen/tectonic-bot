@@ -4,11 +4,11 @@ import {
     CommandInteraction,
     GuildMember,
 } from 'discord.js';
-import IsAdmin from '../utility/isAdmin.js';
-import newUser from '../database/newUser.js';
-import removeUser from '../database/removeUser.js';
-import getUser from '../database/getUser.js';
-import * as rankUtils from '../utility/rankUtils/index.js';
+import IsAdmin from '../../utility/isAdmin.js';
+import newUser from '../../database/newUser.js';
+import removeUser from '../../database/removeUser.js';
+import getUser from '../../database/getUser.js';
+import * as rankUtils from '../../utility/rankUtils/index.js';
 
 const isValid = async (interaction: CommandInteraction) => {
     if (!IsAdmin(Number(interaction.member?.permissions))) {

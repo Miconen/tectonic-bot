@@ -15,11 +15,11 @@ import {
     SlashChoice,
     SlashOption,
 } from "discordx";
-import IsAdmin from "../utility/isAdmin.js";
-import * as pointUtils from "../utility/pointUtils/index.js";
-import * as rankUtils from "../utility/rankUtils/index.js";
-import updateUserPoints from "../database/updateUserPoints.js";
-import capitalizeFirstLetter from "../utility/capitalizeFirstLetter.js";
+import IsAdmin from "../../utility/isAdmin.js";
+import * as pointUtils from "../../utility/pointUtils/index.js";
+import * as rankUtils from "../../utility/rankUtils/index.js";
+import updateUserPoints from "../../database/updateUserPoints.js";
+import capitalizeFirstLetter from "../../utility/capitalizeFirstLetter.js";
 
 const interactionMap = new Map<string, CommandInteraction>();
 const interactionState = new Map<string, boolean>();
