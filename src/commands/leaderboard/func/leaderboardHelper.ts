@@ -1,6 +1,5 @@
 import {CommandInteraction, EmbedBuilder} from "discord.js";
 import { Pagination } from "@discordx/pagination";
-import IsAdmin from "../../../utility/isAdmin.js";
 import getLeaderboard from '../../../database/getLeaderboard.js';
 import * as rankUtils from "../../../utility/rankUtils/index.js";
 
