@@ -3,6 +3,7 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
+import * as cron from "node-cron";
 
 // TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,6 +70,10 @@ async function run() {
 
     // Log in with your bot token
     await bot.login(process.env.BOT_TOKEN);
+
+    cron.schedule('* * * * * *', () => {
+        console.log("Hello World, every second!");
+    })
 }
 
 run();
