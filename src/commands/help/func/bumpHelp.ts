@@ -2,7 +2,7 @@ import {CommandInteraction} from "discord.js";
 import * as pointUtils from "../../../utility/pointUtils/index.js";
 
 const bumpHelp = async (interaction: CommandInteraction) => {
-    let points = pointUtils.pointsHandler(
+    let points = await pointUtils.pointsHandler(
         pointUtils.pointRewards.get("forum_bump"),
         interaction.guild!.id,
     );
