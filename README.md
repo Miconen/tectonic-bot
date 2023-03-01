@@ -2,8 +2,11 @@
 
 ## Branches
 
--   main branch: Deployed version of the bot
--   dev branch: Most up to date branch
+- **main**: Deployed version of the bot (Autodeploy)
+- **develop**: Most up-to-date branch used for development
+- **feature/{name}**: New WIP features
+
+**[All planned features and ideas can be found here.](https://github.com/Miconen/tectonic-bot/projects/1)**
 
 # Table of contents
 
@@ -39,7 +42,7 @@ Ranks info command:
 /help ranks
 ```
 
-Currently we give out points like so.
+Currently, we give points out like so.
 
 -   Splits
     -   Low value: 10
