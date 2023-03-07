@@ -1,11 +1,11 @@
 import {
-    CommandInteraction,
+    BaseInteraction,
     GuildMember, RoleResolvable
 } from "discord.js";
 import { getRole } from "./getRole.js";
 
 const addRole = async (
-    interaction: CommandInteraction,
+    interaction: BaseInteraction,
     target: GuildMember,
     roleName: string
 ) => {

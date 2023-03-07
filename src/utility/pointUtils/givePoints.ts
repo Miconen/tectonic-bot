@@ -1,15 +1,13 @@
 import updateUserPoints from "../../database/updateUserPoints.js";
-import type { CommandInteraction, Guild, GuildMember } from "discord.js";
+import { BaseInteraction, Guild, GuildMember, MessageInteraction, CommandInteraction } from "discord.js";
 import * as rankUtils from "../rankUtils/index.js";
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js";
 
 async function givePoints(
     addedPoints: number,
     user: GuildMember,
-    interaction: CommandInteraction,
+    interaction: BaseInteraction,
 ) {
-    await interaction.deferReply();
-
     const { displayName: receivingUser = "???", id: receivingUserId } = user;
     const { displayName: grantingUser = "???", id: grantingUserId } = interaction.member as GuildMember;
     const { id: guildId } = interaction.guild as Guild;
@@ -32,7 +30,7 @@ async function givePoints(
             let newRankIcon = rankUtils.rankIcon.get(newRank);
             response += `\n**${receivingUser}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
                 newRank,
-            )}!`;
+            )}! <&1082761501615603752>`;
         }
     } else if (newPoints === false) {
         response = `❌ **${receivingUser}** is not an activated user.`;
@@ -40,7 +38,7 @@ async function givePoints(
         response = "Error giving points";
     }
 
-    await interaction.editReply(response);
+    return response;
 }
 
 export { givePoints };

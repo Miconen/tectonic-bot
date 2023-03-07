@@ -1,12 +1,12 @@
 import {
-    CommandInteraction,
+    BaseInteraction,
     GuildMember,
 } from "discord.js";
 import { rankUpdater } from './rankUpdater.js';
 import { removeOldRoles } from "./removeOldRoles.js";
 import { addRole } from "./addRole.js";
 
-type RankData = { interaction: CommandInteraction; target: GuildMember; oldPoints: number; newPoints: number; }
+type RankData = { interaction: BaseInteraction; target: GuildMember; oldPoints: number; newPoints: number; }
 
 const rankUpHandler = async (
     { interaction, target, oldPoints, newPoints }: RankData,

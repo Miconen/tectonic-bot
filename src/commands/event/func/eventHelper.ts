@@ -13,7 +13,8 @@ const learnerHelper = async (user: GuildMember, interaction: CommandInteraction,
     );
 
     // Handle giving of points, returns a string to be sent as a message.
-    await pointUtils.givePoints(addedPoints, user, interaction);
+    const pointsResponse = await pointUtils.givePoints(addedPoints, user, interaction);
+    await interaction.reply(pointsResponse);
 }
 
 export default learnerHelper;

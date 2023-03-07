@@ -21,6 +21,7 @@
         "discord.js": "^14.7.1",
         "discordx": "^11.5.2",
         "dotenv": "^16.0.1",
+        "eslint": "^8.35.0",
         "node-cron": "^3.0.2"
     },
     "devDependencies": {

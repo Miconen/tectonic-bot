@@ -6,7 +6,8 @@ const giveHelper = async (user: GuildMember, addedPoints: number, interaction: C
     if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
     // Handle giving of points, returns a string to be sent as a message.
-    await pointUtils.givePoints(addedPoints, user, interaction);
+    let pointsResponse = await pointUtils.givePoints(addedPoints, user, interaction);
+    await interaction.reply(pointsResponse);
 }
 
 export default giveHelper;

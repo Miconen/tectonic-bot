@@ -53,13 +53,13 @@ class split {
 
     // register a handler for the button with id: "approve-btn"
     @ButtonComponent({ id: "approve-btn" })
-    async approveButton(interaction: ButtonInteraction) {
+    approveButton(interaction: ButtonInteraction) {
         return acceptHelper(interaction, state);
     }
 
     // register a handler for the button with id: "deny-btn"
     @ButtonComponent({ id: "deny-btn" })
-    async denyButton(interaction: ButtonInteraction) {
+    denyButton(interaction: ButtonInteraction) {
         return denyHelper(interaction, state);
     }
 }
