@@ -2,6 +2,7 @@ version: '3.7'
 services:
     db:
         image: mysql
+        container_name: db
         command: --default-authentication-plugin=mysql_native_password
         restart: always
         environment:
@@ -9,16 +10,22 @@ services:
             MYSQL_DATABASE: tectonic
         volumes:
             - .mysqldata:/var/lib/mysql
+            - ./database.sql:/docker-entrypoint-initdb.d/database.sql
         ports:
             - 3306:3306
 
     phpmyadmin:
         image: phpmyadmin
+        container_name: pma
         restart: always
         ports:
             - 8080:80
+        links:
+            - db
         environment:
-            - PMA_ARBITRARY=1
+            PMA_HOST: db
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
 
     app:
         build: .

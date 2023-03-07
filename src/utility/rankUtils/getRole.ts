@@ -1,9 +1,9 @@
-import { CommandInteraction, Role } from "discord.js";
+import { BaseInteraction, Role } from "discord.js";
 import { roleIds } from "./rankData.js";
 
 
 const getRole = (
-    interaction: CommandInteraction,
+    interaction: BaseInteraction,
     roleName: string
 ): Role | undefined => {
     let guild = interaction.guild;
