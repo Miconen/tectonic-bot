@@ -10,6 +10,7 @@ services:
             MYSQL_DATABASE: tectonic
         volumes:
             - .mysqldata:/var/lib/mysql
+            - ./database.sql:/docker-entrypoint-initdb.d/database.sql
         ports:
             - 3306:3306
 
