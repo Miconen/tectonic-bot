@@ -30,7 +30,7 @@ async function givePoints(
             let newRankIcon = rankUtils.rankIcon.get(newRank);
             response += `\n**${receivingUser}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
                 newRank,
-            )}! <&1082761501615603752>`;
+            )}!`;
         }
     } else if (newPoints === false) {
         response = `❌ **${receivingUser}** is not an activated user.`;
