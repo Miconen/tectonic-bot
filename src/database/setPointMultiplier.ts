@@ -1,10 +1,10 @@
 import prisma from "./client.js";
 
-async function main(guildId: string, newMultiplier: number) {
+async function main(guild_id: string, multiplier: number) {
     let response = await prisma.guilds.upsert({
-        where: {guild_id: guildId},
-        update: {multiplier: newMultiplier},
-        create: {guild_id: guildId, multiplier: newMultiplier}
+        where: {guild_id},
+        update: {multiplier},
+        create: {guild_id, multiplier}
     });
     return response.multiplier;
 }
