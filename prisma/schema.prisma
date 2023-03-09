@@ -8,48 +8,30 @@ datasource db {
 }
 
 model guilds {
-  id         Int    @id @default(autoincrement())
-  guild_id   String @unique(map: "guild_id") @db.VarChar(32)
-  multiplier Int    @default(1)
+  guild_id   String  @id @unique(map: "guild_id") @db.VarChar(32)
+  multiplier Int     @default(1)
+  users      users[]
 }
 
 model rsn {
-  id    Int    @id @default(autoincrement())
-  user  Int
-  rsn   String @unique(map: "rsn") @db.VarChar(32)
-  type  String @db.VarChar(8)
-  users users  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_27")
+  rsn      String @db.VarChar(32)
+  wom_id   String @db.VarChar(32)
+  user_id  String @db.VarChar(32)
+  guild_id String @db.VarChar(32)
+  users    users  @relation(fields: [user_id, guild_id], references: [user_id, guild_id], onDelete: Cascade, map: "rsn_ibfk_1")
 
-  @@index([user], map: "FK_29")
-}
-
-model splits {
-  id             Int    @id @default(autoincrement())
-  user           Int
-  split_amount   Int
-  split_item     String @db.VarChar(50)
-  points_awarded Int
-  users          users  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_19")
-
-  @@index([user], map: "FK_21")
-}
-
-model transactions {
-  id             Int    @id @default(autoincrement())
-  user           Int
-  points_awarded Int
-  points_reason  String @db.VarChar(50)
-  users          users  @relation(fields: [user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_26")
-
-  @@index([user], map: "FK_28")
+  @@id([wom_id, guild_id])
+  @@index([user_id, guild_id], map: "rsn_ibfk_1")
 }
 
 model users {
-  id           Int            @id @default(autoincrement())
-  guild_id     String         @db.VarChar(32)
-  user_id      String         @db.VarChar(32)
-  points       Int            @default(0)
-  rsn          rsn[]
-  splits       splits[]
-  transactions transactions[]
+  user_id  String @db.VarChar(32)
+  guild_id String @db.VarChar(32)
+  points   Int    @default(0)
+  rsn      rsn[]
+  guilds   guilds @relation(fields: [guild_id], references: [guild_id], onUpdate: Restrict, map: "users_ibfk_1")
+
+  @@id([user_id, guild_id], name: "ids")
+  @@index([guild_id], map: "guild_id")
+  @@index([user_id], map: "user_id")
 }

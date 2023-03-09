@@ -1,7 +1,7 @@
 import prisma from "./client.js";
 
-async function main(guildId: string) {
-	let response = await prisma.guilds.findFirst({where: {guild_id: guildId}})
+async function main(guild_id: string) {
+	let response = await prisma.guilds.findUnique({where: {guild_id}})
 	return response?.multiplier;
 }
 
