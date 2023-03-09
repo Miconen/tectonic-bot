@@ -4,6 +4,7 @@ import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
 
+
 // TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (BigInt.prototype as any).toJSON = function () {

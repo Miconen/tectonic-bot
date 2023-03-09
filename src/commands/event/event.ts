@@ -5,6 +5,7 @@ import {
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
 import learnerHelper from "./func/eventHelper.js";
+import womHelper from "./func/womHelper.js";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
@@ -39,5 +40,26 @@ class Event {
         interaction: CommandInteraction,
     ) {
         return learnerHelper(user, interaction, "event_participation");
+    }
+
+    @Slash({ name: "wom", description: "Wise old man automation" })
+    async wom(
+        @SlashOption({
+            name: "competition",
+            description: "ID of the WOM competition",
+            required: true,
+            type: ApplicationCommandOptionType.Integer,
+        })
+        @SlashOption({
+            name: "cutoff",
+            description: "Cutoff for xp/kills to gaine points",
+            required: true,
+            type: ApplicationCommandOptionType.Integer,
+        })
+        competitionId: number,
+        cutoff: number,
+        interaction: CommandInteraction,
+    ) {
+        return womHelper(competitionId, interaction, cutoff);
     }
 }
