@@ -1,7 +1,22 @@
 import updateUserPoints from "../../database/updateUserPoints.js";
-import { BaseInteraction, Guild, GuildMember, MessageInteraction, CommandInteraction } from "discord.js";
+import { BaseInteraction, Collection, Guild, GuildMember } from "discord.js";
 import * as rankUtils from "../rankUtils/index.js";
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js";
+
+async function givePointsToMultiple(
+    addedPoints: number,
+    users: Collection<string, GuildMember>,
+    interaction: BaseInteraction
+) {
+    let responses: Promise<string>[] = [];
+
+    users.forEach(user => {
+        let points = givePoints(addedPoints, user, interaction);
+        responses.push(points);
+    })
+
+    return Promise.all(responses);
+}
 
 async function givePoints(
     addedPoints: number,
@@ -41,4 +56,4 @@ async function givePoints(
     return response;
 }
 
-export { givePoints };
+export { givePoints, givePointsToMultiple };
