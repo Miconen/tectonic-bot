@@ -1,7 +1,7 @@
 import prisma from "./client.js";
 
 async function main(guildId: string, userId: string) {
-	return await prisma.users.findFirst({where: {guild_id: guildId, user_id: userId}});
+	return await prisma.users.findUnique({ where: { ids: { user_id: userId, guild_id: guildId } } });
 }
 
 async function getPoints(guildId: string, userId: string) {
