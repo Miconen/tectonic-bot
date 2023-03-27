@@ -1,10 +1,11 @@
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
-    GuildMember,
+    GuildMember, Role,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import learnerHelper from "./func/eventHelper.js";
+import eventHelper from "./func/eventHelper.js";
+import eventRoleHelper from "./func/eventRoleHelper.js";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
@@ -24,7 +25,7 @@ class Event {
         user: GuildMember,
         interaction: CommandInteraction,
     ) {
-        return learnerHelper(user, interaction, "event_participation");
+        return eventHelper(user, interaction, "event_participation");
     }
 
     @Slash({ name: "hosting", description: "Event hosting specific command" })
@@ -38,6 +39,27 @@ class Event {
         user: GuildMember,
         interaction: CommandInteraction,
     ) {
-        return learnerHelper(user, interaction, "event_participation");
+        return eventHelper(user, interaction, "event_hosting");
+    }
+
+    @Slash({ name: "role", description: "Event point for a whole role" })
+    async role(
+        @SlashOption({
+            name: "role",
+            description: "Role for which to award points",
+            required: true,
+            type: ApplicationCommandOptionType.Role,
+        })
+        @SlashOption({
+            name: "amount",
+            description: "Amount of points to give",
+            required: true,
+            type: ApplicationCommandOptionType.Number,
+        })
+        role: Role,
+        amount: number,
+        interaction: CommandInteraction,
+    ) {
+        return eventRoleHelper(role, interaction, amount);
     }
 }

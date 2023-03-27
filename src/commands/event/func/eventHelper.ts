@@ -4,7 +4,7 @@ import * as pointUtils from "../../../utility/pointUtils/index.js";
 
 type PointAmount = "event_participation" | "event_hosting";
 
-const learnerHelper = async (user: GuildMember, interaction: CommandInteraction, amount: PointAmount) => {
+const eventHelper = async (user: GuildMember, interaction: CommandInteraction, amount: PointAmount) => {
     if (!IsAdmin(Number(interaction.member?.permissions))) return;
 
     let addedPoints = await pointUtils.pointsHandler(
@@ -17,4 +17,4 @@ const learnerHelper = async (user: GuildMember, interaction: CommandInteraction,
     await interaction.reply(pointsResponse);
 }
 
-export default learnerHelper;
+export default eventHelper;
