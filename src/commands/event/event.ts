@@ -22,7 +22,7 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-        user: GuildMember,
+            user: GuildMember,
         interaction: CommandInteraction,
     ) {
         return eventHelper(user, interaction, "event_participation");
@@ -36,7 +36,7 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-        user: GuildMember,
+            user: GuildMember,
         interaction: CommandInteraction,
     ) {
         return eventHelper(user, interaction, "event_hosting");
@@ -56,10 +56,15 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.Number,
         })
+<<<<<<< HEAD
         role: Role,
+=======
+            role: Role,
+>>>>>>> origin/main
         amount: number,
         interaction: CommandInteraction,
     ) {
         return eventRoleHelper(role, interaction, amount);
     }
 }
+
