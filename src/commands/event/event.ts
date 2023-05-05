@@ -56,11 +56,7 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.Number,
         })
-<<<<<<< HEAD
         role: Role,
-=======
-            role: Role,
->>>>>>> origin/main
         amount: number,
         interaction: CommandInteraction,
     ) {

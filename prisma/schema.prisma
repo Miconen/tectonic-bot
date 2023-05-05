@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
-}
+  }
 
 model guilds {
-  guild_id   String  @id @unique(map: "guild_id") @db.VarChar(32)
+  guild_id   String  @id @db.VarChar(32)
   multiplier Int     @default(1)
   users      users[]
 }
@@ -21,7 +21,6 @@ model rsn {
   users    users  @relation(fields: [user_id, guild_id], references: [user_id, guild_id], onDelete: Cascade, map: "rsn_ibfk_1")
 
   @@id([wom_id, guild_id])
-  @@index([user_id, guild_id], map: "rsn_ibfk_1")
 }
 
 model users {
@@ -32,6 +31,5 @@ model users {
   guilds   guilds @relation(fields: [guild_id], references: [guild_id], onUpdate: Restrict, map: "users_ibfk_1")
 
   @@id([user_id, guild_id], name: "ids")
-  @@index([guild_id], map: "guild_id")
-  @@index([user_id], map: "user_id")
+  @@index([user_id], map: "users_user_id")
 }

@@ -17,8 +17,4 @@ const eventHelper = async (user: GuildMember, interaction: CommandInteraction, a
     await interaction.reply(pointsResponse);
 }
 
-<<<<<<< HEAD
 export default eventHelper;
-=======
-export default eventHelper;
->>>>>>> origin/main
