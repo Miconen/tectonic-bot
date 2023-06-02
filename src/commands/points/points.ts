@@ -4,7 +4,7 @@ import {
     CommandInteraction,
     GuildMember,
 } from 'discord.js';
-import giveHelper from "./func/pointsHelper.js";
+import pointsHelper from "./func/pointsHelper.js";
 
 @Discord()
 class Points {
@@ -23,6 +23,6 @@ class Points {
         user: GuildMember | null,
         interaction: CommandInteraction
     ) {
-        return giveHelper(user, interaction);
+        return pointsHelper(user, interaction);
     }
 }
