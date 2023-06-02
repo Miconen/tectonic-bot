@@ -9,13 +9,12 @@ import * as pointUtils from "../../../utility/pointUtils/index.js";
 import {InteractionCache} from "./InteractionCache";
 
 const splitHelper = async (value: number, interaction: CommandInteraction, state: InteractionCache) => {
-    await interaction.deferReply();
     value = await pointUtils.pointsHandler(value, interaction.guild!.id);
 
     // Create the button, giving it the id: "approve-btn"
     const approveButton = new ButtonBuilder()
         .setLabel("Approve")
-        .setStyle(ButtonStyle.Primary)
+        .setStyle(ButtonStyle.Success)
         .setCustomId("approve-btn");
 
     // Create a button, giving it the id: "deny-btn"
@@ -33,7 +32,7 @@ const splitHelper = async (value: number, interaction: CommandInteraction, state
 
     const msg = `**${(interaction.member as GuildMember).displayName
     }** has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
-    await interaction.editReply({
+    await interaction.reply({
         content: msg,
         components: [row],
     });
