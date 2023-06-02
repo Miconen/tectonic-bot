@@ -4,8 +4,6 @@ import isValid from "./isValid.js";
 import getInteractionId from "./getInteractionId.js";
 
 const denyHelper = async (interaction: ButtonInteraction, state: InteractionCache) => {
-    if (!(await isValid(interaction, state))) return;
-
     let interactionId = getInteractionId(interaction);
     let receivingInteraction = state.interactionMap.get(
         interactionId,
@@ -19,9 +17,7 @@ const denyHelper = async (interaction: ButtonInteraction, state: InteractionCach
     let receivingUserName = receivingUser.displayName;
 
     // Remove buttons on successful button press
-    await receivingInteraction.editReply({
-        components: [],
-    });
+    await interaction.message.edit({ components: [] });
 
     // Free up memory on point denial
     state.interactionMap.delete(interactionId);

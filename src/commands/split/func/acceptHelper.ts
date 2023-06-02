@@ -2,12 +2,8 @@ import {ButtonInteraction, CommandInteraction, GuildMember, BaseInteraction} fro
 import * as pointUtils from "../../../utility/pointUtils/index.js"
 import {InteractionCache} from "./InteractionCache.js";
 import getInteractionId from "./getInteractionId.js";
-import isValid from "./isValid.js";
 
 const acceptHelper = async (interaction: ButtonInteraction, state: InteractionCache) => {
-    
-    if (!(await isValid(interaction, state))) return;
-
     let interactionId = getInteractionId(interaction);
 
     let receivingInteraction = state.interactionMap.get(
@@ -24,9 +20,7 @@ const acceptHelper = async (interaction: ButtonInteraction, state: InteractionCa
     let addedPoints = state.pointsMap.get(interactionId) ?? 0;
 
     // Remove buttons on button press
-    await receivingInteraction.editReply({
-        components: [],
-    });
+    await interaction.message.edit({ components: [] });
 
     // Free up memory on point approval
     state.interactionMap.delete(interactionId);
