@@ -1,8 +1,8 @@
 import {
     ButtonInteraction,
     CommandInteraction,
-    ButtonStyle,
     ApplicationCommandOptionType,
+    Snowflake,
 } from "discord.js";
 import {
     Discord,
@@ -10,18 +10,17 @@ import {
     ButtonComponent,
     SlashChoice,
     SlashOption,
+    Guard,
 } from "discordx";
 import * as pointUtils from "../../utility/pointUtils/index.js";
 import splitHelper from "./func/splitHelper.js";
 import acceptHelper from "./func/acceptHelper.js";
-import {InteractionCache} from "./func/InteractionCache.js";
 import denyHelper from "./func/denyHelper.js";
+import IsAdmin from "../../utility/isAdmin.js";
+import IsValid from "./func/isValid.js";
+import { SplitCache, SplitData } from "./func/splitTypes.js";
 
-let state: InteractionCache = {
-    interactionMap: new Map<string, CommandInteraction>(),
-    interactionState: new Map<string, boolean>(),
-    pointsMap: new Map<string, number>(),
-}
+let state: SplitCache = new Map<Snowflake, SplitData>;
 
 @Discord()
 class split {
@@ -53,12 +52,14 @@ class split {
 
     // register a handler for the button with id: "approve-btn"
     @ButtonComponent({ id: "approve-btn" })
+    @Guard(IsAdmin, IsValid(state))
     approveButton(interaction: ButtonInteraction) {
         return acceptHelper(interaction, state);
     }
 
     // register a handler for the button with id: "deny-btn"
     @ButtonComponent({ id: "deny-btn" })
+    @Guard(IsAdmin, IsValid(state))
     denyButton(interaction: ButtonInteraction) {
         return denyHelper(interaction, state);
     }

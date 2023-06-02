@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashOption, SlashGroup } from "discordx";
+import { Discord, Slash, SlashOption, SlashGroup, Guard } from "discordx";
 import {
     CommandInteraction,
     GuildMember,
@@ -6,10 +6,12 @@ import {
 } from "discord.js";
 import multiplierHelper from "./func/multiplierHelper.js";
 import giveHelper from "./func/giveHelper.js";
+import IsAdmin from "../../utility/isAdmin.js";
 
 @Discord()
 @SlashGroup({ name: "moderation", description: "Moderation related commands" })
 @SlashGroup("moderation")
+@Guard(IsAdmin)
 class Moderation {
     @Slash({ name: "give", description: "Give points to a user" })
     async give(
