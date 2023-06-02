@@ -10,12 +10,14 @@ import {
     ButtonComponent,
     SlashChoice,
     SlashOption,
+    Guard,
 } from "discordx";
 import * as pointUtils from "../../utility/pointUtils/index.js";
 import splitHelper from "./func/splitHelper.js";
 import acceptHelper from "./func/acceptHelper.js";
-import {InteractionCache} from "./func/InteractionCache.js";
+import { InteractionCache } from "./func/InteractionCache.js";
 import denyHelper from "./func/denyHelper.js";
+import IsAdmin from "../../utility/isAdmin.js";
 
 let state: InteractionCache = {
     interactionMap: new Map<string, CommandInteraction>(),
@@ -53,12 +55,14 @@ class split {
 
     // register a handler for the button with id: "approve-btn"
     @ButtonComponent({ id: "approve-btn" })
+    // @Guard(IsAdmin)
     approveButton(interaction: ButtonInteraction) {
         return acceptHelper(interaction, state);
     }
 
     // register a handler for the button with id: "deny-btn"
     @ButtonComponent({ id: "deny-btn" })
+    // @Guard(IsAdmin)
     denyButton(interaction: ButtonInteraction) {
         return denyHelper(interaction, state);
     }

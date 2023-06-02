@@ -3,13 +3,15 @@ import {
     CommandInteraction,
     GuildMember, Role,
 } from "discord.js";
-import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
+import IsAdmin from "../../utility/isAdmin.js";
 import eventHelper from "./func/eventHelper.js";
 import eventRoleHelper from "./func/eventRoleHelper.js";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
 @SlashGroup("event")
+// @Guard(IsAdmin)
 class Event {
     @Slash({
         name: "participation",
