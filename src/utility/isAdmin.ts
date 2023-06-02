@@ -20,7 +20,7 @@ export const IsAdmin: GuardFunction<ButtonInteraction | CommandInteraction> = as
             content: "You do not have the required permissions for this action",
             ephemeral: true,
         }
-        interaction.reply(warning);
+        await interaction.reply(warning);
     }
 }
 

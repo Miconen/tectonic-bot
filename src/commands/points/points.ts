@@ -1,4 +1,4 @@
-import { Discord, Guard, Slash, SlashOption } from 'discordx';
+import { Discord, Slash, SlashOption } from 'discordx';
 import {
     ApplicationCommandOptionType,
     CommandInteraction,

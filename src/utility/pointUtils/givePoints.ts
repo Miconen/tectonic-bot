@@ -26,7 +26,7 @@ async function givePoints(
     const { displayName: receivingUser = "???", id: receivingUserId } = user;
     const { displayName: grantingUser = "???", id: grantingUserId } = interaction.member as GuildMember;
     const { id: guildId } = interaction.guild as Guild;
-
+    
     let newPoints = await updateUserPoints(
         guildId,
         receivingUserId,
