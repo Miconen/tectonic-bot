@@ -1,4 +1,4 @@
-import {CommandInteraction} from "discord.js";
+import { CommandInteraction } from "discord.js";
 import * as rankUtils from "../../../utility/rankUtils/index.js";
 
 const ranksHelp = async (interaction: CommandInteraction) => {
