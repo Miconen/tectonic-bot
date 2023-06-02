@@ -1,19 +1,26 @@
-import { ButtonInteraction, CommandInteraction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, GuildMember, InteractionReplyOptions, PermissionsBitField } from "discord.js";
 import { GuardFunction } from "discordx";
 
-function hasPermissions(input: number) {
-    let bitfield = BigInt(input);
-    return !!((bitfield & (1n << 40n)) >> 40n);
+function hasPermissions(userPermissions: PermissionsBitField) {
+    return userPermissions.has("ModerateMembers");
 }
 
-export const IsAdmin: GuardFunction<ButtonInteraction | CommandInteraction> = async (arg, _, next) => {
-    const argObj = arg instanceof Array ? arg[0] : arg;
-    const permissions = argObj.member.permissions;
+export const IsAdmin: GuardFunction<ButtonInteraction | CommandInteraction> = async (interaction, _, next) => {
+    const member = interaction.member as GuildMember;
+    const permissions = member.permissions as PermissionsBitField;
 
-    console.log(permissions);
-    console.log(hasPermissions(permissions));
+    console.log(`Checking permissions for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`);
     if (hasPermissions(permissions)) {
+        console.log("↳ Passed")
         await next();
+    } else {
+        console.log("↳ Denied")
+
+        const warning: InteractionReplyOptions = {
+            content: "You do not have the required permissions for this action",
+            ephemeral: true,
+        }
+        interaction.reply(warning);
     }
 }
 
