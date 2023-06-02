@@ -1,28 +1,38 @@
-import { ButtonInteraction, GuildMember } from "discord.js";
+import { ButtonInteraction, GuildMember, InteractionReplyOptions } from "discord.js";
 import { GuardFunction } from "discordx";
 import getInteractionId from "./getInteractionId.js";
-import { InteractionCache } from "./InteractionCache.js";
+import { SplitCache } from "./splitTypes.js";
 
-export function IsValid(state: InteractionCache) {
+export function IsValid(state: SplitCache) {
     const guard: GuardFunction<ButtonInteraction> = async (interaction, _, next) => {
         const member = interaction.member as GuildMember;
+        let splitId = getInteractionId(interaction);
+        let split = state.get(splitId);
 
-        console.log(`Checking state for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`);
-        let interactionId = getInteractionId(interaction);
+        console.log(`Checking state validity for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`);
 
         // If command has not been stored in memory, don't run.
         // Idea is not to handle commands that haven't been stored since restart.
-        if (!state.interactionState.has(interactionId)) {
-            await interaction.reply("❌ Point request expired...");
-            console.log("↳ Denied")
+        if (!split) {
+            let reply: InteractionReplyOptions = {
+                content: "❌ Point request expired...",
+                ephemeral: true,
+            }
+            await interaction.reply(reply);
+            console.log("↳ Expired")
             return;
         }
-        // If command has been run once, don't run again. Returns true if ran once.
-        if (state.interactionState.get(interactionId)) {
-            await interaction.reply("❌ Points already handled");
-            console.log("↳ Denied")
+
+        if (split.points == 0) {
+            let reply: InteractionReplyOptions = {
+                content: "❌ Point request failed internally...",
+                ephemeral: true,
+            }
+            await interaction.reply(reply);
+            console.log("↳ Failed, 0 points")
             return;
         }
+
         console.log("↳ Passed")
         await next();
     }

@@ -6,9 +6,9 @@ import {
     MessageActionRowComponentBuilder
 } from "discord.js";
 import * as pointUtils from "../../../utility/pointUtils/index.js";
-import {InteractionCache} from "./InteractionCache";
+import { SplitCache, SplitData } from "./splitTypes.js";
 
-const splitHelper = async (value: number, interaction: CommandInteraction, state: InteractionCache) => {
+const splitHelper = async (value: number, interaction: CommandInteraction, state: SplitCache) => {
     value = await pointUtils.pointsHandler(value, interaction.guild!.id);
 
     // Create the button, giving it the id: "approve-btn"
@@ -37,9 +37,12 @@ const splitHelper = async (value: number, interaction: CommandInteraction, state
         components: [row],
     });
 
-    state.interactionMap.set(interaction.id, interaction);
-    state.interactionState.set(interaction.id, false);
-    state.pointsMap.set(interaction.id, value);
+    const split: SplitData = {
+        member: interaction.member as GuildMember,
+        points: value
+    }
+
+    state.set(interaction.id, split)
 }
 
 export default splitHelper;
