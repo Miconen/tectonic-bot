@@ -1,12 +1,10 @@
 import {ButtonInteraction} from "discord.js";
 import {InteractionCache} from "./InteractionCache";
-import IsAdmin from "../../../utility/isAdmin.js";
 import getInteractionId from "./getInteractionId.js";
 
 const isValid = async (interaction: ButtonInteraction, state: InteractionCache) => {
     let interactionId = getInteractionId(interaction);
-    // return if not admin
-    if (!IsAdmin(Number(interaction.member?.permissions))) return false;
+
     // If command has not been stored in memory, don't run.
     // Idea is not to handle commands that haven't been stored since restart.
     if (!state.interactionState.has(interactionId)) {
