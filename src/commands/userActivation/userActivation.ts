@@ -10,7 +10,7 @@ import statusHelper from "./func/statusHelper.js";
 import IsAdmin from '../../utility/isAdmin.js';
 
 @Discord()
-// @Guard(IsAdmin)
+@Guard(IsAdmin)
 class Activation {
     @Slash({
         name: 'activate',

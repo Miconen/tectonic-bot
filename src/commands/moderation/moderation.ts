@@ -11,7 +11,7 @@ import IsAdmin from "../../utility/isAdmin.js";
 @Discord()
 @SlashGroup({ name: "moderation", description: "Moderation related commands" })
 @SlashGroup("moderation")
-// @Guard(IsAdmin)
+@Guard(IsAdmin)
 class Moderation {
     @Slash({ name: "give", description: "Give points to a user" })
     async give(

@@ -11,7 +11,7 @@ import eventRoleHelper from "./func/eventRoleHelper.js";
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
 @SlashGroup("event")
-// @Guard(IsAdmin)
+@Guard(IsAdmin)
 class Event {
     @Slash({
         name: "participation",

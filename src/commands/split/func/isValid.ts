@@ -1,22 +1,33 @@
-import {ButtonInteraction} from "discord.js";
-import {InteractionCache} from "./InteractionCache";
+import { ButtonInteraction, GuildMember } from "discord.js";
+import { GuardFunction } from "discordx";
 import getInteractionId from "./getInteractionId.js";
+import { InteractionCache } from "./InteractionCache.js";
 
-const isValid = async (interaction: ButtonInteraction, state: InteractionCache) => {
-    let interactionId = getInteractionId(interaction);
+export function IsValid(state: InteractionCache) {
+    const guard: GuardFunction<ButtonInteraction> = async (interaction, _, next) => {
+        const member = interaction.member as GuildMember;
 
-    // If command has not been stored in memory, don't run.
-    // Idea is not to handle commands that haven't been stored since restart.
-    if (!state.interactionState.has(interactionId)) {
-        await interaction.reply("❌ Point request expired...");
-        return false;
+        console.log(`Checking state for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`);
+        let interactionId = getInteractionId(interaction);
+
+        // If command has not been stored in memory, don't run.
+        // Idea is not to handle commands that haven't been stored since restart.
+        if (!state.interactionState.has(interactionId)) {
+            await interaction.reply("❌ Point request expired...");
+            console.log("↳ Denied")
+            return;
+        }
+        // If command has been run once, don't run again. Returns true if ran once.
+        if (state.interactionState.get(interactionId)) {
+            await interaction.reply("❌ Points already handled");
+            console.log("↳ Denied")
+            return;
+        }
+        console.log("↳ Passed")
+        await next();
     }
-    // If command has been run once, don't run again. Returns true if ran once.
-    if (state.interactionState.get(interactionId)) {
-        await interaction.reply("❌ Points already handled");
-        return false;
-    }
-    return true;
-};
 
-export default isValid;
+    return guard;
+}
+
+export default IsValid;

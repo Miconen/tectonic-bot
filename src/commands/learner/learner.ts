@@ -10,7 +10,7 @@ import learnerHelper from "./func/learnerHelper.js";
 @Discord()
 @SlashGroup({ name: "learner", description: "Learner specific point commands" })
 @SlashGroup("learner")
-// @Guard(IsAdmin)
+@Guard(IsAdmin)
 class Learner {
     @Slash({ name: "half", description: "Halved learner points" })
     half(

@@ -1,7 +1,6 @@
 import {
     ButtonInteraction,
     CommandInteraction,
-    ButtonStyle,
     ApplicationCommandOptionType,
 } from "discord.js";
 import {
@@ -18,6 +17,7 @@ import acceptHelper from "./func/acceptHelper.js";
 import { InteractionCache } from "./func/InteractionCache.js";
 import denyHelper from "./func/denyHelper.js";
 import IsAdmin from "../../utility/isAdmin.js";
+import IsValid from "./func/isValid.js";
 
 let state: InteractionCache = {
     interactionMap: new Map<string, CommandInteraction>(),
@@ -55,14 +55,14 @@ class split {
 
     // register a handler for the button with id: "approve-btn"
     @ButtonComponent({ id: "approve-btn" })
-    // @Guard(IsAdmin)
+    @Guard(IsAdmin, IsValid(state))
     approveButton(interaction: ButtonInteraction) {
         return acceptHelper(interaction, state);
     }
 
     // register a handler for the button with id: "deny-btn"
     @ButtonComponent({ id: "deny-btn" })
-    // @Guard(IsAdmin)
+    @Guard(IsAdmin, IsValid(state))
     denyButton(interaction: ButtonInteraction) {
         return denyHelper(interaction, state);
     }
