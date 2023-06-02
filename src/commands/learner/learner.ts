@@ -3,12 +3,14 @@ import {
     CommandInteraction,
     GuildMember,
 } from "discord.js";
-import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
+import IsAdmin from "../../utility/isAdmin.js";
 import learnerHelper from "./func/learnerHelper.js";
 
 @Discord()
 @SlashGroup({ name: "learner", description: "Learner specific point commands" })
 @SlashGroup("learner")
+@Guard(IsAdmin)
 class Learner {
     @Slash({ name: "half", description: "Halved learner points" })
     half(

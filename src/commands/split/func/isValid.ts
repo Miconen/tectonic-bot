@@ -1,24 +1,43 @@
-import {ButtonInteraction} from "discord.js";
-import {InteractionCache} from "./InteractionCache";
-import IsAdmin from "../../../utility/isAdmin.js";
+import { ButtonInteraction, GuildMember, InteractionReplyOptions } from "discord.js";
+import { GuardFunction } from "discordx";
 import getInteractionId from "./getInteractionId.js";
+import { SplitCache } from "./splitTypes.js";
 
-const isValid = async (interaction: ButtonInteraction, state: InteractionCache) => {
-    let interactionId = getInteractionId(interaction);
-    // return if not admin
-    if (!IsAdmin(Number(interaction.member?.permissions))) return false;
-    // If command has not been stored in memory, don't run.
-    // Idea is not to handle commands that haven't been stored since restart.
-    if (!state.interactionState.has(interactionId)) {
-        await interaction.reply("❌ Point request expired...");
-        return false;
-    }
-    // If command has been run once, don't run again. Returns true if ran once.
-    if (state.interactionState.get(interactionId)) {
-        await interaction.reply("❌ Points already handled");
-        return false;
-    }
-    return true;
-};
+export function IsValid(state: SplitCache) {
+    const guard: GuardFunction<ButtonInteraction> = async (interaction, _, next) => {
+        const member = interaction.member as GuildMember;
+        let splitId = getInteractionId(interaction);
+        let split = state.get(splitId);
 
-export default isValid;
+        console.log(`Checking state validity for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`);
+
+        // If command has not been stored in memory, don't run.
+        // Idea is not to handle commands that haven't been stored since restart.
+        if (!split) {
+            let reply: InteractionReplyOptions = {
+                content: "❌ Point request expired...",
+                ephemeral: true,
+            }
+            await interaction.reply(reply);
+            console.log("↳ Expired")
+            return;
+        }
+
+        if (split.points == 0) {
+            let reply: InteractionReplyOptions = {
+                content: "❌ Point request failed internally...",
+                ephemeral: true,
+            }
+            await interaction.reply(reply);
+            console.log("↳ Failed, 0 points")
+            return;
+        }
+
+        console.log("↳ Passed")
+        await next();
+    }
+
+    return guard;
+}
+
+export default IsValid;
