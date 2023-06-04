@@ -21,14 +21,14 @@ services:
       - 5433:8080
 
   app:
-      build: .
-      command: node build/main.js
-      env_file:
-          - .env
-      environment:
-        DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres?schema=public&connection_limit=5
-      depends_on:
-          - db
+    build: .
+    command: node build/main.js
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres?schema=public&connection_limit=5
+    depends_on:
+      - db
 
 volumes:
   db:
