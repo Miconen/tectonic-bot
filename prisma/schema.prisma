@@ -5,12 +5,22 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  }
+}
+
+model categories {
+  thumbnail        String?            @db.VarChar(256)
+  order            Int                @default(0) @db.SmallInt
+  name             String             @id(map: "categories_name") @db.VarChar(64)
+  bosses           bosses[]
+  guild_categories guild_categories[]
+}
 
 model guilds {
-  guild_id   String  @id @db.VarChar(32)
-  multiplier Int     @default(1)
-  users      users[]
+  guild_id         String             @id @db.VarChar(32)
+  multiplier       Int                @default(1)
+  guild_bosses     guild_bosses[]
+  guild_categories guild_categories[]
+  users            users[]
 }
 
 model rsn {
@@ -23,13 +33,64 @@ model rsn {
   @@id([wom_id, guild_id])
 }
 
-model users {
+model teams {
+  run_id   Int
   user_id  String @db.VarChar(32)
   guild_id String @db.VarChar(32)
-  points   Int    @default(0)
+  times    times  @relation(fields: [run_id], references: [run_id], onDelete: Cascade)
+  users    users  @relation(fields: [user_id, guild_id], references: [user_id, guild_id], onDelete: NoAction)
+
+  @@id([run_id, user_id, guild_id], map: "teams_run_id_user_id_guild_id")
+}
+
+model times {
+  time         Int
+  boss_name    String         @db.VarChar(32)
+  run_id       Int            @id @default(autoincrement())
+  guild_bosses guild_bosses[]
+  teams        teams[]
+  boss         bosses         @relation(fields: [boss_name], references: [name], onDelete: Cascade, map: "times_bosses_name_fkey")
+}
+
+model users {
+  user_id  String  @db.VarChar(32)
+  guild_id String  @db.VarChar(32)
+  points   Int     @default(0)
   rsn      rsn[]
-  guilds   guilds @relation(fields: [guild_id], references: [guild_id], onUpdate: Restrict, map: "users_ibfk_1")
+  teams    teams[]
+  guilds   guilds  @relation(fields: [guild_id], references: [guild_id], onUpdate: Restrict, map: "users_ibfk_1")
 
   @@id([user_id, guild_id], name: "ids")
-  @@index([user_id], map: "users_user_id")
+  @@index([guild_id], map: "guild_id")
+}
+
+model bosses {
+  name         String         @id(map: "boss_name") @db.VarChar(32)
+  display_name String         @db.VarChar(32)
+  category     String         @db.VarChar(64)
+  solo         Boolean
+  categories   categories     @relation(fields: [category], references: [name], onDelete: SetNull, map: "boss_category_fkey")
+  guild_bosses guild_bosses[]
+  times        times[]
+}
+
+model guild_bosses {
+  boss     String @db.VarChar(32)
+  guild_id String @db.VarChar(32)
+  pb_id    Int?
+  bosses   bosses @relation(fields: [boss], references: [name], onDelete: Cascade, map: "guild_bosses_bosses_fkey")
+  guilds   guilds @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  times    times? @relation(fields: [pb_id], references: [run_id], onDelete: Cascade)
+
+  @@id([boss, guild_id], map: "guild_bosses_bosses_guild_id")
+}
+
+model guild_categories {
+  guild_id   String     @db.VarChar(32)
+  category   String     @db.VarChar(64)
+  message_id String     @db.VarChar(32)
+  categories categories @relation(fields: [category], references: [name], onDelete: Cascade)
+  guilds     guilds     @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@id([guild_id, category], map: "guild_categories_guild_id_category")
 }
