@@ -14,7 +14,7 @@ class TimeConverter {
             const [minutes, secondsAndMilliseconds] = timeComponents
             const [seconds, millisecondsStr] = secondsAndMilliseconds.split(".")
             const millisecondsPart = millisecondsStr
-                ? Number(millisecondsStr)
+                ? Number(millisecondsStr.padEnd(3, "0"))
                 : 0
             milliseconds =
                 Number(minutes) * 60000 +

@@ -24,10 +24,6 @@ async function updatePb(time: number, timeId: number, boss: string, guildId: str
 
     if (!isFaster(time, oldTime)) return false;
 
-    console.log("Updating pb", oldBoss.boss);
-    console.log("Old time", oldTime);
-    console.log("New time", time);
-
     await prisma.guild_bosses.update({
         where: {
             boss_guild_id: {
