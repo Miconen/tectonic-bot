@@ -1,9 +1,20 @@
-import { ApplicationCommandOptionType, CommandInteraction, GuildMember } from "discord.js";
-import { Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "../../guards/IsAdmin.js";
-import IsValidTime from "../../guards/IsValidTime.js";
-import bossCategories from "./func/getBosses.js";
-import submitHandler from "./func/submitHandler.js";
+import {
+    ApplicationCommandOptionType,
+    CommandInteraction,
+    GuildMember,
+} from "discord.js"
+import {
+    Discord,
+    Guard,
+    Slash,
+    SlashChoice,
+    SlashGroup,
+    SlashOption,
+} from "discordx"
+import IsAdmin from "../../guards/IsAdmin.js"
+import IsValidTime from "../../guards/IsValidTime.js"
+import bossCategories from "./func/getBosses.js"
+import submitHandler from "./func/submitHandler.js"
 
 @Discord()
 @SlashGroup("pb")
@@ -26,20 +37,18 @@ class slayerpb {
             type: ApplicationCommandOptionType.String,
         })
         time: string,
-        interaction: CommandInteraction,
         @SlashOption({
             name: "player",
-            description: "Teammate discord @name",
-            required: false,
+            description: "Player discord @name",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
-        player: GuildMember | null,
+        player: GuildMember,
+        interaction: CommandInteraction,
     ) {
-        let team = [
-            player?.user.id,
-        ];
+        let team = [player?.user.id]
 
-        await submitHandler(boss, time, team, interaction);
-        await interaction.reply("Time added to database");
+        await submitHandler(boss, time, team, interaction)
+        await interaction.reply("Time added to database")
     }
 }

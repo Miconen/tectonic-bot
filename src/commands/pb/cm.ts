@@ -25,10 +25,10 @@ class cmpb {
         @SlashOption({
             name: "player1",
             description: "Teammate discord @name",
-            required: false,
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
-        player1: GuildMember | null,
+        player1: GuildMember,
         @SlashOption({
             name: "player2",
             description: "Teammate discord @name",

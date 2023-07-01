@@ -37,14 +37,14 @@ class slayerpb {
             type: ApplicationCommandOptionType.String,
         })
         time: string,
-        interaction: CommandInteraction,
         @SlashOption({
             name: "player",
-            description: "Teammate discord @name",
-            required: false,
+            description: "Player discord @name",
+            required: true,
             type: ApplicationCommandOptionType.User,
         })
-        player: GuildMember | null
+        player: GuildMember,
+        interaction: CommandInteraction,
     ) {
         let team = [player?.user.id]
 
