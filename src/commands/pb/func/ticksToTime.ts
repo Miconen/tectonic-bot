@@ -1,7 +1,7 @@
 const TICK_LENGHT = 600
 
 function ticksToTime(ticks: number | undefined) {
-    if (!ticks) return;
+    if (!ticks) return
     const unixTimestamp = ticks * TICK_LENGHT
     const date = new Date(unixTimestamp)
 
@@ -19,9 +19,7 @@ function ticksToTime(ticks: number | undefined) {
         }
 
         // Format minutes
-        if (minutes != 0) {
-            formattedString += (minutes < 10 ? "0" : "") + minutes + ":"
-        }
+        formattedString += (minutes < 10 ? "0" : "") + minutes + ":"
 
         // Format seconds
         formattedString += (seconds < 10 ? "0" : "") + seconds
@@ -32,4 +30,4 @@ function ticksToTime(ticks: number | undefined) {
     return formattedString
 }
 
-export default ticksToTime;
+export default ticksToTime

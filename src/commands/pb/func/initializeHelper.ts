@@ -2,6 +2,7 @@ import { CommandInteraction, TextChannel } from "discord.js";
 import prisma from "../../../database/client.js";
 import embedBuilder from "./embedBuilder.js";
 import removeOldEmbeds from "./removeOldEmbeds.js";
+import ticksToTime from "./ticksToTime.js";
 import { GuildBoss, GuildCategory, TimeField } from "./types.js";
 
 async function initializeHelper(interaction: CommandInteraction) {
@@ -62,7 +63,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 
         for (let boss of category.bosses) {
             const existingBoss = existingBossesMap.get(boss.name);
-            const time = existingBoss?.times?.time.toString() || "No time yet";
+            const time = ticksToTime(existingBoss?.times?.time) || "No time yet";
             const team = existingBoss?.times?.teams.map(player => `<@${player.user_id}>`);
 
             fields.push({ name: boss.display_name, value: time + " " + team?.join(", ") ?? "" });
