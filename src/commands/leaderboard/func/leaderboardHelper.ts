@@ -1,7 +1,7 @@
 import {CommandInteraction, EmbedBuilder} from "discord.js";
 import { Pagination } from "@discordx/pagination";
 import getLeaderboard from '../../../database/getLeaderboard.js';
-import * as rankUtils from "../../../utility/rankUtils/index.js";
+import * as rankUtils from "../../../utils/rankUtils/index.js";
 
 const leaderboardHelper = async (interaction: CommandInteraction) => {
     if (!interaction.guildId) return;

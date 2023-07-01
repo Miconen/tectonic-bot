@@ -1,5 +1,5 @@
 import {CommandInteraction, GuildMember} from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
 
 type PointAmount = "event_participation" | "event_hosting";
 

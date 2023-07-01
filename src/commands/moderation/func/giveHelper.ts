@@ -1,5 +1,5 @@
 import {CommandInteraction, GuildMember} from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
 
 const giveHelper = async (user: GuildMember, addedPoints: number, interaction: CommandInteraction) => {
     // Handle giving of points, returns a string to be sent as a message.

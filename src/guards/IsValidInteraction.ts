@@ -1,12 +1,11 @@
 import { ButtonInteraction, GuildMember, InteractionReplyOptions } from "discord.js";
 import { GuardFunction } from "discordx";
-import getInteractionId from "./getInteractionId.js";
-import { SplitCache } from "./splitTypes.js";
+import { SplitCache } from "../typings/splitTypes";
 
-export function IsValid(state: SplitCache) {
+export function IsValidInteraction(state: SplitCache) {
     const guard: GuardFunction<ButtonInteraction> = async (interaction, _, next) => {
         const member = interaction.member as GuildMember;
-        let splitId = getInteractionId(interaction);
+        let splitId = interaction.message.interaction?.id ?? "0";
         let split = state.get(splitId);
 
         console.log(`Checking state validity for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`);
@@ -40,4 +39,4 @@ export function IsValid(state: SplitCache) {
     return guard;
 }
 
-export default IsValid;
+export default IsValidInteraction;

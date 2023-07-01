@@ -1,6 +1,6 @@
 import { ButtonInteraction, BaseInteraction } from "discord.js";
-import { SplitCache } from "./splitTypes.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js"
+import { SplitCache } from "../../../typings/splitTypes.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
 import getInteractionId from "./getInteractionId.js";
 
 const acceptHelper = async (interaction: ButtonInteraction, state: SplitCache) => {

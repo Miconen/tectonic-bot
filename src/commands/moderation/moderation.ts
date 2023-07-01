@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import multiplierHelper from "./func/multiplierHelper.js";
 import giveHelper from "./func/giveHelper.js";
-import IsAdmin from "../../utility/isAdmin.js";
+import IsAdmin from "../../guards/IsAdmin.js";
 
 @Discord()
 @SlashGroup({ name: "moderation", description: "Moderation related commands" })

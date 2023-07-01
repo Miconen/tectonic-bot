@@ -3,7 +3,7 @@
  * @info object that stores all point values in one neat place for easy maintaining.
  * @get get point value for key value
  */
-const pointRewards = new Map<string, number>;
+const pointRewards = new Map<string, number>();
 pointRewards.set('event_participation', 5);
 pointRewards.set('event_hosting', 10);
 pointRewards.set('forum_bump', 5);

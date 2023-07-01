@@ -4,7 +4,7 @@ import {
     GuildMember, Role,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "../../utility/isAdmin.js";
+import IsAdmin from "../../guards/IsAdmin.js";
 import eventHelper from "./func/eventHelper.js";
 import eventRoleHelper from "./func/eventRoleHelper.js";
 

@@ -1,9 +1,12 @@
 import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
+import IsValidTime from "../../guards/IsValidTime.js";
 import bossCategories from "./func/getBosses.js";
+import submitHandler from "./func/submitHandler.js";
 
 @Discord()
 @SlashGroup("pb")
+@Guard(IsValidTime("time"))
 class slayerpb {
     @Slash({ name: "slayer", description: "Request your new pb to be added" })
     async slayer(
@@ -24,6 +27,11 @@ class slayerpb {
         time: string,
         interaction: CommandInteraction,
     ) {
-        await interaction.reply(time);
+        let team = [
+            interaction.user.id,
+        ];
+
+        await submitHandler(boss, time, team, interaction);
+        await interaction.reply("Time submitted");
     }
 }

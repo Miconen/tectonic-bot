@@ -12,15 +12,15 @@ import {
     SlashOption,
     Guard,
 } from "discordx";
-import * as pointUtils from "../../utility/pointUtils/index.js";
+import * as pointUtils from "../../utils/pointUtils/index.js";
 import splitHelper from "./func/splitHelper.js";
 import acceptHelper from "./func/acceptHelper.js";
 import denyHelper from "./func/denyHelper.js";
-import IsAdmin from "../../utility/isAdmin.js";
-import IsValid from "./func/isValid.js";
-import { SplitCache, SplitData } from "./func/splitTypes.js";
+import IsAdmin from "../../guards/IsAdmin.js";
+import IsValid from "../../guards/IsValidInteraction.js";
+import { SplitCache, SplitData } from "../../typings/splitTypes.js";
 
-let state: SplitCache = new Map<Snowflake, SplitData>;
+let state: SplitCache = new Map<Snowflake, SplitData>();
 
 @Discord()
 class split {
