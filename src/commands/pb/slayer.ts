@@ -32,6 +32,5 @@ class slayerpb {
         ];
 
         await submitHandler(boss, time, team, interaction);
-        await interaction.reply("Time submitted");
     }
 }

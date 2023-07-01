@@ -56,6 +56,6 @@ class tobpb {
         ];
 
         await submitHandler(getBoss("tob", team), time, team, interaction);
-        await interaction.reply("");
+        await interaction.reply("Time added to database");
     }
 }

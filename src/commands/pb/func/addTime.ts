@@ -1,13 +1,13 @@
 import prisma from "../../../database/client.js";
 import hasDuplicates from "./hasDuplicates.js";
 
-async function addTime(time: string, boss: string, team: (string | undefined)[], guildId: string) {
+async function addTime(ticks: number, boss: string, team: (string | undefined)[], guildId: string) {
     if (team.filter(player => player).length == 0) return;
     if (hasDuplicates(team)) return;
 
     const newTime = await prisma.times.create({
         data: {
-            time: Number(time),
+            time: ticks,
             boss_name: boss,
         },
     });

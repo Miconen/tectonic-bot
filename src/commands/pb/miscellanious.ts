@@ -32,6 +32,6 @@ class miscellaneouspb {
         ];
 
         await submitHandler(boss, time, team, interaction);
-        await interaction.reply("Time submitted");
+        await interaction.reply("Time added to database");
     }
 }

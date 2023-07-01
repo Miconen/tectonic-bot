@@ -56,6 +56,6 @@ class hmtpb {
         ];
 
         await submitHandler(getBoss("hmt", team), time, team, interaction);
-        await interaction.reply("Time submitted");
+        await interaction.reply("Time added to database");
     }
 }
