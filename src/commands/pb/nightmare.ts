@@ -1,15 +1,30 @@
-import { ApplicationCommandOptionType, CommandInteraction, GuildMember } from "discord.js";
-import { Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
-import IsValidTime from "../../guards/IsValidTime.js";
-import getBoss from "./func/getBoss.js";
-import bossCategories from "./func/getBosses.js";
-import submitHandler from "./func/submitHandler.js";
+import {
+    ApplicationCommandOptionType,
+    CommandInteraction,
+    GuildMember,
+} from "discord.js"
+import {
+    Discord,
+    Guard,
+    Slash,
+    SlashChoice,
+    SlashGroup,
+    SlashOption,
+} from "discordx"
+import IsAdmin from "../../guards/IsAdmin.js"
+import IsValidTime from "../../guards/IsValidTime.js"
+import getBoss from "./func/getBoss.js"
+import bossCategories from "./func/getBosses.js"
+import submitHandler from "./func/submitHandler.js"
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"))
+@Guard(IsAdmin, IsValidTime("time"))
 class nightmarepb {
-    @Slash({ name: "nightmare", description: "Request your new pb to be added" })
+    @Slash({
+        name: "nightmare",
+        description: "Request your new pb to be added",
+    })
     async nightmare(
         @SlashChoice(...bossCategories["Nightmare"])
         @SlashOption({
@@ -26,6 +41,13 @@ class nightmarepb {
             type: ApplicationCommandOptionType.String,
         })
         time: string,
+        @SlashOption({
+            name: "player1",
+            description: "Teammate discord @name",
+            required: false,
+            type: ApplicationCommandOptionType.User,
+        })
+        player1: GuildMember | null,
         @SlashOption({
             name: "player2",
             description: "Teammate discord @name",
@@ -54,17 +76,17 @@ class nightmarepb {
             type: ApplicationCommandOptionType.User,
         })
         player5: GuildMember | null,
-        interaction: CommandInteraction,
+        interaction: CommandInteraction
     ) {
         let team = [
-            interaction.user.id,
+            player1?.user.id,
             player2?.user.id,
             player3?.user.id,
             player4?.user.id,
             player5?.user.id,
-        ];
+        ]
 
-        await submitHandler(getBoss("nm", team), time, team, interaction);
-        await interaction.reply("Time added to database");
+        await submitHandler(getBoss("nm", team), time, team, interaction)
+        await interaction.reply("Time added to database")
     }
 }

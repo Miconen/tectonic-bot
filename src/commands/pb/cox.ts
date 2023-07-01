@@ -1,13 +1,17 @@
-import { ApplicationCommandOptionType, CommandInteraction, GuildMember } from "discord.js";
-import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsValidTime from "../../guards/IsValidTime.js";
-import getBoss from "./func/getBoss.js";
-import submitHandler from "./func/submitHandler.js";
-
+import {
+    ApplicationCommandOptionType,
+    CommandInteraction,
+    GuildMember,
+} from "discord.js"
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx"
+import IsAdmin from "../../guards/IsAdmin.js"
+import IsValidTime from "../../guards/IsValidTime.js"
+import getBoss from "./func/getBoss.js"
+import submitHandler from "./func/submitHandler.js"
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"))
+@Guard(IsAdmin, IsValidTime("time"))
 class coxpb {
     @Slash({ name: "cox", description: "Request your new pb to be added" })
     async cox(
@@ -18,6 +22,13 @@ class coxpb {
             type: ApplicationCommandOptionType.String,
         })
         time: string,
+        @SlashOption({
+            name: "player1",
+            description: "Teammate discord @name",
+            required: false,
+            type: ApplicationCommandOptionType.User,
+        })
+        player1: GuildMember | null,
         @SlashOption({
             name: "player2",
             description: "Teammate discord @name",
@@ -67,10 +78,10 @@ class coxpb {
             type: ApplicationCommandOptionType.User,
         })
         player8: GuildMember | null,
-        interaction: CommandInteraction,
+        interaction: CommandInteraction
     ) {
         let team = [
-            interaction.user.id,
+            player1?.user.id,
             player2?.user.id,
             player3?.user.id,
             player4?.user.id,
@@ -78,9 +89,9 @@ class coxpb {
             player6?.user.id,
             player7?.user.id,
             player8?.user.id,
-        ];
+        ]
 
-        await submitHandler(getBoss("cox", team), time, team, interaction);
-        await interaction.reply("Time added to database");
+        await submitHandler(getBoss("cox", team), time, team, interaction)
+        await interaction.reply("Time added to database")
     }
 }
