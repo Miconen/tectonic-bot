@@ -163,7 +163,7 @@ export function IsValidTime(option: string) {
             }
             return await interaction.reply(warning)
         } else {
-            console.log("↳ Valid time")
+            console.log("↳ Passed")
             await next()
         }
     }

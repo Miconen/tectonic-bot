@@ -24,7 +24,7 @@ async function submitHandler(boss: string, time: string, team: (string | undefin
     if (!updated) {
         return console.log("↳ Not a new pb")
     } else {
-        console.log("↳ New pb")
+        console.log(`↳ New pb: ${time} (${TimeConverter.timeToTicks(time)} ticks)`)
     };
     await updateEmbed(boss, guildId, interaction);
 }
