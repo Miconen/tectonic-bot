@@ -114,7 +114,8 @@ VALUES
     ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 6, 'Theatre of Blood: HM'),
     ('https://oldschool.runescape.wiki/images/thumb/Tombs_of_Amascut.png/300px-Tombs_of_Amascut.png?f9992', 7, 'Tombs of Amascut'),
     ('https://oldschool.runescape.wiki/images/thumb/Coins_detail.png/120px-Coins_detail.png?404bc', 8, 'Miscellaneous'),
-    ('https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903', 9, 'Slayer Boss');
+    ('https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903', 9, 'Slayer Boss'),
+    ('https://oldschool.runescape.wiki/images/thumb/Inferno_logo.png/800px-Inferno_logo.png?bfcdb&20180310121602', 10, 'TzHaar');
 
 INSERT INTO bosses (name, display_name, category, solo)
 VALUES
@@ -157,6 +158,8 @@ VALUES
     ('mimic', 'Mimic', 'Miscellaneous', true),
     ('hespori', 'Hespori', 'Miscellaneous', true),
     ('zulrah', 'Zulrah', 'Miscellaneous', true),
+    ('gauntlet', 'Gauntlet', 'Miscellaneous', true),
+    ('corrupted_gauntlet', 'Corrupted Gauntlet', 'Miscellaneous', true),
     -- Slayer
     ('hydra', 'Alchemical Hydra', 'Slayer Boss', true),
     ('ggs', 'Grotesque Guardians', 'Slayer Boss', true),
@@ -166,4 +169,7 @@ VALUES
     ('pnm', 'Phosani''s Nightmare', 'Nightmare', true),
     -- Sepulcher
     ('sep_5', 'Sepulchre Floor 5', 'Sepulchre', true),
-    ('sep', 'Sepulchre Overall', 'Sepulchre', true);
+    ('sep', 'Sepulchre Overall', 'Sepulchre', true),
+    -- TzHaar
+    ('inferno', 'Inferno', 'TzHaar', true),
+    ('fight_caves', 'Fight Caves', 'TzHaar', true);

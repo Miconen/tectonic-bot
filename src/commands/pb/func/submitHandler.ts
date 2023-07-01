@@ -1,13 +1,13 @@
 import { CommandInteraction } from "discord.js";
 import addTime from "./addTime.js";
+import TimeConverter from "./TimeConverter.js";
 import timeToTicks from "./timeToTicks.js";
 import updateEmbed from "./updateEmbed.js";
 import updatePb from "./updatePb.js";
 
 async function submitHandler(boss: string, time: string, team: (string | undefined)[], interaction: CommandInteraction) {
     const guildId = interaction.guildId!;
-    const ticks = timeToTicks(time);
-    console.log(time, ticks);
+    const ticks = TimeConverter.timeToTicks(time);
     if (!ticks) return;
     const addedTime = await addTime(ticks, boss, team, guildId);
     if (!addedTime) return;
