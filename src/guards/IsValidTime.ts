@@ -57,7 +57,7 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
     let minutes = parseInt(hasHours ? timeParts[1] : timeParts[0], 10)
     let seconds = parseInt(hasHours ? timeParts[2] : timeParts[1], 10)
     let milliseconds = hasMilliseconds
-        ? parseInt(timeParts[2].split(".")[0], 10)
+        ? parseInt(timeParts[1].split(".")[0], 10)
         : undefined
 
     // Check if minutes are valid numeric values

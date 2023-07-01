@@ -7,6 +7,7 @@ import updatePb from "./updatePb.js";
 async function submitHandler(boss: string, time: string, team: (string | undefined)[], interaction: CommandInteraction) {
     const guildId = interaction.guildId!;
     const ticks = timeToTicks(time);
+    console.log(time, ticks);
     if (!ticks) return;
     const addedTime = await addTime(ticks, boss, team, guildId);
     if (!addedTime) return;
