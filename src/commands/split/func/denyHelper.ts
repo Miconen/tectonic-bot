@@ -1,5 +1,5 @@
 import { ButtonInteraction } from "discord.js";
-import { SplitCache } from "./splitTypes.js";
+import { SplitCache } from "../../../typings/splitTypes.js";
 import getInteractionId from "./getInteractionId.js";
 
 const denyHelper = async (interaction: ButtonInteraction, state: SplitCache) => {

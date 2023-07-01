@@ -5,8 +5,8 @@ import {
     GuildMember,
     MessageActionRowComponentBuilder
 } from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
-import { SplitCache, SplitData } from "./splitTypes.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
+import { SplitCache, SplitData } from "../../../typings/splitTypes.js";
 
 const splitHelper = async (value: number, interaction: CommandInteraction, state: SplitCache) => {
     value = await pointUtils.pointsHandler(value, interaction.guild!.id);

@@ -6,7 +6,7 @@
     "type": "module",
     "main": "build/main.js",
     "scripts": {
-        "build": "swc src -d build",
+        "build": "tsc",
         "build:changelog": "npx @discordx/changelog --root=src",
         "dev": "ts-node-esm src/main.ts",
         "start": "node build/main.js",
@@ -26,8 +26,6 @@
         "reflect-metadata": "^0.1.13"
     },
     "devDependencies": {
-        "@swc/cli": "^0.1.57",
-        "@swc/core": "^1.3.27",
         "@types/node": "^18.7.18",
         "nodemon": "^2.0.19",
         "prettier": "^2.7.1",

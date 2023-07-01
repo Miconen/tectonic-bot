@@ -1,5 +1,5 @@
 import {CommandInteraction, GuildMember} from "discord.js";
-import * as rankUtils from "../../../utility/rankUtils/index.js";
+import * as rankUtils from "../../../utils/rankUtils/index.js";
 import newUser from "../../../database/newUser.js"
 
 const activationHelper = async (user: GuildMember, interaction: CommandInteraction) => {

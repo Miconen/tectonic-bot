@@ -1,9 +1,11 @@
 import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
+import IsValidTime from "../../guards/IsValidTime.js";
 import bossCategories from "./func/getBosses.js";
 
 @Discord()
 @SlashGroup("pb")
+@Guard(IsValidTime("time"))
 class sepulchrepb {
     @Slash({ name: "sepulchre", description: "Request your new pb to be added" })
     async sepulchre(

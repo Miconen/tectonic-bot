@@ -18,6 +18,7 @@ model categories {
 model guilds {
   guild_id         String             @id @db.VarChar(32)
   multiplier       Int                @default(1)
+  pb_channel_id    String?            @db.VarChar(32)
   guild_bosses     guild_bosses[]
   guild_categories guild_categories[]
   users            users[]

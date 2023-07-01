@@ -39,6 +39,7 @@ DROP TABLE IF EXISTS "guilds";
 CREATE TABLE "public"."guilds" (
     "guild_id" character varying(32) NOT NULL,
     "multiplier" integer DEFAULT '1' NOT NULL,
+    "pb_channel_id" character varying(32),
     CONSTRAINT "guilds_pkey" PRIMARY KEY ("guild_id")
 ) WITH (oids = false);
 
@@ -105,15 +106,15 @@ ALTER TABLE ONLY "public"."users" ADD CONSTRAINT "users_ibfk_1" FOREIGN KEY (gui
 
 INSERT INTO categories ("thumbnail", "order", "name")
 VALUES
-    ('nightmare_thumbnail_url', 1, 'Nightmare'),
-    ('sepulcher_thumbnail_url', 2, 'Sepulchre'),
-    ('cox_thumbnail_url', 3, 'Chambers of Xeric'),
-    ('cox_thumbnail_url', 4, 'Chambers of Xeric: CM'),
-    ('tob_thumbnail_url', 5, 'Theatre of Blood'),
-    ('tob_thumbnail_url', 6, 'Theatre of Blood: HM'),
-    ('toa_thumbnail_url', 7, 'Tombs of Amascut'),
-    ('thumbnail_url', 8, 'Miscellaneous'),
-    ('slayer_thumbnail_url', 9, 'Slayer Boss');
+    ('https://oldschool.runescape.wiki/images/thumb/The_Nightmare.png/250px-The_Nightmare.png?0128a', 1, 'Nightmare'),
+    ('https://oldschool.runescape.wiki/w/Hallowed_crystal_shard#/media/File:Hallowed_crystal_shard_detail.png', 2, 'Sepulchre'),
+    ('https://oldschool.runescape.wiki/images/thumb/Chambers_of_Xeric_logo.png/250px-Chambers_of_Xeric_logo.png?34a98', 3, 'Chambers of Xeric'),
+    ('https://oldschool.runescape.wiki/images/thumb/Chambers_of_Xeric_logo.png/250px-Chambers_of_Xeric_logo.png?34a98', 4, 'Chambers of Xeric: CM'),
+    ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 5, 'Theatre of Blood'),
+    ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 6, 'Theatre of Blood: HM'),
+    ('https://oldschool.runescape.wiki/images/thumb/Tombs_of_Amascut.png/300px-Tombs_of_Amascut.png?f9992', 7, 'Tombs of Amascut'),
+    ('https://oldschool.runescape.wiki/images/thumb/Coins_detail.png/120px-Coins_detail.png?404bc', 8, 'Miscellaneous'),
+    ('https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903', 9, 'Slayer Boss');
 
 INSERT INTO bosses (name, display_name, category, solo)
 VALUES

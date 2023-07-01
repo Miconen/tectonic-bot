@@ -1,5 +1,5 @@
 import {CommandInteraction, GuildMember} from "discord.js";
-import * as rankUtils from "../../../utility/rankUtils/index.js";
+import * as rankUtils from "../../../utils/rankUtils/index.js";
 import removeUser from "../../../database/removeUser.js"
 
 const deactivationHelper = async (user: GuildMember, interaction: CommandInteraction) => {

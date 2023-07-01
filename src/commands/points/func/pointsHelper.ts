@@ -1,6 +1,6 @@
 import {CommandInteraction, GuildMember} from "discord.js";
 import { getPoints } from '../../../database/getUser.js';
-import * as rankUtils from "../../../utility/rankUtils/index.js";
+import * as rankUtils from "../../../utils/rankUtils/index.js";
 
 const pointsHelper = async (user: GuildMember | null, interaction: CommandInteraction) => {
     let targetUser = user?.user?.id ?? interaction.user.id ?? "0";

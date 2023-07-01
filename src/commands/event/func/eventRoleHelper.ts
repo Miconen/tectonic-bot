@@ -1,5 +1,5 @@
 import {CommandInteraction, Role} from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
 
 const eventHelper = async (users: Role, interaction: CommandInteraction, amount: number) => {
     if (!interaction.guild) return;

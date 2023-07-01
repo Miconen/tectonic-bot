@@ -1,5 +1,5 @@
 import { CommandInteraction } from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
 
 const bumpHelp = async (interaction: CommandInteraction) => {
     let points = await pointUtils.pointsHandler(

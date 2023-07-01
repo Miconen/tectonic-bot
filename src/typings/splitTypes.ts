@@ -1,4 +1,4 @@
-import { GuildMember, Snowflake } from "discord.js";
+import type { GuildMember, Snowflake } from "discord.js";
 
 export type SplitCache = Map<Snowflake, SplitData>;
 

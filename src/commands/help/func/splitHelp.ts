@@ -1,5 +1,5 @@
 import { CommandInteraction } from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import * as pointUtils from "../../../utils/pointUtils/index.js";
 
 const splitHelp = async (interaction: CommandInteraction) => {
     let points_low = await pointUtils.pointsHandler(
