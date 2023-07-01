@@ -4,6 +4,7 @@ import {
     GuildMember,
 } from "discord.js"
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx"
+import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
 import getBoss from "./func/getBoss.js"
 import submitHandler from "./func/submitHandler.js"
