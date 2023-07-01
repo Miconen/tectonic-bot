@@ -81,6 +81,6 @@ class cmpb {
         ];
 
         await submitHandler(getBoss("cm", team), time, team, interaction);
-        await interaction.reply("Time submitted");
+        await interaction.reply("Time added to database");
     }
 }

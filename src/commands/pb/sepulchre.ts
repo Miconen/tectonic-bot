@@ -26,6 +26,6 @@ class sepulchrepb {
         time: string,
         interaction: CommandInteraction,
     ) {
-        await interaction.reply(time);
+        await interaction.reply("Time added to database");
     }
 }

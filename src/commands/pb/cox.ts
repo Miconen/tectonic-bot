@@ -81,6 +81,6 @@ class coxpb {
         ];
 
         await submitHandler(getBoss("cox", team), time, team, interaction);
-        await interaction.reply("Time submitted");
+        await interaction.reply("Time added to database");
     }
 }

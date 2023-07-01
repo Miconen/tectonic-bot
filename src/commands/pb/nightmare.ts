@@ -65,6 +65,6 @@ class nightmarepb {
         ];
 
         await submitHandler(getBoss("nm", team), time, team, interaction);
-        await interaction.reply("Time submitted");
+        await interaction.reply("Time added to database");
     }
 }

@@ -73,6 +73,6 @@ class toapb {
         player8: string | null,
         interaction: CommandInteraction
     ) {
-        await interaction.reply(time)
+        await interaction.reply("Time added to database");
     }
 }

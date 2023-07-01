@@ -1,6 +1,7 @@
 import { CommandInteraction, TextChannel } from "discord.js";
 import prisma from "../../../database/client.js";
 import embedBuilder from "./embedBuilder.js";
+import ticksToTime from "./ticksToTime.js";
 import { TimeField } from "./types.js";
 
 async function updateEmbed(bossId: string, guildId: string, interaction: CommandInteraction) {
@@ -52,7 +53,7 @@ async function updateEmbed(bossId: string, guildId: string, interaction: Command
 
     for (let bossData of bosses) {
         let guildBoss = bossData.guild_bosses[0];
-        const time = guildBoss?.times?.time || "No time yet";
+        const time = ticksToTime(guildBoss?.times?.time) || "No time yet";
         const team = guildBoss?.times?.teams.map(player => `<@${player.user_id}>`);
 
         fields.push({ name: bossData.display_name, value: time + " " + team?.join(", ") ?? "" });
