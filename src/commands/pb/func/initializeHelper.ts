@@ -71,13 +71,18 @@ async function initializeHelper(interaction: CommandInteraction) {
             if (time) {
                 formattedTime = TimeConverter.ticksToTime(time)
             }
+
+            let formattedTeam = ""
             const team = existingBoss?.times?.teams.map(
                 (player) => `<@${player.user_id}>`
             )
+            if (team) {
+                formattedTeam = team?.join(", ")
+            }
 
             fields.push({
                 name: boss.display_name,
-                value: formattedTime + " " + team?.join(", ") ?? "",
+                value: `${formattedTime} ${formattedTeam}`,
             })
 
             guildBosses.push({

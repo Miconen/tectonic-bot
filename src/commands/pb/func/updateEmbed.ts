@@ -59,18 +59,23 @@ async function updateEmbed(
 
     for (let bossData of bosses) {
         let guildBoss = bossData.guild_bosses[0]
-        let formattedTime = "No time yet";
+        let formattedTime = "No time yet"
         const time = guildBoss?.times?.time
         if (time) {
             formattedTime = TimeConverter.ticksToTime(time)
         }
+
+        let formattedTeam = ""
         const team = guildBoss?.times?.teams.map(
             (player) => `<@${player.user_id}>`
         )
+        if (team) {
+            formattedTeam = team?.join(", ");
+        }
 
         fields.push({
             name: bossData.display_name,
-            value: formattedTime + " " + team?.join(", ") ?? "",
+            value: `${formattedTime} ${formattedTeam}`,
         })
     }
 
