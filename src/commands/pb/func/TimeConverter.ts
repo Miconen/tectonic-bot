@@ -1,4 +1,10 @@
 class TimeConverter {
+    static readonly HOUR: number = 3600000
+    static readonly MINUTE: number = 60000
+    static readonly SECOND: number = 1000
+    /** A singular game tick, one 100th of a minute. */
+    static readonly TICK: number = 600
+
     static timeToMilliseconds(time: string): number {
         const timeComponents = time.split(":")
         const numComponents = timeComponents.length
@@ -7,9 +13,9 @@ class TimeConverter {
         if (numComponents === 3) {
             const [hours, minutes, seconds] = timeComponents
             milliseconds =
-                Number(hours) * 3600000 +
-                Number(minutes) * 60000 +
-                Number(seconds) * 1000
+                Number(hours) * TimeConverter.HOUR +
+                Number(minutes) * TimeConverter.MINUTE +
+                Number(seconds) * TimeConverter.SECOND
         } else if (numComponents === 2) {
             const [minutes, secondsAndMilliseconds] = timeComponents
             const [seconds, millisecondsStr] = secondsAndMilliseconds.split(".")
@@ -17,8 +23,8 @@ class TimeConverter {
                 ? Number(millisecondsStr.padEnd(3, "0"))
                 : 0
             milliseconds =
-                Number(minutes) * 60000 +
-                Number(seconds) * 1000 +
+                Number(minutes) * TimeConverter.MINUTE +
+                Number(seconds) * TimeConverter.SECOND +
                 millisecondsPart
         } else if (numComponents === 1) {
             const millisecondsStr = timeComponents[0]
@@ -29,12 +35,12 @@ class TimeConverter {
     }
 
     static millisecondsToTime(milliseconds: number): string {
-        const hours = Math.floor(milliseconds / 3600000)
-        milliseconds %= 3600000
-        const minutes = Math.floor(milliseconds / 60000)
-        milliseconds %= 60000
-        const seconds = Math.floor(milliseconds / 1000)
-        milliseconds %= 1000
+        const hours = Math.floor(milliseconds / TimeConverter.HOUR)
+        milliseconds %= TimeConverter.HOUR
+        const minutes = Math.floor(milliseconds / TimeConverter.MINUTE)
+        milliseconds %= TimeConverter.MINUTE
+        const seconds = Math.floor(milliseconds / TimeConverter.SECOND)
+        milliseconds %= TimeConverter.SECOND
         const millisecondsStr = milliseconds.toString().padStart(2, "0")
 
         if (hours > 0) {
@@ -54,12 +60,12 @@ class TimeConverter {
 
     static timeToTicks(time: string): number {
         const totalMilliseconds = TimeConverter.timeToMilliseconds(time)
-        const ticks = totalMilliseconds / 600
-        return Math.floor(ticks)
+        const ticks = totalMilliseconds / TimeConverter.TICK
+        return Math.ceil(ticks)
     }
 
     static ticksToTime(ticks: number): string {
-        const milliseconds = ticks * 600
+        const milliseconds = ticks * TimeConverter.TICK
         return TimeConverter.millisecondsToTime(milliseconds)
     }
 }
