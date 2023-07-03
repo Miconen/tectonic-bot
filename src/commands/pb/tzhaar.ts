@@ -48,7 +48,7 @@ class slayerpb {
     ) {
         let team = [player?.user.id]
 
-        await submitHandler(boss, time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(boss, time, team, interaction)
+        await interaction.reply(response)
     }
 }

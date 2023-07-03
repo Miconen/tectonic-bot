@@ -86,7 +86,7 @@ class nightmarepb {
             player5?.user.id,
         ]
 
-        await submitHandler(getBoss("nm", team), time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(getBoss("nm", team), time, team, interaction)
+        await interaction.reply(response)
     }
 }
