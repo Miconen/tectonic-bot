@@ -67,7 +67,7 @@ class tobpb {
             player5?.user.id,
         ]
 
-        await submitHandler(getBoss("tob", team), time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(getBoss("tob", team), time, team, interaction)
+        await interaction.reply(response)
     }
 }

@@ -91,7 +91,7 @@ class cmpb {
             player8?.user.id,
         ]
 
-        await submitHandler(getBoss("cm", team), time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(getBoss("cm", team), time, team, interaction)
+        await interaction.reply(response)
     }
 }

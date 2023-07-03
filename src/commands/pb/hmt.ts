@@ -67,7 +67,7 @@ class hmtpb {
             player5?.user.id,
         ]
 
-        await submitHandler(getBoss("hmt", team), time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(getBoss("hmt", team), time, team, interaction)
+        await interaction.reply(response)
     }
 }

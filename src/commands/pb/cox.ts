@@ -91,7 +91,7 @@ class coxpb {
             player8?.user.id,
         ]
 
-        await submitHandler(getBoss("cox", team), time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(getBoss("cox", team), time, team, interaction)
+        await interaction.reply(response)
     }
 }

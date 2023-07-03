@@ -98,7 +98,7 @@ class toapb {
             player8?.user.id,
         ]
 
-        await submitHandler(getBossToa("toa", team, raidlevel), time, team, interaction)
-        await interaction.reply("Time added to database")
+        let response = await submitHandler(getBossToa("toa", team, raidlevel), time, team, interaction)
+        await interaction.reply(response)
     }
 }
