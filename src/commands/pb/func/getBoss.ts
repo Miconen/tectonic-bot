@@ -9,7 +9,7 @@ function getBossToa(
     team: (string | undefined)[],
     raidlevel: number
 ) {
-    let size = team.length == 1 ? "solo" : "team"
+    let size = team.filter(Boolean).length == 1 ? "solo" : "team"
     let invocation = raidLevelHelper(raidlevel)
     // Example return: toa_solo_400
     return `${boss}_${size}_${invocation}`
