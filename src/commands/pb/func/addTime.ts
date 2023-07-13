@@ -9,6 +9,7 @@ async function addTime(ticks: number, boss: string, team: (string | undefined)[]
         data: {
             time: ticks,
             boss_name: boss,
+            date: new Date(),
         },
     });
 
