@@ -91,7 +91,7 @@ ALTER TABLE ONLY "public"."bosses" ADD CONSTRAINT "boss_category_fkey" FOREIGN K
 
 ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_bosses_fkey" FOREIGN KEY (boss) REFERENCES bosses(name) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_guild_id_fkey" FOREIGN KEY (guild_id) REFERENCES guilds(guild_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_pb_id_fkey" FOREIGN KEY (pb_id) REFERENCES times(run_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_pb_id_fkey" FOREIGN KEY (pb_id) REFERENCES times(run_id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."guild_categories" ADD CONSTRAINT "guild_categories_category_fkey" FOREIGN KEY (category) REFERENCES categories(name) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."guild_categories" ADD CONSTRAINT "guild_categories_guild_id_fkey" FOREIGN KEY (guild_id) REFERENCES guilds(guild_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
