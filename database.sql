@@ -71,6 +71,7 @@ CREATE TABLE "public"."times" (
     "time" integer NOT NULL,
     "boss_name" character varying(32) NOT NULL,
     "run_id" integer DEFAULT nextval('times_run_id_seq') NOT NULL,
+    "date" timestamp NOT NULL,
     CONSTRAINT "times_pkey" PRIMARY KEY ("run_id")
 ) WITH (oids = false);
 
