@@ -60,7 +60,7 @@ class hmtpb {
         interaction: CommandInteraction
     ) {
         let team = [
-            player1?.user.id,
+            player1.user.id,
             player2?.user.id,
             player3?.user.id,
             player4?.user.id,

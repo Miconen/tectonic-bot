@@ -49,7 +49,7 @@ class sepulchrepb {
         player: GuildMember,
         interaction: CommandInteraction,
     ) {
-        let team = [player?.user.id]
+        let team = [player.user.id]
 
         let response = await submitHandler(floor, time, team, interaction)
         await interaction.reply(response)
