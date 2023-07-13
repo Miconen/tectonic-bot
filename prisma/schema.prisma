@@ -48,6 +48,7 @@ model times {
   time         Int
   boss_name    String         @db.VarChar(32)
   run_id       Int            @id @default(autoincrement())
+  date         DateTime       @db.Timestamp(6)
   guild_bosses guild_bosses[]
   teams        teams[]
   boss         bosses         @relation(fields: [boss_name], references: [name], onDelete: Cascade, map: "times_bosses_name_fkey")
