@@ -46,7 +46,7 @@ class slayerpb {
         player: GuildMember,
         interaction: CommandInteraction,
     ) {
-        let team = [player?.user.id]
+        let team = [player.user.id]
 
         let response = await submitHandler(boss, time, team, interaction)
         await interaction.reply(response)
