@@ -57,7 +57,10 @@ async function initializeHelper(interaction: CommandInteraction) {
         existingBosses.map((boss) => [boss.boss, boss])
     )
 
-    for (let category of categories) {
+    // Sort categories by category order
+    const sortedCategories = categories.sort((a, b) => a.order - b.order);
+
+    for (let category of sortedCategories) {
         let embed = embedBuilder(interaction)
             .setTitle(category.name)
             .setThumbnail(category.thumbnail)

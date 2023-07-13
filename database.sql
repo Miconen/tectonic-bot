@@ -91,7 +91,7 @@ ALTER TABLE ONLY "public"."bosses" ADD CONSTRAINT "boss_category_fkey" FOREIGN K
 
 ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_bosses_fkey" FOREIGN KEY (boss) REFERENCES bosses(name) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_guild_id_fkey" FOREIGN KEY (guild_id) REFERENCES guilds(guild_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_pb_id_fkey" FOREIGN KEY (pb_id) REFERENCES times(run_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."guild_bosses" ADD CONSTRAINT "guild_bosses_pb_id_fkey" FOREIGN KEY (pb_id) REFERENCES times(run_id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."guild_categories" ADD CONSTRAINT "guild_categories_category_fkey" FOREIGN KEY (category) REFERENCES categories(name) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."guild_categories" ADD CONSTRAINT "guild_categories_guild_id_fkey" FOREIGN KEY (guild_id) REFERENCES guilds(guild_id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
@@ -108,7 +108,7 @@ ALTER TABLE ONLY "public"."users" ADD CONSTRAINT "users_ibfk_1" FOREIGN KEY (gui
 INSERT INTO categories ("thumbnail", "order", "name")
 VALUES
     ('https://oldschool.runescape.wiki/images/thumb/The_Nightmare.png/250px-The_Nightmare.png?0128a', 1, 'Nightmare'),
-    ('https://oldschool.runescape.wiki/w/Hallowed_crystal_shard#/media/File:Hallowed_crystal_shard_detail.png', 2, 'Sepulchre'),
+    ('https://oldschool.runescape.wiki/images/thumb/Hallowed_mark_detail.png/800px-Hallowed_mark_detail.png?e9975', 2, 'Sepulchre'),
     ('https://oldschool.runescape.wiki/images/thumb/Chambers_of_Xeric_logo.png/250px-Chambers_of_Xeric_logo.png?34a98', 3, 'Chambers of Xeric'),
     ('https://oldschool.runescape.wiki/images/thumb/Chambers_of_Xeric_logo.png/250px-Chambers_of_Xeric_logo.png?34a98', 4, 'Chambers of Xeric: CM'),
     ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 5, 'Theatre of Blood'),
