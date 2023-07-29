@@ -116,7 +116,8 @@ VALUES
     ('https://oldschool.runescape.wiki/images/thumb/Tombs_of_Amascut.png/300px-Tombs_of_Amascut.png?f9992', 7, 'Tombs of Amascut'),
     ('https://oldschool.runescape.wiki/images/thumb/Coins_detail.png/120px-Coins_detail.png?404bc', 8, 'Miscellaneous'),
     ('https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903', 9, 'Slayer Boss'),
-    ('https://oldschool.runescape.wiki/images/thumb/Inferno_logo.png/800px-Inferno_logo.png?bfcdb&20180310121602', 10, 'TzHaar');
+    ('https://oldschool.runescape.wiki/images/thumb/Inferno_logo.png/800px-Inferno_logo.png?bfcdb&20180310121602', 10, 'TzHaar'),
+    ('https://oldschool.runescape.wiki/images/thumb/Desert_Treasure_II_logo.png/1280px-Desert_Treasure_II_logo.png', 11, 'Desert Treasure II');
 
 INSERT INTO bosses (name, display_name, category, solo)
 VALUES
@@ -173,4 +174,9 @@ VALUES
     ('sep', 'Sepulchre Overall', 'Sepulchre', true),
     -- TzHaar
     ('inferno', 'Inferno', 'TzHaar', true),
-    ('fight_caves', 'Fight Caves', 'TzHaar', true);
+    ('fight_caves', 'Fight Caves', 'TzHaar', true),
+    -- Desert Treasure II
+    ('vardorvis', 'Vardorvis', 'Desert Treasure II', true),
+    ('leviathan', 'Leviathan', 'Desert Treasure II', true),
+    ('duke_sucellus', 'Duke Sucellus', 'Desert Treasure II', true),
+    ('whisperer', 'The Whisperer', 'Desert Treasure II', true);
