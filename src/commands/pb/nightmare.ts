@@ -13,7 +13,6 @@ import {
 } from "discordx"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
-import getBoss from "./func/getBoss.js"
 import bossCategories from "./func/getBosses.js"
 import submitHandler from "./func/submitHandler.js"
 
@@ -86,7 +85,31 @@ class nightmarepb {
             player5?.user.id,
         ]
 
-        let response = await submitHandler(getBoss("nm", team), time, team, interaction)
+        // Handle solos
+        if (
+            team.filter(Boolean).length > 1 &&
+            (boss == "pnm" || boss == "nm_1")
+        ) {
+            return interaction.reply({
+                ephemeral: true,
+                content: "Selected boss can't include more than one player.",
+            })
+        }
+
+        // Handle 5-man nightmare
+        if (team.filter(Boolean).length != 5 && boss == "nm_5") {
+            return interaction.reply({
+                ephemeral: true,
+                content: "Invalid amount of players for 5-man nightmare.",
+            })
+        }
+
+        let response = await submitHandler(
+            boss,
+            time,
+            team,
+            interaction
+        )
         await interaction.reply(response)
     }
 }
