@@ -15,6 +15,12 @@ function getBossToa(
     return `${boss}_${size}_${invocation}`
 }
 
+function getBossCox(boss: string, team: (string | undefined)[]) {
+    const SCALES = [1,2,3,5];
+    const size = teamsize(team) in SCALES ? teamsize(team) : 'any';
+    return boss + "_" + size; 
+}
+
 // Round raid level down to predetermined checkpoints
 function raidLevelHelper(raidlevel: number) {
     if (raidlevel < 300) {
@@ -30,4 +36,4 @@ function raidLevelHelper(raidlevel: number) {
 }
 
 export default getBoss
-export { getBossToa }
+export { getBossToa, getBossCox }
