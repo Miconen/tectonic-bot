@@ -6,7 +6,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
-import getBossCox from "./func/getBoss.js"
+import { getBossCox } from "./func/getBoss.js"
 import submitHandler from "./func/submitHandler.js"
 
 @Discord()
