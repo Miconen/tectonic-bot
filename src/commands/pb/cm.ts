@@ -6,7 +6,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
-import getBoss from "./func/getBoss.js"
+import getBossCox from "./func/getBoss.js"
 import submitHandler from "./func/submitHandler.js"
 
 @Discord()
@@ -91,7 +91,7 @@ class cmpb {
             player8?.user.id,
         ]
 
-        let response = await submitHandler(getBoss("cm", team), time, team, interaction)
+        let response = await submitHandler(getBossCox("cm", team), time, team, interaction)
         await interaction.reply(response)
     }
 }
