@@ -17,7 +17,7 @@ function getBossToa(
 
 function getBossCox(boss: string, team: (string | undefined)[]) {
     const SCALES = [1,2,3,5];
-    const size = teamsize(team) in SCALES ? teamsize(team) : 'any';
+    const size = SCALES.includes(team) ? team : 'any';
     return boss + "_" + size; 
 }
 
