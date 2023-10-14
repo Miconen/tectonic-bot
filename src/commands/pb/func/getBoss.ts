@@ -17,8 +17,9 @@ function getBossToa(
 
 function getBossCox(boss: string, team: (string | undefined)[]) {
     const SCALES = [1,2,3,5];
-    const size = SCALES.includes(team) ? team : 'any';
-    return boss + "_" + size; 
+    const size = teamsize(team);
+    const sizeString = SCALES.includes(size) ? size : 'any';
+    return boss + "_" + sizeString; 
 }
 
 // Round raid level down to predetermined checkpoints
