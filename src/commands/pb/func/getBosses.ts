@@ -1,18 +1,14 @@
 import { SlashChoiceType } from 'discordx';
-import prisma from '../../../database/client.js';
+import type IDatabase from "../../../database/IDatabase"
 
-async function getBosses() {
-    return await prisma.bosses.findMany({
-        orderBy: {
-            category: 'asc',
-        },
-    });
-}
+import { container } from "tsyringe"
 
 async function bossesAsChoices() {
+    const database = container.resolve<IDatabase>("Database")
+
     const bossesByCategory: Record<string, SlashChoiceType[]> = {};
 
-    for (const boss of await getBosses()) {
+    for (const boss of await database.getBosses()) {
         const { category, name, display_name } = boss;
 
         if (!bossesByCategory[category]) {

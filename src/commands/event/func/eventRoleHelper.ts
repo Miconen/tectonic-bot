@@ -1,20 +1,36 @@
-import {CommandInteraction, Role} from "discord.js";
-import * as pointUtils from "../../../utils/pointUtils/index.js";
+import type { CommandInteraction, Role } from "discord.js"
+import type IPointService from "../../../utils/pointUtils/IPointService"
+import { replyHandler } from "../../../utils/replyHandler.js"
 
-const eventHelper = async (users: Role, interaction: CommandInteraction, amount: number) => {
-    if (!interaction.guild) return;
+import { container } from "tsyringe"
 
-    let addedPoints = await pointUtils.pointsHandler(
+const eventHelper = async (
+    users: Role,
+    interaction: CommandInteraction,
+    amount: number
+) => {
+    const pointService = container.resolve<IPointService>("PointService")
+
+    if (!interaction.guild) return interaction.reply({ ephemeral: true, content: "Something went **really** wrong" })
+
+    await interaction.deferReply();
+
+    let addedPoints = await pointService.pointsHandler(
         amount,
-        interaction.guild!.id,
-    );
+        interaction.guild!.id
+    )
 
     // Populate the guild members cache for this scope
-    await interaction.guild.members.fetch();
+    await interaction.guild.members.fetch()
 
     // Handle giving of points, returns a string to be sent as a message.
-    const pointsResponse = await pointUtils.givePointsToMultiple(addedPoints, users.members, interaction);
-    await interaction.reply(pointsResponse.join("\n"));
+    const pointsResponse = await pointService.givePointsToMultiple(
+        addedPoints,
+        users.members,
+        interaction
+    )
+
+    await replyHandler(pointsResponse.join("\n"), interaction);
 }
 
-export default eventHelper;
+export default eventHelper

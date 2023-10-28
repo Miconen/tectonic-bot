@@ -1,31 +1,35 @@
-import prisma from "../../../database/client.js";
-import hasDuplicates from "./hasDuplicates.js";
+import hasDuplicates from "./hasDuplicates.js"
+import type IDatabase from "../../../database/IDatabase"
 
-async function addTime(ticks: number, boss: string, team: (string | undefined)[], guildId: string) {
-    if (team.filter(player => player).length == 0) return;
-    if (hasDuplicates(team)) return;
+import { container } from "tsyringe"
 
-    const newTime = await prisma.times.create({
-        data: {
-            time: ticks,
-            boss_name: boss,
-            date: new Date(),
-        },
-    });
+async function addTime(
+    ticks: number,
+    boss: string,
+    team: (string | undefined)[],
+    guildId: string
+) {
+    const database = container.resolve<IDatabase>("Database")
 
-    const timeId = newTime.run_id;
+    if (team.filter((player) => player).length == 0) return
+    if (hasDuplicates(team)) return
 
-    let teamData = [];
+    const newTime = await database.addTime(ticks, boss)
+    const timeId = newTime.run_id
+
+    let teamData = []
     for (let player of team) {
-        if (!player) continue;
-        teamData.push({ run_id: timeId, user_id: player, guild_id: guildId });
-    };
+        if (!player) continue
+        teamData.push({ run_id: timeId, user_id: player, guild_id: guildId })
+    }
 
-    const createdTeams = await prisma.teams.createMany({
-        data: teamData,
-    })
+    await database.addTeam(teamData);
 
-    return { ...newTime, run_id: timeId, team_size: createdTeams, team: teamData };
+    return {
+        ...newTime,
+        run_id: timeId,
+        team: teamData,
+    }
 }
 
-export default addTime;
+export default addTime

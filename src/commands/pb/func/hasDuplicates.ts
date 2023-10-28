@@ -1,5 +1,3 @@
-import { GuildMember } from "discord.js";
-
 function hasDuplicates(team: (string | undefined)[]) {
     let duplicateMap: Record<string, boolean> = {}
     for (let player of team) {

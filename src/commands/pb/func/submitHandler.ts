@@ -1,9 +1,11 @@
-import { CommandInteraction, GuildMember } from "discord.js"
-import * as pointUtils from "../../../utils/pointUtils/index.js"
+import type { CommandInteraction } from "discord.js"
+import type IPointService from "../../../utils/pointUtils/IPointService"
+
 import addTime from "./addTime.js"
 import TimeConverter from "./TimeConverter.js"
 import updateEmbed from "./updateEmbed.js"
 import updatePb from "./updatePb.js"
+import { container } from "tsyringe"
 
 async function submitHandler(
     boss: string,
@@ -11,6 +13,7 @@ async function submitHandler(
     team: (string | undefined)[],
     interaction: CommandInteraction
 ) {
+    const pointService = container.resolve<IPointService>("PointService")
     console.log(`Submitting pb: ${boss} ${time}`)
     // Parse guild id
     const guildId = interaction?.guildId
@@ -59,7 +62,7 @@ async function submitHandler(
     if (fetchedGuildMembers) {
         // Give points
         let PB_POINTS = 10
-        pointsResponses = await pointUtils.givePointsToMultiple(
+        pointsResponses = await pointService.givePointsToMultiple(
             PB_POINTS,
             fetchedGuildMembers,
             interaction
