@@ -41,7 +41,7 @@ class TimeConverter {
         milliseconds %= TimeConverter.MINUTE
         const seconds = Math.floor(milliseconds / TimeConverter.SECOND)
         milliseconds %= TimeConverter.SECOND
-        const millisecondsStr = milliseconds.toString().padStart(2, "0")
+        const millisecondsStr = milliseconds.toString().padStart(2, "0").slice(0, 2);
 
         if (hours > 0) {
             return `${hours.toString().padStart(2, "0")}:${minutes
@@ -68,15 +68,6 @@ class TimeConverter {
         const milliseconds = ticks * TimeConverter.TICK
         return TimeConverter.millisecondsToTime(milliseconds)
     }
-}
-
-function test(time: string) {
-    const time2 = TimeConverter.timeToTicks(time)
-    console.log(
-        TimeConverter.timeToTicks(time),
-        TimeConverter.ticksToTime(time2),
-        time
-    )
 }
 
 export default TimeConverter
