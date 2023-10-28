@@ -6,6 +6,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
+import { replyHandler } from "../../utils/replyHandler.js"
 import { getBossToa } from "./func/getBoss.js"
 import submitHandler from "./func/submitHandler.js"
 
@@ -98,7 +99,8 @@ class toapb {
             player8?.user.id,
         ]
 
+        await interaction.deferReply();
         let response = await submitHandler(getBossToa("toa", team, raidlevel), time, team, interaction)
-        await interaction.reply(response)
+        await replyHandler(response, interaction);
     }
 }

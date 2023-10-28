@@ -13,6 +13,7 @@ import {
 } from "discordx"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
+import { replyHandler } from "../../utils/replyHandler.js"
 import bossCategories from "./func/getBosses.js"
 import submitHandler from "./func/submitHandler.js"
 
@@ -85,6 +86,8 @@ class nightmarepb {
             player5?.user.id,
         ]
 
+        await interaction.deferReply();
+
         // Handle solos
         if (
             team.filter(Boolean).length > 1 &&
@@ -110,6 +113,6 @@ class nightmarepb {
             team,
             interaction
         )
-        await interaction.reply(response)
+        await replyHandler(response, interaction);
     }
 }
