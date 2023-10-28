@@ -1,46 +1,23 @@
 import { CommandInteraction, TextChannel } from "discord.js"
-import prisma from "../../../database/client.js"
 import embedBuilder from "./embedBuilder.js"
-import ticksToTime from "./ticksToTime.js"
 import TimeConverter from "./TimeConverter.js"
 import { TimeField } from "./types.js"
+import type IDatabase from "../../../database/IDatabase"
+
+import { container } from "tsyringe"
 
 async function updateEmbed(
     bossId: string,
     guildId: string,
     interaction: CommandInteraction
 ) {
-    const boss = await prisma.bosses.findUnique({
-        where: { name: bossId },
-    })
+    const database = container.resolve<IDatabase>("Database")
 
+    const boss = await database.getBoss(bossId)
     if (!boss) return
 
-    const bosses = await prisma.bosses.findMany({
-        where: { category: boss.category },
-        include: {
-            guild_bosses: {
-                include: {
-                    times: {
-                        include: {
-                            teams: true,
-                        },
-                    },
-                },
-            },
-        },
-    })
-
-    const category = await prisma.guild_categories.findUnique({
-        where: {
-            guild_id_category: { guild_id: guildId, category: boss.category },
-        },
-        include: {
-            guilds: true,
-            categories: true,
-        },
-    })
-
+    const bosses = await database.getCategoryByBoss(boss.category)
+    const category = await database.getEmbedData(guildId, boss.category)
     if (!bosses || !category) return
     if (!category.guilds.pb_channel_id) return
 

@@ -1,9 +1,13 @@
-import { ButtonInteraction, BaseInteraction } from "discord.js";
-import { SplitCache } from "../../../typings/splitTypes.js";
-import * as pointUtils from "../../../utils/pointUtils/index.js";
+import type { ButtonInteraction, BaseInteraction } from "discord.js";
+import type IPointService from "../../../utils/pointUtils/IPointService"
+import type { SplitCache } from "../../../typings/splitTypes.js";
+
 import getInteractionId from "./getInteractionId.js";
+import { container } from "tsyringe"
 
 const acceptHelper = async (interaction: ButtonInteraction, state: SplitCache) => {
+    const pointService = container.resolve<IPointService>("PointService")
+
     let splitId = getInteractionId(interaction);
     let split = state.get(splitId);
     if (!split) {
@@ -21,7 +25,7 @@ const acceptHelper = async (interaction: ButtonInteraction, state: SplitCache) =
     // Free up memory on point approval
     state.delete(splitId);
 
-    const pointsResponse = await pointUtils.givePoints(addedPoints, receivingUser, interaction as BaseInteraction);
+    const pointsResponse = await pointService.givePoints(addedPoints, receivingUser, interaction as BaseInteraction);
 
     await interaction.reply(pointsResponse);
 }

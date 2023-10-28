@@ -13,6 +13,7 @@ import {
 } from "discordx"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
+import { replyHandler } from "../../utils/replyHandler.js"
 import bossCategories from "./func/getBosses.js"
 import submitHandler from "./func/submitHandler.js"
 
@@ -51,7 +52,8 @@ class sepulchrepb {
     ) {
         let team = [player.user.id]
 
+        await interaction.deferReply();
         let response = await submitHandler(floor, time, team, interaction)
-        await interaction.reply(response)
+        await replyHandler(response, interaction);
     }
 }

@@ -1,35 +1,37 @@
-version: '3.7'
+version: "3.7"
 
 services:
-  db:
-    image: postgres:alpine
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DATABASE: postgres
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    db:
+        image: postgres:alpine
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DATABASE: postgres
+        ports:
+            - "5432:5432"
+        volumes:
+            - db:/var/lib/postgresql/data
+            - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+        # expose:
+        #   - 5432
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 5433:8080
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 5433:8080
 
-  app:
-    build: .
-    command: node build/main.js
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres?schema=public&connection_limit=5
-    depends_on:
-      - db
+    app:
+        build: .
+        command: node build/main.js
+        env_file:
+            - .env
+        environment:
+            DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres?schema=public&connection_limit=5
+        depends_on:
+            - db
 
 volumes:
-  db:
-    driver: local
+    db:
+        driver: local

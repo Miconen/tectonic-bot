@@ -1,12 +1,15 @@
 import { CommandInteraction, TextChannel } from "discord.js"
-import prisma from "../../../database/client.js"
 import embedBuilder from "./embedBuilder.js"
 import removeOldEmbeds from "./removeOldEmbeds.js"
-import ticksToTime from "./ticksToTime.js"
 import TimeConverter from "./TimeConverter.js"
 import { GuildBoss, GuildCategory, TimeField } from "./types.js"
+import type IDatabase from "../../../database/IDatabase"
+
+import { container } from "tsyringe"
 
 async function initializeHelper(interaction: CommandInteraction) {
+    const database = container.resolve<IDatabase>("Database")
+
     // Guild id should always be set, if not let the program fail for easier debugging
     const guildId = interaction.guildId!
 
@@ -17,12 +20,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 
     await interaction.editReply({ content: "Getting categories and bosses..." })
 
-    const categoriesWithBosses = await prisma.categories.findMany({
-        include: {
-            bosses: true,
-        },
-    })
-
+    const categoriesWithBosses = await database.getCategoriesWithBosses()
     // Accessing categories with associated bosses
     const categories = categoriesWithBosses.map((category) => {
         const { bosses, ...categoryData } = category
@@ -40,25 +38,13 @@ async function initializeHelper(interaction: CommandInteraction) {
     const guildCategories: GuildCategory[] = []
 
     // Fetch existing boss data from guild_bosses table in a single query
-    const existingBosses = await prisma.guild_bosses.findMany({
-        where: {
-            guild_id: guildId,
-        },
-        include: {
-            times: {
-                include: {
-                    teams: true,
-                },
-            },
-        },
-    })
-
+    const existingBosses = await database.getGuildBossesPbs(guildId)
     const existingBossesMap = new Map(
         existingBosses.map((boss) => [boss.boss, boss])
     )
 
     // Sort categories by category order
-    const sortedCategories = categories.sort((a, b) => a.order - b.order);
+    const sortedCategories = categories.sort((a, b) => a.order - b.order)
 
     for (let category of sortedCategories) {
         let embed = embedBuilder(interaction)
@@ -106,37 +92,9 @@ async function initializeHelper(interaction: CommandInteraction) {
     }
 
     await interaction.editReply({ content: "Storing data..." })
-
-    await prisma.guilds.upsert({
-        where: {
-            guild_id: guildId,
-        },
-        update: {
-            pb_channel_id: interaction.channelId,
-        },
-        create: {
-            guild_id: guildId,
-            multiplier: 1,
-            pb_channel_id: interaction.channelId,
-        },
-    })
-
-    await prisma.guild_bosses.createMany({
-        data: guildBosses,
-        skipDuplicates: true,
-    })
-
-    await prisma.guild_categories.deleteMany({
-        where: {
-            guild_id: guildId,
-        },
-    })
-
-    await prisma.guild_categories.createMany({
-        data: guildCategories,
-        skipDuplicates: true,
-    })
-
+    await database.updatePbChannel(guildId, interaction.channelId)
+    await database.ensureGuildBossesExist(guildBosses)
+    await database.updateGuildCategories(guildId, guildCategories)
     await interaction.editReply({ content: "Finished" })
 }
 

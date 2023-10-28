@@ -1,8 +1,12 @@
 import {CommandInteraction, GuildMember} from "discord.js";
-import getUser from "../../../database/getUser.js"
+import type IDatabase from "../../../database/IDatabase";
+
+import { container } from "tsyringe"
 
 const statusHelper = async (user: GuildMember, interaction: CommandInteraction) => {
-    let result = await getUser(interaction.guildId!, user.user.id);
+    const database = container.resolve<IDatabase>("Database")
+
+    let result = await database.getUser(interaction.guildId!, user.user.id);
 
     let response: string;
     if (result) {

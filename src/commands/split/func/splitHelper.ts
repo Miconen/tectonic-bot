@@ -1,3 +1,6 @@
+import type { SplitCache, SplitData } from "../../../typings/splitTypes.js";
+import type IPointService from "../../../utils/pointUtils/IPointService"
+
 import {
     ActionRowBuilder,
     ButtonBuilder, ButtonStyle,
@@ -5,11 +8,12 @@ import {
     GuildMember,
     MessageActionRowComponentBuilder
 } from "discord.js";
-import * as pointUtils from "../../../utils/pointUtils/index.js";
-import { SplitCache, SplitData } from "../../../typings/splitTypes.js";
+import { container } from "tsyringe"
 
 const splitHelper = async (value: number, interaction: CommandInteraction, state: SplitCache) => {
-    value = await pointUtils.pointsHandler(value, interaction.guild!.id);
+    const pointService = container.resolve<IPointService>("PointService")
+
+    value = await pointService.pointsHandler(value, interaction.guild!.id);
 
     // Create the button, giving it the id: "approve-btn"
     const approveButton = new ButtonBuilder()

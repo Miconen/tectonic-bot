@@ -1,22 +1,17 @@
 import { Client, TextChannel } from "discord.js"
-import prisma from "../../../database/client.js"
+import type IDatabase from "../../../database/IDatabase"
+
+import { container } from "tsyringe"
 
 async function removeOldEmbeds(guildId: string, client: Client) {
-    const fetchCategoriesPromise = prisma.guild_categories.findMany({
-        where: {
-            guild_id: guildId,
-        },
-    })
+    const database = container.resolve<IDatabase>("Database")
 
-    const fetchGuildPromise = prisma.guilds.findUnique({
-        where: {
-            guild_id: guildId,
-        },
-    })
+    const categoriesPromise = database.getGuildCategories(guildId)
+    const guildPromise = database.getGuild(guildId)
 
     const [categories, guild] = await Promise.all([
-        fetchCategoriesPromise,
-        fetchGuildPromise,
+        categoriesPromise,
+        guildPromise,
     ])
 
     if (categories.length == 0) return

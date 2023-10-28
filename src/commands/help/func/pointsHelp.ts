@@ -1,24 +1,28 @@
 import { CommandInteraction } from "discord.js";
-import * as pointUtils from "../../../utils/pointUtils/index.js";
+import type IPointService from "../../../utils/pointUtils/IPointService"
+
+import { container } from "tsyringe"
 
 const pointsHelp = async (interaction: CommandInteraction) => {
+    const pointService = container.resolve<IPointService>("PointService")
+
     let response =
         `**Point sources**:\n\n` +
         `**Splits**:\n` +
-        `Low value: ${pointUtils.pointRewards.get("split_low")}\n` +
-        `Medium value: ${pointUtils.pointRewards.get("split_medium")}\n` +
-        `High value: ${pointUtils.pointRewards.get("split_high")}` +
+        `Low value: ${pointService.pointRewards.get("split_low")}\n` +
+        `Medium value: ${pointService.pointRewards.get("split_medium")}\n` +
+        `High value: ${pointService.pointRewards.get("split_high")}` +
         `\n\n` +
         `**Events**:\n` +
-        `Participation: ${pointUtils.pointRewards.get("event_participation")}\n` +
-        `Hosting: ${pointUtils.pointRewards.get("event_hosting")}` +
+        `Participation: ${pointService.pointRewards.get("event_participation")}\n` +
+        `Hosting: ${pointService.pointRewards.get("event_hosting")}` +
         `\n\n` +
         `**Learners**:\n` +
-        `Half: ${pointUtils.pointRewards.get("learner_half")}\n` +
-        `Full: ${pointUtils.pointRewards.get("learner_full")}` +
+        `Half: ${pointService.pointRewards.get("learner_half")}\n` +
+        `Full: ${pointService.pointRewards.get("learner_full")}` +
         `\n\n` +
         `**Forum**:\n` +
-        `Bumping: ${pointUtils.pointRewards.get("forum_bump")}`;
+        `Bumping: ${pointService.pointRewards.get("forum_bump")}`;
 
     await interaction.reply(response);
 }
