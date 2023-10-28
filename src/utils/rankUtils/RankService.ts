@@ -19,15 +19,15 @@ export class RankService implements IRankService {
         ])
 
         this.rankIcon = new Map([
-            ["jade", "1167823880358989936"],
-            ["red_topaz", "1167823883580215387"],
-            ["sapphire", "1167823887489318972"],
-            ["emerald", "1167823879205552138"],
-            ["ruby", "1167823885530570872"],
-            ["diamond", "1167823870556909629"],
-            ["dragonstone", "1167823873266438214"],
-            ["onyx", "1167823881403379743"],
-            ["zenyte", "1167823889636806677"],
+            ["jade", "<:Jade:1167823880358989936>"],
+            ["red_topaz", "<:Red_Topaz:1167823883580215387>"],
+            ["sapphire", "<:Sapphire:1167823887489318972>"],
+            ["emerald", "<:Emerald:1167823879205552138>"],
+            ["ruby", "<:Ruby:1167823885530570872>"],
+            ["diamond", "<:Diamond:1167823870556909629>"],
+            ["dragonstone", "<:Dragonstone:1167823873266438214>"],
+            ["onyx", "<:Onyx:1167823881403379743>"],
+            ["zenyte", "<:Zenyte:1167823889636806677>"],
         ])
 
         this.roleValues = new Map([
