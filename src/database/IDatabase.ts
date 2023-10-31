@@ -87,10 +87,14 @@ interface IDatabase {
     getGuildBosses: (guild_id: string) => Promise<guild_bosses[]>
     getGuildBossesPbs: (guild_id: string) => Promise<BossesWithTimes>
     getGuild: (guild_id: string) => Promise<guilds | null>
-    getRsns: (guild_id: string, user_id: string) => Promise<rsn[]>
     getEmbedData: (guild_id: string, category: string) => Promise<EmbedData>
     ensureGuildBossesExist: (data: GuildBoss[]) => Promise<void>
     updateGuildCategories: (guild_id: string, data: GuildCategory[]) => Promise<void>
+
+    addRsn: (guild_id: string, user_id: string, rsn: string, wom_id: string) => Promise<void>
+    removeRsn: (guild_id: string, user_id: string, rsn: string) => Promise<boolean>
+    removeAllRsn: (guild_id: string, user_id: string) => Promise<boolean>
+    getRsns: (guild_id: string, user_id: string) => Promise<rsn[]>
 }
 
 export default IDatabase

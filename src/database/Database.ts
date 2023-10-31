@@ -83,12 +83,6 @@ export class Database implements IDatabase {
         return response?.points
     }
 
-    async getRsns(guild_id: string, user_id: string) {
-        return await this.prisma.rsn.findMany({
-            where: { guild_id, user_id },
-        })
-    }
-
     async getUsersPbs(guild_id: string, user_id: string) {
         return await this.prisma.times.findMany({
             where: {
@@ -299,6 +293,44 @@ export class Database implements IDatabase {
         await this.prisma.guild_categories.createMany({
             data: data,
             skipDuplicates: true,
+        })
+    }
+
+    async addRsn(guild_id: string, user_id: string, rsn: string, wom_id: string) {
+        await this.prisma.rsn.create({
+            data: {
+                guild_id: guild_id,
+                user_id: user_id,
+                rsn: rsn,
+                wom_id: wom_id
+            },
+        })
+    }
+
+    async removeRsn(guild_id: string, user_id: string, rsn: string) {
+        let response = await this.prisma.rsn.deleteMany({
+            where: {
+                guild_id: guild_id,
+                user_id: user_id,
+                rsn: rsn,
+            },
+        })
+        return !!response.count;
+    }
+
+    async removeAllRsn(guild_id: string, user_id: string) {
+        let response = await this.prisma.rsn.deleteMany({
+            where: {
+                guild_id: guild_id,
+                user_id: user_id,
+            },
+        })
+        return !!response.count;
+    }
+
+    async getRsns(guild_id: string, user_id: string) {
+        return await this.prisma.rsn.findMany({
+            where: { guild_id, user_id },
         })
     }
 }
