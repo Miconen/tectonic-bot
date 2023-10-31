@@ -43,12 +43,13 @@ const pointsHelper = async (
     if (currentRank != "zenyte") {
         response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`
     }
-    // if (accounts.length) {
-    //     response += "\n# Accounts"
-    //     accounts.forEach((account) => {
-    //         response += `\n\`${account}\``
-    //     })
-    // } else {
+    if (accounts.length) {
+        response += "\n# Accounts"
+        accounts.forEach((account) => {
+            response += `\n\`${account}\``
+        })
+    }
+    // else {
     //     response += "\n`Link your OSRS account to be eligible for event rank points`"
     // }
     if (pbs.length) {
