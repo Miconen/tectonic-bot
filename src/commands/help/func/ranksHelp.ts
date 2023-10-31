@@ -1,34 +1,38 @@
-import {CommandInteraction} from "discord.js";
-import * as rankUtils from "../../../utility/rankUtils/index.js";
+import type { CommandInteraction } from "discord.js";
+import type IRankService from "../../../utils/rankUtils/IRankService"
+
+import { container } from "tsyringe"
 
 const ranksHelp = async (interaction: CommandInteraction) => {
+    const rankService = container.resolve<IRankService>("RankService")
+
     let response =
         `**Ranks**:\n\n` +
-        `${rankUtils.rankIcon.get("jade")} Jade - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("jade")} Jade - ${rankService.getRoleValueByName(
             "jade",
         )} points\n` +
-        `${rankUtils.rankIcon.get("red_topaz")} Red Topaz - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("red_topaz")} Red Topaz - ${rankService.getRoleValueByName(
             "red_topaz",
         )} points\n` +
-        `${rankUtils.rankIcon.get("sapphire")} Sapphire - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("sapphire")} Sapphire - ${rankService.getRoleValueByName(
             "sapphire",
         )} points\n` +
-        `${rankUtils.rankIcon.get("emerald")} Emerald - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("emerald")} Emerald - ${rankService.getRoleValueByName(
             "emerald",
         )} points\n` +
-        `${rankUtils.rankIcon.get("ruby")} Ruby - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("ruby")} Ruby - ${rankService.getRoleValueByName(
             "ruby",
         )} points\n` +
-        `${rankUtils.rankIcon.get("diamond")} Diamond - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("diamond")} Diamond - ${rankService.getRoleValueByName(
             "diamond",
         )} points\n` +
-        `${rankUtils.rankIcon.get(
+        `${rankService.rankIcon.get(
             "dragonstone",
-        )} Dragonstone - ${rankUtils.roleValuesByName.get("dragonstone")} points\n` +
-        `${rankUtils.rankIcon.get("onyx")} Onyx - ${rankUtils.roleValuesByName.get(
+        )} Dragonstone - ${rankService.getRoleValueByName("dragonstone")} points\n` +
+        `${rankService.rankIcon.get("onyx")} Onyx - ${rankService.getRoleValueByName(
             "onyx",
         )} points\n` +
-        `${rankUtils.rankIcon.get("zenyte")} Zenyte - ${rankUtils.roleValuesByName.get(
+        `${rankService.rankIcon.get("zenyte")} Zenyte - ${rankService.getRoleValueByName(
             "zenyte",
         )} points\n`;
 

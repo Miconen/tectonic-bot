@@ -1,19 +1,12 @@
 import {CommandInteraction, GuildMember} from "discord.js";
-import IsAdmin from "../../../utility/isAdmin.js";
-import getUser from "../../../database/getUser.js"
+import type IDatabase from "../../../database/IDatabase";
 
-const isValid = async (interaction: CommandInteraction) => {
-    if (!IsAdmin(Number(interaction.member?.permissions))) {
-        await interaction.reply('❌ Lacking permissions for this command.');
-        return false;
-    }
-    return true;
-};
+import { container } from "tsyringe"
 
 const statusHelper = async (user: GuildMember, interaction: CommandInteraction) => {
-    if (!await isValid(interaction)) return;
+    const database = container.resolve<IDatabase>("Database")
 
-    let result = await getUser(interaction.guildId!, user.user.id);
+    let result = await database.getUser(interaction.guildId!, user.user.id);
 
     let response: string;
     if (result) {

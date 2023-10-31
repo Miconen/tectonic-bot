@@ -1,66 +1,68 @@
-import { Discord, Slash, SlashOption } from 'discordx';
+import { Discord, Guard, Slash, SlashOption } from "discordx"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
     GuildMember,
-} from 'discord.js';
-import activationHelper from "./func/activationHelper.js";
-import deactivationHelper from "./func/deactivationHelper.js";
-import statusHelper from "./func/statusHelper.js";
+} from "discord.js"
+import activationHelper from "./func/activationHelper.js"
+import deactivationHelper from "./func/deactivationHelper.js"
+import statusHelper from "./func/statusHelper.js"
+import IsAdmin from "../../guards/IsAdmin.js"
 
 @Discord()
+@Guard(IsAdmin)
 class Activation {
     @Slash({
-        name: 'activate',
+        name: "activate",
         description:
-            'Used for activating new guild members and giving access to rank points',
+            "Used for activating new guild members and giving access to rank points",
     })
     async Activate(
         @SlashOption({
-            name: 'username',
-            description: '@User tag to activate',
+            name: "username",
+            description: "@User tag to activate",
             required: true,
             type: ApplicationCommandOptionType.User,
         })
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        return activationHelper(user, interaction);
+        return activationHelper(user, interaction)
     }
 
     @Slash({
-        name: 'deactivate',
+        name: "deactivate",
         description:
-            'Deactivate and remove all points/data entries associated with a user',
+            "Deactivate and remove all points/data entries associated with a user",
     })
     async Deactivate(
         @SlashOption({
-            name: 'username',
+            name: "username",
             description:
-                '@User tag to deactivate, WARNING USERS POINTS WILL BE DELETED',
+                "@User tag to deactivate, WARNING USERS POINTS WILL BE DELETED",
             required: true,
             type: ApplicationCommandOptionType.User,
         })
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        return deactivationHelper(user, interaction);
+        return deactivationHelper(user, interaction)
     }
 
     @Slash({
-        name: 'checkstatus',
-        description: 'Checks if a user is activated or not',
+        name: "checkstatus",
+        description: "Checks if a user is activated or not",
     })
     async Checkstatus(
         @SlashOption({
-            name: 'username',
-            description: '@User tag to check',
+            name: "username",
+            description: "@User tag to check",
             required: true,
             type: ApplicationCommandOptionType.User,
         })
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        return statusHelper(user, interaction);
+        return statusHelper(user, interaction)
     }
 }

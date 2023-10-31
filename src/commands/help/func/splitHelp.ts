@@ -1,17 +1,21 @@
-import {CommandInteraction} from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import { CommandInteraction } from "discord.js";
+import type IPointService from "../../../utils/pointUtils/IPointService"
+
+import { container } from "tsyringe"
 
 const splitHelp = async (interaction: CommandInteraction) => {
-    let points_low = await pointUtils.pointsHandler(
-        pointUtils.pointRewards.get("split_low"),
+    const pointService = container.resolve<IPointService>("PointService")
+
+    let points_low = await pointService.pointsHandler(
+        pointService.pointRewards.get("split_low") ?? 0,
         interaction.guild!.id,
     );
-    let points_medium = await pointUtils.pointsHandler(
-        pointUtils.pointRewards.get("split_medium"),
+    let points_medium = await pointService.pointsHandler(
+        pointService.pointRewards.get("split_medium") ?? 0,
         interaction.guild!.id,
     );
-    let points_high = await pointUtils.pointsHandler(
-        pointUtils.pointRewards.get("split_high"),
+    let points_high = await pointService.pointsHandler(
+        pointService.pointRewards.get("split_high") ?? 0,
         interaction.guild!.id,
     );
 

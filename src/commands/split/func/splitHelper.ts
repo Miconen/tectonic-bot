@@ -1,3 +1,6 @@
+import type { SplitCache, SplitData } from "../../../typings/splitTypes.js";
+import type IPointService from "../../../utils/pointUtils/IPointService"
+
 import {
     ActionRowBuilder,
     ButtonBuilder, ButtonStyle,
@@ -5,17 +8,17 @@ import {
     GuildMember,
     MessageActionRowComponentBuilder
 } from "discord.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
-import {InteractionCache} from "./InteractionCache";
+import { container } from "tsyringe"
 
-const splitHelper = async (value: number, interaction: CommandInteraction, state: InteractionCache) => {
-    await interaction.deferReply();
-    value = await pointUtils.pointsHandler(value, interaction.guild!.id);
+const splitHelper = async (value: number, interaction: CommandInteraction, state: SplitCache) => {
+    const pointService = container.resolve<IPointService>("PointService")
+
+    value = await pointService.pointsHandler(value, interaction.guild!.id);
 
     // Create the button, giving it the id: "approve-btn"
     const approveButton = new ButtonBuilder()
         .setLabel("Approve")
-        .setStyle(ButtonStyle.Primary)
+        .setStyle(ButtonStyle.Success)
         .setCustomId("approve-btn");
 
     // Create a button, giving it the id: "deny-btn"
@@ -33,14 +36,17 @@ const splitHelper = async (value: number, interaction: CommandInteraction, state
 
     const msg = `**${(interaction.member as GuildMember).displayName
     }** has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
-    await interaction.editReply({
+    await interaction.reply({
         content: msg,
         components: [row],
     });
 
-    state.interactionMap.set(interaction.id, interaction);
-    state.interactionState.set(interaction.id, false);
-    state.pointsMap.set(interaction.id, value);
+    const split: SplitData = {
+        member: interaction.member as GuildMember,
+        points: value
+    }
+
+    state.set(interaction.id, split)
 }
 
 export default splitHelper;

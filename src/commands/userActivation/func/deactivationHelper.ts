@@ -1,26 +1,20 @@
-import {CommandInteraction, GuildMember} from "discord.js";
-import * as rankUtils from "../../../utility/rankUtils/index.js";
-import IsAdmin from "../../../utility/isAdmin.js";
-import removeUser from "../../../database/removeUser.js"
+import type {CommandInteraction, GuildMember} from "discord.js";
+import type IRankService from "../../../utils/rankUtils/IRankService"
+import type IDatabase from "../../../database/IDatabase";
 
-const isValid = async (interaction: CommandInteraction) => {
-    if (!IsAdmin(Number(interaction.member?.permissions))) {
-        await interaction.reply('❌ Lacking permissions for this command.');
-        return false;
-    }
-    return true;
-};
+import { container } from "tsyringe"
 
 const deactivationHelper = async (user: GuildMember, interaction: CommandInteraction) => {
-    if (!await isValid(interaction)) return;
+    const rankService = container.resolve<IRankService>("RankService")
+    const database = container.resolve<IDatabase>("Database")
 
-    let result = await removeUser(interaction.guildId!, user.user.id);
+    let result = await database.removeUser(interaction.guildId!, user.user.id);
 
     let response: string;
     if (result) {
         response = `✔ **${user.displayName}** has been deactivated.`;
         // Remove all rank roles
-        await rankUtils.removeOldRoles(user);
+        await rankService.removeOldRoles(user);
     } else {
         response = `❌ **${user.displayName}** is not activated.`;
     }

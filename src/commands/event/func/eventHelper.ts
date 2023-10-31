@@ -1,20 +1,29 @@
-import {CommandInteraction, GuildMember} from "discord.js";
-import IsAdmin from "../../../utility/isAdmin.js";
-import * as pointUtils from "../../../utility/pointUtils/index.js";
+import type { CommandInteraction, GuildMember } from "discord.js"
+import type IPointService from "../../../utils/pointUtils/IPointService"
 
-type PointAmount = "event_participation" | "event_hosting";
+import { container } from "tsyringe"
 
-const learnerHelper = async (user: GuildMember, interaction: CommandInteraction, amount: PointAmount) => {
-    if (!IsAdmin(Number(interaction.member?.permissions))) return;
+type PointAmount = "event_participation" | "event_hosting"
 
-    let addedPoints = await pointUtils.pointsHandler(
-        pointUtils.pointRewards.get(amount),
-        interaction.guild!.id,
-    );
+const eventHelper = async (
+    user: GuildMember,
+    interaction: CommandInteraction,
+    amount: PointAmount
+) => {
+    const pointService = container.resolve<IPointService>("PointService")
+
+    let addedPoints = await pointService.pointsHandler(
+        pointService.pointRewards.get(amount) ?? 0,
+        interaction.guild!.id
+    )
 
     // Handle giving of points, returns a string to be sent as a message.
-    const pointsResponse = await pointUtils.givePoints(addedPoints, user, interaction);
-    await interaction.reply(pointsResponse);
+    const pointsResponse = await pointService.givePoints(
+        addedPoints,
+        user,
+        interaction
+    )
+    await interaction.reply(pointsResponse)
 }
 
-export default learnerHelper;
+export default eventHelper

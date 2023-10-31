@@ -1,14 +1,19 @@
 import {CommandInteraction, EmbedBuilder} from "discord.js";
 import { Pagination } from "@discordx/pagination";
-import getLeaderboard from '../../../database/getLeaderboard.js';
-import * as rankUtils from "../../../utility/rankUtils/index.js";
+import type IRankService from "../../../utils/rankUtils/IRankService"
+import type IDatabase from "../../../database/IDatabase"
+
+import { container } from "tsyringe"
 
 const leaderboardHelper = async (interaction: CommandInteraction) => {
+    const rankService = container.resolve<IRankService>("RankService")
+    const database = container.resolve<IDatabase>("Database")
+
     if (!interaction.guildId) return;
 
     await interaction.deferReply();
 
-    let users = await getLeaderboard(
+    let users = await database.getLeaderboard(
         interaction.guildId,
     );
     let userIds = users.map(user => user.user_id);
@@ -26,12 +31,12 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
         let userData = usersData.get(user.user_id)
         if (!userData) continue;
 
-        let rank = rankUtils.getRankByPoints(user.points);
+        let rank = rankService.getRankByPoints(user.points);
         serverRank++;
 
         leaderboard.push({
             name: `#${serverRank} **${userData.displayName}**`,
-            value: `${rankUtils.rankIcon.get(rank)} ${user.points} points`,
+            value: `${rankService.rankIcon.get(rank)} ${user.points} points`,
         });
     }
 

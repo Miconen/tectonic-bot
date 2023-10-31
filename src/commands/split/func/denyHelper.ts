@@ -1,32 +1,24 @@
-import {ButtonInteraction, CommandInteraction, GuildMember} from "discord.js";
-import {InteractionCache} from "./InteractionCache";
-import isValid from "./isValid.js";
+import { ButtonInteraction } from "discord.js";
+import { SplitCache } from "../../../typings/splitTypes.js";
 import getInteractionId from "./getInteractionId.js";
 
-const denyHelper = async (interaction: ButtonInteraction, state: InteractionCache) => {
-    if (!(await isValid(interaction, state))) return;
-
-    let interactionId = getInteractionId(interaction);
-    let receivingInteraction = state.interactionMap.get(
-        interactionId,
-    ) as CommandInteraction;
-    let receivingUser = receivingInteraction.member as GuildMember;
-    if (!receivingUser) {
-        await interaction.reply("Error parsing interaction map");
-        console.log("ERROR: Couldn't get interaction from interactionMap");
+const denyHelper = async (interaction: ButtonInteraction, state: SplitCache) => {
+    let splitId = getInteractionId(interaction);
+    let split = state.get(splitId);
+    if (!split) {
+        await interaction.reply("Split wasn't found in cache");
+        console.log("ERROR: Couldn't get SplitData from SplitCache");
         return;
     }
+
+    let receivingUser = split.member;
     let receivingUserName = receivingUser.displayName;
 
     // Remove buttons on successful button press
-    await receivingInteraction.editReply({
-        components: [],
-    });
+    await interaction.message.edit({ components: [] });
 
     // Free up memory on point denial
-    state.interactionMap.delete(interactionId);
-    state.interactionState.delete(interactionId);
-    state.pointsMap.delete(interactionId);
+    state.delete(splitId);
 
     await interaction.reply(
         `❌ **${receivingUserName}** point request was denied.`,
