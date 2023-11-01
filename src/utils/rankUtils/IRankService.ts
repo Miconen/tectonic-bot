@@ -8,10 +8,6 @@ interface IRankService {
         roleName: string
     ) => Promise<void>
     getRankByPoints: (points: number) => string
-    getRole: (
-        interaction: BaseInteraction,
-        roleName: string
-    ) => Role | undefined
     pointsToNextRank: (points: number) => number
     rankUpHandler: (
         interaction: BaseInteraction,
@@ -21,7 +17,7 @@ interface IRankService {
     ) => Promise<string | undefined>
     rankUpdater: (oldPoints: number, newPoints: number) => string | false
     removeOldRoles: (target: GuildMember) => Promise<void>
-    getRoleValueByName: (searchValue: string) => number | undefined
+    getRoleValue: (searchValue: string) => number | undefined
 }
 
 export default IRankService

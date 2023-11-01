@@ -1,4 +1,4 @@
-import { BaseInteraction, GuildMember, RoleResolvable } from "discord.js"
+import { BaseInteraction, Guild, GuildMember, RoleResolvable } from "discord.js"
 import { singleton } from "tsyringe"
 import IRankService from "./IRankService"
 
@@ -84,9 +84,7 @@ export class RankService implements IRankService {
     }
 
     public async removeOldRoles(target: GuildMember) {
-        const oldRoles = target.roles.cache.filter((role) =>
-            this.getRoleValueByName(role.id)
-        )
+        const oldRoles = target.roles.cache.filter((role) => this.roleIds.has(role.name))
         if (oldRoles.size === 0) return
         await target.roles.remove(oldRoles)
     }
@@ -110,20 +108,20 @@ export class RankService implements IRankService {
         target: GuildMember,
         roleName: string
     ) {
-        let role = this.getRole(interaction, roleName)
+        if (!interaction.guild) return;
+        let role = this.getRole(interaction.guild, roleName)
         if (role == undefined) return
         await target.roles.add(role as RoleResolvable)
     }
 
-    public getRole(interaction: BaseInteraction, roleName: string) {
-        let guild = interaction.guild
-        if (!guild) return
+    private getRole(guild: Guild, roleName: string) {
         if (guild.id != "979445890064470036") return undefined
-        let roleId = this.roleIds.get(roleName) ?? "0"
+        let roleId = this.roleIds.get(roleName)
+        if (!roleId) return undefined;
         return guild.roles.cache.get(roleId)
     }
 
-    public getRoleValueByName(searchValue: string) {
+    public getRoleValue(searchValue: string) {
         return this.getByValue(this.roleValues, searchValue)
     }
 
