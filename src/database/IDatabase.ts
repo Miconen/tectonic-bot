@@ -67,6 +67,7 @@ interface IDatabase {
         incomingPoints: number
     ) => Promise<number | false | undefined>
     userExists: (guild_id: string, userId: string) => Promise<boolean>
+    usersExist: (guild_id: string, userIds: string[]) => Promise<users[]>
     getUser: (guild_id: string, userId: string) => Promise<users | null>
     newUser: (guild_id: string, user_id: string) => Promise<boolean>
     removeUser: (guild_id: string, user_id: string) => Promise<boolean>
