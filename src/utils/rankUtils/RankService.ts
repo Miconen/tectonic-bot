@@ -84,11 +84,13 @@ export class RankService implements IRankService {
     }
 
     public async removeOldRoles(target: GuildMember) {
-        const oldRoles = target.roles.cache.filter((role) => {
-            this.getByValue(this.roleIds, role.id);
-        })
-        if (oldRoles.size === 0) return
-        await target.roles.remove(oldRoles)
+        // const oldRoles = target.roles.cache.filter((role) => {
+        //     this.getByValue(this.roleIds, role.id);
+        // })
+        // if (oldRoles.size === 0) return
+        console.log(`↳ Removing all rank roles if possible from: ${target.displayName}`)
+        const roles = [...this.roleIds.values()] as RoleResolvable[];
+        await target.roles.remove(roles)
     }
 
     public getRankByPoints(points: number) {
@@ -113,6 +115,7 @@ export class RankService implements IRankService {
         if (!interaction.guild) return;
         let role = this.getRole(interaction.guild, roleName)
         if (role == undefined) return
+        console.log(`↳ Adding new role to ${target.displayName} (${role.name})`)
         await target.roles.add(role as RoleResolvable)
     }
 
