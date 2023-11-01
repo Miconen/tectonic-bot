@@ -84,7 +84,9 @@ export class RankService implements IRankService {
     }
 
     public async removeOldRoles(target: GuildMember) {
-        const oldRoles = target.roles.cache.filter((role) => this.roleIds.has(role.name))
+        const oldRoles = target.roles.cache.filter((role) => {
+            this.getByValue(this.roleIds, role.id);
+        })
         if (oldRoles.size === 0) return
         await target.roles.remove(oldRoles)
     }
