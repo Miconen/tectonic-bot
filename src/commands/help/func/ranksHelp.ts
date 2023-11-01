@@ -8,37 +8,37 @@ const ranksHelp = async (interaction: CommandInteraction) => {
 
     let response =
         `## Ranks:\n\n` +
-        `${rankService.getIcon("jade")} Jade - ${rankService.getRoleValueByName(
+        `${rankService.getIcon("jade")} Jade - ${rankService.getRoleValue(
             "jade"
         )} points\n` +
         `${rankService.getIcon(
             "red_topaz"
-        )} Red Topaz - ${rankService.getRoleValueByName(
+        )} Red Topaz - ${rankService.getRoleValue(
             "red_topaz"
         )} points\n` +
         `${rankService.getIcon(
             "sapphire"
-        )} Sapphire - ${rankService.getRoleValueByName("sapphire")} points\n` +
+        )} Sapphire - ${rankService.getRoleValue("sapphire")} points\n` +
         `${rankService.getIcon(
             "emerald"
-        )} Emerald - ${rankService.getRoleValueByName("emerald")} points\n` +
-        `${rankService.getIcon("ruby")} Ruby - ${rankService.getRoleValueByName(
+        )} Emerald - ${rankService.getRoleValue("emerald")} points\n` +
+        `${rankService.getIcon("ruby")} Ruby - ${rankService.getRoleValue(
             "ruby"
         )} points\n` +
         `${rankService.getIcon(
             "diamond"
-        )} Diamond - ${rankService.getRoleValueByName("diamond")} points\n` +
+        )} Diamond - ${rankService.getRoleValue("diamond")} points\n` +
         `${rankService.getIcon(
             "dragonstone"
-        )} Dragonstone - ${rankService.getRoleValueByName(
+        )} Dragonstone - ${rankService.getRoleValue(
             "dragonstone"
         )} points\n` +
-        `${rankService.getIcon("onyx")} Onyx - ${rankService.getRoleValueByName(
+        `${rankService.getIcon("onyx")} Onyx - ${rankService.getRoleValue(
             "onyx"
         )} points\n` +
         `${rankService.getIcon(
             "zenyte"
-        )} Zenyte - ${rankService.getRoleValueByName("zenyte")} points\n`
+        )} Zenyte - ${rankService.getRoleValue("zenyte")} points\n`
 
     await interaction.reply(response)
 }
