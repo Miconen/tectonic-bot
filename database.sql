@@ -179,4 +179,8 @@ VALUES
     ('vardorvis', 'Vardorvis', 'Desert Treasure II', true),
     ('leviathan', 'Leviathan', 'Desert Treasure II', true),
     ('duke_sucellus', 'Duke Sucellus', 'Desert Treasure II', true),
-    ('whisperer', 'The Whisperer', 'Desert Treasure II', true);
+    ('whisperer', 'The Whisperer', 'Desert Treasure II', true),
+    ('awakened_vardorvis', 'Vardorvis (Awakened)', 'Desert Treasure II', true),
+    ('awakened_leviathan', 'Leviathan (Awakened)', 'Desert Treasure II', true),
+    ('awakened_duke_sucellus', 'Duke Sucellus (Awakened)', 'Desert Treasure II', true),
+    ('awakened_whisperer', 'The Whisperer (Awakened)', 'Desert Treasure II', true);

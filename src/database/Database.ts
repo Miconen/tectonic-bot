@@ -1,4 +1,4 @@
-import { PrismaClient, teams } from "@prisma/client"
+import { PrismaClient, teams, users } from "@prisma/client"
 import { singleton } from "tsyringe"
 import { GuildBoss, GuildCategory } from "../commands/pb/func/types"
 import IDatabase from "./IDatabase"
@@ -46,6 +46,12 @@ export class Database implements IDatabase {
     async userExists(guildId: string, userId: string) {
         let exists = await this.getUser(guildId, userId)
         return !!exists?.user_id
+    }
+
+    async usersExist(guild_id: string, user_ids: string[]) {
+        return await this.prisma.users.findMany({
+            where: { guild_id, user_id: { in: user_ids } },
+        })
     }
 
     async getPoints(guildId: string, userId: string) {

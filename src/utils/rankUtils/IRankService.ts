@@ -1,9 +1,7 @@
 import { BaseInteraction, GuildMember, Role } from "discord.js"
 
 interface IRankService {
-    ironmanIcon: Map<string, string>
-    rankIcon: Map<string, string>
-    roleValues: Map<number, string>
+    getIcon: (icon: string) => string
     addRole: (
         interaction: BaseInteraction,
         target: GuildMember,
@@ -23,7 +21,7 @@ interface IRankService {
     ) => Promise<string | undefined>
     rankUpdater: (oldPoints: number, newPoints: number) => string | false
     removeOldRoles: (target: GuildMember) => Promise<void>
-    getRoleValueByName: (searchValue: string) => number | undefined 
+    getRoleValueByName: (searchValue: string) => number | undefined
 }
 
 export default IRankService
