@@ -6,6 +6,7 @@ import IRankService from "./IRankService"
 export class RankService implements IRankService {
     public readonly ironmanIcon: Map<string, string>
     public readonly rankIcon: Map<string, string>
+    public readonly roleIds: Map<string, string>
     public readonly roleValues: Map<number, string>
 
     constructor() {
@@ -30,6 +31,18 @@ export class RankService implements IRankService {
             ["zenyte", "<:Zenyte:1167823889636806677>"],
         ])
 
+        this.roleIds = new Map([
+            ["jade", "989916229588365384"],
+            ["red_topaz", "989916991164928031"],
+            ["sapphire", "989917487829229600"],
+            ["emerald", "989917954424578058"],
+            ["ruby", "989918030446346290"],
+            ["diamond", "989918133500403713"],
+            ["dragonstone", "989918207735377952"],
+            ["onyx", "989917139836235826"],
+            ["zenyte", "989917779928940585"],
+        ])
+
         this.roleValues = new Map([
             [0, "jade"],
             [50, "red_topaz"],
@@ -41,6 +54,10 @@ export class RankService implements IRankService {
             [1000, "onyx"],
             [1250, "zenyte"],
         ])
+    }
+
+    public getIcon(icon: string) {
+        return this.rankIcon.get(icon) ?? ""
     }
 
     public async rankUpHandler(
@@ -102,7 +119,7 @@ export class RankService implements IRankService {
         let guild = interaction.guild
         if (!guild) return
         if (guild.id != "979445890064470036") return undefined
-        let roleId = this.rankIcon.get(roleName) ?? "0"
+        let roleId = this.roleIds.get(roleName) ?? "0"
         return guild.roles.cache.get(roleId)
     }
 
