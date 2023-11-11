@@ -54,8 +54,8 @@ export class PointService implements IPointService {
         let responses: Promise<string>[] = []
 
         users.forEach((user) => {
-            addedPoints += extraPoints?.[user.id] || 0;
-            let points = this.givePoints(addedPoints, user, interaction)
+            let pointsToGive = addedPoints + (extraPoints?.[user.id] || 0);
+            let points = this.givePoints(pointsToGive, user, interaction)
             responses.push(points)
         })
 
