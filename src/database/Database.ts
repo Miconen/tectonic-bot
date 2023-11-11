@@ -333,4 +333,10 @@ export class Database implements IDatabase {
             where: { guild_id, user_id },
         })
     }
+
+    async getUsersByWomIds(guild_id: string, wom_id: string[]) {
+        return await this.prisma.rsn.findMany({
+            where: { guild_id, wom_id: { in: wom_id } }
+        })
+    }
 }

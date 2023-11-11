@@ -95,6 +95,8 @@ interface IDatabase {
     removeRsn: (guild_id: string, user_id: string, rsn: string) => Promise<boolean>
     removeAllRsn: (guild_id: string, user_id: string) => Promise<boolean>
     getRsns: (guild_id: string, user_id: string) => Promise<rsn[]>
+
+    getUsersByWomIds: (guild_id: string, wom_id: string[]) => Promise<rsn[]>
 }
 
 export default IDatabase
