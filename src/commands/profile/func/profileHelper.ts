@@ -1,7 +1,7 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "../../../utils/rankUtils/IRankService"
 import type IUserService from "../../../utils/userUtils/IUserService"
-import type IDatabase from "../../../database/IDatabase";
+import type IDatabase from "../../../database/IDatabase"
 
 import { container } from "tsyringe"
 
@@ -13,8 +13,8 @@ const pointsHelper = async (
     const userService = container.resolve<IUserService>("UserService")
     const database = container.resolve<IDatabase>("Database")
 
-    let guildId = interaction.guildId;
-    if (!guildId) return "Invalid guild id, something broke bad??";
+    let guildId = interaction.guildId
+    if (!guildId) return "Invalid guild id, something broke bad??"
     let targetUser = user?.user?.id ?? interaction.user.id ?? "0"
     let targetUserName =
         user?.displayName ??
@@ -29,9 +29,9 @@ const pointsHelper = async (
     // Rank info and icons
     let nextRankUntil = rankService.pointsToNextRank(points)
     let nextRank = rankService.getRankByPoints(points + nextRankUntil)
-    let nextRankIcon = rankService.rankIcon.get(nextRank)
+    let nextRankIcon = rankService.getIcon(nextRank)
     let currentRank = rankService.getRankByPoints(points)
-    let currentRankIcon = rankService.rankIcon.get(currentRank)
+    let currentRankIcon = rankService.getIcon(currentRank)
 
     // User accounts
     let accounts = await userService.getAccounts(targetUser, guildId)

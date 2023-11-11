@@ -130,7 +130,7 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
     }
 }
 
-export function IsValidTime(option: string) {
+function IsValidTime(option: string) {
     const guard: GuardFunction<CommandInteraction> = async (
         interaction,
         _,

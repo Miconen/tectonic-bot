@@ -11,6 +11,7 @@ import {
     SlashGroup,
     SlashOption,
 } from "discordx"
+import IsActivated from "../../guards/IsActivated.js"
 import IsAdmin from "../../guards/IsAdmin.js"
 import IsValidTime from "../../guards/IsValidTime.js"
 import { replyHandler } from "../../utils/replyHandler.js"
@@ -19,8 +20,8 @@ import submitHandler from "./func/submitHandler.js"
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsAdmin, IsValidTime("time"))
-class miscellaneouspb {
+@Guard(IsAdmin, IsValidTime("time"), IsActivated())
+class dt2pb {
     @Slash({
         name: "dt2",
         description: "Request your new pb to be added",

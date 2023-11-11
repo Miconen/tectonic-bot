@@ -22,13 +22,15 @@
         "discord.js": "^14.7.1",
         "discordx": "^11.5.2",
         "dotenv": "^16.0.1",
-        "eslint": "^8.35.0",
         "node-cron": "^3.0.2",
         "reflect-metadata": "^0.1.13",
         "tsyringe": "^4.8.0"
     },
     "devDependencies": {
         "@types/node": "^18.7.18",
+        "@typescript-eslint/eslint-plugin": "^6.10.0",
+        "@typescript-eslint/parser": "^6.10.0",
+        "eslint": "^8.53.0",
         "nodemon": "^2.0.19",
         "prettier": "^2.7.1",
         "prisma": "^4.13.0",

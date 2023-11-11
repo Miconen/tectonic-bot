@@ -92,7 +92,7 @@ export class PointService implements IPointService {
             )
             // Concatenate level up message to response if user leveled up
             if (newRank) {
-                let newRankIcon = this.rankService.rankIcon.get(newRank)
+                let newRankIcon = this.rankService.getIcon(newRank)
                 response += `\n**${receivingUser}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
                     newRank
                 )}!`
