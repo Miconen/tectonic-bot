@@ -76,7 +76,7 @@ class Event {
         })
         @SlashOption({
             name: "cutoff",
-            description: "Cutoff for xp/kills to gaine points",
+            description: "Cutoff for xp/kills to gain points",
             required: true,
             type: ApplicationCommandOptionType.Integer,
         })
