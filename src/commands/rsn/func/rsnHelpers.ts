@@ -78,7 +78,7 @@ export async function removeAllRsnHelper(user: GuildMember, interaction: Command
     return await replyHandler(response, interaction);
 }
 
-async function getWomId(rsn: string): Promise<Result<number, string>> {
+export async function getWomId(rsn: string): Promise<Result<number, string>> {
     try {
         let player = await wom.players.getPlayerDetails(rsn);
         let response = player.id;
