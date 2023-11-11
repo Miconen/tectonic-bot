@@ -1,13 +1,12 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IDatabase from "../../../database/IDatabase";
+import type { Result } from "../../../typings/commandResult";
 import { WOMClient } from "@wise-old-man/utils";
 import { replyHandler } from "../../../utils/replyHandler.js";
 
 import { container } from "tsyringe"
 const database = container.resolve<IDatabase>("Database")
 const wom = new WOMClient();
-
-type Result<T, E> = { success: true; value: T } | { success: false; error: E };
 
 export async function addRsnHelper(user: GuildMember, rsn: string, interaction: CommandInteraction) {
     if (!interaction.guild?.id) return;
