@@ -11,6 +11,7 @@ import { UserService } from "./utils/userUtils/UserService.js"
 import { Database } from "./database/Database.js"
 import { container } from "tsyringe"
 
+
 // TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(BigInt.prototype as any).toJSON = function () {
