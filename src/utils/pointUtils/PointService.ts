@@ -48,11 +48,13 @@ export class PointService implements IPointService {
     async givePointsToMultiple(
         addedPoints: number,
         users: Collection<string, GuildMember>,
-        interaction: BaseInteraction
+        interaction: BaseInteraction,
+        extraPoints?: {[key: string]: number},
     ) {
         let responses: Promise<string>[] = []
 
         users.forEach((user) => {
+            addedPoints += extraPoints?.[user.id] || 0;
             let points = this.givePoints(addedPoints, user, interaction)
             responses.push(points)
         })

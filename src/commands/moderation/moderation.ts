@@ -9,8 +9,6 @@ import giveHelper from "./func/giveHelper.js";
 import IsAdmin from "../../guards/IsAdmin.js";
 
 @Discord()
-@SlashGroup({ name: "moderation", description: "Moderation related commands" })
-@SlashGroup("moderation")
 @Guard(IsAdmin)
 class Moderation {
     @Slash({ name: "give", description: "Give points to a user" })
@@ -36,7 +34,7 @@ class Moderation {
 
     @Slash({
         name: "setmultiplier",
-        description: "Set a server vide point multiplier",
+        description: "Set a server wide point multiplier",
     })
     async setmultiplier(
         @SlashOption({

@@ -25,9 +25,16 @@ class Activation {
             type: ApplicationCommandOptionType.User,
         })
         user: GuildMember,
+        @SlashOption({
+            name: "rsn",
+            description: "RSN to add",
+            required: true,
+            type: ApplicationCommandOptionType.String,
+        })
+        rsn: string,
         interaction: CommandInteraction
     ) {
-        return activationHelper(user, interaction)
+        return activationHelper(user, rsn, interaction)
     }
 
     @Slash({

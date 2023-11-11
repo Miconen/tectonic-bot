@@ -60,7 +60,7 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
             embeds: [
                 embedMaker()
                     .setFooter({
-                        text: `Page ${i % 9} (${i + 1}-${i + 10})`,
+                        text: `Page ${i % 9 + 1} (${i + 1}-${i + 10})`,
                     })
                     .addFields(...fields),
             ],
