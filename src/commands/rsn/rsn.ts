@@ -11,7 +11,7 @@ import { addRsnHelper, removeAllRsnHelper, removeRsnHelper } from "./func/rsnHel
 @Discord()
 @SlashGroup({ name: "rsn", description: "RSN specific commands" })
 @SlashGroup("rsn")
-@Guard(IsAdmin, IsActivated("rsn"))
+@Guard(IsAdmin)
 class RSN {
     @Slash({
         name: "add",
