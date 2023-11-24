@@ -1,5 +1,5 @@
 import type { CommandInteraction } from "discord.js"
-import type IPointService from "../../../utils/pointUtils/IPointService"
+import type IPointService from "@utils/pointUtils/IPointService"
 
 import addTime from "./addTime.js"
 import TimeConverter from "./TimeConverter.js"

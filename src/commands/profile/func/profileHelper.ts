@@ -1,7 +1,7 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "../../../utils/rankUtils/IRankService"
 import type IUserService from "../../../utils/userUtils/IUserService"
-import type IDatabase from "../../../database/IDatabase"
+import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 

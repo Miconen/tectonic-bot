@@ -1,5 +1,5 @@
 import hasDuplicates from "./hasDuplicates.js"
-import type IDatabase from "../../../database/IDatabase"
+import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 
@@ -23,7 +23,7 @@ async function addTime(
         teamData.push({ run_id: timeId, user_id: player, guild_id: guildId })
     }
 
-    await database.addTeam(teamData);
+    await database.addTeam(teamData)
 
     return {
         ...newTime,

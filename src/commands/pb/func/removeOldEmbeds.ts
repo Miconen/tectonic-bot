@@ -1,5 +1,5 @@
 import { Client, TextChannel } from "discord.js"
-import type IDatabase from "../../../database/IDatabase"
+import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 

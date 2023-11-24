@@ -3,7 +3,7 @@ import IPointService from "./IPointService.js"
 import { BaseInteraction, Collection, Guild, GuildMember } from "discord.js"
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js"
 import IRankService from "../rankUtils/IRankService.js"
-import IDatabase from "../../database/IDatabase.js"
+import IDatabase from "@database/IDatabase.js"
 
 @singleton()
 @injectable()
@@ -49,12 +49,12 @@ export class PointService implements IPointService {
         addedPoints: number,
         users: Collection<string, GuildMember>,
         interaction: BaseInteraction,
-        extraPoints?: {[key: string]: number},
+        extraPoints?: { [key: string]: number }
     ) {
         let responses: Promise<string>[] = []
 
         users.forEach((user) => {
-            let pointsToGive = addedPoints + (extraPoints?.[user.id] || 0);
+            let pointsToGive = addedPoints + (extraPoints?.[user.id] || 0)
             let points = this.givePoints(pointsToGive, user, interaction)
             responses.push(points)
         })

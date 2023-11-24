@@ -5,13 +5,21 @@
         "outDir": "build",
         "rootDir": "src",
         "strict": true,
-        "moduleResolution": "Node",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "skipLibCheck": false,
         "forceConsistentCasingInFileNames": true,
-        "esModuleInterop": true
+        "baseUrl": "./",
+        "paths": {
+            "@commands/*": ["src/commands/*"],
+            "@utils/*": ["src/utils/*"],
+            "@database/*": ["src/database/*"],
+            "@guards/*": ["src/guards/*"]
+        }
     },
     "exclude": ["build", "node_modules"]
 }
