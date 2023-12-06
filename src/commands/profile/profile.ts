@@ -7,12 +7,13 @@ import {
 import profileHelper from "./func/profileHelper.js";
 
 @Discord()
-class Profile {
+class profile {
     @Slash({
         name: 'profile',
         description: 'Check your or someone elses profile',
     })
     async points(
+        //this 
         @SlashOption({
             name: 'username',
             description:
@@ -20,10 +21,20 @@ class Profile {
             required: false,
             type: ApplicationCommandOptionType.User,
         })
-        user: GuildMember | null,
+        // or this
+        user: GuildMember | string | null,
+        @SlashOption({
+            name: 'rsn',
+            description:
+                'an rsn coneccted to the profile.',
+            required: false,
+            type: ApplicationCommandOptionType.String,
+        })
+        rsn: GuildMember | string | null,
         interaction: CommandInteraction
     ) {
-        const response = await profileHelper(user, interaction);
+        
+        const response = await profileHelper(user ?? rsn ?? null, interaction);
         await interaction.reply(response);
     }
 }

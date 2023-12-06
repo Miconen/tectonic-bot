@@ -2,6 +2,7 @@ import { PrismaClient, teams, users } from "@prisma/client"
 import { singleton } from "tsyringe"
 import { GuildBoss, GuildCategory } from "../commands/pb/func/types"
 import IDatabase from "./IDatabase"
+import { GuildMember } from "discord.js"
 
 @singleton()
 export class Database implements IDatabase {
@@ -343,6 +344,18 @@ export class Database implements IDatabase {
     async getUsersByWomIds(guild_id: string, wom_id: string[]) {
         return await this.prisma.rsn.findMany({
             where: { guild_id, wom_id: { in: wom_id } }
+        })
+    }
+
+    async getUserByRsn( guild_id: string, rsn: string) {
+        return await this.prisma.rsn.findFirst({
+            where: {
+                guild_id,
+                rsn,
+            },
+            select: {
+                user_id: true
+            }
         })
     }
 }
