@@ -13,7 +13,6 @@ class profile {
         description: "Check your or someone elses profile",
     })
     async points(
-        //this
         @SlashOption({
             name: "username",
             description:
@@ -21,18 +20,24 @@ class profile {
             required: false,
             type: ApplicationCommandOptionType.User,
         })
-        user: // or this
-        GuildMember | string | null,
+        user: GuildMember | null,
         @SlashOption({
             name: "rsn",
-            description: "an rsn coneccted to the profile.",
+            description: "RSN connected to the user profile.",
             required: false,
             type: ApplicationCommandOptionType.String,
         })
-        rsn: GuildMember | string | null,
+        rsn: string | null,
         interaction: CommandInteraction
     ) {
-        const response = await profileHelper(user ?? rsn ?? null, interaction)
+        if (user && rsn) {
+            return await interaction.reply({
+                ephemeral: true,
+                content: `❌ Can't look for a member by @ AND rsn.`,
+            })
+        }
+
+        const response = await profileHelper(user, rsn, interaction)
         await interaction.reply(response)
     }
 }
