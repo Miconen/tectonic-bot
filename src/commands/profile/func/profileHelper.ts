@@ -6,45 +6,47 @@ import type IDatabase from "@database/IDatabase"
 import { container } from "tsyringe"
 
 const pointsHelper = async (
-    user: GuildMember | string | null | undefined,
+    user: GuildMember | null,
+    rsn: string | null,
     interaction: CommandInteraction
 ) => {
+    let guildId = interaction.guildId
+    if (!guildId) return `❌ Critical error determining guild.`
+
     const rankService = container.resolve<IRankService>("RankService")
     const userService = container.resolve<IUserService>("UserService")
     const database = container.resolve<IDatabase>("Database")
 
-    let targetUser: string
-    let targetUserName: string
+    let targetUser: GuildMember | undefined
+    let targetId = ""
+    let isActivated = false
 
-    // checks the database for an rns
-    if (typeof user === "string") {
-        user = user as string
-        console.log(user)
-        let temp =
-            (await database.getUserByRsn(interaction.guildId!, user)) ??
-            undefined
-        console.log(temp)
-        if (temp === undefined) {
-            return `❌ **${user}** is not bound to a member.`
-        }
-        user = await interaction.guild?.members.fetch(temp.user_id)
+    // Checks the database for an rns
+    if (rsn) {
+        let userId = await database.getUserByRsn(guildId, rsn)
+        if (!userId) return `❌ **${rsn}** is not bound to a member.`
+        // User exists and is activated
+        targetId = userId
+        targetUser = await interaction.guild?.members.fetch(targetId)
+        isActivated = true
     }
 
-    // from the user fetch the informatuin required to make the profile
-    user = user as GuildMember | null
-    targetUser = user?.user?.id ?? interaction.user.id ?? "0"
-    targetUserName =
-        user?.displayName ??
-        (interaction.member as GuildMember).displayName ??
-        undefined
-
-    if (targetUserName === undefined) {
-        return `❌ **${targetUserName}** is not activated.`
+    // Check user exists if there was no rsn
+    if (!isActivated) {
+        targetUser = user || (interaction.member as GuildMember)
+        targetId = targetUser.id
+        isActivated = await database.userExists(guildId, targetId)
     }
 
-    let points =
-        (await database.getPoints(interaction.guildId!, targetUser)) ?? 0
-    let guildId = interaction.guildId
+    if (!targetUser) {
+        return `❌ Couldn't fetch user.`
+    }
+
+    if (!isActivated) {
+        return `❌ **${targetUser.displayName}** is not activated.`
+    }
+
+    let points = (await database.getPoints(interaction.guildId!, targetId)) ?? 0
     if (!guildId) return "Invalid guild id, something broke bad??"
 
     // Rank info and icons
@@ -55,11 +57,11 @@ const pointsHelper = async (
     let currentRankIcon = rankService.getIcon(currentRank)
 
     // User accounts
-    let accounts = await userService.getAccounts(targetUser, guildId)
-    let pbs = await userService.getPbs(targetUser, guildId)
+    let accounts = await userService.getAccounts(targetId, guildId)
+    let pbs = await userService.getPbs(targetId, guildId)
 
     let response: string
-    response = `# ${currentRankIcon} **${targetUserName}**`
+    response = `# ${currentRankIcon} **${targetUser.displayName}**`
     response += `\nCurrent points: ${points}${currentRankIcon}`
     if (currentRank != "zenyte") {
         response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`
