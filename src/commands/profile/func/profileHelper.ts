@@ -13,40 +13,39 @@ const pointsHelper = async (
     const userService = container.resolve<IUserService>("UserService")
     const database = container.resolve<IDatabase>("Database")
 
-
     let targetUser: string
     let targetUserName: string
 
     // checks the database for an rns
-    if (typeof user === "string"){
-        user = user as string;
-        console.log(user);
-        let temp = await database.getUserByRsn(interaction.guildId!, user) ?? undefined;
-        console.log(temp);
+    if (typeof user === "string") {
+        user = user as string
+        console.log(user)
+        let temp =
+            (await database.getUserByRsn(interaction.guildId!, user)) ??
+            undefined
+        console.log(temp)
         if (temp === undefined) {
             return `❌ **${user}** is not bound to a member.`
         }
-        user = (await interaction.guild?.members.fetch(temp.user_id));
+        user = await interaction.guild?.members.fetch(temp.user_id)
     }
 
     // from the user fetch the informatuin required to make the profile
-    user = user as GuildMember | null;
+    user = user as GuildMember | null
     targetUser = user?.user?.id ?? interaction.user.id ?? "0"
-        targetUserName =
+    targetUserName =
         user?.displayName ??
         (interaction.member as GuildMember).displayName ??
-        undefined        
-        
-        if (targetUserName === undefined) {
-            return `❌ **${targetUserName}** is not activated.`
-        }
+        undefined
 
-    let points =  await database.getPoints(interaction.guildId!, targetUser) ?? 0
+    if (targetUserName === undefined) {
+        return `❌ **${targetUserName}** is not activated.`
+    }
+
+    let points =
+        (await database.getPoints(interaction.guildId!, targetUser)) ?? 0
     let guildId = interaction.guildId
     if (!guildId) return "Invalid guild id, something broke bad??"
-    
-
-
 
     // Rank info and icons
     let nextRankUntil = rankService.pointsToNextRank(points)

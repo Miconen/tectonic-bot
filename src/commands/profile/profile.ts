@@ -1,40 +1,38 @@
-import { Discord, Slash, SlashOption } from 'discordx';
+import { Discord, Slash, SlashOption } from "discordx"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
     GuildMember,
-} from 'discord.js';
-import profileHelper from "./func/profileHelper.js";
+} from "discord.js"
+import profileHelper from "./func/profileHelper.js"
 
 @Discord()
 class profile {
     @Slash({
-        name: 'profile',
-        description: 'Check your or someone elses profile',
+        name: "profile",
+        description: "Check your or someone elses profile",
     })
     async points(
-        //this 
+        //this
         @SlashOption({
-            name: 'username',
+            name: "username",
             description:
-                'Leave blank to check personal profile or supply a name to check another user.',
+                "Leave blank to check personal profile or supply a name to check another user.",
             required: false,
             type: ApplicationCommandOptionType.User,
         })
-        // or this
-        user: GuildMember | string | null,
+        user: // or this
+        GuildMember | string | null,
         @SlashOption({
-            name: 'rsn',
-            description:
-                'an rsn coneccted to the profile.',
+            name: "rsn",
+            description: "an rsn coneccted to the profile.",
             required: false,
             type: ApplicationCommandOptionType.String,
         })
         rsn: GuildMember | string | null,
         interaction: CommandInteraction
     ) {
-        
-        const response = await profileHelper(user ?? rsn ?? null, interaction);
-        await interaction.reply(response);
+        const response = await profileHelper(user ?? rsn ?? null, interaction)
+        await interaction.reply(response)
     }
 }

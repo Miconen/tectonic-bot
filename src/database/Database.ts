@@ -303,13 +303,18 @@ export class Database implements IDatabase {
         })
     }
 
-    async addRsn(guild_id: string, user_id: string, rsn: string, wom_id: string) {
+    async addRsn(
+        guild_id: string,
+        user_id: string,
+        rsn: string,
+        wom_id: string
+    ) {
         await this.prisma.rsn.create({
             data: {
                 guild_id: guild_id,
                 user_id: user_id,
                 rsn: rsn,
-                wom_id: wom_id
+                wom_id: wom_id,
             },
         })
     }
@@ -322,7 +327,7 @@ export class Database implements IDatabase {
                 rsn: rsn,
             },
         })
-        return !!response.count;
+        return !!response.count
     }
 
     async removeAllRsn(guild_id: string, user_id: string) {
@@ -332,7 +337,7 @@ export class Database implements IDatabase {
                 user_id: user_id,
             },
         })
-        return !!response.count;
+        return !!response.count
     }
 
     async getRsns(guild_id: string, user_id: string) {
@@ -343,19 +348,19 @@ export class Database implements IDatabase {
 
     async getUsersByWomIds(guild_id: string, wom_id: string[]) {
         return await this.prisma.rsn.findMany({
-            where: { guild_id, wom_id: { in: wom_id } }
+            where: { guild_id, wom_id: { in: wom_id } },
         })
     }
 
-    async getUserByRsn( guild_id: string, rsn: string) {
+    async getUserByRsn(guild_id: string, rsn: string) {
         return await this.prisma.rsn.findFirst({
             where: {
                 guild_id,
                 rsn,
             },
             select: {
-                user_id: true
-            }
+                user_id: true,
+            },
         })
     }
 }
