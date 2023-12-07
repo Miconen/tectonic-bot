@@ -49,7 +49,6 @@ type EmbedData =
           guilds: guilds
       })
     | null
-type user_id = { user_id: string } | null
 
 interface IDatabase {
     getLeaderboard: (guild_id: string) => Promise<users[]>
@@ -113,7 +112,7 @@ interface IDatabase {
     getRsns: (guild_id: string, user_id: string) => Promise<rsn[]>
 
     getUsersByWomIds: (guild_id: string, wom_id: string[]) => Promise<rsn[]>
-    getUserByRsn: (guild_id: string, rsn: string) => Promise<user_id>
+    getUserByRsn: (guild_id: string, rsn: string) => Promise<string | undefined>
 }
 
 export default IDatabase

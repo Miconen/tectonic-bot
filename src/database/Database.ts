@@ -353,7 +353,7 @@ export class Database implements IDatabase {
     }
 
     async getUserByRsn(guild_id: string, rsn: string) {
-        return await this.prisma.rsn.findFirst({
+        const userId = await this.prisma.rsn.findFirst({
             where: {
                 guild_id,
                 rsn,
@@ -362,5 +362,7 @@ export class Database implements IDatabase {
                 user_id: true,
             },
         })
+
+        return userId?.user_id;
     }
 }
