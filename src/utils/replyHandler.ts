@@ -22,8 +22,10 @@ export async function replyHandler(message: string, interaction: CommandInteract
 }
 
 async function replyer(message: string, interaction: CommandInteraction, split?: boolean) {
-    if (interaction.channel instanceof TextChannel && split) {
-        return await interaction.channel.send(message);
+    let channel = interaction.channel as TextChannel;
+
+    if (split) {
+        return await channel.send(message);
     }
 
     if (interaction.deferred) {
@@ -31,9 +33,10 @@ async function replyer(message: string, interaction: CommandInteraction, split?:
     }
 
     return await interaction.reply(message);
+
 }
 
-function splitMessage(message: string, CHARACTER_LIMIT: number) {
+export function splitMessage(message: string, CHARACTER_LIMIT: number) {
     const chunks = [];
 
     while (message.length > CHARACTER_LIMIT) {

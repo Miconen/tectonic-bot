@@ -1,9 +1,9 @@
-import { BaseInteraction, Guild, GuildMember, RoleResolvable } from "discord.js"
-import { singleton } from "tsyringe"
-import IRankService from "./IRankService"
+import IRankService from "@utils/rankUtils/IRankService";
+import { BaseInteraction, CacheType, GuildMember } from "discord.js";
+import { singleton } from "tsyringe";
 
 @singleton()
-export class RankService implements IRankService {
+export class MockRankService implements IRankService {
     public readonly ironmanIcon: Map<string, string>
     public readonly rankIcon: Map<string, string>
     public readonly roleIds: Map<string, string>
@@ -11,24 +11,24 @@ export class RankService implements IRankService {
 
     constructor() {
         this.ironmanIcon = new Map([
-            ["MAIN", ""],
-            ["IM", "<:IM:990015824981020702>"],
-            ["HCIM", "<:HCIM:990015822376366140>"],
-            ["UIM", "<:UIM:990015823651422238>"],
-            ["GIM", "<:GIM:990015820568592434>"],
-            ["HCGIM", "<:HCGIM:990015818924429312>"],
+            ["MAIN", "( Main )"],
+            ["IM", "( Ironman )"],
+            ["HCIM", "( Hardcore Ironman )"],
+            ["UIM", "( Ultimate Ironman )"],
+            ["GIM", "( Group Ironman )"],
+            ["HCGIM", "( Group Hardcore Ironman )"],
         ])
 
         this.rankIcon = new Map([
-            ["jade", "<:Jade:1167823880358989936>"],
-            ["red_topaz", "<:Red_Topaz:1167823883580215387>"],
-            ["sapphire", "<:Sapphire:1167823887489318972>"],
-            ["emerald", "<:Emerald:1167823879205552138>"],
-            ["ruby", "<:Ruby:1167823885530570872>"],
-            ["diamond", "<:Diamond:1167823870556909629>"],
-            ["dragonstone", "<:Dragonstone:1167823873266438214>"],
-            ["onyx", "<:Onyx:1167823881403379743>"],
-            ["zenyte", "<:Zenyte:1167823889636806677>"],
+            ["jade", "( Jade )"],
+            ["red_topaz", "( Red Topaz )"],
+            ["sapphire", "( Sapphire )"],
+            ["emerald", "( Emerald )"],
+            ["ruby", "( Ruby )"],
+            ["diamond", "( Diamond )"],
+            ["dragonstone", "( Dragonstone )"],
+            ["onyx", "( Onyx )"],
+            ["zenyte", "( Zenyte )"],
         ])
 
         this.roleIds = new Map([
@@ -70,9 +70,6 @@ export class RankService implements IRankService {
         let newRank = this.rankUpdater(oldPoints, newPoints)
         // If no new rank then return
         if (!newRank) return
-        // Remove old roles before adding new one
-        await this.removeOldRoles(target)
-        await this.addRole(interaction, target, newRank)
         return newRank
     }
 
@@ -81,16 +78,6 @@ export class RankService implements IRankService {
         const oldRank = this.getRankByPoints(oldPoints)
         const newRank = this.getRankByPoints(newPoints)
         return oldRank != newRank ? newRank : false
-    }
-
-    async removeOldRoles(target: GuildMember) {
-        // const oldRoles = target.roles.cache.filter((role) => {
-        //     this.getByValue(this.roleIds, role.id);
-        // })
-        // if (oldRoles.size === 0) return
-        console.log(`↳ Removing all rank roles if possible from: ${target.displayName}`)
-        const roles = [...this.roleIds.values()] as RoleResolvable[];
-        await target.roles.remove(roles)
     }
 
     public getRankByPoints(points: number) {
@@ -107,25 +94,6 @@ export class RankService implements IRankService {
         return nextRank ? nextRank[0] - points : -1
     }
 
-    async addRole(
-        interaction: BaseInteraction,
-        target: GuildMember,
-        roleName: string
-    ) {
-        if (!interaction.guild) return;
-        let role = this.getRole(interaction.guild, roleName)
-        if (role == undefined) return
-        console.log(`↳ Adding new role to ${target.displayName} (${role.name})`)
-        await target.roles.add(role as RoleResolvable)
-    }
-
-    private getRole(guild: Guild, roleName: string) {
-        if (guild.id != "979445890064470036") return undefined
-        let roleId = this.roleIds.get(roleName)
-        if (!roleId) return undefined;
-        return guild.roles.cache.get(roleId)
-    }
-
     public getRoleValue(searchValue: string) {
         return this.getByValue(this.roleValues, searchValue)
     }
@@ -138,5 +106,13 @@ export class RankService implements IRankService {
             if (value === searchValue) return key
         }
         return
+    }
+
+    async removeOldRoles (target: GuildMember) {
+        return;
+    } 
+
+    async addRole(interaction: BaseInteraction<CacheType>, target: GuildMember, roleName: string) {
+        return;
     }
 }

@@ -1,51 +1,64 @@
-import { PrismaClient, teams } from "@prisma/client"
-import { singleton } from "tsyringe"
-import { GuildBoss, GuildCategory } from "../commands/pb/func/types"
-import IDatabase from "./IDatabase"
+import IDatabase from "@database/IDatabase";
+import { users, categories, bosses, guild_bosses, guild_categories } from "@prisma/client";
+import { singleton } from "tsyringe";
 
 @singleton()
-export class Database implements IDatabase {
-    private readonly prisma
-    constructor() {
-        this.prisma = new PrismaClient()
+export class MockDatabase implements IDatabase {
+    private users: users[] = [];
+    private guildBosses: Record<string, guild_bosses[]> = {}
+    private guildCategories: Record<string, guild_categories[]> = {}
+    private categories: Record<string, categories> = {}
+    private bosses: Record<string, bosses> = {}
+    private points: Record<string, Record<string, number>> = {}
+    private multiplier = 1
+
+    // Clear all data from the mock database
+    reset(): void {
+        this.users = []
+        this.guildBosses = {}
+        this.guildCategories = {}
+        this.categories = {}
+        this.bosses = {}
+        this.points = {}
+        this.multiplier = 1
     }
 
     async getLeaderboard(guild_id: string) {
-        return await this.prisma.users.findMany({
-            take: 50,
-            orderBy: [{ points: "desc" }],
-            where: { guild_id },
-        })
+        return this.users;
     }
 
     async getUser(guildId: string, userId: string) {
-        return await this.prisma.users.findUnique({
-            where: { ids: { user_id: userId, guild_id: guildId } },
-        })
+        return this.users[0]
     }
 
     async newUser(guild_id: string, user_id: string) {
-        // Return false if we didn't update
-        if (await this.userExists(guild_id, user_id)) return false
+        let exists = await this.userExists(guild_id, user_id)
 
-        // Create new user
-        await this.prisma.users.create({ data: { guild_id, user_id } })
+        // Return false if we didn't update
+        if (exists) return false
+
+        this.users.push({
+            user_id: user_id,
+            guild_id: guild_id,
+            points: 0,
+        })
 
         // Return true if updated
         return true
     }
 
     async removeUser(guild_id: string, user_id: string) {
-        let response = await this.prisma.users.deleteMany({
-            where: { guild_id, user_id },
-        })
+        let exists = await this.userExists(guild_id, user_id)
 
-        return !!response.count
+        if (exists) {
+            this.users = this.users.filter(user => user.user_id !== user_id)
+        }
+
+        return exists
     }
 
     async userExists(guildId: string, userId: string) {
-        let exists = await this.getUser(guildId, userId)
-        return !!exists?.user_id
+        return this.users.some(user => user.user_id === userId)
     }
 
     async usersExist(guild_id: string, user_ids: string[]) {
@@ -55,24 +68,16 @@ export class Database implements IDatabase {
     }
 
     async getPoints(guildId: string, userId: string) {
-        let response = await this.getUser(guildId, userId)
-        return response?.points
+        return this.users.find(user => user.user_id === userId)?.points
     }
 
     async getPointMultiplier(guild_id: string) {
-        let response = await this.prisma.guilds.findUnique({
-            where: { guild_id },
-        })
-        return response?.multiplier
+        return this.multiplier
     }
 
     async setPointMultiplier(guild_id: string, multiplier: number) {
-        let response = await this.prisma.guilds.upsert({
-            where: { guild_id },
-            update: { multiplier },
-            create: { guild_id, multiplier },
-        })
-        return response.multiplier
+        this.multiplier = multiplier
+        return multiplier
     }
 
     async updateUserPoints(
@@ -80,13 +85,11 @@ export class Database implements IDatabase {
         user_id: string,
         incomingPoints: number
     ) {
-        if (!(await this.userExists(guild_id, user_id))) return false
-        await this.prisma.users.update({
-            where: { ids: { guild_id, user_id } },
-            data: { points: { increment: incomingPoints } },
-        })
-        let response = await this.getUser(guild_id, user_id)
-        return response?.points
+        let user = this.users.find(user => user.user_id === user_id)
+        if (user) {
+            user.points += incomingPoints
+        }
+        return user?.points
     }
 
     async getUsersPbs(guild_id: string, user_id: string) {
@@ -346,3 +349,5 @@ export class Database implements IDatabase {
         })
     }
 }
+
+export default MockDatabase
