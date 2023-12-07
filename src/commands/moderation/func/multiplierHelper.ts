@@ -1,5 +1,5 @@
 import { CommandInteraction } from "discord.js"
-import IDatabase from "../../../database/IDatabase"
+import IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 

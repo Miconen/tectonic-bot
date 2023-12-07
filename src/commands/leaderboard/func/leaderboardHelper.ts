@@ -1,7 +1,7 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js"
 import { Pagination } from "@discordx/pagination"
 import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IDatabase from "../../../database/IDatabase"
+import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 
@@ -60,7 +60,7 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
             embeds: [
                 embedMaker()
                     .setFooter({
-                        text: `Page ${i % 9 + 1} (${i + 1}-${i + 10})`,
+                        text: `Page ${(i % 9) + 1} (${i + 1}-${i + 10})`,
                     })
                     .addFields(...fields),
             ],

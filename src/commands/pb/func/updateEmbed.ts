@@ -2,7 +2,7 @@ import { CommandInteraction, TextChannel } from "discord.js"
 import embedBuilder from "./embedBuilder.js"
 import TimeConverter from "./TimeConverter.js"
 import { TimeField } from "./types.js"
-import type IDatabase from "../../../database/IDatabase"
+import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 

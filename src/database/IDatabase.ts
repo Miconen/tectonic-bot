@@ -26,27 +26,29 @@ type UsersPbs = (times & {
 type CategoryWithTimes = (bosses & {
     guild_bosses: (guild_bosses & {
         times:
-        | (times & {
-            teams: teams[]
-        })
-        | null
+            | (times & {
+                  teams: teams[]
+              })
+            | null
     })[]
 })[]
 
 type BossesWithTimes = (guild_bosses & {
     times:
-    | (times & {
-        teams: teams[]
-    })
-    | null
-})[];
+        | (times & {
+              teams: teams[]
+          })
+        | null
+})[]
 
 type CategoriesWithBosses = (categories & { bosses: bosses[] })[]
 type OldPb = (guild_bosses & { times: times | null }) | null
-type EmbedData = (guild_categories & {
-    categories: categories,
-    guilds: guilds,
-}) | null;
+type EmbedData =
+    | (guild_categories & {
+          categories: categories
+          guilds: guilds
+      })
+    | null
 
 interface IDatabase {
     getLeaderboard: (guild_id: string) => Promise<users[]>
@@ -90,14 +92,27 @@ interface IDatabase {
     getGuild: (guild_id: string) => Promise<guilds | null>
     getEmbedData: (guild_id: string, category: string) => Promise<EmbedData>
     ensureGuildBossesExist: (data: GuildBoss[]) => Promise<void>
-    updateGuildCategories: (guild_id: string, data: GuildCategory[]) => Promise<void>
+    updateGuildCategories: (
+        guild_id: string,
+        data: GuildCategory[]
+    ) => Promise<void>
 
-    addRsn: (guild_id: string, user_id: string, rsn: string, wom_id: string) => Promise<void>
-    removeRsn: (guild_id: string, user_id: string, rsn: string) => Promise<boolean>
+    addRsn: (
+        guild_id: string,
+        user_id: string,
+        rsn: string,
+        wom_id: string
+    ) => Promise<void>
+    removeRsn: (
+        guild_id: string,
+        user_id: string,
+        rsn: string
+    ) => Promise<boolean>
     removeAllRsn: (guild_id: string, user_id: string) => Promise<boolean>
     getRsns: (guild_id: string, user_id: string) => Promise<rsn[]>
 
     getUsersByWomIds: (guild_id: string, wom_id: string[]) => Promise<rsn[]>
+    getUserByRsn: (guild_id: string, rsn: string) => Promise<string | undefined>
 }
 
 export default IDatabase
