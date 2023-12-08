@@ -356,13 +356,16 @@ export class Database implements IDatabase {
         const userId = await this.prisma.rsn.findFirst({
             where: {
                 guild_id,
-                rsn,
+                rsn: {
+                    equals: rsn,
+                    mode: "insensitive",
+                },
             },
             select: {
                 user_id: true,
             },
         })
 
-        return userId?.user_id;
+        return userId?.user_id
     }
 }
