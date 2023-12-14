@@ -16,27 +16,30 @@ function IsActivated(target: string = "player") {
         _,
         next
     ) => {
-        console.log(
-            `Checking if all players are activated`
-        )
+        console.log(`Checking if all players are activated`)
 
-        let players: GuildMember[] = [];
+        let players: GuildMember[] = []
 
         // Dirty hack to extract GuildMembers from the guarded commands options
-        interaction.options.data[0].options?.forEach(option => {
-            if (option.name.includes(target) && option.member && option.member instanceof GuildMember) {
-                console.log("option was guild member");
-                players.push(option.member);
+        interaction.options.data[0].options?.forEach((option) => {
+            if (
+                option.name.includes(target) &&
+                option.member &&
+                option.member instanceof GuildMember
+            ) {
+                console.log("option was guild member")
+                players.push(option.member)
             } else if (option.name.includes(target)) {
-                console.error("### Something went wrong with IsActivated guard finding GuildMembers ###")
+                console.error(
+                    "### Something went wrong with IsActivated guard finding GuildMembers ###"
+                )
             }
         })
 
         if (!players.length) {
             console.log("↳ Error retrieving players")
             const warning: InteractionReplyOptions = {
-                content:
-                    "Failed to fetch players from command",
+                content: "Failed to fetch players from command",
                 ephemeral: true,
             }
             return await interaction.reply(warning)
@@ -47,42 +50,46 @@ function IsActivated(target: string = "player") {
         if (!interaction.guild?.id) {
             console.log("↳ Error getting guild ID")
             const warning: InteractionReplyOptions = {
-                content:
-                    "Failed to fetch guild id",
+                content: "Failed to fetch guild id",
                 ephemeral: true,
             }
             return await interaction.reply(warning)
         }
 
-        const playersUserIds = players.map(member => member.id);
-        const playersUserNames = players.map(member => `${member.displayName}`);
+        const playersUserIds = players.map((member) => member.id)
+        const playersUserNames = players.map(
+            (member) => `${member.displayName}`
+        )
         console.log(
             `Checking activation statuses for: ${playersUserNames.join(", ")}`
         )
-        let existingUsers = await database.usersExist(interaction.guild.id, playersUserIds)
+        let existingUsers = await database.usersExist(
+            interaction.guild.id,
+            playersUserIds
+        )
 
-        let warning = "";
+        let warning = ""
 
         for (const member of players) {
-            const userExists = existingUsers.some(user => user.user_id === member.id);
+            const userExists = existingUsers.some(
+                (user) => user.user_id === member.id
+            )
             if (!userExists) {
-                console.log(`↳ Denied, not activated: ${member.displayName}`);
-                warning += `❌ **${member.displayName}** is not activated.\n`;
+                console.log(`↳ Denied, not activated: ${member.displayName}`)
+                warning += `❌ **${member.displayName}** is not activated.\n`
             }
         }
 
         if (warning) {
             console.log(warning)
             return await interaction.reply("## Could not submit pb\n" + warning)
-        } else {
-            console.log("↳ Passed")
-            await next()
         }
 
-        return await interaction.reply(warning);
+        console.log("↳ Passed")
+        await next()
     }
 
-    return guard;
+    return guard
 }
 
-export default IsActivated;
+export default IsActivated
