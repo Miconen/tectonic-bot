@@ -63,7 +63,7 @@ const pointsHelper = async (
     let response: string
     response = `# ${currentRankIcon} **${targetUser.displayName}**`
     response += `\nCurrent points: ${points}${currentRankIcon}`
-    if (currentRank != "zenyte") {
+    if (currentRank != "wrath") {
         response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`
     }
     if (accounts.length) {
