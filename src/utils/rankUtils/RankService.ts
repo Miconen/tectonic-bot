@@ -29,6 +29,11 @@ export class RankService implements IRankService {
             ["dragonstone", "<:Dragonstone:1167823873266438214>"],
             ["onyx", "<:Onyx:1167823881403379743>"],
             ["zenyte", "<:Zenyte:1167823889636806677>"],
+            ["astral", "<:Astral:1193279921242509383>"],
+            ["death", "<:Death:1193279997868245022>"],
+            ["blood", "<:Blood:1193279948899766342>"],
+            ["soul", "<:Soul:1193279967396634686>"],
+            ["wrath", "<:Wrath:1193279983725068398>"],
         ])
 
         this.roleIds = new Map([
@@ -41,6 +46,11 @@ export class RankService implements IRankService {
             ["dragonstone", "989918207735377952"],
             ["onyx", "989917139836235826"],
             ["zenyte", "989917779928940585"],
+            ["astral", "1190821065899913236"],
+            ["death", "1190838725790400564"],
+            ["blood", "1190825155761553519"],
+            ["soul", "1190827045366796490"],
+            ["wrath", "1190827085648908338"],
         ])
 
         this.roleValues = new Map([
@@ -53,6 +63,11 @@ export class RankService implements IRankService {
             [800, "dragonstone"],
             [1000, "onyx"],
             [1250, "zenyte"],
+            [1500, "astral"],
+            [2000, "death"],
+            [2750, "blood"],
+            [3750, "soul"],
+            [5000, "wrath"],
         ])
     }
 
