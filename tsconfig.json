@@ -15,11 +15,11 @@
         "forceConsistentCasingInFileNames": true,
         "baseUrl": "./",
         "paths": {
-            "@commands/*": ["src/commands/*"],
-            "@utils/*": ["src/utils/*"],
-            "@database/*": ["src/database/*"],
-            "@guards/*": ["src/guards/*"]
+            //"@commands/*": ["src/commands/*"],
+            //"@utils/*": ["src/utils/*"],
+            //"@database/*": ["src/database/*"],
+            //"@guards/*": ["src/guards/*"]
         }
     },
-    "exclude": ["build", "node_modules"]
+    "exclude": ["build", "node_modules","prisma","src/commands","src/database","src/utils","src/events","src/guards"]
 }
