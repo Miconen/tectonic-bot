@@ -74,6 +74,7 @@ async function run() {
     // container.registerSingleton("RankService", RankService)
     // container.registerSingleton("PointService", PointService)
     // container.registerSingleton("UserService", UserService)
+    // container.registerSingleton("APIService", APIService)
 
 
 
