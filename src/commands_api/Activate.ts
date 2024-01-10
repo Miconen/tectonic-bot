@@ -31,73 +31,94 @@ class Activate {
         })
         rsn: string,
         interaction: CommandInteraction
-    ) 
-    {   
-        
+    ) {
         const API = process.env.API
         var warning: InteractionReplyOptions = {
             content: "",
             ephemeral: true,
         }
 
+        var error_mesasge = `An error occured`
+        var request_body = {}
+        var response: Response = new Response()
         //verify guild is activated
-        //TODO: make guard?
-        if (!interaction.guild?.id){
-            warning.content = "Failed to fetch guild id";
+        //TODO: this is stupid
+        if (!interaction.guild?.id) {
+            warning.content = "Failed to fetch guild id"
             interaction.reply(warning)
+            return
         }
-        
-        // Add the user to the db
-        var response:Response = new Response()
+
         try {
-                    response = await fetch(`${API}/user`, {
-                        method: 'POST', 
-                        headers: {
-                        'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                                guild_id: interaction.guildId,
-                                user_id: user.id,
-                            }),
-                    });
+            // Add the user to the db
+            warning.content = `Failed to add user (**${user.displayName}**) Status: ${response.status} ${response.statusText}`
+            error_mesasge = `Error making POST request to ${API}/user.`
+            request_body = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    guild_id: interaction.guildId,
+                    user_id: user.id,
+                }),
+            }
+
+            await fetch(`${API}/user`).then((response) => {
+                if (!response.ok) {
+                    // `❌ **${user.displayName}** is already activated`
+                    // TODO: figure out what can cause this error on the api side and what to repply
+
+                    warning.content = `Status: ${response.status} ${response.statusText}`
+                    response.json().then((bodyText) => {
+                        error_mesasge =
+                            warning.content + bodyText
+                                ? JSON.stringify(bodyText)
+                                : "{}"
+                    })
+                    throw new Error("Bad responce")
+                }
+            })
+
+            // Add an rsn to the user
+            // Update the warning in case operation fails
+            warning.content = `Failed to add RSN (**${rsn}**) Status: ${response.status} ${response.statusText}`
+            error_mesasge = `Error making POST request to ${API}/rsn.`
+            request_body = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    guild_id: interaction.guildId,
+                    user_id: user.id,
+                    rsn: rsn,
+                }),
+            }
+
+            await fetch(`${API}/rsn`, request_body).then(async (response) => {
+                if (!response.ok) {
+                    warning.content = `Status: ${response.status} ${response.statusText} `
+                    response.json().then((bodyText) => {
+                        error_mesasge =
+                            warning.content + bodyText
+                                ? JSON.stringify(bodyText)
+                                : "{}"
+                    })
+                    throw new Error("Bad responce")
+                }
+            })
         } catch (error) {
             console.error(error)
-        }
+            console.error(`Error message:\n`, error_mesasge)
+            console.error(`request_body:\n`, request_body)
 
-        if (!response.ok) {
-
-            // `❌ **${user.displayName}** is already activated`
-            // TODO: figure out what can cause this error on the api side and what to repply
-
-            warning.content = `Status: ${response.status} ${response.statusText}`;
             interaction.reply(warning)
-            console.error(`Error making POST request to ${API}/user. Status: ${response.status} ${response.statusText} Body: ${JSON.stringify({
-                guild_id: interaction.guildId,
-                user_id: user.id,
-              })}`)
+            return
         }
 
-        // Add an rsn to the user
-        response = await fetch(`${API}/rsn`, {
-            method: 'POST', 
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                guild_id: interaction.guildId,
-                user_id: user.id,
-              }),
-        });
-
-        if (!response.ok) {
-            warning.content = `Failed to add RSN (**${rsn}**) Status: ${response.status} ${response.statusText}`;
-            interaction.reply(warning)
-            console.error(`Error making POST request to ${API}/rsn. Status: ${response.status} ${response.statusText} Body: ${JSON.stringify({
-                guild_id: interaction.guildId,
-                user_id: user.id,
-              })}`)
-        }
-        
-        interaction.reply(`**${user.user}** has been activated and linked by **${interaction.member}**.`)
+        interaction.reply(
+            `**${user.user}** has been activated and linked by **${interaction.member}**.`
+        )
     }
 }
