@@ -16,17 +16,9 @@
         "baseUrl": "./",
         "paths": {
             //"@commands/*": ["src/commands/*"],
-            //"@utils/*": ["src/utils/*"],
-            //"@database/*": ["src/database/*"],
+            "@utils/*": ["src/utils/*"],
             "@guards/*": ["src/guards/*"]
         }
     },
-    "exclude": [
-        "build",
-        "node_modules",
-        "prisma",
-        "src/commands",
-        "src/database",
-        "src/utils"
-    ]
+    "exclude": ["build", "node_modules", "src/commands"]
 }

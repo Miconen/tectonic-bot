@@ -1,4 +1,4 @@
-async function fetch<T>(url: string, options: unknown): Promise<T> {
+/* async function fetch<T>(url: string, options: unknown): Promise<T> {
     let response: Response | null = null;
     try {
         response = await window.fetch(url, options);
@@ -9,4 +9,4 @@ async function fetch<T>(url: string, options: unknown): Promise<T> {
         throw error;
         // TODO: Implement error handling
     }
-}
+} */

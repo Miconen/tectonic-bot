@@ -5,10 +5,8 @@ import {
     GuildMember,
     InteractionReplyOptions,
 } from "discord.js"
-import IsAdmin from "../guards/IsAdmin.js"
-
+import HttpStatus from "../utils/HTTPCodes.js"
 @Discord()
-//@Guard(IsAdmin)
 class Checkstatus {
     @Slash({
         name: "checkstatus",
@@ -32,21 +30,30 @@ class Checkstatus {
         }
 
         const API = process.env.API
-        let request_url
 
-        try {
-            // Removes the user to the db
-            warning.content = `User (**${user.displayName}**) not activated`
-            request_url = `${API}/user?guild_id=${interaction.guildId}&user_id=${user.id}`
+        warning.content = `User (**${user.displayName}**) not activated`
+        let request_url: string = `${API}/user?guild_id=${interaction.guildId}&user_id=${user.id}`
 
-            await fetch(request_url, { method: "GET" }).then((response) => {
-                if (!response.ok) {
-                    warning.content += ` : ${response.status}`
-                    throw new Error("Bad response")
-                }
-            })
-        } catch (error) {
-            console.error(error)
+        let response = await fetch(request_url, { method: "GET" })
+
+        switch (response.status) {
+            case 200:
+                warning.content = ``
+                break
+            case 400:
+                warning.content = `(**${user.displayName}**) is not activated : ${response.status}`
+                break
+            case 404:
+                warning.content = `(**${user.displayName}**) is not activated : ${response.status}`
+                break
+            case 500:
+                warning.content = `api die ded : ${response.status}`
+                break
+            default:
+                warning.content = `uncaught : ${response.status}`
+                break
+        }
+        if (response.status > 400) {
             console.error(`Request failed\nRequest_url:\n`, request_url)
             interaction.reply(warning)
             return

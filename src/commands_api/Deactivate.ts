@@ -6,6 +6,7 @@ import {
     InteractionReplyOptions,
 } from "discord.js"
 import IsAdmin from "../guards/IsAdmin.js"
+import HttpStatus from "../utils/HTTPCodes.js"
 
 @Discord()
 @Guard(IsAdmin)
@@ -34,26 +35,38 @@ class Deactivate {
         }
 
         const API = process.env.API
-        let request_url
 
-        try {
-            // Removes the user to the db
-            warning.content = `Failed to remove user (**${user.displayName}**)`
-            request_url = `${API}/user?guild_id=${interaction.guildId}&user_id=${user.id}`
+        // Add the user to the db
+        warning.content = `Failed to deactivate (**${user.displayName}**)`
+        let request_url = `${API}/user?guild_id=${interaction.guild.id}&user_id=${user.id}`
 
-            await fetch(request_url, { method: "DELETE" }).then((response) => {
-                if (!response.ok) {
-                    warning.content += ` : ${response.status}`
-                    throw new Error("Bad response")
-                }
-            })
-        } catch (error) {
-            console.error(error)
+        let response = await fetch(request_url, { method: "DELETE" })
+
+        switch (response.status) {
+            case HttpStatus.NO_CONTENT:
+                warning.content += ``
+                break
+            case HttpStatus.BAD_REQUEST:
+                warning.content += `(**${user.displayName}**) is not activated : ${response.status}`
+                break
+            case HttpStatus.NOT_FOUND:
+                warning.content += `(**${user.displayName}**) is not activated : ${response.status}`
+                break
+            case HttpStatus.INTERNAL_SERVER_ERROR:
+                warning.content += `api die ded : ${response.status}`
+                break
+            default:
+                warning.content += `uncaught : ${response.status}`
+                break
+        }
+        if (response.status > 400) {
             console.error(`Request failed\nRequest_url:\n`, request_url)
             interaction.reply(warning)
             return
         }
 
-        interaction.reply(`**${user.user}** has been deactivated.`)
+        interaction.reply(
+            `**${user.user}** has been deactivated by **${interaction.member}**.`
+        )
     }
 }
