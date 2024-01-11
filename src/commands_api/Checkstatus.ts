@@ -24,44 +24,34 @@ class Checkstatus {
         user: GuildMember,
         interaction: CommandInteraction
     ) {
-        const API = process.env.API
-        var warning: InteractionReplyOptions = {
+        if (!interaction.guild?.id) return
+
+        let warning: InteractionReplyOptions = {
             content: "",
             ephemeral: true,
         }
 
-        //verify guild is activated
-        //TODO: make guard?
-        if (!interaction.guild?.id){
-            warning.content = "Failed to fetch guild id";
+        const API = process.env.API
+        let request_url
+
+        try {
+            // Removes the user to the db
+            warning.content = `User (**${user.displayName}**) not activated`
+            request_url = `${API}/user?guild_id=${interaction.guildId}&user_id=${user.id}`
+
+            await fetch(request_url, { method: "GET" }).then((response) => {
+                if (!response.ok) {
+                    warning.content += ` : ${response.status}`
+                    throw new Error("Bad response")
+                }
+            })
+        } catch (error) {
+            console.error(error)
+            console.error(`Request failed\nRequest_url:\n`, request_url)
             interaction.reply(warning)
-        }
-        
-        // Get the user
-        var response = await fetch(`${API}/user`, {
-            method: 'DELETE', 
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                    guild_id: interaction.guildId,
-                    user_id: user.id,
-                  }),
-        });
-
-        if (!response.ok) {
-
-            // `❌ **${user.displayName}** is not activated.`
-            // TODO: figure out what can cause this error on the api side and what to repply
-
-            warning.content = `Status: ${response.status} ${response.statusText}`;
-            interaction.reply(warning)
-            console.error(`Error making DELETE request to ${API}/user. Status: ${response.status} ${response.statusText} Body: ${JSON.stringify({
-                guild_id: interaction.guildId,
-                user_id: user.id,
-              })}`)
+            return
         }
 
-        interaction.reply(`✔ **${user.displayName}** has been deactivated.`)
+        interaction.reply(`**${user.user}** is activated.`)
     }
 }

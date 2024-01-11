@@ -18,8 +18,15 @@
             //"@commands/*": ["src/commands/*"],
             //"@utils/*": ["src/utils/*"],
             //"@database/*": ["src/database/*"],
-            //"@guards/*": ["src/guards/*"]
+            "@guards/*": ["src/guards/*"]
         }
     },
-    "exclude": ["build", "node_modules","prisma","src/commands","src/database","src/utils","src/events","src/guards"]
+    "exclude": [
+        "build",
+        "node_modules",
+        "prisma",
+        "src/commands",
+        "src/database",
+        "src/utils"
+    ]
 }

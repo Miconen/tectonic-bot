@@ -8,7 +8,7 @@ import {
 import IsAdmin from "../guards/IsAdmin.js"
 
 @Discord()
-//@Guard(IsAdmin)
+@Guard(IsAdmin)
 class Activate {
     @Slash({
         name: "activate",
@@ -32,87 +32,43 @@ class Activate {
         rsn: string,
         interaction: CommandInteraction
     ) {
-        const API = process.env.API
-        var warning: InteractionReplyOptions = {
+        if (!interaction.guild?.id) return
+
+        let warning: InteractionReplyOptions = {
             content: "",
             ephemeral: true,
         }
 
-        var error_mesasge = `An error occured`
-        var request_body = {}
-        var response: Response = new Response()
-        //verify guild is activated
-        //TODO: this is stupid
-        if (!interaction.guild?.id) {
-            warning.content = "Failed to fetch guild id"
-            interaction.reply(warning)
-            return
-        }
+        const API = process.env.API
+        let request_url
 
         try {
             // Add the user to the db
-            warning.content = `Failed to add user (**${user.displayName}**) Status: ${response.status} ${response.statusText}`
-            error_mesasge = `Error making POST request to ${API}/user.`
-            request_body = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    guild_id: interaction.guildId,
-                    user_id: user.id,
-                }),
-            }
+            warning.content = `Failed to add user (**${user.displayName}**)`
+            request_url = `${API}/user?guild_id=${interaction.guild.id}&user_id=${user.id}`
 
-            await fetch(`${API}/user`, request_body).then((response) => {
+            await fetch(request_url, { method: "POST" }).then((response) => {
                 if (!response.ok) {
                     // `❌ **${user.displayName}** is already activated`
-                    // TODO: figure out what can cause this error on the api side and what to repply
+                    warning.content += ` : ${response.status}`
 
-                    warning.content = `Status: ${response.status} ${response.statusText}`
-                    response.json().then((bodyText) => {
-                        error_mesasge =
-                            warning.content + bodyText
-                                ? JSON.stringify(bodyText)
-                                : "{}"
-                    })
-                    throw new Error("Bad responce")
+                    throw new Error("Bad response")
                 }
             })
 
             // Add an rsn to the user
-            // Update the warning in case operation fails
-            warning.content = `Failed to add RSN (**${rsn}**) Status: ${response.status} ${response.statusText}`
-            error_mesasge = `Error making POST request to ${API}/rsn.`
-            request_body = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    guild_id: interaction.guildId,
-                    user_id: user.id,
-                    rsn: rsn,
-                }),
-            }
+            request_url = `${API}/rsn?guild_id=${interaction.guild.id}&user_id=${user.id}&rsn=${rsn}`
+            warning.content = `Failed to add RSN (**${rsn}**)`
 
-            await fetch(`${API}/rsn`, request_body).then(async (response) => {
+            await fetch(request_url, { method: "POST" }).then((response) => {
                 if (!response.ok) {
-                    warning.content = `Status: ${response.status} ${response.statusText} `
-                    response.json().then((bodyText) => {
-                        error_mesasge =
-                            warning.content + bodyText
-                                ? JSON.stringify(bodyText)
-                                : "{}"
-                    })
-                    throw new Error("Bad responce")
+                    warning.content += ` : ${response.status}`
+                    throw new Error("Bad response")
                 }
             })
         } catch (error) {
             console.error(error)
-            console.error(`Error message:\n`, error_mesasge)
-            console.error(`request_body:\n`, request_body)
-
+            console.error(`Request failed\nRequest_url:\n`, request_url)
             interaction.reply(warning)
             return
         }
