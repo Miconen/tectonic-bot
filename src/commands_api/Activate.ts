@@ -64,7 +64,7 @@ class Activate {
                 }),
             }
 
-            await fetch(`${API}/user`).then((response) => {
+            await fetch(`${API}/user`, request_body).then((response) => {
                 if (!response.ok) {
                     // `❌ **${user.displayName}** is already activated`
                     // TODO: figure out what can cause this error on the api side and what to repply
