@@ -58,7 +58,7 @@ const pointsHelper = async (
 
     // User accounts
     let accounts = await userService.getAccounts(targetId, guildId)
-    let pbs = await userService.getPbs(targetId, guildId)
+    let pbs = (await userService.getPbs(targetId, guildId)).sort()
 
     let response: string
     response = `# ${currentRankIcon} **${targetUser.displayName}**`

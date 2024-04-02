@@ -112,12 +112,13 @@ VALUES
     ('https://oldschool.runescape.wiki/images/thumb/Chambers_of_Xeric_logo.png/250px-Chambers_of_Xeric_logo.png?34a98', 3, 'Chambers of Xeric'),
     ('https://oldschool.runescape.wiki/images/thumb/Chambers_of_Xeric_logo.png/250px-Chambers_of_Xeric_logo.png?34a98', 4, 'Chambers of Xeric: CM'),
     ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 5, 'Theatre of Blood'),
-    ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 6, 'Theatre of Blood: HM'),
-    ('https://oldschool.runescape.wiki/images/thumb/Tombs_of_Amascut.png/300px-Tombs_of_Amascut.png?f9992', 7, 'Tombs of Amascut'),
+    ('https://oldschool.runescape.wiki/images/thumb/Theatre_of_Blood_logo.png/250px-Theatre_of_Blood_logo.png?e6e68', 6, 'Theatre of Blood: HM (Overall time)'),
+    ('https://oldschool.runescape.wiki/images/thumb/Tombs_of_Amascut.png/300px-Tombs_of_Amascut.png?f9992', 7, 'Tombs of Amascut (Overall time)'),
     ('https://oldschool.runescape.wiki/images/thumb/Coins_detail.png/120px-Coins_detail.png?404bc', 8, 'Miscellaneous'),
     ('https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903', 9, 'Slayer Boss'),
     ('https://oldschool.runescape.wiki/images/thumb/Inferno_logo.png/800px-Inferno_logo.png?bfcdb&20180310121602', 10, 'TzHaar'),
-    ('https://oldschool.runescape.wiki/images/thumb/Desert_Treasure_II_logo.png/1280px-Desert_Treasure_II_logo.png', 11, 'Desert Treasure II');
+    ('https://oldschool.runescape.wiki/images/thumb/Desert_Treasure_II_logo.png/1280px-Desert_Treasure_II_logo.png', 11, 'Desert Treasure II'),
+    ("https://oldschool.runescape.wiki/images/Blessed_dizana's_quiver_detail.png", 12, 'Varlamore');
 
 INSERT INTO bosses (name, display_name, category, solo)
 VALUES
@@ -140,20 +141,20 @@ VALUES
     ('tob_4', '4-man', 'Theatre of Blood', false),
     ('tob_5', '5-man', 'Theatre of Blood', false),
     -- ToB: HM
-    ('hmt_1', 'Solo', 'Theatre of Blood: HM', true),
-    ('hmt_2', 'Duo', 'Theatre of Blood: HM', false),
-    ('hmt_3', 'Trio', 'Theatre of Blood: HM', false),
-    ('hmt_4', '4-man', 'Theatre of Blood: HM', false),
-    ('hmt_5', '5-man', 'Theatre of Blood: HM', false),
+    ('hmt_1', 'Solo', 'Theatre of Blood: HM (Overall time)', true),
+    ('hmt_2', 'Duo', 'Theatre of Blood: HM (Overall time)', false),
+    ('hmt_3', 'Trio', 'Theatre of Blood: HM (Overall time)', false),
+    ('hmt_4', '4-man', 'Theatre of Blood: HM (Overall time)', false),
+    ('hmt_5', '5-man', 'Theatre of Blood: HM (Overall time)', false),
     -- ToA
-    ('toa_solo_150', 'Solo 150+', 'Tombs of Amascut', true),
-    ('toa_solo_300', 'Solo 300+', 'Tombs of Amascut', true),
-    ('toa_solo_400', 'Solo 400+', 'Tombs of Amascut', true),
-    ('toa_solo_500', 'Solo 500+', 'Tombs of Amascut', true),
-    ('toa_team_150', 'Team 150+', 'Tombs of Amascut', false),
-    ('toa_team_300', 'Team 300+', 'Tombs of Amascut', false),
-    ('toa_team_400', 'Team 400+', 'Tombs of Amascut', false),
-    ('toa_team_500', 'Team 500+', 'Tombs of Amascut', false),
+    ('toa_solo_150', 'Solo 150+', 'Tombs of Amascut (Overall time)', true),
+    ('toa_solo_300', 'Solo 300+', 'Tombs of Amascut (Overall time)', true),
+    ('toa_solo_400', 'Solo 400+', 'Tombs of Amascut (Overall time)', true),
+    ('toa_solo_500', 'Solo 500+', 'Tombs of Amascut (Overall time)', true),
+    ('toa_team_150', 'Team 150+', 'Tombs of Amascut (Overall time)', false),
+    ('toa_team_300', 'Team 300+', 'Tombs of Amascut (Overall time)', false),
+    ('toa_team_400', 'Team 400+', 'Tombs of Amascut (Overall time)', false),
+    ('toa_team_500', 'Team 500+', 'Tombs of Amascut (Overall time)', false),
     -- Miscellanious
     ('vorkath', 'Vorkath', 'Miscellaneous', true),
     ('muspah', 'Phantom Muspah', 'Miscellaneous', true),
@@ -183,4 +184,6 @@ VALUES
     ('awakened_vardorvis', 'Vardorvis (Awakened)', 'Desert Treasure II', true),
     ('awakened_leviathan', 'Leviathan (Awakened)', 'Desert Treasure II', true),
     ('awakened_duke_sucellus', 'Duke Sucellus (Awakened)', 'Desert Treasure II', true),
-    ('awakened_whisperer', 'The Whisperer (Awakened)', 'Desert Treasure II', true);
+    ('awakened_whisperer', 'The Whisperer (Awakened)', 'Desert Treasure II', true)
+    -- Desert Treasure II
+    ('colosseum', 'Fortis Colosseum', 'Varlamore', true);
