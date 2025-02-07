@@ -1,5 +1,5 @@
 ## build runner
-FROM node:lts-alpine as build-runner
+FROM node:20-alpine3.16 as build-runner
 
 # Set temp directory
 WORKDIR /tmp/app
@@ -22,7 +22,7 @@ COPY tsconfig.json .
 RUN npm run build
 
 ## producation runner
-FROM node:lts-alpine as prod-runner
+FROM node:20-alpine3.16 as prod-runner
 
 # Set work directory
 WORKDIR /app
