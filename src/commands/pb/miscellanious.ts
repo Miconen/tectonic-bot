@@ -49,9 +49,25 @@ class miscellaneouspb {
             type: ApplicationCommandOptionType.User,
         })
         player: GuildMember,
+        @SlashOption({
+            name: "player2",
+            description: "Teammate discord @name",
+            required: false,
+            type: ApplicationCommandOptionType.User,
+        })
+        player2: GuildMember | null,
         interaction: CommandInteraction,
     ) {
-        let team = [player.user.id]
+        let team = [player.user.id, player2?.user.id]
+
+        // Handle Royal Titans duos
+        const duo = team.filter(Boolean).length != 2;
+        if (boss == "royal_titans_2" && duo) {
+            return interaction.reply({
+                ephemeral: true,
+                content: "Invalid amount of players for duo Royal Titans.",
+            })
+        }
 
         await interaction.deferReply();
         let response = await submitHandler(boss, time, team, interaction)
