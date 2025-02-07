@@ -118,7 +118,7 @@ VALUES
     ('https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903', 9, 'Slayer Boss'),
     ('https://oldschool.runescape.wiki/images/thumb/Inferno_logo.png/800px-Inferno_logo.png?bfcdb&20180310121602', 10, 'TzHaar'),
     ('https://oldschool.runescape.wiki/images/thumb/Desert_Treasure_II_logo.png/1280px-Desert_Treasure_II_logo.png', 11, 'Desert Treasure II'),
-    ("https://oldschool.runescape.wiki/images/Blessed_dizana's_quiver_detail.png", 12, 'Varlamore');
+    ('https://oldschool.runescape.wiki/images/Blessed_dizana''s_quiver_detail.png', 12, 'Varlamore');
 
 INSERT INTO bosses (name, display_name, category, solo)
 VALUES
