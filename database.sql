@@ -163,6 +163,8 @@ VALUES
     ('zulrah', 'Zulrah', 'Miscellaneous', true),
     ('gauntlet', 'Gauntlet', 'Miscellaneous', true),
     ('corrupted_gauntlet', 'Corrupted Gauntlet', 'Miscellaneous', true),
+    ('royal_titans_1', 'Royal Titans (Solo)', 'Miscellaneous', true),
+    ('royal_titans_2', 'Royal Titans (Duo)', 'Miscellaneous', false),
     -- Slayer
     ('hydra', 'Alchemical Hydra', 'Slayer Boss', true),
     ('ggs', 'Grotesque Guardians', 'Slayer Boss', true),
@@ -184,6 +186,6 @@ VALUES
     ('awakened_vardorvis', 'Vardorvis (Awakened)', 'Desert Treasure II', true),
     ('awakened_leviathan', 'Leviathan (Awakened)', 'Desert Treasure II', true),
     ('awakened_duke_sucellus', 'Duke Sucellus (Awakened)', 'Desert Treasure II', true),
-    ('awakened_whisperer', 'The Whisperer (Awakened)', 'Desert Treasure II', true)
+    ('awakened_whisperer', 'The Whisperer (Awakened)', 'Desert Treasure II', true),
     -- Desert Treasure II
     ('colosseum', 'Fortis Colosseum', 'Varlamore', true);
