@@ -1,11 +1,8 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
-import type IDatabase from "@database/IDatabase"
 import type { Result } from "../../../typings/commandResult"
 import { WOMClient } from "@wise-old-man/utils"
 import { replyHandler } from "../../../utils/replyHandler.js"
 
-import { container } from "tsyringe"
-const database = container.resolve<IDatabase>("Database")
 const wom = new WOMClient()
 
 export async function addRsnHelper(
@@ -26,13 +23,13 @@ export async function addRsnHelper(
     let response = `## ${user.displayName} RSNs\n`
 
     try {
-        await database.addRsn(
+        Requests.addRsn(
             interaction.guild.id,
             user.id,
             rsn,
             womId.value.toString()
         )
-        let rsns = await database.getRsns(interaction.guild.id, user.id)
+        let rsns = Requests.getUserRsns(interaction.guild.id, { type: "user_id", user_id: user.id })
         response += rsns.map((rsn) => `\`${rsn.rsn}\``).join("\n")
     } catch (e) {
         let error = `Failed to add RSN (**${rsn}**), is the user (**${user.displayName}**) activated?`
@@ -53,7 +50,7 @@ export async function removeRsnHelper(
 
     let response = ""
     try {
-        let removed = await database.removeRsn(
+        let removed = Requests.removeRsn(
             interaction.guild.id,
             user.id,
             rsn
@@ -65,30 +62,6 @@ export async function removeRsnHelper(
         }
     } catch (e) {
         let error = `Failed to remove (**${rsn}**), is the user (**${user.displayName}**) activated?`
-        return await replyHandler(error, interaction)
-    }
-
-    return await replyHandler(response, interaction)
-}
-
-export async function removeAllRsnHelper(
-    user: GuildMember,
-    interaction: CommandInteraction
-) {
-    if (!interaction.guild?.id) return
-
-    await interaction.deferReply()
-
-    let response = ""
-    try {
-        let removed = await database.removeAllRsn(interaction.guild.id, user.id)
-        if (removed) {
-            response = `Removed all RSNs from **${user.displayName}**`
-        } else {
-            response = `**${user.displayName}** had no linked RSNs found`
-        }
-    } catch (e) {
-        let error = `Failed to remove RSNs, is the user (**${user.displayName}**) activated?`
         return await replyHandler(error, interaction)
     }
 

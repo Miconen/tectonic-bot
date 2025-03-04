@@ -4,9 +4,8 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsActivated from "../../guards/IsActivated.js";
 import IsAdmin from "../../guards/IsAdmin.js";
-import { addRsnHelper, removeAllRsnHelper, removeRsnHelper } from "./func/rsnHelpers.js";
+import { addRsnHelper, removeRsnHelper } from "./func/rsnHelpers.js";
 
 @Discord()
 @SlashGroup({ name: "rsn", description: "RSN specific commands" })
@@ -59,23 +58,6 @@ class RSN {
         interaction: CommandInteraction,
     ) {
         return removeRsnHelper(user, rsn, interaction);
-    }
-
-    @Slash({
-        name: "removeall",
-        description: "Remove all RSNs for a discord user",
-    })
-    async removeAllRsn(
-        @SlashOption({
-            name: "username",
-            description: "User to unlink account from",
-            required: true,
-            type: ApplicationCommandOptionType.User,
-        })
-        user: GuildMember,
-        interaction: CommandInteraction,
-    ) {
-        return removeAllRsnHelper(user, interaction);
     }
 }
 

@@ -1,3 +1,4 @@
+import { notEmpty } from "@utils/notEmpty.js"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
@@ -67,7 +68,7 @@ class hmtpb {
             player3?.user.id,
             player4?.user.id,
             player5?.user.id,
-        ]
+        ].filter(notEmpty)
 
         await interaction.deferReply();
         let response = await submitHandler(getBoss("hmt", team), time, team, interaction)

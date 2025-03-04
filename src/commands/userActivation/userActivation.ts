@@ -6,7 +6,6 @@ import {
 } from "discord.js"
 import activationHelper from "./func/activationHelper.js"
 import deactivationHelper from "./func/deactivationHelper.js"
-import statusHelper from "./func/statusHelper.js"
 import IsAdmin from "../../guards/IsAdmin.js"
 
 @Discord()
@@ -54,22 +53,5 @@ class Activation {
         interaction: CommandInteraction
     ) {
         return deactivationHelper(user, interaction)
-    }
-
-    @Slash({
-        name: "checkstatus",
-        description: "Checks if a user is activated or not",
-    })
-    async Checkstatus(
-        @SlashOption({
-            name: "username",
-            description: "@User tag to check",
-            required: true,
-            type: ApplicationCommandOptionType.User,
-        })
-        user: GuildMember,
-        interaction: CommandInteraction
-    ) {
-        return statusHelper(user, interaction)
     }
 }

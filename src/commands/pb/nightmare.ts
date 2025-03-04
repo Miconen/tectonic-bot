@@ -1,3 +1,4 @@
+import { notEmpty } from "@utils/notEmpty.js"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
@@ -85,13 +86,13 @@ class nightmarepb {
             player3?.user.id,
             player4?.user.id,
             player5?.user.id,
-        ]
+        ].filter(notEmpty)
 
         await interaction.deferReply();
 
         // Handle solos
         if (
-            team.filter(Boolean).length > 1 &&
+            team.length > 1 &&
             (boss == "pnm" || boss == "nm_1")
         ) {
             return interaction.reply({
@@ -101,7 +102,7 @@ class nightmarepb {
         }
 
         // Handle 5-man nightmare
-        if (team.filter(Boolean).length != 5 && boss == "nm_5") {
+        if (team.length != 5 && boss == "nm_5") {
             return interaction.reply({
                 ephemeral: true,
                 content: "Invalid amount of players for 5-man nightmare.",

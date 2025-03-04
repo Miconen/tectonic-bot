@@ -1,6 +1,5 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 
@@ -9,14 +8,14 @@ const pointsHelper = async (
     interaction: CommandInteraction
 ) => {
     const rankService = container.resolve<IRankService>("RankService")
-    const database = container.resolve<IDatabase>("Database")
 
     let targetUser = user?.user?.id ?? interaction.user.id ?? "0"
     let targetUserName =
         user?.displayName ??
         (interaction.member as GuildMember).displayName ??
         "???"
-    let points = await database.getPoints(interaction.guildId!, targetUser)
+
+    let points = Requests.getUserPoints(interaction.guildId!, { type: "user_id", user_id: targetUser })
 
     let response: string
     if (points || points === 0) {

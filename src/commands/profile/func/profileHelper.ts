@@ -1,7 +1,6 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
-import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IUserService from "../../../utils/userUtils/IUserService"
-import type IDatabase from "@database/IDatabase"
+import type IRankService from "@utils/rankUtils/IRankService"
+import type IUserService from "@utils/userUtils/IUserService"
 
 import { container } from "tsyringe"
 
@@ -15,7 +14,6 @@ const pointsHelper = async (
 
     const rankService = container.resolve<IRankService>("RankService")
     const userService = container.resolve<IUserService>("UserService")
-    const database = container.resolve<IDatabase>("Database")
 
     let targetUser: GuildMember | undefined
     let targetId = ""
@@ -23,10 +21,11 @@ const pointsHelper = async (
 
     // Checks the database for an rns
     if (rsn) {
-        let userId = await database.getUserByRsn(guildId, rsn)
+        let userId = Requests.getUser(guildId, { type: "rsn", rsn })
+
         if (!userId) return `❌ **${rsn}** is not bound to a member.`
         // User exists and is activated
-        targetId = userId
+        targetId = userId.user_id
         targetUser = await interaction.guild?.members.fetch(targetId)
         isActivated = true
     }
@@ -35,7 +34,7 @@ const pointsHelper = async (
     if (!isActivated) {
         targetUser = user || (interaction.member as GuildMember)
         targetId = targetUser.id
-        isActivated = await database.userExists(guildId, targetId)
+        isActivated = Boolean(Requests.getUser(guildId, { type: "user_id", user_id: targetId }))
     }
 
     if (!targetUser) {
@@ -46,7 +45,8 @@ const pointsHelper = async (
         return `❌ **${targetUser.displayName}** is not activated.`
     }
 
-    let points = (await database.getPoints(interaction.guildId!, targetId)) ?? 0
+    let points = (Requests.getUserPoints(guildId, { type: "user_id", user_id: targetId })) ?? 0
+
     if (!guildId) return "Invalid guild id, something broke bad??"
 
     // Rank info and icons

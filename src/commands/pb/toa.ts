@@ -1,3 +1,4 @@
+import { notEmpty } from "@utils/notEmpty.js"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
@@ -98,7 +99,7 @@ class toapb {
             player6?.user.id,
             player7?.user.id,
             player8?.user.id,
-        ]
+        ].filter(notEmpty)
 
         await interaction.deferReply();
         let response = await submitHandler(getBossToa("toa", team, raidlevel), time, team, interaction)

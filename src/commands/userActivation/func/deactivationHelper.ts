@@ -1,6 +1,5 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 
@@ -9,9 +8,8 @@ const deactivationHelper = async (
     interaction: CommandInteraction
 ) => {
     const rankService = container.resolve<IRankService>("RankService")
-    const database = container.resolve<IDatabase>("Database")
 
-    let result = await database.removeUser(interaction.guildId!, user.user.id)
+    let result = Requests.removeUser(interaction.guildId!, user.user.id)
 
     let response: string
     if (result) {
