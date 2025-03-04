@@ -1,14 +1,10 @@
+import { Requests } from "@requests/main"
 import { SlashChoiceType } from "discordx"
-import type IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
 
 async function bossesAsChoices() {
-    const database = container.resolve<IDatabase>("Database")
-
     const bossesByCategory: Record<string, SlashChoiceType[]> = {}
 
-    for (const boss of await database.getBosses()) {
+    for (const boss of Requests.getBosses()) {
         const { category, name, display_name } = boss
 
         if (!bossesByCategory[category]) {

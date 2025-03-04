@@ -1,4 +1,5 @@
 import hasDuplicates from "./hasDuplicates.js"
+import { Requests } from "@requests/main.js"
 
 async function addTime(
     ticks: number,

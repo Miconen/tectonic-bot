@@ -4,6 +4,7 @@ import {
     InteractionReplyOptions,
 } from "discord.js"
 import { GuardFunction } from "discordx"
+import { Requests } from "@requests/main.js"
 
 function IsActivated(target: string = "player") {
     const guard: GuardFunction<CommandInteraction> = async (

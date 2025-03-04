@@ -1,4 +1,5 @@
 import { Discord, On, ArgsOf } from "discordx";
+import { Requests } from "@requests/main.js"
 
 @Discord()
 class removeOnLeave {

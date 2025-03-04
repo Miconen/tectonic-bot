@@ -1,6 +1,7 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js"
 import { Pagination } from "@discordx/pagination"
 import type IRankService from "../../../utils/rankUtils/IRankService"
+import { Requests } from "@requests/main.js"
 
 import { container } from "tsyringe"
 

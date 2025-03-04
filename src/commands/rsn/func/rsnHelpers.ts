@@ -2,6 +2,7 @@ import type { CommandInteraction, GuildMember } from "discord.js"
 import type { Result } from "../../../typings/commandResult"
 import { WOMClient } from "@wise-old-man/utils"
 import { replyHandler } from "../../../utils/replyHandler.js"
+import { Requests } from "@requests/main.js"
 
 const wom = new WOMClient()
 

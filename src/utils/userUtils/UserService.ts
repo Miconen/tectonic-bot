@@ -1,6 +1,7 @@
 import TimeConverter from "../../commands/pb/func/TimeConverter.js"
 import IUserService from "./IUserService.js"
 import { singleton } from "tsyringe"
+import { Requests } from "@requests/main.js"
 
 @singleton()
 export class UserService implements IUserService {
