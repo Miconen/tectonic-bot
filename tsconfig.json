@@ -13,13 +13,27 @@
         "emitDecoratorMetadata": true,
         "skipLibCheck": false,
         "forceConsistentCasingInFileNames": true,
-        "baseUrl": "./",
+        "baseUrl": "./src",
         "paths": {
-            "@commands/*": ["src/commands/*"],
-            "@utils/*": ["src/utils/*"],
-            "@database/*": ["src/database/*"],
-            "@guards/*": ["src/guards/*"]
+            "@commands/*": [
+                "commands/*"
+            ],
+            "@utils/*": [
+                "utils/*"
+            ],
+            "@database/*": [
+                "database/*"
+            ],
+            "@guards/*": [
+                "guards/*"
+            ],
+            "@requests/*": [
+                "requests/*"
+            ]
         }
     },
-    "exclude": ["build", "node_modules"]
+    "exclude": [
+        "build",
+        "node_modules"
+    ]
 }
