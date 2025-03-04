@@ -1,19 +1,17 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js"
 import { Pagination } from "@discordx/pagination"
 import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 
 const leaderboardHelper = async (interaction: CommandInteraction) => {
     const rankService = container.resolve<IRankService>("RankService")
-    const database = container.resolve<IDatabase>("Database")
 
     if (!interaction.guildId) return
-
     await interaction.deferReply()
 
-    let users = await database.getLeaderboard(interaction.guildId)
+    let users = Requests.getLeaderboard(interaction.guildId).map(user => user.user)
+
     let userIds = users.map((user) => user.user_id)
     let usersData = await interaction.guild?.members.fetch({ user: userIds })
     if (!usersData) return

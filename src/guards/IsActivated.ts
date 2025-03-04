@@ -1,14 +1,9 @@
 import {
-    ButtonInteraction,
     CommandInteraction,
     GuildMember,
     InteractionReplyOptions,
 } from "discord.js"
 import { GuardFunction } from "discordx"
-import type IDatabase from "../database/IDatabase"
-
-import { container } from "tsyringe"
-const database = container.resolve<IDatabase>("Database")
 
 function IsActivated(target: string = "player") {
     const guard: GuardFunction<CommandInteraction> = async (
@@ -63,10 +58,8 @@ function IsActivated(target: string = "player") {
         console.log(
             `Checking activation statuses for: ${playersUserNames.join(", ")}`
         )
-        let existingUsers = await database.usersExist(
-            interaction.guild.id,
-            playersUserIds
-        )
+
+        let existingUsers = Requests.getUsers(interaction.guild.id, { type: "user_id", user_id: playersUserIds })
 
         let warning = ""
 

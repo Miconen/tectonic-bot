@@ -1,24 +1,18 @@
 import { CommandInteraction } from "discord.js"
-import IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
 
 const multiplierHelper = async (
     multiplier: number,
     interaction: CommandInteraction
 ) => {
-    const database = container.resolve<IDatabase>("Database")
-
-    let newMultiplier = await database.setPointMultiplier(
+    let newMultiplier = Requests.updateGuild(
         interaction.guild!.id,
-        multiplier
+        { type: "multiplier", multiplier }
     )
 
-    let response: string
+    let response = "Something went wrong..."
+
     if (newMultiplier) {
         response = `Updated server point multiplier to ${newMultiplier}`
-    } else {
-        response = "Something went wrong..."
     }
 
     await interaction.reply(response)

@@ -1,6 +1,5 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IDatabase from "@database/IDatabase"
 import { getWomId } from "../../rsn/func/rsnHelpers.js"
 import { replyHandler } from "../../../utils/replyHandler.js"
 
@@ -14,7 +13,6 @@ const activationHelper = async (
     if (!interaction.guild?.id) return
 
     const rankService = container.resolve<IRankService>("RankService")
-    const database = container.resolve<IDatabase>("Database")
 
     await interaction.deferReply()
 
@@ -23,19 +21,7 @@ const activationHelper = async (
         return await replyHandler(womId.error, interaction)
     }
 
-    let result = await database.newUser(interaction.guildId!, user.user.id)
-
-    try {
-        await database.addRsn(
-            interaction.guild.id,
-            user.id,
-            rsn,
-            womId.value.toString()
-        )
-    } catch (e) {
-        let error = `Failed to add RSN (**${rsn}**)`
-        return await replyHandler(error, interaction)
-    }
+    let result = Requests.createUser(interaction.guildId!, user.user.id, rsn)
 
     let response: string
     if (result) {

@@ -1,23 +1,19 @@
 import TimeConverter from "../../commands/pb/func/TimeConverter.js"
 import IUserService from "./IUserService.js"
-import { inject, injectable, singleton } from "tsyringe"
-import IDatabase from "@database/IDatabase.js"
+import { singleton } from "tsyringe"
 
 @singleton()
-@injectable()
 export class UserService implements IUserService {
-    constructor(@inject("Database") private database: IDatabase) {}
-
     public async getAccounts(userId: string, guildId: string) {
-        const accounts = await this.database.getRsns(guildId, userId)
+        const accounts = Requests.getUserRsns(guildId, { type: "user_id", user_id: userId })
         return accounts.map((account) => account.rsn)
     }
 
     public async getPbs(userId: string, guildId: string) {
-        const times = await this.database.getUsersPbs(guildId, userId)
+        const times = Requests.getUserPbs(guildId, { type: "user_id", user_id: userId })
         let timesFormatted = times.map((time) => ({
             time: TimeConverter.ticksToTime(time.time),
-            boss: `${time.guild_bosses[0].bosses.category} | ${time.guild_bosses[0].bosses.display_name}`,
+            boss: `${time.boss_category} | ${time.boss_name}`,
         }))
 
         return timesFormatted

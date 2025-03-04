@@ -3,7 +3,6 @@ import IPointService from "./IPointService.js"
 import { BaseInteraction, Collection, Guild, GuildMember } from "discord.js"
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js"
 import IRankService from "../rankUtils/IRankService.js"
-import IDatabase from "@database/IDatabase.js"
 
 @singleton()
 @injectable()
@@ -13,7 +12,6 @@ export class PointService implements IPointService {
 
     constructor(
         @inject("RankService") private rankService: IRankService,
-        @inject("Database") private database: IDatabase
     ) {
         this.pointRewards = new Map([
             ["event_participation", 5],
@@ -37,7 +35,7 @@ export class PointService implements IPointService {
             return points * cachedMultiplier
         }
 
-        let res = await this.database.getPointMultiplier(guild_id)
+        let res = Requests.getGuild(guild_id).multiplier
         if (!res) return points
         if (isNaN(res) || res == 0) return points
 
@@ -74,11 +72,7 @@ export class PointService implements IPointService {
             interaction.member as GuildMember
         const { id: guildId } = interaction.guild as Guild
 
-        let newPoints = await this.database.updateUserPoints(
-            guildId,
-            receivingUserId,
-            addedPoints
-        )
+        let newPoints = Requests.givePoints(guildId, { type: "user_id", user_id: receivingUserId, points: addedPoints })
 
         let response: string
         // Check for 0 since it evaluates to false otherwise
@@ -97,9 +91,11 @@ export class PointService implements IPointService {
                     newRank
                 )}!`
             }
-        } else if (newPoints === false) {
-            response = `❌ **${receivingUser}** is not an activated user.`
-        } else {
+        }
+        //else if (newPoints === false) {
+        //    response = `❌ **${receivingUser}** is not an activated user.`
+        //}
+        else {
             response = "Error giving points"
         }
 

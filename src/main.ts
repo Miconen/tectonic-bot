@@ -8,14 +8,13 @@ import "dotenv/config"
 import { RankService } from "./utils/rankUtils/RankService.js"
 import { PointService } from "./utils/pointUtils/PointService.js"
 import { UserService } from "./utils/userUtils/UserService.js"
-import { Database } from "./database/Database.js"
 import { container } from "tsyringe"
 
 
-// TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;import events from "events"
-(BigInt.prototype as any).toJSON = function () {
+    // TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ; import events from "events"
+(BigInt.prototype as any).toJSON = function() {
     return this.toString()
 }
 
@@ -68,7 +67,6 @@ bot.on("messageCreate", (message: Message) => {
 
 
 async function run() {
-    container.registerSingleton("Database", Database)
     container.registerSingleton("RankService", RankService)
     container.registerSingleton("PointService", PointService)
     container.registerSingleton("UserService", UserService)

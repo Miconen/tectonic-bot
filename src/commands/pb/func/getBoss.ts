@@ -6,7 +6,7 @@ function getBoss(boss: string, team: (string | undefined)[]) {
 
 function getBossToa(
     boss: string,
-    team: (string | undefined)[],
+    team: string[],
     raidlevel: number
 ) {
     let size = team.filter(Boolean).length == 1 ? "solo" : "team"
@@ -15,11 +15,11 @@ function getBossToa(
     return `${boss}_${size}_${invocation}`
 }
 
-function getBossCox(boss: string, team: (string | undefined)[]) {
-    const SCALES = [1,2,3,5];
+function getBossCox(boss: string, team: string[]) {
+    const SCALES = [1, 2, 3, 5];
     const size = teamsize(team);
     const sizeString = SCALES.includes(size) ? size : 'any';
-    return boss + "_" + sizeString; 
+    return boss + "_" + sizeString;
 }
 
 // Round raid level down to predetermined checkpoints

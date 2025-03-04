@@ -1,20 +1,22 @@
-import IDatabase from "../database/IDatabase";
-import { container } from "tsyringe"
-
-const database = container.resolve<IDatabase>("Database")
-
 /**
  * Returns a map that reprecents the wom ids associated with the particular discord user
  * @key Wise Old Man ID 
  * @value Discord ID 
  */
 export async function womToDiscord(guildId: string, womIds: string[]) {
-    let rsns = await database.getUsersByWomIds(guildId, womIds)
+    let users = Requests.getUsers(guildId, { type: "wom", wom: womIds })
+
     const userIdMap = new Map<string, string>;
 
-    rsns.forEach(user => {
-        userIdMap.set(user.wom_id, user.user_id);
-    })
+    for (let user of users) {
+        let rsn = user.rsns.find((rsn) => {
+            return womIds.includes(rsn.rsn);
+        })
+
+        if (!rsn) continue;
+
+        userIdMap.set(rsn.wom_id, user.user_id);
+    }
 
     return userIdMap;
 }

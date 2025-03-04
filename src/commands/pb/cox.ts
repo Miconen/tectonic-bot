@@ -1,3 +1,4 @@
+import { notEmpty } from "@utils/notEmpty.js"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
@@ -91,7 +92,7 @@ class coxpb {
             player6?.user.id,
             player7?.user.id,
             player8?.user.id,
-        ]
+        ].filter(notEmpty)
 
         await interaction.deferReply();
         let response = await submitHandler(getBossCox("cox", team), time, team, interaction)

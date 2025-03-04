@@ -3,7 +3,6 @@ import embedBuilder from "./embedBuilder.js"
 import removeOldEmbeds from "./removeOldEmbeds.js"
 import TimeConverter from "./TimeConverter.js"
 import { GuildBoss, GuildCategory, TimeField } from "./types.js"
-import type IDatabase from "@database/IDatabase"
 
 import { container } from "tsyringe"
 

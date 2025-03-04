@@ -1,7 +1,4 @@
 import hasDuplicates from "./hasDuplicates.js"
-import type IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
 
 async function addTime(
     ticks: number,
@@ -9,26 +6,24 @@ async function addTime(
     team: (string | undefined)[],
     guildId: string
 ) {
-    const database = container.resolve<IDatabase>("Database")
-
     if (team.filter((player) => player).length == 0) return
     if (hasDuplicates(team)) return
 
-    const newTime = await database.addTime(ticks, boss)
-    const timeId = newTime.run_id
-
-    let teamData = []
-    for (let player of team) {
-        if (!player) continue
-        teamData.push({ run_id: timeId, user_id: player, guild_id: guildId })
+    const user_ids: string[] = []
+    for (let teammate of team) {
+        if (!teammate) continue;
+        user_ids.push(teammate)
     }
 
-    await database.addTeam(teamData)
+    const time = Requests.newTime(guildId, {
+        user_ids,
+        time: ticks,
+        boss_name: boss,
+    })
 
+    // TODO: Return proper format
     return {
-        ...newTime,
-        run_id: timeId,
-        team: teamData,
+        time,
     }
 }
 

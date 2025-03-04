@@ -1,16 +1,14 @@
 import type { CommandInteraction } from "discord.js"
 import type IPointService from "@utils/pointUtils/IPointService"
 
-import addTime from "./addTime.js"
 import TimeConverter from "./TimeConverter.js"
 import updateEmbed from "./updateEmbed.js"
-import updatePb from "./updatePb.js"
 import { container } from "tsyringe"
 
 async function submitHandler(
     boss: string,
     time: string,
-    team: (string | undefined)[],
+    team: string[],
     interaction: CommandInteraction
 ) {
     const pointService = container.resolve<IPointService>("PointService")
@@ -30,21 +28,16 @@ async function submitHandler(
     }
 
     // Add time
-    const addedTime = await addTime(ticks, boss, team, guildId)
+    const addedTime = Requests.newTime(guildId, { user_ids: team, time: ticks, boss_name: boss })
     if (!addedTime) {
         console.log("↳ Failed adding time")
         return "Failed adding time"
     }
+
     console.log("↳ Time added")
 
-    // Update pb
-    const updated = await updatePb(
-        addedTime.time,
-        addedTime.run_id,
-        boss,
-        guildId
-    )
-    if (!updated) {
+    // FIX: Check if old pb was beaten
+    if (!addedTime) {
         console.log("↳ Not a new pb")
         return `Time submitted, not a new pb :)`
     }

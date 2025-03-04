@@ -1,3 +1,4 @@
+import { notEmpty } from "@utils/notEmpty.js"
 import {
     ApplicationCommandOptionType,
     CommandInteraction,
@@ -58,10 +59,10 @@ class miscellaneouspb {
         player2: GuildMember | null,
         interaction: CommandInteraction,
     ) {
-        let team = [player.user.id, player2?.user.id]
+        let team = [player.user.id, player2?.user.id].filter(notEmpty)
 
         // Handle Royal Titans duos
-        const duo = team.filter(Boolean).length != 2;
+        const duo = team.length != 2;
         if (boss == "royal_titans_2" && duo) {
             return interaction.reply({
                 ephemeral: true,
