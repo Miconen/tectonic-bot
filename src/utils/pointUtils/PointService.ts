@@ -3,6 +3,7 @@ import IPointService from "./IPointService.js"
 import { BaseInteraction, Collection, Guild, GuildMember } from "discord.js"
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js"
 import IRankService from "../rankUtils/IRankService.js"
+import { Requests } from "@requests/main.js"
 
 @singleton()
 @injectable()

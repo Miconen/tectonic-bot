@@ -1,4 +1,5 @@
 import { CommandInteraction } from "discord.js"
+import { Requests } from "@requests/main.js"
 
 const multiplierHelper = async (
     multiplier: number,

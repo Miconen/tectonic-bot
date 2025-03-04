@@ -1,3 +1,5 @@
+import { Requests } from "@requests/main.js"
+
 /**
  * Returns a map that reprecents the wom ids associated with the particular discord user
  * @key Wise Old Man ID 
