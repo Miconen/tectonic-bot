@@ -1,61 +1,5 @@
-const mockUser: DetailedUser = {
-    "user": {
-        "user_id": "...",
-        "guild_id": "...",
-        "points": 120,
-        "rsns": [
-            {
-                "rsn": "...",
-                "wom_id": "..."
-            },
-            {
-                "rsn": "...",
-                "wom_id": "..."
-            }
-        ]
-    },
-    "times": [
-        {
-            "time": 69,
-            "boss_category": "...",
-            "boss_name": "...",
-            "run_id": 420,
-            "date": "...",
-            "team": [
-                {
-                    "user_id": "...",
-                    "guild_id": "...",
-                    "points": 0,
-                    "rsns": [
-                        {
-                            "rsn": "...",
-                            "wom_id": "..."
-                        },
-                        {
-                            "rsn": "...",
-                            "wom_id": "..."
-                        }
-                    ]
-                },
-                {
-                    "user_id": "...",
-                    "guild_id": "...",
-                    "points": 0,
-                    "rsns": [
-                        {
-                            "rsn": "...",
-                            "wom_id": "..."
-                        },
-                        {
-                            "rsn": "...",
-                            "wom_id": "..."
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
+import { DetailedUser, Guild, GuildUpdate, Leaderboard, NewTime } from "typings/requests";
+import { fetchData } from "./main";
 
 type Boss = {
     category: string;
@@ -142,30 +86,47 @@ const bosses: Boss[] = [
     { category: 'Varlamore', name: 'colosseum', display_name: 'Fortis Colosseum' }
 ];
 
+export async function getLeaderboard(guild_id: string) {
+    const url = `guilds/${guild_id}/leaderboard`
+    const leaderboard = await fetchData<Leaderboard>(url)
 
-const mockGuild: Guild = {
-    "guild_id": "123",
-    "multiplier": 1,
-    "pb_channel_id": "123",
+    return leaderboard
 }
 
-export function getLeaderboard(guild_id: string) {
-    return [mockUser]
+export async function getGuild(guild_id: string) {
+    const url = `guilds/${guild_id}`
+    const guild = await fetchData<Guild>(url)
+
+    return guild
 }
 
-export function getGuild(guild_id: string): Guild {
-    return mockGuild
+export async function createGuild(guild_id: string) {
+    const url = `guilds`
+    const options = {
+        method: "POST",
+        body: JSON.stringify({ guild_id })
+    }
+    const status = await fetchData(url, options)
+
+    return status
 }
 
-export function updateGuild(guild_id: string, query: GuildUpdate) {
-    return true
+export async function updateGuild(guild_id: string, query: GuildUpdate) {
+    const url = `guilds/${guild_id}`
+    const options = {
+        method: "PUT",
+        body: JSON.stringify({ multiplier: query.multiplier, pb_channel_id: query.pb_channel })
+    }
+    const status = await fetchData(url, options)
+
+    return status
 }
 
 // TODO: Consider returning the old pb if time was beat
-export function newTime(guild_id: string, time: NewTime) {
+export async function newTime(guild_id: string, time: NewTime) {
     return true
 }
 
-export function getBosses() {
+export async function getBosses() {
     return bosses
 }

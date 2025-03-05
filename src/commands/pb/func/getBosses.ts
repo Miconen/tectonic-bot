@@ -4,7 +4,7 @@ import { SlashChoiceType } from "discordx"
 async function bossesAsChoices() {
     const bossesByCategory: Record<string, SlashChoiceType[]> = {}
 
-    for (const boss of Requests.getBosses()) {
+    for (const boss of await Requests.getBosses()) {
         const { category, name, display_name } = boss
 
         if (!bossesByCategory[category]) {

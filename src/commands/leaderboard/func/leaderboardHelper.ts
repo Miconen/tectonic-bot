@@ -4,25 +4,33 @@ import type IRankService from "../../../utils/rankUtils/IRankService"
 import { Requests } from "@requests/main.js"
 
 import { container } from "tsyringe"
+import { replyHandler } from "@utils/replyHandler"
+
+interface LeaderboardUser {
+    name: string
+    value: string
+}
 
 const leaderboardHelper = async (interaction: CommandInteraction) => {
     const rankService = container.resolve<IRankService>("RankService")
 
-    if (!interaction.guildId) return
+    if (!interaction.guild) return
     await interaction.deferReply()
 
-    let users = Requests.getLeaderboard(interaction.guildId).map(user => user.user)
+    let lb = await Requests.getLeaderboard(interaction.guild.id)
+    if (lb.error) return replyHandler("Error outputting leaderboard", interaction)
+    if (lb.data.users.length === 0 || !lb.data) return replyHandler("No activated users for leaderboard", interaction)
+    console.log(lb.data.users)
+
+    let users = lb.data.users.map(user => user.user)
+
+    console.log(users)
 
     let userIds = users.map((user) => user.user_id)
-    let usersData = await interaction.guild?.members.fetch({ user: userIds })
+    let usersData = await interaction.guild.members.fetch({ user: userIds })
     if (!usersData) return
 
-    interface ILeaderboardUser {
-        name: string
-        value: string
-    }
-
-    let leaderboard: ILeaderboardUser[] = []
+    let leaderboard: LeaderboardUser[] = []
     let serverRank = 0
     for (let user of users) {
         let userData = usersData.get(user.user_id)

@@ -2,6 +2,7 @@ import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "@utils/rankUtils/IRankService"
 import type IUserService from "@utils/userUtils/IUserService"
 import { Requests } from "@requests/main.js"
+import { User } from "@typings/requests.js"
 
 import { container } from "tsyringe"
 
@@ -10,45 +11,51 @@ const pointsHelper = async (
     rsn: string | null,
     interaction: CommandInteraction
 ) => {
-    let guildId = interaction.guildId
-    if (!guildId) return `❌ Critical error determining guild.`
+    if (!interaction.guild) return `❌ Critical error determining guild.`
+    let guildId = interaction.guild.id
 
     const rankService = container.resolve<IRankService>("RankService")
     const userService = container.resolve<IUserService>("UserService")
 
+    let foundUser: User | undefined
     let targetUser: GuildMember | undefined
     let targetId = ""
-    let isActivated = false
+
+    // User wants to check self
+    if (!rsn && !user) {
+        let res = await Requests.getUser(guildId, { type: "user_id", user_id: interaction.user.id })
+        if (res.error) return `❌ **${(interaction.member as GuildMember).displayName}** is not activated.`
+
+        foundUser = res.data
+        targetId = interaction.user.id
+        targetUser = interaction.member as GuildMember
+    }
 
     // Checks the database for an rns
     if (rsn) {
-        let userId = Requests.getUser(guildId, { type: "rsn", rsn })
+        let res = await Requests.getUser(guildId, { type: "rsn", rsn })
+        if (res.error) return `❌ **${rsn}** is not bound to a known member.`
 
-        if (!userId) return `❌ **${rsn}** is not bound to a member.`
         // User exists and is activated
-        targetId = userId.user_id
-        targetUser = await interaction.guild?.members.fetch(targetId)
-        isActivated = true
+        foundUser = res.data
+        targetId = res.data.user_id
+        targetUser = await interaction.guild.members.fetch(targetId)
     }
 
-    // Check user exists if there was no rsn
-    if (!isActivated) {
-        targetUser = user || (interaction.member as GuildMember)
-        targetId = targetUser.id
-        isActivated = Boolean(Requests.getUser(guildId, { type: "user_id", user_id: targetId }))
+    if (user) {
+        let res = await Requests.getUser(guildId, { type: "user_id", user_id: user.user.id })
+        if (res.error) return `❌ **${user.displayName}** is not activated.`
+
+        foundUser = res.data
+        targetId = user.id
+        targetUser = user
     }
 
-    if (!targetUser) {
-        return `❌ Couldn't fetch user.`
+    if (!foundUser || !targetUser) {
+        return `❌ Error fetching user data.`
     }
 
-    if (!isActivated) {
-        return `❌ **${targetUser.displayName}** is not activated.`
-    }
-
-    let points = (Requests.getUserPoints(guildId, { type: "user_id", user_id: targetId })) ?? 0
-
-    if (!guildId) return "Invalid guild id, something broke bad??"
+    let points = foundUser.points
 
     // Rank info and icons
     let nextRankUntil = rankService.pointsToNextRank(points)

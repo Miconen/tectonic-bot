@@ -60,7 +60,7 @@ function IsActivated(target: string = "player") {
             `Checking activation statuses for: ${playersUserNames.join(", ")}`
         )
 
-        let existingUsers = Requests.getUsers(interaction.guild.id, { type: "user_id", user_id: playersUserIds })
+        let existingUsers = await Requests.getUsers(interaction.guild.id, { type: "user_id", user_id: playersUserIds })
 
         let warning = ""
 

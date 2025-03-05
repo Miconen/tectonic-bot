@@ -1,8 +1,8 @@
-import type IPointService from "../../../utils/pointUtils/IPointService"
+import type IPointService from "@utils/pointUtils/IPointService"
 import { CommandInteraction } from "discord.js";
 import { WOMClient } from "@wise-old-man/utils";
-import { replyHandler } from "../../../utils/replyHandler.js";
-import { womToDiscord } from "../../../utils/womIdConversion.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { womToDiscord } from "@utils/womIdConversion.js";
 
 import { container } from "tsyringe"
 

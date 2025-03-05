@@ -36,12 +36,14 @@ export class PointService implements IPointService {
             return points * cachedMultiplier
         }
 
-        let res = Requests.getGuild(guild_id).multiplier
-        if (!res) return points
-        if (isNaN(res) || res == 0) return points
+        let res = await Requests.getGuild(guild_id)
+        if (res.error) return points
+        let multi = res.data.multiplier
+        if (!multi) return points
+        if (isNaN(multi) || multi == 0) return points
 
-        this.pointMultiplierCache.set(guild_id, res)
-        return points * res
+        this.pointMultiplierCache.set(guild_id, multi)
+        return points * multi
     }
 
     async givePointsToMultiple(
@@ -66,40 +68,41 @@ export class PointService implements IPointService {
         user: GuildMember,
         interaction: BaseInteraction
     ) {
-        if (!this.rankService)
-            return "Unexpected error happened with rank service"
-        const { displayName: receivingUser = "???", id: receivingUserId } = user
-        const { displayName: grantingUser = "???" } =
-            interaction.member as GuildMember
-        const { id: guildId } = interaction.guild as Guild
+        if (!interaction.guild) return "Error fetching guild"
+        const member = interaction.member as GuildMember
 
-        let newPoints = Requests.givePoints(guildId, { type: "user_id", user_id: receivingUserId, points: addedPoints })
+        // FIX: Once we have the API returning point values, use that here
+        const res = await Requests.givePoints(interaction.guild.id, { user_id: user.id, points: { type: "custom", amount: addedPoints } })
+        // FIX: Fix me
+        let newPoints = 9001
 
-        let response: string
         // Check for 0 since it evaluates to false otherwise
-        if (newPoints || newPoints === 0) {
-            response = `✔ **${receivingUser}** was granted ${addedPoints} points by **${grantingUser}** and now has a total of ${newPoints} points.`
+        if (res.status === 204) {
+            let response = `✔ **${user.displayName}** was granted ${addedPoints} points by **${member.displayName}** and now has a total of ${newPoints} points.`
             let newRank = await this.rankService.rankUpHandler(
                 interaction,
                 user,
                 newPoints - addedPoints,
                 newPoints
             )
+
+            if (!newRank) return response
+
             // Concatenate level up message to response if user leveled up
-            if (newRank) {
-                let newRankIcon = this.rankService.getIcon(newRank)
-                response += `\n**${receivingUser}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
-                    newRank
-                )}!`
-            }
-        }
-        //else if (newPoints === false) {
-        //    response = `❌ **${receivingUser}** is not an activated user.`
-        //}
-        else {
-            response = "Error giving points"
+            let newRankIcon = this.rankService.getIcon(newRank)
+            response += `\n**${user.displayName}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
+                newRank
+            )}!`
+
+            return response
+
         }
 
-        return response
+        if (res.status === 404) {
+            let response = `❌ **${user.displayName}** is not an activated user.`
+            return response
+        }
+
+        return "Error giving points"
     }
 }

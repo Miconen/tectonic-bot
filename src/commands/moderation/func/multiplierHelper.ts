@@ -5,7 +5,7 @@ const multiplierHelper = async (
     multiplier: number,
     interaction: CommandInteraction
 ) => {
-    let newMultiplier = Requests.updateGuild(
+    let newMultiplier = await Requests.updateGuild(
         interaction.guild!.id,
         { type: "multiplier", multiplier }
     )

@@ -1,10 +1,6 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
-import type { Result } from "../../../typings/commandResult"
-import { WOMClient } from "@wise-old-man/utils"
 import { replyHandler } from "../../../utils/replyHandler.js"
 import { Requests } from "@requests/main.js"
-
-const wom = new WOMClient()
 
 export async function addRsnHelper(
     user: GuildMember,
@@ -15,23 +11,20 @@ export async function addRsnHelper(
 
     await interaction.deferReply()
 
-    // Attempt to find Wise Old Man id of given rsn
-    let womId = await getWomId(rsn)
-    if (!womId.success) {
-        return await replyHandler(womId.error, interaction)
-    }
-
     let response = `## ${user.displayName} RSNs\n`
 
     try {
-        Requests.addRsn(
+        await Requests.addRsn(
             interaction.guild.id,
             user.id,
             rsn,
-            womId.value.toString()
         )
-        let rsns = Requests.getUserRsns(interaction.guild.id, { type: "user_id", user_id: user.id })
-        response += rsns.map((rsn) => `\`${rsn.rsn}\``).join("\n")
+        let rsns = await Requests.getUserRsns(interaction.guild.id, { type: "user_id", user_id: user.id })
+        if (rsns.error) {
+            let error = `Failed to fetch RSN (**${rsn}**)`
+            return await replyHandler(error, interaction)
+        }
+        response += rsns.data.map((rsn) => `\`${rsn.rsn}\``).join("\n")
     } catch (e) {
         let error = `Failed to add RSN (**${rsn}**), is the user (**${user.displayName}**) activated?`
         return await replyHandler(error, interaction)
@@ -51,7 +44,7 @@ export async function removeRsnHelper(
 
     let response = ""
     try {
-        let removed = Requests.removeRsn(
+        let removed = await Requests.removeRsn(
             interaction.guild.id,
             user.id,
             rsn
@@ -67,33 +60,4 @@ export async function removeRsnHelper(
     }
 
     return await replyHandler(response, interaction)
-}
-
-export async function getWomId(rsn: string): Promise<Result<number, string>> {
-    try {
-        let player = await wom.players.getPlayerDetails(rsn)
-        let response = player.id
-        return { success: true, value: response }
-    } catch (e: unknown) {
-        if (typeof e === "string") {
-            console.error(e)
-            let error = "Encountered an unknown error"
-            return { success: false, error }
-        }
-
-        if (e instanceof Error && e.message === "Player not found.") {
-            let error =
-                "User could not be found, please check you typed the name correctly."
-            return { success: false, error }
-        }
-
-        if (e instanceof Error) {
-            let error = "Something wrong...\n**Error: **" + e.message
-            return { success: false, error }
-        }
-
-        console.error(e)
-        let error = "Something went catastrophically wrong :D"
-        return { success: false, error }
-    }
 }
