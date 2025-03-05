@@ -29,7 +29,7 @@ async function submitHandler(
     }
 
     // Add time
-    const addedTime = Requests.newTime(guildId, { user_ids: team, time: ticks, boss_name: boss })
+    const addedTime = await Requests.newTime(guildId, { user_ids: team, time: ticks, boss_name: boss })
     if (!addedTime) {
         console.log("↳ Failed adding time")
         return "Failed adding time"

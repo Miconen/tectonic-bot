@@ -16,7 +16,7 @@ const pointsHelper = async (
         (interaction.member as GuildMember).displayName ??
         "???"
 
-    let points = Requests.getUserPoints(interaction.guildId!, { type: "user_id", user_id: targetUser })
+    let points = await Requests.getUserPoints(interaction.guildId!, { type: "user_id", user_id: targetUser })
 
     let response: string
     if (points || points === 0) {

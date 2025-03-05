@@ -6,13 +6,15 @@ import { Requests } from "@requests/main.js"
 @singleton()
 export class UserService implements IUserService {
     public async getAccounts(userId: string, guildId: string) {
-        const accounts = Requests.getUserRsns(guildId, { type: "user_id", user_id: userId })
-        return accounts.map((account) => account.rsn)
+        const accounts = await Requests.getUserRsns(guildId, { type: "user_id", user_id: userId })
+        if (accounts.error) return []
+        return accounts.data.map((account) => account.rsn)
     }
 
     public async getPbs(userId: string, guildId: string) {
-        const times = Requests.getUserPbs(guildId, { type: "user_id", user_id: userId })
-        let timesFormatted = times.map((time) => ({
+        const times = await Requests.getUserPbs(guildId, { type: "user_id", user_id: userId })
+        if (times.error) return []
+        let timesFormatted = times.data.map((time) => ({
             time: TimeConverter.ticksToTime(time.time),
             boss: `${time.boss_category} | ${time.boss_name}`,
         }))

@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashOption, SlashGroup, Guard } from "discordx";
+import { Discord, Slash, SlashOption, Guard } from "discordx";
 import {
     CommandInteraction,
     GuildMember,
@@ -7,6 +7,7 @@ import {
 import multiplierHelper from "./func/multiplierHelper.js";
 import giveHelper from "./func/giveHelper.js";
 import IsAdmin from "../../guards/IsAdmin.js";
+import startHelper from "./func/startHelper.js";
 
 @Discord()
 @Guard(IsAdmin)
@@ -47,5 +48,15 @@ class Moderation {
         interaction: CommandInteraction,
     ) {
         return multiplierHelper(multiplier, interaction);
+    }
+
+    @Slash({
+        name: "start",
+        description: "Setup command for the whole guild",
+    })
+    async start(
+        interaction: CommandInteraction,
+    ) {
+        return startHelper(interaction);
     }
 }

@@ -1,38 +1,40 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
-import type IRankService from "../../../utils/rankUtils/IRankService"
-import { getWomId } from "../../rsn/func/rsnHelpers.js"
-import { replyHandler } from "../../../utils/replyHandler.js"
-
+import type IRankService from "@utils/rankUtils/IRankService"
+import { replyHandler } from "@utils/replyHandler.js"
 import { container } from "tsyringe"
+import { Requests } from "@requests/main"
+import { httpErrorHandler } from "@utils/httpErrorHandler"
 
 const activationHelper = async (
     user: GuildMember,
     rsn: string,
     interaction: CommandInteraction
 ) => {
-    if (!interaction.guild?.id) return
-
+    if (!interaction.guild) return
     const rankService = container.resolve<IRankService>("RankService")
-
     await interaction.deferReply()
 
-    let womId = await getWomId(rsn)
-    if (!womId.success) {
-        return await replyHandler(womId.error, interaction)
-    }
+    let result = await Requests.createUser(interaction.guild.id, user.user.id, rsn)
 
-    let result = Requests.createUser(interaction.guildId!, user.user.id, rsn)
-
-    let response: string
-    if (result) {
-        response = `**${user.user}** has been activated and linked by **${interaction.member}**.`
+    if (result.status === 201) {
+        let response = `**${user.user}** has been activated and linked by **${interaction.member}**.`
         // Set default role
         await rankService.addRole(interaction, user, "jade")
-    } else {
-        response = `❌ **${user.displayName}** is already activated.`
+        return await replyHandler(response, interaction)
     }
 
-    await replyHandler(response, interaction)
+    if (result.status === 409) {
+        let response = `❌ **${user.displayName}** is already activated.`
+        return await replyHandler(response, interaction)
+    }
+
+    let handler = httpErrorHandler(result.status)
+    if (handler.error) {
+        let response = handler.message
+        return await replyHandler(response, interaction)
+    }
+
+    return await replyHandler("Something unexpected happened...", interaction)
 }
 
 export default activationHelper

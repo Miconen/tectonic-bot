@@ -16,7 +16,7 @@ async function addTime(
         user_ids.push(teammate)
     }
 
-    const time = Requests.newTime(guildId, {
+    const time = await Requests.newTime(guildId, {
         user_ids,
         time: ticks,
         boss_name: boss,

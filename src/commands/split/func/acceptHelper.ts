@@ -1,6 +1,6 @@
 import type { ButtonInteraction, BaseInteraction } from "discord.js";
-import type IPointService from "../../../utils/pointUtils/IPointService"
-import type { SplitCache } from "../../../typings/splitTypes.js";
+import type IPointService from "@utils/pointUtils/IPointService"
+import type { SplitCache } from "@typings/splitTypes.js";
 
 import getInteractionId from "./getInteractionId.js";
 import { container } from "tsyringe"

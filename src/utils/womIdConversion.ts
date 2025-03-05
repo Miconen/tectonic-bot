@@ -6,11 +6,13 @@ import { Requests } from "@requests/main.js"
  * @value Discord ID 
  */
 export async function womToDiscord(guildId: string, womIds: string[]) {
-    let users = Requests.getUsers(guildId, { type: "wom", wom: womIds })
+    let users = await Requests.getUsers(guildId, { type: "wom", wom: womIds })
 
     const userIdMap = new Map<string, string>;
 
-    for (let user of users) {
+    if (users.error) return userIdMap
+
+    for (let user of users.data) {
         let rsn = user.rsns.find((rsn) => {
             return womIds.includes(rsn.rsn);
         })

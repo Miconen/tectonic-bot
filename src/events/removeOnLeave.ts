@@ -4,11 +4,11 @@ import { Requests } from "@requests/main.js"
 @Discord()
 class removeOnLeave {
   @On({ event: "guildMemberRemove" })
-  onguildMemberRemove(
+  async onguildMemberRemove(
     [message]: ArgsOf<"guildMemberRemove">,
   ) {
     // Remove user from database
-    Requests.removeUser(message.guild.id, message.user.id)
+    await Requests.removeUser(message.guild.id, { type: "user_id", "user_id": message.user.id })
   }
 }
 
