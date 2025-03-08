@@ -4,7 +4,7 @@ import {
     GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "../../guards/IsAdmin.js";
+import IsAdmin from "@guards/IsAdmin.js";
 import { addRsnHelper, removeRsnHelper } from "./func/rsnHelpers.js";
 
 @Discord()

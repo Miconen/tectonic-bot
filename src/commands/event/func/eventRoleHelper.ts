@@ -1,6 +1,6 @@
 import type { CommandInteraction, Role } from "discord.js"
-import type IPointService from "../../../utils/pointUtils/IPointService"
-import { replyHandler } from "../../../utils/replyHandler.js"
+import type IPointService from "@utils/pointUtils/IPointService"
+import { replyHandler } from "@utils/replyHandler.js"
 
 import { container } from "tsyringe"
 
