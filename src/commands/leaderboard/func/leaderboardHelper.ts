@@ -19,12 +19,8 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
 
     let lb = await Requests.getLeaderboard(interaction.guild.id)
     if (lb.error) return replyHandler("Error outputting leaderboard", interaction)
-    if (lb.data.users.length === 0 || !lb.data) return replyHandler("No activated users for leaderboard", interaction)
-    console.log(lb.data.users)
-
-    let users = lb.data.users.map(user => user.user)
-
-    console.log(users)
+    let users = lb.data
+    if (!users || users.length === 0) return replyHandler("No activated users for leaderboard", interaction)
 
     let userIds = users.map((user) => user.user_id)
     let usersData = await interaction.guild.members.fetch({ user: userIds })
@@ -40,8 +36,8 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
         serverRank++
 
         leaderboard.push({
-            name: `#${serverRank} **${userData.displayName}**`,
-            value: `${rankService.getIcon(rank)} ${user.points} points`,
+            name: `#${serverRank} **${userData.nickname ?? userData.displayName}** (${user.rsns.map(rsn => rsn.rsn).join(" | ")})`,
+            value: `${rankService.getIcon(rank)} ${user.points} points | Accounts: ${user.rsns.length}`,
         })
     }
 

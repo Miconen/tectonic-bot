@@ -19,12 +19,12 @@ export async function addRsnHelper(
             user.id,
             rsn,
         )
-        let rsns = await Requests.getUserRsns(interaction.guild.id, { type: "user_id", user_id: user.id })
+        let rsns = await Requests.getUser(interaction.guild.id, { type: "user_id", user_id: user.id })
         if (rsns.error) {
             let error = `Failed to fetch RSN (**${rsn}**)`
             return await replyHandler(error, interaction)
         }
-        response += rsns.data.map((rsn) => `\`${rsn.rsn}\``).join("\n")
+        response += rsns.data.rsns.map((rsn) => `\`${rsn.rsn}\``).join("\n")
     } catch (e) {
         let error = `Failed to add RSN (**${rsn}**), is the user (**${user.displayName}**) activated?`
         return await replyHandler(error, interaction)
