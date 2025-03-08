@@ -1,4 +1,4 @@
-import { DetailedUser, Guild, GuildUpdate, Leaderboard, NewTime } from "typings/requests";
+import { Guild, GuildUpdate, NewTime, User } from "typings/requests";
 import { fetchData } from "./main";
 
 type Boss = {
@@ -88,7 +88,7 @@ const bosses: Boss[] = [
 
 export async function getLeaderboard(guild_id: string) {
     const url = `guilds/${guild_id}/leaderboard`
-    const leaderboard = await fetchData<Leaderboard>(url)
+    const leaderboard = await fetchData<User[]>(url)
 
     return leaderboard
 }

@@ -1,4 +1,4 @@
-import { ApiResponse, DetailedUser, PointsParam, RSN, Time, User, UserParam, UsersParam } from "@typings/requests";
+import { ApiResponse, DetailedUser, PointsParam, SimpleUser, UserParam, UsersParam } from "@typings/requests";
 import { fetchData } from "./main"
 
 // Allows for creation of multiple convinience functions that return more specific data
@@ -26,54 +26,19 @@ function rewrapResponse<T, R>(res: ApiResponse<R>, field: T): ApiResponse<T> {
 }
 
 
-export async function getFullUser(guild_id: string, query: UserParam) {
+export async function getUser(guild_id: string, query: UserParam) {
     const url = `guilds/${guild_id}/users/${userParamHandler(query)}`
-    const user = await fetchData<DetailedUser>(url)
+    const user = await fetchData<DetailedUser[]>(url)
+    if (user.error) return user
 
-    return user
+    return rewrapResponse<DetailedUser, DetailedUser[]>(user, user.data[0])
 }
 
-export async function getFullUsers(guild_id: string, query: UsersParam) {
+export async function getUsers(guild_id: string, query: UsersParam) {
     const url = `guilds/${guild_id}/users/${userParamHandler(query)}`
     const users = await fetchData<DetailedUser[]>(url)
 
     return users
-}
-
-export async function getUser(guild_id: string, query: UserParam) {
-    const user = await getFullUser(guild_id, query)
-    if (user.error) return user
-    return rewrapResponse<User, DetailedUser>(user, user.data.user)
-}
-
-export async function getUsers(guild_id: string, query: UsersParam) {
-    const users = await getFullUsers(guild_id, query)
-    if (users.error) return users
-    return rewrapResponse<User[], DetailedUser[]>(users, users.data.map(u => u.user))
-}
-
-export async function getUserPbs(guild_id: string, query: UserParam) {
-    const user = await getFullUser(guild_id, query)
-    if (user.error) return user
-    return rewrapResponse<Time[], DetailedUser>(user, user.data.times)
-}
-
-export async function getUserPoints(guild_id: string, query: UserParam) {
-    const user = await getUser(guild_id, query)
-    if (user.error) return user
-    return rewrapResponse<number, User>(user, user.data.points)
-}
-
-export async function getUsersRsns(guild_id: string, query: UsersParam) {
-    const users = await getUsers(guild_id, query)
-    if (users.error) return users
-    return rewrapResponse<RSN[][], User[]>(users, users.data.map(u => u.rsns))
-}
-
-export async function getUserRsns(guild_id: string, query: UserParam) {
-    const user = await getUser(guild_id, query)
-    if (user.error) return user
-    return rewrapResponse<RSN[], User>(user, user.data.rsns)
 }
 
 export async function createUser(guild_id: string, user_id: string, rsn: string) {
@@ -114,29 +79,26 @@ export async function removeRsn(guild_id: string, user_id: string, rsn: string) 
     return status
 }
 
-export async function givePoints(guild_id: string, query: PointsParam) {
+export async function givePointsToMultiple(guild_id: string, query: PointsParam) {
     const ids = Array.isArray(query.user_id) ? query.user_id : [query.user_id]
-    let body: Object
-    let url = `guilds/${guild_id}/points/`
+    let url = `guilds/${guild_id}/users/${ids.join(",")}/points/`
 
     if (query.points.type === "custom") {
         url += `custom/${query.points.amount}`
-        body = {
-            guild_id,
-            user_ids: ids,
-            points: query.points.amount
-        }
     } else {
         url += query.points.event
-        body = {
-            guild_id,
-            user_ids: ids,
-            event: query.points.event
-        }
     }
 
-    const options = { method: "PUT", body: JSON.stringify(body) }
-    const status = await fetchData(url, options)
+    const options = { method: "PUT" }
+    const status = await fetchData<SimpleUser[]>(url, options)
 
     return status
+}
+
+export async function givePoints(guild_id: string, query: PointsParam) {
+    const res = await givePointsToMultiple(guild_id, query)
+
+    if (res.error) return res
+
+    return rewrapResponse<SimpleUser, SimpleUser[]>(res, res.data[0])
 }

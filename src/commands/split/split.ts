@@ -1,28 +1,28 @@
-import {
-    ButtonInteraction,
-    CommandInteraction,
-    ApplicationCommandOptionType,
-    Snowflake,
-} from "discord.js"
-import type { SplitCache, SplitData } from "../../typings/splitTypes.js"
-import type IPointService from "../../utils/pointUtils/IPointService"
-
-import {
-    Discord,
-    Slash,
-    ButtonComponent,
-    SlashChoice,
-    SlashOption,
-    Guard,
-} from "discordx"
+import { CommandInteraction, ApplicationCommandOptionType, Snowflake, AutocompleteInteraction, TextChannel } from "discord.js"
+import type { SplitCache, SplitData } from "@typings/splitTypes.js"
+import type IPointService from "@utils/pointUtils/IPointService"
+import { Discord, Slash, SlashChoice, SlashOption, Guard } from "discordx"
 import splitHelper from "./func/splitHelper.js"
+import IsAdmin from "@guards/IsAdmin.js"
+import { container, injectable } from "tsyringe"
 import acceptHelper from "./func/acceptHelper.js"
 import denyHelper from "./func/denyHelper.js"
-import IsAdmin from "../../guards/IsAdmin.js"
-import IsValid from "../../guards/IsValidInteraction.js"
-import { container, injectable } from "tsyringe"
+import { formatTimeAgo } from "@utils/timeFormatter.js"
 
 let state: SplitCache = new Map<Snowflake, SplitData>()
+
+function autocompleter(interaction: AutocompleteInteraction) {
+    // Convert Map entries to an array of autocomplete options
+    const options = Array.from(state.entries()).map(([id, data]) => ({
+        name: `${data.member.displayName} - ${data.points} points (${formatTimeAgo(data.timestamp)})`,
+        value: id
+    }));
+
+    // Respond with the options (limit to 25 as per Discord's requirements)
+    interaction.respond(
+        options.slice(0, 25)
+    );
+}
 
 @Discord()
 @injectable()
@@ -56,17 +56,83 @@ class split {
         await splitHelper(rewardValue, interaction, state)
     }
 
-    // register a handler for the button with id: "approve-btn"
-    @ButtonComponent({ id: "approve-btn" })
-    @Guard(IsAdmin, IsValid(state))
-    approveButton(interaction: ButtonInteraction) {
-        return acceptHelper(interaction, state)
+    @Slash({
+        name: "accept",
+        description: "Accept a split by id",
+    })
+    @Guard(IsAdmin)
+    async accept(
+        @SlashOption({
+            name: "id",
+            description: "Id of the split event",
+            required: true,
+            type: ApplicationCommandOptionType.String,
+            autocomplete: autocompleter
+        })
+        id: string,
+        interaction: CommandInteraction
+    ) {
+        const split = state.get(id)
+        if (!split) return await interaction.reply("Internal error")
+
+        const response = await acceptHelper(interaction, split)
+
+        // Free up memory
+        state.delete(id)
+        return await interaction.reply(response)
     }
 
-    // register a handler for the button with id: "deny-btn"
-    @ButtonComponent({ id: "deny-btn" })
-    @Guard(IsAdmin, IsValid(state))
-    denyButton(interaction: ButtonInteraction) {
-        return denyHelper(interaction, state)
+    @Slash({
+        name: "deny",
+        description: "Deny a split by id",
+    })
+    @Guard(IsAdmin)
+    async deny(
+        @SlashOption({
+            name: "id",
+            description: "Id of the split event",
+            required: true,
+            type: ApplicationCommandOptionType.String,
+            autocomplete: autocompleter,
+        })
+        id: string,
+        interaction: CommandInteraction
+    ) {
+        const split = state.get(id)
+        if (!split) return await interaction.reply("Internal error")
+
+        const response = await denyHelper(interaction, split)
+
+        // Free up memory
+        state.delete(id)
+        return await interaction.reply(response)
+    }
+
+    @Slash({
+        name: "splitinfo",
+        description: "Get information about a split only visible to you",
+    })
+    @Guard(IsAdmin)
+    async splitinfo(
+        @SlashOption({
+            name: "id",
+            description: "Id of the split event",
+            required: true,
+            type: ApplicationCommandOptionType.String,
+            autocomplete: autocompleter,
+        })
+        id: string,
+        interaction: CommandInteraction
+    ) {
+        const split = state.get(id)
+        if (!split) return await interaction.reply("Internal error")
+
+        const channel = await interaction.client.channels.fetch(split.channel) as TextChannel
+        if (!channel) return "Channel not found"
+        const message = await channel.messages.fetch(split.message)
+
+        const response = `# Split: ${split.member.displayName}\nPoints: ${split.points} points\nCreated: ${formatTimeAgo(split.timestamp)}\nMessage: ${message.url}`
+
+        return await interaction.reply({ content: response, ephemeral: true })
     }
 }

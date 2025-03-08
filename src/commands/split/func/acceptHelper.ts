@@ -1,33 +1,21 @@
-import type { ButtonInteraction, BaseInteraction } from "discord.js";
+import type { CommandInteraction, TextChannel } from "discord.js";
 import type IPointService from "@utils/pointUtils/IPointService"
-import type { SplitCache } from "@typings/splitTypes.js";
+import type { SplitData } from "@typings/splitTypes.js";
 
-import getInteractionId from "./getInteractionId.js";
 import { container } from "tsyringe"
 
-const acceptHelper = async (interaction: ButtonInteraction, state: SplitCache) => {
+const acceptHelper = async (interaction: CommandInteraction, split: SplitData) => {
     const pointService = container.resolve<IPointService>("PointService")
-
-    let splitId = getInteractionId(interaction);
-    let split = state.get(splitId);
-    if (!split) {
-        await interaction.reply("Split wasn't found in cache");
-        console.log("ERROR: Couldn't get SplitData from SplitCache");
-        return;
-    }
 
     let receivingUser = split.member;
     let addedPoints = split.points;
 
-    // Remove buttons on button press
-    await interaction.message.edit({ components: [] });
+    const channel = await interaction.client.channels.fetch(split.channel) as TextChannel
+    if (!channel) return "Channel not found"
+    await channel.messages.delete(split.message)
 
-    // Free up memory on point approval
-    state.delete(splitId);
-
-    const pointsResponse = await pointService.givePoints(addedPoints, receivingUser, interaction as BaseInteraction);
-
-    await interaction.reply(pointsResponse);
+    const pointsResponse = await pointService.givePoints(addedPoints, receivingUser, interaction);
+    return pointsResponse;
 }
 
 export default acceptHelper;

@@ -24,10 +24,12 @@ export type User = {
     rsns: RSN[],
 }
 
+export type SimpleUser = Omit<User, "rsns">
+
 export type Time = {
     time: number,
-    boss_category: string,
     boss_name: string,
+    category: string,
     run_id: number,
     date: string,
     team: User[],
@@ -39,14 +41,7 @@ export type NewTime = {
     boss_name: string,
 }
 
-export type DetailedUser = {
-    user: User,
-    times: Time[],
-}
-
-export type Leaderboard = {
-    users: DetailedUser[],
-}
+export type DetailedUser = User & { times: Time[] }
 
 export type Guild = {
     guild_id: string,

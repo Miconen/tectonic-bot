@@ -1,6 +1,6 @@
 import { injectable, inject, singleton } from "tsyringe"
 import IPointService from "./IPointService.js"
-import { BaseInteraction, Collection, Guild, GuildMember } from "discord.js"
+import { BaseInteraction, Collection, GuildMember } from "discord.js"
 import capitalizeFirstLetter from "../capitalizeFirstLetter.js"
 import IRankService from "../rankUtils/IRankService.js"
 import { Requests } from "@requests/main.js"
@@ -71,13 +71,21 @@ export class PointService implements IPointService {
         if (!interaction.guild) return "Error fetching guild"
         const member = interaction.member as GuildMember
 
-        // FIX: Once we have the API returning point values, use that here
         const res = await Requests.givePoints(interaction.guild.id, { user_id: user.id, points: { type: "custom", amount: addedPoints } })
-        // FIX: Fix me
-        let newPoints = 9001
 
-        // Check for 0 since it evaluates to false otherwise
-        if (res.status === 204) {
+        if (res.error) {
+            if (res.status === 404) {
+                let response = `❌ **${user.displayName}** is not an activated user.`
+                return response
+            }
+
+            return "Error giving points"
+        }
+
+        if (res.status === 200) {
+            let newPoints = res.data.points
+            console.log(res.data)
+
             let response = `✔ **${user.displayName}** was granted ${addedPoints} points by **${member.displayName}** and now has a total of ${newPoints} points.`
             let newRank = await this.rankService.rankUpHandler(
                 interaction,
@@ -96,11 +104,6 @@ export class PointService implements IPointService {
 
             return response
 
-        }
-
-        if (res.status === 404) {
-            let response = `❌ **${user.displayName}** is not an activated user.`
-            return response
         }
 
         return "Error giving points"

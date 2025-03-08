@@ -16,25 +16,26 @@ const pointsHelper = async (
         (interaction.member as GuildMember).displayName ??
         "???"
 
-    let points = await Requests.getUserPoints(interaction.guildId!, { type: "user_id", user_id: targetUser })
-
-    let response: string
-    if (points || points === 0) {
-        let nextRankUntil = rankService.pointsToNextRank(points)
-        let nextRankIcon = rankService.getIcon(
-            rankService.getRankByPoints(points + nextRankUntil)
-        )
-
-        response = `${rankService.getIcon(
-            rankService.getRankByPoints(points)
-        )} **${targetUserName}** has: ${points} points`
-        if (rankService.getRankByPoints(points) != "zenyte")
-            response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`
-    } else {
-        response = `❌ ${targetUserName} is not activated.`
+    let res = await Requests.getUser(interaction.guildId!, { type: "user_id", user_id: targetUser })
+    if (res.error) {
+        const response = `❌ ${targetUserName} is not activated.`
+        return await interaction.reply(response)
     }
 
-    await interaction.reply(response)
+    const points = res.data.points
+
+    let nextRankUntil = rankService.pointsToNextRank(points)
+    let nextRankIcon = rankService.getIcon(
+        rankService.getRankByPoints(points + nextRankUntil)
+    )
+
+    let response = `${rankService.getIcon(
+        rankService.getRankByPoints(points)
+    )} **${targetUserName}** has: ${points} points`
+    if (rankService.getRankByPoints(points) != "zenyte")
+        response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`
+
+    return await interaction.reply(response)
 }
 
 export default pointsHelper
