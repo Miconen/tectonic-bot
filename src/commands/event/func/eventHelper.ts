@@ -1,5 +1,5 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
-import type IPointService from "../../../utils/pointUtils/IPointService"
+import type IPointService from "@utils/pointUtils/IPointService"
 
 import { container } from "tsyringe"
 

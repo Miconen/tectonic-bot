@@ -6,7 +6,7 @@ import {
 } from "discord.js"
 import activationHelper from "./func/activationHelper.js"
 import deactivationHelper from "./func/deactivationHelper.js"
-import IsAdmin from "../../guards/IsAdmin.js"
+import IsAdmin from "@guards/IsAdmin.js"
 
 @Discord()
 @Guard(IsAdmin)

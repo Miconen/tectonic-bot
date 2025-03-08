@@ -4,7 +4,7 @@ import {
     GuildMember, Role,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "../../guards/IsAdmin.js";
+import IsAdmin from "@guards/IsAdmin.js";
 import eventHelper from "./func/eventHelper.js";
 import eventRoleHelper from "./func/eventRoleHelper.js";
 import womHelper from "./func/womHelper.js";
@@ -25,7 +25,7 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction,
     ) {
         return eventHelper(user, interaction, "event_participation");
@@ -39,7 +39,7 @@ class Event {
             required: true,
             type: ApplicationCommandOptionType.User,
         })
-            user: GuildMember,
+        user: GuildMember,
         interaction: CommandInteraction,
     ) {
         return eventHelper(user, interaction, "event_hosting");
