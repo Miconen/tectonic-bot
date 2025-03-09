@@ -1,71 +1,25 @@
+import capitalizeFirstLetter from "./capitalizeFirstLetter";
+
 /**
- * Define all the string categories and their keys
+ * Interface defining the structure of string templates
  */
-export interface StringDefinitions {
-    ranks: {
-        levelUpMessage: (args: { username: string; icon: string; rankName: string }) => string;
-        pointsGranted: (args: {
-            username: string;
-            pointsGiven: number;
-            grantedBy: string;
-            totalPoints: number
-        }) => string;
-    };
-    competitions: {
-        header: (args: { title: string }) => string;
-        participantCount: (args: { count: number }) => string;
-        eligibleCount: (args: { eligibleCount: number }) => string;
-        pointsHeader: string;
-    };
-    accounts: {
-        unlinkedHeader: string;
-        unlinkedAccount: (args: { name: string; pointsGiven: number }) => string;
-        unlinkInstructions: string;
-        unlinkHelp: string;
-    };
-    errors: {
-        noGuild: string;
-        noMember: string;
-        competitionError: string;
+type StringTemplate = string | ((args: Record<string, any>) => string);
+
+/**
+ * Interface for the string repository
+ */
+interface StringRepository {
+    [category: string]: {
+        [key: string]: StringTemplate;
     };
 }
 
 /**
- * Extract categories from StringDefinitions
+ * Main string repository containing all application strings
  */
-export type StringCategory = keyof StringDefinitions;
-
-/**
- * Extract keys for a specific category
- */
-export type StringKey<C extends StringCategory> = keyof StringDefinitions[C];
-
-/**
- * Extract argument type for a specific string template
- */
-export type StringArgs<
-    C extends StringCategory,
-    K extends StringKey<C>
-> = StringDefinitions[C][K] extends (args: infer A) => string ? A : never;
-
-/**
- * Type guard to check if a string requires args
- */
-export type RequiresArgs<
-    C extends StringCategory,
-    K extends StringKey<C>
-> = StringDefinitions[C][K] extends (args: any) => string ? true : false;
-
-/**
- * Implementation of the string repository
- */
-const strings: {
-    [C in StringCategory]: {
-        [K in StringKey<C>]: StringDefinitions[C][K];
-    };
-} = {
+const strings: StringRepository = {
     ranks: {
-        levelUpMessage: (args) => `**${args.username}** ranked up to ${args.icon} ${args.rankName}!`,
+        levelUpMessage: (args) => `**${args.username}** ranked up to ${args.icon} ${capitalizeFirstLetter(args.rankName)}!`,
         pointsGranted: (args) => `✔ **${args.username}** was granted ${args.pointsGiven} points by **${args.grantedBy}** and now has a total of ${args.totalPoints} points.`,
     },
     competitions: {
@@ -76,80 +30,60 @@ const strings: {
     },
     accounts: {
         unlinkedHeader: `\n## Unlinked accounts`,
-        unlinkedAccount: (args) => `**${args.name}** +${args.pointsGiven} points, once Discord linked to RSN`,
+        unlinkedAccount: (args) => `**${args.rsn}** +${args.pointsGiven} points, once Discord linked to RSN`,
         unlinkInstructions: "\n_Once you link your rsn to the bot you'll be eligible to gain event points_",
         unlinkHelp: "_Please tag leadership to help with linking your account with your rsn_",
+        notActivated: (args) => `❌ **${args.username}** is not an activated user.`,
     },
     errors: {
         noGuild: "This command must be used in a guild.",
         noMember: "Couldn't retrieve member information.",
         competitionError: "Failed to retrieve competition data.",
+        givingPoints: "Error giving points.",
     }
 };
 
 /**
- * Overloaded getString function to handle both types of strings (with and without args)
+ * Gets a string from the repository
+ * @param category - The category of the string
+ * @param key - The key of the string within the category
+ * @param args - Optional arguments to format the string
+ * @returns The formatted string
  */
-export function getString<
-    C extends StringCategory,
-    K extends StringKey<C>
->(
-    category: C,
-    key: K,
-    args: RequiresArgs<C, K> extends true ? StringArgs<C, K> : never
-): string;
-
-export function getString<
-    C extends StringCategory,
-    K extends StringKey<C>
->(
-    category: C,
-    key: K,
-    args?: RequiresArgs<C, K> extends false ? never : StringArgs<C, K>
-): string;
-
-export function getString<
-    C extends StringCategory,
-    K extends StringKey<C>
->(
-    category: C,
-    key: K,
-    args?: any
-): string {
-    if (!strings[category] || !(key in strings[category])) {
-        console.warn(`String not found: ${String(category)}.${String(key)}`);
-        return `[${String(category)}.${String(key)}]`;
+export function getString(category: string, key: string, args?: Record<string, any>): string {
+    if (!strings[category] || !strings[category][key]) {
+        console.warn(`String not found: ${category}.${key}`);
+        return `[${category}.${key}]`;
     }
 
     const template = strings[category][key];
 
-    if (typeof template === 'function') {
-        if (!args) {
-            console.warn(`Missing arguments for string template: ${String(category)}.${String(key)}`);
-            return `[${String(category)}.${String(key)}:missing-args]`;
-        }
+    if (typeof template === 'function' && args) {
         return template(args);
+    } else if (typeof template === 'string') {
+        return template;
     } else {
-        return template as string;
+        console.warn(`Missing arguments for string template: ${category}.${key}`);
+        return `[${category}.${key}:missing-args]`;
     }
 }
 
 /**
- * Typed version of getMultipleStrings
+ * Gets multiple strings as an array and joins them with a separator
+ * @param stringRequests - Array of string requests
+ * @param separator - Separator to join the strings with
+ * @returns The joined strings
  */
-export function getMultipleStrings<T extends Array<{
-    category: StringCategory;
-    key: StringKey<T[number]['category']>;
-    args?: any;
-}>>(
-    stringRequests: T,
+export function getMultipleStrings(
+    stringRequests: Array<{
+        category: string;
+        key: string;
+        args?: Record<string, any>;
+    }>,
     separator: string = "\n"
 ): string {
     return stringRequests
-        .map(request => {
-            const { category, key, args } = request;
-            return getString(category as any, key as any, args);
-        })
+        .map(request => getString(request.category, request.key, request.args))
         .join(separator);
 }
 
