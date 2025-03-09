@@ -7,7 +7,6 @@ import { Client } from "discordx"
 import "dotenv/config"
 import { RankService } from "./utils/rankUtils/RankService.js"
 import { PointService } from "./utils/pointUtils/PointService.js"
-import { UserService } from "./utils/userUtils/UserService.js"
 import { container } from "tsyringe"
 
 
@@ -69,7 +68,6 @@ bot.on("messageCreate", (message: Message) => {
 async function run() {
     container.registerSingleton("RankService", RankService)
     container.registerSingleton("PointService", PointService)
-    container.registerSingleton("UserService", UserService)
 
     // Import commands
     await importx(dirname(import.meta.url) + "/{events,commands}/**/**/*.{ts,js}")
