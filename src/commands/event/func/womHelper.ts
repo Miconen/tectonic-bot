@@ -1,75 +1,98 @@
-import type IPointService from "@utils/pointUtils/IPointService"
-import { CommandInteraction } from "discord.js";
-import { WOMClient } from "@wise-old-man/utils";
+import { CommandInteraction, GuildMember } from "discord.js";
 import { replyHandler } from "@utils/replyHandler.js";
-import { womToDiscord } from "@utils/womIdConversion.js";
-
 import { container } from "tsyringe"
 
-const wom = new WOMClient();
+import { Requests } from "@requests/main";
+import IRankService from "@utils/rankUtils/IRankService";
+import capitalizeFirstLetter from "@utils/capitalizeFirstLetter";
+import { getString } from "@utils/stringRepo";
 
 async function womHelper(competitionId: number, interaction: CommandInteraction, cutoff: number) {
-    if (!interaction.guild) return;
+    if (!interaction.guild) {
+        await interaction.reply({ content: getString("errors", "noGuild"), ephemeral: true });
+        return;
+    }
 
+    if (!interaction.member) {
+        await interaction.reply({ content: getString("errors", "noMember"), ephemeral: true });
+        return;
+    }
+
+    const member = interaction.member as GuildMember;
     interaction.deferReply();
 
-    const pointService = container.resolve<IPointService>("PointService")
+    // Services and data fetching
+    const rankService = container.resolve<IRankService>("RankService")
+    const competition = await Requests.eventCompetition(interaction.guild.id, competitionId, cutoff)
 
-    const competition = await wom.competitions.getCompetitionDetails(competitionId);
+    // Process RSN data
+    if (competition.error) {
+        await interaction.followUp({ content: getString("errors", "competitionError"), ephemeral: true });
+        return;
+    }
 
-    const userWomIds: string[] = [];
-    const extraPointValues = [15, 10, 5];
-    const extraPoints: Record<string, number> = {};
-    const pointReward = pointService.pointRewards.get("event_participation") ?? 0;
+    const rsns = competition.data.participants.flatMap(u => u.rsns.map(r => r.rsn))
+    const participated = new Set(rsns)
+    const unlinked = competition.data.accounts.filter(name => !participated.has(name))
 
-    // Calculate participants valid for points and construct participants string
-    let participantCountAboveCutoff = 0;
-    for (const [_, player] of competition.participations.entries()) {
-        if (player.progress.gained < cutoff) continue;
-        ++participantCountAboveCutoff
-        userWomIds.push(player.player.id.toString());
-    };
-
-    let usersMap = await womToDiscord(interaction.guild.id, userWomIds);
-    let discordUsers = await interaction.guild.members.fetch({ user: Array.from(usersMap.values()) });
-    let foundUnlinkedAccounts = false;
-
-    let linkedUsers = "";
-    let nonLinkedUsers = "";
-    let competitiors = 0;
-    for (const [i, player] of competition.participations.entries()) {
-        if (player.progress.gained > 1) ++competitiors;
-        if (player.progress.gained < cutoff) continue;
-        const bonus = extraPointValues[Math.min(i, 3)] ?? 0;
-        const discordId = usersMap.get(player.player.id.toString()) ?? undefined;
-        if (discordId) {
-            extraPoints[discordId] = bonus;
-        }
-        else {
-            let points = pointReward + bonus;
-            nonLinkedUsers += `**${player.player.displayName}** +${points} points, when linked\n`;
-            foundUnlinkedAccounts = true;
-        }
-    };
-
-    const linkedUsersList = await pointService.givePointsToMultiple(pointReward, discordUsers, interaction, extraPoints);
-    linkedUsers = linkedUsersList.join("\n");
+    // Fetch Discord users
+    const discordIds = competition.data.participants.map(u => u.user_id)
+    const discordUsers = await interaction.guild.members.fetch({ user: discordIds })
 
     // Build the response string
-    let response = "";
-    response += `## ${competition.title}\n`;
-    response += `Participants: ${competitiors}\n`;
-    response += `Eligible for points: ${participantCountAboveCutoff}`;
-    if (linkedUsers) {
-        response += `\n## Points\n${linkedUsers}`;
+    let responseLines: string[] = [];
+
+    // Header section
+    responseLines.push(getString("competitions", "header", { title: competition.data.title }));
+    responseLines.push(getString("competitions", "participantCount", { count: competition.data.participant_count }));
+    responseLines.push(getString("competitions", "eligibleCount", { eligibleCount: competition.data.participants.length }));
+
+    if (competition.data.participants.length) {
+        responseLines.push(getString("competitions", "pointsHeader"))
+        for (let participant of competition.data.participants) {
+            const user = discordUsers.get(participant.user_id)
+
+            responseLines.push(getString("ranks", "pointsGranted", {
+                username: user?.displayName ?? "???",
+                pointsGiven: competition.data.points_given,
+                grantedBy: member.displayName,
+                totalPoints: participant.points
+            }));
+
+            if (!user) continue
+
+            let newRank = await rankService.rankUpHandler(
+                interaction,
+                user,
+                competition.data.points_given,
+                participant.points
+            )
+
+            if (!newRank) continue
+
+            // Concatenate level up message to response if user leveled up
+            responseLines.push(getString("ranks", "levelUpMessage", {
+                username: user.displayName,
+                icon: rankService.getIcon(newRank),
+                rankName: capitalizeFirstLetter(newRank)
+            }));
+        }
     }
-    if (foundUnlinkedAccounts) {
-        response += `\n## Unlinked accounts\n${nonLinkedUsers}\n`;
-        response += "_Once you link your rsn to the bot you'll be eligible to gain event points_\n";
-        response += "_Please tag leadership to help with linking your account with your rsn_";
+    if (unlinked) {
+        responseLines.push(getString("accounts", "unlinkedHeader"));
+
+        unlinked.forEach(account => {
+            responseLines.push(getString("accounts", "unlinkedAccount", {
+                name: account,
+                pointsGiven: competition.data.points_given
+            }));
+        });
+
+        responseLines.push(getString("accounts", "unlinkInstructions"));
+        responseLines.push(getString("accounts", "unlinkHelp"));
     }
 
-    await replyHandler(response, interaction);
+    await replyHandler(responseLines.join("\n"), interaction);
 }
 
 export default womHelper;

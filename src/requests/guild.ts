@@ -1,4 +1,4 @@
-import { Guild, GuildUpdate, NewTime, TimeResponse, User } from "typings/requests";
+import { CompetitionResponse, Guild, GuildUpdate, NewTime, TimeResponse, User } from "typings/requests";
 import { fetchData } from "./main";
 
 type Boss = {
@@ -138,4 +138,11 @@ export async function newTime(guild_id: string, query: NewTime) {
 
 export async function getBosses() {
     return bosses
+}
+
+export async function eventCompetition(guild_id: string, competition_id: number, cutoff: number) {
+    const url = `guilds/${guild_id}/wom/competition/${competition_id}/cutoff/${cutoff}`
+    const status = await fetchData<CompetitionResponse>(url)
+
+    return status
 }
