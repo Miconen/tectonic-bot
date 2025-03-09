@@ -11,10 +11,10 @@ import {
     SlashGroup,
     SlashOption,
 } from "discordx"
-import IsActivated from "../../guards/IsActivated.js"
-import IsAdmin from "../../guards/IsAdmin.js"
-import IsValidTime from "../../guards/IsValidTime.js"
-import { replyHandler } from "../../utils/replyHandler.js"
+import IsActivated from "@guards/IsActivated.js"
+import IsAdmin from "@guards/IsAdmin.js"
+import IsValidTime from "@guards/IsValidTime.js"
+import { replyHandler } from "@utils/replyHandler.js"
 import bossCategories from "./func/getBosses.js"
 import submitHandler from "./func/submitHandler.js"
 
