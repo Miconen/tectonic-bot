@@ -29,6 +29,7 @@ export type SimpleUser = Omit<User, "rsns">
 export type Time = {
     time: number,
     boss_name: string,
+    display_name: string,
     category: string,
     run_id: number,
     date: string,
@@ -39,6 +40,13 @@ export type NewTime = {
     user_ids: string[],
     time: number,
     boss_name: string,
+}
+
+export type TimeResponse = {
+    boss_name: string,
+    time: number,
+    time_old: number,
+    run_id: number,
 }
 
 export type DetailedUser = User & { times: Time[] }
