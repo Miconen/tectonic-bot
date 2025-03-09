@@ -16,6 +16,9 @@ async function bossesAsChoices() {
             value: name,
         }
 
+        // HACK: We want to exclude these from the miscellaneous command since they have their own... for now...
+        if (category === "Miscellaneous" && (name === "royal_titans_1" || name === "royal_titans_2")) continue;
+
         bossesByCategory[category].push(choice)
     }
 

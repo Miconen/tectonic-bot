@@ -1,4 +1,4 @@
-import { Guild, GuildUpdate, NewTime, User } from "typings/requests";
+import { Guild, GuildUpdate, NewTime, TimeResponse, User } from "typings/requests";
 import { fetchData } from "./main";
 
 type Boss = {
@@ -54,6 +54,8 @@ const bosses: Boss[] = [
     { category: 'Miscellaneous', name: 'zulrah', display_name: 'Zulrah' },
     { category: 'Miscellaneous', name: 'gauntlet', display_name: 'Gauntlet' },
     { category: 'Miscellaneous', name: 'corrupted_gauntlet', display_name: 'Corrupted Gauntlet' },
+    { category: 'Miscellaneous', name: 'royal_titans_1', display_name: 'Royal Titans (Solo)' },
+    { category: 'Miscellaneous', name: 'royal_titans_1', display_name: 'Royal Titans (Duo)' },
 
     // Slayer Boss
     { category: 'Slayer Boss', name: 'hydra', display_name: 'Alchemical Hydra' },
@@ -122,9 +124,16 @@ export async function updateGuild(guild_id: string, query: GuildUpdate) {
     return status
 }
 
-// TODO: Consider returning the old pb if time was beat
-export async function newTime(guild_id: string, time: NewTime) {
-    return true
+export async function newTime(guild_id: string, query: NewTime) {
+    const url = `guilds/${guild_id}/times`
+    const { user_ids, time, boss_name } = query
+    const options = {
+        method: "POST",
+        body: JSON.stringify({ guild_id, user_ids, time, boss_name })
+    }
+    const status = await fetchData<TimeResponse>(url, options)
+
+    return status
 }
 
 export async function getBosses() {
