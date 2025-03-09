@@ -1,9 +1,9 @@
 import { injectable, inject, singleton } from "tsyringe"
 import IPointService from "./IPointService.js"
 import { BaseInteraction, Collection, GuildMember } from "discord.js"
-import capitalizeFirstLetter from "../capitalizeFirstLetter.js"
 import IRankService from "../rankUtils/IRankService.js"
 import { Requests } from "@requests/main.js"
+import { getString } from "@utils/stringRepo.js"
 
 @singleton()
 @injectable()
@@ -74,7 +74,12 @@ export class PointService implements IPointService {
             if (!member) return [`Couldn't get user for ID: ${u.user_id}`]
 
             givenTo.set(u.user_id, true)
-            response.push(`✔ **${member.displayName}** was granted ${addedPoints} points by **${member.displayName}** and now has a total of ${newPoints} points.`)
+            response.push(getString("ranks", "pointsGranted", {
+                username: member.displayName,
+                pointsGiven: addedPoints,
+                grantedBy: member.displayName,
+                totalPoints: newPoints,
+            }))
             let newRank = await this.rankService.rankUpHandler(
                 interaction,
                 member,
@@ -86,9 +91,11 @@ export class PointService implements IPointService {
 
             // Concatenate level up message to response if user leveled up
             let newRankIcon = this.rankService.getIcon(newRank)
-            response.push(`**${member.displayName}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
-                newRank
-            )}!`)
+            response.push(getString("ranks", "levelUpMessage", {
+                username: member.displayName,
+                icon: newRankIcon,
+                rankName: newRank
+            }))
         }
 
         givenTo.forEach((v, k) => {
@@ -96,7 +103,7 @@ export class PointService implements IPointService {
             let member = users.get(k)
             if (!member) return
 
-            response.push(`❌ **${member.displayName}** is not an activated user.`)
+            response.push()
         })
 
         return response
@@ -107,24 +114,31 @@ export class PointService implements IPointService {
         user: GuildMember,
         interaction: BaseInteraction
     ) {
-        if (!interaction.guild) return "Error fetching guild"
+        if (!interaction.guild) return getString("errors", "noGuild")
+
         const member = interaction.member as GuildMember
 
         const res = await Requests.givePoints(interaction.guild.id, { user_id: user.id, points: { type: "custom", amount: addedPoints } })
 
         if (res.error) {
             if (res.status === 404) {
-                let response = `❌ **${user.displayName}** is not an activated user.`
-                return response
+                return getString("accounts", "notActivated", { username: member.displayName })
             }
 
-            return "Error giving points"
+            return getString("errors", "givingPoints")
         }
 
         if (res.status === 200) {
             let newPoints = res.data.points
 
-            let response = `✔ **${user.displayName}** was granted ${addedPoints} points by **${member.displayName}** and now has a total of ${newPoints} points.`
+            const response: string[] = []
+
+            response.push(getString("ranks", "pointsGranted", {
+                username: member.displayName,
+                pointsGiven: addedPoints,
+                grantedBy: member.displayName,
+                totalPoints: newPoints,
+            }))
             let newRank = await this.rankService.rankUpHandler(
                 interaction,
                 user,
@@ -132,18 +146,20 @@ export class PointService implements IPointService {
                 newPoints
             )
 
-            if (!newRank) return response
+            if (!newRank) return response.join("\n")
 
             // Concatenate level up message to response if user leveled up
             let newRankIcon = this.rankService.getIcon(newRank)
-            response += `\n**${user.displayName}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
-                newRank
-            )}!`
+            response.push(getString("ranks", "levelUpMessage", {
+                username: member.displayName,
+                icon: newRankIcon,
+                rankName: newRank
+            }))
 
-            return response
+            return response.join("\n")
 
         }
 
-        return "Error giving points"
+        return getString("errors", "givingPoints")
     }
 }
