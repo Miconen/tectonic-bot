@@ -5,10 +5,10 @@ import {
     GuildMember,
 } from "discord.js"
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx"
-import IsActivated from "../../guards/IsActivated.js"
-import IsAdmin from "../../guards/IsAdmin.js"
-import IsValidTime from "../../guards/IsValidTime.js"
-import { replyHandler } from "../../utils/replyHandler.js"
+import IsActivated from "@guards/IsActivated.js"
+import IsAdmin from "@guards/IsAdmin.js"
+import IsValidTime from "@guards/IsValidTime.js"
+import { replyHandler } from "@utils/replyHandler.js"
 import { getBossCox } from "./func/getBoss.js"
 import submitHandler from "./func/submitHandler.js"
 
