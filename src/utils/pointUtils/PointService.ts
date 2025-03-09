@@ -54,6 +54,7 @@ export class PointService implements IPointService {
     ) {
         let responses: Promise<string>[] = []
 
+        // TODO: Transition to using new points endpoints instead of multiple queries
         users.forEach((user) => {
             let pointsToGive = addedPoints + (extraPoints?.[user.id] || 0)
             let points = this.givePoints(pointsToGive, user, interaction)
