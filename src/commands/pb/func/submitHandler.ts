@@ -14,12 +14,11 @@ async function submitHandler(
 ) {
     const pointService = container.resolve<IPointService>("PointService")
     console.log(`Submitting pb: ${boss} ${time}`)
-    // Parse guild id
-    const guildId = interaction?.guildId
-    if (!guildId) {
-        console.log("↳ Failed getting guildId")
-        return "Failed getting guild id"
+    if (!interaction.guild) {
+        console.log("↳ Failed getting guild")
+        return "Failed getting guild"
     }
+    const guildId = interaction.guild.id
 
     // Parse time
     const ticks = TimeConverter.timeToTicks(time)
@@ -29,43 +28,40 @@ async function submitHandler(
     }
 
     // Add time
-    const addedTime = await Requests.newTime(guildId, { user_ids: team, time: ticks, boss_name: boss })
-    if (!addedTime) {
-        console.log("↳ Failed adding time")
+    const res = await Requests.newTime(guildId, { user_ids: team, time: ticks, boss_name: boss })
+    if (res.error) {
+        console.log("↳ Failed adding time", res.message)
         return "Failed adding time"
     }
 
     console.log("↳ Time added")
 
-    // FIX: Check if old pb was beaten
-    if (!addedTime) {
+    if (res.status == 200) {
         console.log("↳ Not a new pb")
         return `Time submitted, not a new pb :)`
     }
 
     // Pb updated
     //await updateEmbed(boss, guildId, interaction)
-    console.log(`↳ New pb: ${time} (${TimeConverter.timeToTicks(time)} ticks)`)
+    console.log(`↳ New pb: ${TimeConverter.ticksToTime(res.data.time)} (${res.data.time} ticks)\nBeating the old time ${TimeConverter.ticksToTime(res.data.time_old)} (${res.data.time_old} ticks)`)
 
     // Fetch and map user ids to GuildMember types
-    let filteredTeam = team.filter((user): user is string => user !== undefined)
-    let fetchedGuildMembers = await interaction.guild?.members.fetch({
-        user: filteredTeam,
-    })
+    let members = await interaction.guild.members.fetch({ user: team })
     let pointsResponses = []
-    if (fetchedGuildMembers) {
+    if (members) {
         // Give points
+        // TODO: Use new API endpoints instead of hard coding points
         let PB_POINTS = 10
         pointsResponses = await pointService.givePointsToMultiple(
             PB_POINTS,
-            fetchedGuildMembers,
+            members,
             interaction
         )
     } else {
         pointsResponses.push("Error fetching users to give points to")
     }
 
-    // Construct resposne
+    // Construct response
     let response = `# New pb: ${time} (${TimeConverter.timeToTicks(
         time
     )} ticks)\n`
