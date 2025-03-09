@@ -112,3 +112,12 @@ export type GuildUpdate = {
     pb_channel?: string;
     multiplier?: number;
 }
+
+export type CompetitionResponse = {
+    title: string
+    participant_count: number
+    participants: DetailedUser[]
+    accounts: string[]
+    cutoff: number
+    points_given: number
+}
