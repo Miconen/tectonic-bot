@@ -1,13 +1,13 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import type IRankService from "@utils/rankUtils/IRankService"
-import type IUserService from "@utils/userUtils/IUserService"
 import { Requests } from "@requests/main.js"
-import { User } from "@typings/requests.js"
+import { UserParam } from "@typings/requests.js"
 
 import { container } from "tsyringe"
+import TimeConverter from "@commands/pb/func/TimeConverter"
 
 const pointsHelper = async (
-    user: GuildMember | null,
+    member: GuildMember | null,
     rsn: string | null,
     interaction: CommandInteraction
 ) => {
@@ -15,47 +15,36 @@ const pointsHelper = async (
     let guildId = interaction.guild.id
 
     const rankService = container.resolve<IRankService>("RankService")
-    const userService = container.resolve<IUserService>("UserService")
 
-    let foundUser: User | undefined
-    let targetUser: GuildMember | undefined
-    let targetId = ""
+    let query: UserParam | undefined
+    let errorMsg = `❌ Error fetching user data.`
+
+    if (!member) {
+        member = interaction.member as GuildMember
+    }
 
     // User wants to check self
-    if (!rsn && !user) {
-        let res = await Requests.getUser(guildId, { type: "user_id", user_id: interaction.user.id })
-        if (res.error) return `❌ **${(interaction.member as GuildMember).displayName}** is not activated.`
-
-        foundUser = res.data
-        targetId = interaction.user.id
-        targetUser = interaction.member as GuildMember
+    if (!rsn) {
+        query = { type: "user_id", user_id: member.id }
+        errorMsg = `❌ **${member.displayName}** is not activated.`
     }
 
     // Checks the database for an rns
     if (rsn) {
-        let res = await Requests.getUser(guildId, { type: "rsn", rsn })
-        if (res.error) return `❌ **${rsn}** is not bound to a known member.`
-
-        // User exists and is activated
-        foundUser = res.data
-        targetId = res.data.user_id
-        targetUser = await interaction.guild.members.fetch(targetId)
+        query = { type: "rsn", rsn }
+        errorMsg = `❌ **${rsn}** is not bound to a known member.`
     }
 
-    if (user) {
-        let res = await Requests.getUser(guildId, { type: "user_id", user_id: user.user.id })
-        if (res.error) return `❌ **${user.displayName}** is not activated.`
-
-        foundUser = res.data
-        targetId = user.id
-        targetUser = user
+    if (!query) {
+        return errorMsg
     }
 
-    if (!foundUser || !targetUser) {
-        return `❌ Error fetching user data.`
-    }
+    const res = await Requests.getUser(guildId, query)
+    if (res.error) return errorMsg
+    member = await interaction.guild.members.fetch(res.data.user_id)
 
-    let points = foundUser.points
+    const user = res.data
+    const points = user.points
 
     // Rank info and icons
     let nextRankUntil = rankService.pointsToNextRank(points)
@@ -64,29 +53,25 @@ const pointsHelper = async (
     let currentRank = rankService.getRankByPoints(points)
     let currentRankIcon = rankService.getIcon(currentRank)
 
-    // User accounts
-    let accounts = await userService.getAccounts(targetId, guildId)
-    let pbs = (await userService.getPbs(targetId, guildId)).sort()
-
     let response: string
-    response = `# ${currentRankIcon} **${targetUser.displayName}**`
+    response = `# ${currentRankIcon} **${member.displayName}**`
     response += `\nCurrent points: ${points}${currentRankIcon}`
     if (currentRank != "wrath") {
         response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`
     }
-    if (accounts.length) {
+    if (user.rsns.length) {
         response += "\n# Accounts"
-        accounts.forEach((account) => {
-            response += `\n\`${account}\``
+        user.rsns.forEach((account) => {
+            response += `\n\`${account.rsn}\``
         })
     }
-    // else {
-    //     response += "\n`Link your OSRS account to be eligible for event rank points`"
-    // }
-    if (pbs.length) {
+    else {
+        response += "\n`Link your OSRS account to be eligible for event rank points`"
+    }
+    if (user.times.length) {
         response += "\n# Clan PBs"
-        pbs.forEach((pb) => {
-            response += `\n\`${pb.boss}\` - \`${pb.time}\``
+        user.times.forEach((pb) => {
+            response += `\n\`${pb.category} | ${pb.display_name}\` - \`${TimeConverter.ticksToTime(pb.time)} (${pb.time} ticks)\``
         })
     }
 
