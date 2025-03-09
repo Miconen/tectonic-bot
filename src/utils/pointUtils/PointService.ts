@@ -52,16 +52,54 @@ export class PointService implements IPointService {
         interaction: BaseInteraction,
         extraPoints?: { [key: string]: number }
     ) {
-        let responses: Promise<string>[] = []
+        if (!interaction.guild) return ["Error fetching guild ID"]
+        let response: string[] = []
 
-        // TODO: Transition to using new points endpoints instead of multiple queries
-        users.forEach((user) => {
-            let pointsToGive = addedPoints + (extraPoints?.[user.id] || 0)
-            let points = this.givePoints(pointsToGive, user, interaction)
-            responses.push(points)
+        let user_ids = Array.from(users.keys())
+        const res = await Requests.givePointsToMultiple(interaction.guild.id, { user_id: user_ids, points: { type: "custom", amount: addedPoints } })
+
+        if (res.error) {
+            return [`Error giving points: ${res.message}`]
+        }
+
+        const givenTo = new Map<string, boolean>()
+        users.forEach((_, k) => {
+            givenTo.set(k, false)
+        });
+
+        for (let u of res.data) {
+            let newPoints = u.points
+            let member = users.get(u.user_id)
+
+            if (!member) return [`Couldn't get user for ID: ${u.user_id}`]
+
+            givenTo.set(u.user_id, true)
+            response.push(`✔ **${member.displayName}** was granted ${addedPoints} points by **${member.displayName}** and now has a total of ${newPoints} points.`)
+            let newRank = await this.rankService.rankUpHandler(
+                interaction,
+                member,
+                newPoints - addedPoints,
+                newPoints
+            )
+
+            if (!newRank) continue;
+
+            // Concatenate level up message to response if user leveled up
+            let newRankIcon = this.rankService.getIcon(newRank)
+            response.push(`**${member.displayName}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
+                newRank
+            )}!`)
+        }
+
+        givenTo.forEach((v, k) => {
+            if (v) return
+            let member = users.get(k)
+            if (!member) return
+
+            response.push(`❌ **${member.displayName}** is not an activated user.`)
         })
 
-        return Promise.all(responses)
+        return response
     }
 
     async givePoints(
@@ -85,7 +123,6 @@ export class PointService implements IPointService {
 
         if (res.status === 200) {
             let newPoints = res.data.points
-            console.log(res.data)
 
             let response = `✔ **${user.displayName}** was granted ${addedPoints} points by **${member.displayName}** and now has a total of ${newPoints} points.`
             let newRank = await this.rankService.rankUpHandler(
