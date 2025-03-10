@@ -42,7 +42,7 @@ async function submitHandler(
     }
 
     // Pb updated
-    //await updateEmbed(boss, guildId, interaction)
+    await updateEmbed(boss, guildId, interaction)
     console.log(`↳ New pb: ${TimeConverter.ticksToTime(res.data.time)} (${res.data.time} ticks)\nBeating the old time ${TimeConverter.ticksToTime(res.data.time_old)} (${res.data.time_old} ticks)`)
 
     // Fetch and map user ids to GuildMember types

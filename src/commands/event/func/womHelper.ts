@@ -89,7 +89,6 @@ async function womHelper(competitionId: number, interaction: CommandInteraction,
         });
 
         responseLines.push(getString("accounts", "unlinkInstructions"));
-        responseLines.push(getString("accounts", "unlinkHelp"));
     }
 
     await replyHandler(responseLines.join("\n"), interaction);

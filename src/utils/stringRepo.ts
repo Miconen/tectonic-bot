@@ -31,8 +31,7 @@ const strings: StringRepository = {
     accounts: {
         unlinkedHeader: `\n## Unlinked accounts`,
         unlinkedAccount: (args) => `**${args.rsn}** +${args.pointsGiven} points, once Discord linked to RSN`,
-        unlinkInstructions: "\n_Once you link your rsn to the bot you'll be eligible to gain event points_",
-        unlinkHelp: "_Please tag leadership to help with linking your account with your rsn_",
+        unlinkInstructions: "\n_Once you link your rsn to the bot you'll be eligible to gain event points_\n_Please tag leadership to help with linking your account with your rsn_",
         notActivated: (args) => `❌ **${args.username}** is not an activated user.`,
     },
     errors: {
@@ -40,6 +39,7 @@ const strings: StringRepository = {
         noMember: "Couldn't retrieve member information.",
         competitionError: "Failed to retrieve competition data.",
         givingPoints: "Error giving points.",
+        guildTimes: (args) => `Error fetching guild times.\n\`${args.error}\``
     }
 };
 

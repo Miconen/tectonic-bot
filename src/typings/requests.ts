@@ -26,7 +26,7 @@ export type User = {
 
 export type SimpleUser = Omit<User, "rsns">
 
-export type Time = {
+export type DetailedTime = {
     time: number,
     boss_name: string,
     display_name: string,
@@ -49,7 +49,7 @@ export type TimeResponse = {
     run_id: number,
 }
 
-export type DetailedUser = User & { times: Time[] }
+export type DetailedUser = User & { times: DetailedTime[] }
 
 export type Guild = {
     guild_id: string,
@@ -108,9 +108,15 @@ export type PointsParam = {
     points: Points;
 };
 
+export type CategoryUpdate = {
+    message_id: string
+    category: string
+}
+
 export type GuildUpdate = {
     pb_channel?: string;
     multiplier?: number;
+    category_messages?: CategoryUpdate[]
 }
 
 export type CompetitionResponse = {
@@ -120,4 +126,54 @@ export type CompetitionResponse = {
     accounts: string[]
     cutoff: number
     points_given: number
+}
+
+export type Boss = {
+    name: string;
+    display_name: string;
+    category: string;
+    solo: boolean
+}
+
+export type Category = {
+    thumbnail: string
+    order: number
+    name: string
+}
+
+export type GuildBoss = {
+    boss: string
+    guild_id: string
+    pb_id: number | null
+}
+
+export type GuildCategory = {
+    guild_id: string
+    category: string
+    message_id: number | null
+}
+
+export type Time = {
+    time: number,
+    boss_name: string,
+    run_id: number,
+    date: string,
+    guild_id: string
+}
+
+export type Team = {
+    run_id: number
+    user_id: string
+    guild_id: string
+}
+
+export type GuildTimes = {
+    guild_id: string
+    pb_channel_id: string
+    bosses: Boss[]
+    categories: Category[]
+    guild_bosses: GuildBoss[]
+    guild_categories: GuildCategory[]
+    pbs: Time[]
+    teammates: Team[]
 }
