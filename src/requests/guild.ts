@@ -1,4 +1,4 @@
-import { CompetitionResponse, Guild, GuildUpdate, NewTime, TimeResponse, User } from "typings/requests";
+import { CompetitionResponse, Guild, GuildTimes, GuildUpdate, NewTime, TimeResponse, User } from "typings/requests";
 import { fetchData } from "./main";
 
 type Boss = {
@@ -117,7 +117,7 @@ export async function updateGuild(guild_id: string, query: GuildUpdate) {
     const url = `guilds/${guild_id}`
     const options = {
         method: "PUT",
-        body: JSON.stringify({ multiplier: query.multiplier, pb_channel_id: query.pb_channel })
+        body: JSON.stringify({ multiplier: query.multiplier, pb_channel_id: query.pb_channel, category_messages: query.category_messages })
     }
     const status = await fetchData(url, options)
 
@@ -143,6 +143,13 @@ export async function getBosses() {
 export async function eventCompetition(guild_id: string, competition_id: number, cutoff: number) {
     const url = `guilds/${guild_id}/wom/competition/${competition_id}/cutoff/${cutoff}`
     const status = await fetchData<CompetitionResponse>(url)
+
+    return status
+}
+
+export async function getGuildTimes(guild_id: string) {
+    const url = `guilds/${guild_id}/times`
+    const status = await fetchData<GuildTimes>(url)
 
     return status
 }

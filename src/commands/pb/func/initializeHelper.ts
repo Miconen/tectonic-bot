@@ -1,51 +1,69 @@
+import { Requests } from "@requests/main.js"
+import { CategoryUpdate } from "@typings/requests.js"
+import { notEmpty } from "@utils/notEmpty.js"
+import { getString } from "@utils/stringRepo.js"
 import { CommandInteraction, TextChannel } from "discord.js"
 import embedBuilder from "./embedBuilder.js"
 import removeOldEmbeds from "./removeOldEmbeds.js"
 import TimeConverter from "./TimeConverter.js"
-import { GuildBoss, GuildCategory, TimeField } from "./types.js"
-
-import { container } from "tsyringe"
+import { TimeField } from "./types.js"
 
 async function initializeHelper(interaction: CommandInteraction) {
-    const database = container.resolve<IDatabase>("Database")
-
-    // Guild id should always be set, if not let the program fail for easier debugging
-    const guildId = interaction.guildId!
+    if (!interaction.guild) {
+        await interaction.reply({ content: getString("errors", "noGuild"), ephemeral: true });
+        return;
+    }
+    const guildId = interaction.guild.id
+    let channel = interaction.channel as TextChannel
+    //let member = interaction.member as GuildMember
 
     await interaction.deferReply({ ephemeral: true })
+
+    await interaction.editReply({ content: "Fetching guild data..." })
+    const res = await Requests.getGuildTimes(guildId)
+
+    if (res.error) {
+        await interaction.reply({ content: getString("errors", "guildTimes", { error: res.message }), ephemeral: true });
+        return;
+    }
+
     await interaction.editReply({ content: "Removing old category embeds..." })
-
-    await removeOldEmbeds(guildId, interaction.client)
-
-    await interaction.editReply({ content: "Getting categories and bosses..." })
-
-    const categoriesWithBosses = await database.getCategoriesWithBosses()
-    // Accessing categories with associated bosses
-    const categories = categoriesWithBosses.map((category) => {
-        const { bosses, ...categoryData } = category
-        return {
-            ...categoryData,
-            bosses,
-        }
-    })
-
-    let channel = interaction.channel as TextChannel
+    //await removeOldEmbeds(guildId, interaction.client)
 
     await interaction.editReply({ content: "Creating embeds..." })
 
-    const guildBosses: GuildBoss[] = []
-    const guildCategories: GuildCategory[] = []
+    // Create combined bosses data
+    const bosses = res.data.guild_bosses.map(gb => {
+        let pb = res.data.pbs.find(t => t.run_id === gb.pb_id)
+        let teammates = res.data.teammates.filter(tm => tm.run_id === gb.pb_id)
 
-    // Fetch existing boss data from guild_bosses table in a single query
-    const existingBosses = await database.getGuildBossesPbs(guildId)
-    const existingBossesMap = new Map(
-        existingBosses.map((boss) => [boss.boss, boss])
-    )
+        // Find all guild_bosses entries for this boss
+        const boss = res.data.bosses.find(b => b.name === gb.boss);
 
-    // Sort categories by category order
-    const sortedCategories = categories.sort((a, b) => a.order - b.order)
+        if (!boss) return
 
-    for (let category of sortedCategories) {
+        // Return combined data
+        return { ...gb, ...boss, pb, teammates };
+    }).filter(notEmpty);
+
+    // Create combined categories data
+    const categories = res.data.guild_categories.map(gc => {
+        let bs = bosses.filter(b => b.category === gc.category)
+
+        // Find all guild_categories entries for this category
+        const category = res.data.categories.find(c => gc.category === c.name);
+
+        if (!category) return
+
+        // Return combined data
+        return { ...gc, ...category, bosses: bs };
+    }).filter(notEmpty).sort((a, b) => a.order - b.order);
+
+    const players = new Set<string>(res.data.teammates.map(t => t.user_id))
+    const members = await interaction.guild.members.fetch({ user: Array.from(players) })
+    const msgs: CategoryUpdate[] = []
+
+    for (let category of categories) {
         let embed = embedBuilder(interaction)
             .setTitle(category.name)
             .setThumbnail(category.thumbnail)
@@ -53,47 +71,33 @@ async function initializeHelper(interaction: CommandInteraction) {
         let fields: TimeField[] = []
 
         for (let boss of category.bosses) {
-            const existingBoss = existingBossesMap.get(boss.name)
             let formattedTime = "No time yet"
-            const time = existingBoss?.times?.time
-            if (time) {
-                formattedTime = TimeConverter.ticksToTime(time)
+            if (boss.pb) {
+                formattedTime = TimeConverter.ticksToTime(boss.pb.time)
             }
 
             let formattedTeam = ""
-            const team = existingBoss?.times?.teams.map(
-                (player) => `<@${player.user_id}>`
+            const team = boss.teammates.map(
+                (player) => `**${members.get(player.user_id)?.displayName}**`
             )
             if (team) {
-                formattedTeam = team?.join(", ")
+                formattedTeam = `${team?.join(", ")}`
             }
 
             fields.push({
                 name: boss.display_name,
                 value: `${formattedTime} ${formattedTeam}`,
             })
-
-            guildBosses.push({
-                boss: boss.name,
-                guild_id: guildId,
-            })
         }
 
         embed.addFields(...fields)
 
-        let { id: messageId } = await channel.send({ embeds: [embed] })
-
-        guildCategories.push({
-            guild_id: guildId,
-            category: category.name,
-            message_id: messageId,
-        })
+        let { id } = await channel.send({ embeds: [embed] })
+        msgs.push({ message_id: id, category: category.category })
     }
 
     await interaction.editReply({ content: "Storing data..." })
-    await database.updatePbChannel(guildId, interaction.channelId)
-    await database.ensureGuildBossesExist(guildBosses)
-    await database.updateGuildCategories(guildId, guildCategories)
+    await Requests.updateGuild(guildId, { pb_channel: interaction.channelId, category_messages: msgs })
     await interaction.editReply({ content: "Finished" })
 }
 
