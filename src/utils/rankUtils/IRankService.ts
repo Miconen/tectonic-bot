@@ -1,4 +1,4 @@
-import { BaseInteraction, GuildMember, Role } from "discord.js"
+import { BaseInteraction, GuildMember } from "discord.js"
 
 interface IRankService {
     getIcon: (icon: string) => string
