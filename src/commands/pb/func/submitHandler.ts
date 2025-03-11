@@ -3,7 +3,7 @@ import type IPointService from "@utils/pointUtils/IPointService"
 import { Requests } from "@requests/main.js"
 
 import TimeConverter from "./TimeConverter.js"
-//import updateEmbed from "./updateEmbed.js"
+import updateEmbed from "./updateEmbed.js"
 import { container } from "tsyringe"
 
 async function submitHandler(
