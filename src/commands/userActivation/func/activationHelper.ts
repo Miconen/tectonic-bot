@@ -16,15 +16,24 @@ const activationHelper = async (
 
     let result = await Requests.createUser(interaction.guild.id, user.user.id, rsn)
 
+    if (result.error) {
+        let response = `Unexpected error occurred...\n${result.message}`
+
+        if (result.status === 400) {
+            response = `Error fetching user from Wise Old Man, or the guild is not activated...\n${result.message}`
+        }
+
+        if (result.status === 409) {
+            response = `❌ **${user.displayName}** is already activated.`
+        }
+
+        return await replyHandler(response, interaction)
+    }
+
     if (result.status === 201) {
         let response = `**${user.user}** has been activated and linked by **${interaction.member}**.`
         // Set default role
         await rankService.addRole(interaction, user, "jade")
-        return await replyHandler(response, interaction)
-    }
-
-    if (result.status === 409) {
-        let response = `❌ **${user.displayName}** is already activated.`
         return await replyHandler(response, interaction)
     }
 
