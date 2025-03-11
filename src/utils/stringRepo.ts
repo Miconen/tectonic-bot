@@ -51,12 +51,19 @@ const strings: StringRepository = {
  * @returns The formatted string
  */
 export function getString(category: string, key: string, args?: Record<string, any>): string {
-    if (!strings[category] || !strings[category][key]) {
+    const c = strings[category]
+    if (!c) {
         console.warn(`String not found: ${category}.${key}`);
         return `[${category}.${key}]`;
     }
 
-    const template = strings[category][key];
+    const k = c[key]
+    if (!k) {
+        console.warn(`String not found: ${category}.${key}`);
+        return `[${category}.${key}]`;
+    }
+
+    const template = k;
 
     if (typeof template === 'function' && args) {
         return template(args);
