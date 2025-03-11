@@ -2,9 +2,12 @@ import { Requests } from "@requests/main"
 import { SlashChoiceType } from "discordx"
 
 async function bossesAsChoices() {
+    const res = await Requests.getBosses()
+    if (res.error) throw new Error("Could not fetch bosses from database in bossesAsChoices()")
+
     const bossesByCategory: Record<string, SlashChoiceType[]> = {}
 
-    for (const boss of await Requests.getBosses()) {
+    for (const boss of res.data) {
         const { category, name, display_name } = boss
 
         if (!bossesByCategory[category]) {
