@@ -3,7 +3,7 @@ import * as Guild from "@requests/guild"
 import { HTTPError } from "discord.js";
 import { ApiResponse } from "typings/requests";
 
-const API_URL = (`https://${process.env.API_URL}` ?? "http://localhost:8080") + "/api/v1/"
+const API_URL = process.env.API_URL ? `https://${process.env.API_URL}/api/v1/` : "http://localhost:8080/api/v1/"
 const AUTH_KEY = process.env.AUTH_KEY ?? ""
 
 if (!AUTH_KEY) {

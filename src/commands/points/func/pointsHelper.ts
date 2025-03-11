@@ -3,6 +3,7 @@ import type IRankService from "../../../utils/rankUtils/IRankService"
 import { Requests } from "@requests/main.js"
 
 import { container } from "tsyringe"
+import { getString } from "@utils/stringRepo"
 
 const pointsHelper = async (
     user: GuildMember | null,
@@ -20,6 +21,10 @@ const pointsHelper = async (
     if (res.error) {
         const response = `❌ ${targetUserName} is not activated.`
         return await interaction.reply(response)
+    }
+
+    if (!res.data) {
+        return getString("accounts", "notActivated", { username: targetUserName })
     }
 
     const points = res.data.points

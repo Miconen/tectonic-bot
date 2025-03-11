@@ -62,6 +62,8 @@ function IsActivated(target: string = "player") {
 
         let res = await Requests.getUsers(interaction.guild.id, { type: "user_id", user_id: playersUserIds })
         if (res.error) return await interaction.reply("Error checking activated users")
+        if (res.data.length) return await interaction.reply("Error checking activated users")
+
         let existingUsers = res.data
 
         let warning = ""

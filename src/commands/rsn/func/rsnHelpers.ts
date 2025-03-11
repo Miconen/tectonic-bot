@@ -1,6 +1,7 @@
 import type { CommandInteraction, GuildMember } from "discord.js"
 import { replyHandler } from "@utils/replyHandler.js"
 import { Requests } from "@requests/main.js"
+import { getString } from "@utils/stringRepo"
 
 export async function addRsnHelper(
     user: GuildMember,
@@ -37,6 +38,10 @@ export async function addRsnHelper(
     if (rsns.error) {
         let error = `Failed to fetch user RSNs after succesfully adding new one`
         return await replyHandler(error, interaction)
+    }
+
+    if (!rsns.data) {
+        return getString("accounts", "notActivated", { username: user.displayName })
     }
 
     response += `Succesfully added new RSN (**${rsn}**)\n`

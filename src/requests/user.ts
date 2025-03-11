@@ -31,7 +31,7 @@ export async function getUser(guild_id: string, query: UserParam) {
     const user = await fetchData<DetailedUser[]>(url)
     if (user.error) return user
 
-    return rewrapResponse<DetailedUser, DetailedUser[]>(user, user.data[0])
+    return rewrapResponse<DetailedUser | undefined, DetailedUser[]>(user, user.data[0])
 }
 
 export async function getUsers(guild_id: string, query: UsersParam) {
@@ -97,5 +97,5 @@ export async function givePoints(guild_id: string, query: PointsParam) {
 
     if (res.error) return res
 
-    return rewrapResponse<SimpleUser, SimpleUser[]>(res, res.data[0])
+    return rewrapResponse<SimpleUser | undefined, SimpleUser[]>(res, res.data[0])
 }

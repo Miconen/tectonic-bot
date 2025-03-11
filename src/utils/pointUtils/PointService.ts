@@ -128,6 +128,10 @@ export class PointService implements IPointService {
             return getString("errors", "givingPoints")
         }
 
+        if (!res.data) {
+            return getString("accounts", "notActivated", { username: member.displayName })
+        }
+
         if (res.status === 200) {
             let newPoints = res.data.points
 

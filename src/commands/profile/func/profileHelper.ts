@@ -5,6 +5,7 @@ import { UserParam } from "@typings/requests.js"
 
 import { container } from "tsyringe"
 import TimeConverter from "@commands/pb/func/TimeConverter"
+import { getString } from "@utils/stringRepo"
 
 const pointsHelper = async (
     member: GuildMember | null,
@@ -26,7 +27,7 @@ const pointsHelper = async (
     // User wants to check self
     if (!rsn) {
         query = { type: "user_id", user_id: member.id }
-        errorMsg = `❌ **${member.displayName}** is not activated.`
+        errorMsg = getString("accounts", "notActivated", { username: member.displayName })
     }
 
     // Checks the database for an rns
@@ -41,6 +42,10 @@ const pointsHelper = async (
 
     const res = await Requests.getUser(guildId, query)
     if (res.error) return errorMsg
+    if (!res.data) {
+        return getString("accounts", "notActivated", { username: member.displayName })
+    }
+
     member = await interaction.guild.members.fetch(res.data.user_id)
 
     const user = res.data
