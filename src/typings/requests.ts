@@ -150,7 +150,7 @@ export type GuildBoss = {
 export type GuildCategory = {
     guild_id: string
     category: string
-    message_id: number | null
+    message_id: string | null
 }
 
 export type Time = {
