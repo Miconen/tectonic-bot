@@ -6,7 +6,8 @@
     "type": "module",
     "main": "build/main.js",
     "scripts": {
-        "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json"
+        "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+        "start": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node build/main.js"
     },
     "dependencies": {
         "@discordx/importer": "^1.1.10",
