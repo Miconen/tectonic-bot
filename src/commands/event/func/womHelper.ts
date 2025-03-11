@@ -19,7 +19,6 @@ async function womHelper(competitionId: number, interaction: CommandInteraction,
     }
 
     const member = interaction.member as GuildMember;
-    interaction.deferReply();
 
     // Services and data fetching
     const rankService = container.resolve<IRankService>("RankService")
@@ -27,9 +26,11 @@ async function womHelper(competitionId: number, interaction: CommandInteraction,
 
     // Process RSN data
     if (competition.error) {
-        await interaction.followUp({ content: getString("errors", "competitionError"), ephemeral: true });
+        await interaction.reply({ content: getString("errors", "competitionError"), ephemeral: true });
         return;
     }
+
+    interaction.deferReply();
 
     const rsns = competition.data.participants.flatMap(u => u.rsns.map(r => r.rsn))
     const participated = new Set(rsns)
@@ -83,7 +84,7 @@ async function womHelper(competitionId: number, interaction: CommandInteraction,
 
         unlinked.forEach(account => {
             responseLines.push(getString("accounts", "unlinkedAccount", {
-                name: account,
+                rsn: account,
                 pointsGiven: competition.data.points_given
             }));
         });
