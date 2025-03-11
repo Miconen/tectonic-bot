@@ -1,62 +1,57 @@
+import { Requests } from "@requests/main.js"
+import { formatGuildTimes } from "@utils/guilds.js"
+import { getString } from "@utils/stringRepo.js"
 import { CommandInteraction, TextChannel } from "discord.js"
 import embedBuilder from "./embedBuilder.js"
 import TimeConverter from "./TimeConverter.js"
 import { TimeField } from "./types.js"
-import type IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
 
 async function updateEmbed(
     bossId: string,
     guildId: string,
     interaction: CommandInteraction
 ) {
-    const database = container.resolve<IDatabase>("Database")
+    const res = await Requests.getGuildTimes(guildId)
 
-    const boss = await database.getBoss(bossId)
-    if (!boss) return
+    if (res.error) {
+        await interaction.deleteReply();
+        await interaction.followUp({ content: getString("errors", "apiError", { activity: "fetching data for pb embeds", error: res.message }), ephemeral: true });
+        return;
+    }
 
-    const bosses = await database.getCategoryByBoss(boss.category)
-    const category = await database.getEmbedData(guildId, boss.category)
-    if (!bosses || !category) return
-    if (!category.guilds.pb_channel_id) return
+    const category = formatGuildTimes(res.data).find(c => {
+        return c.bosses.some(b => b.boss === bossId)
+    })
+    if (!category || !category.message_id) return
 
-    let channel = (await interaction.client.channels.fetch(
-        category.guilds.pb_channel_id
-    )) as TextChannel
+    let channel = (await interaction.client.channels.fetch(res.data.pb_channel_id)) as TextChannel
     if (!channel) return
     let message = await channel.messages.fetch(category.message_id)
     if (!message) return
 
     let embed = embedBuilder(interaction)
-        .setTitle(boss.category)
-        .setThumbnail(category.categories.thumbnail)
+        .setTitle(category.name)
+        .setThumbnail(category.thumbnail)
 
     let fields: TimeField[] = []
 
-    for (let bossData of bosses) {
-        let guildBoss = bossData.guild_bosses[0]
-        let formattedTime = "No time yet"
-        const time = guildBoss?.times?.time
-        if (time) {
-            formattedTime = TimeConverter.ticksToTime(time)
+    for (let boss of category.bosses) {
+        let time = "No time yet"
+        if (boss.pb) {
+            time = TimeConverter.ticksToTime(boss.pb.time)
         }
 
-        let formattedTeam = ""
-        const team = guildBoss?.times?.teams.map(
+        const team = boss.teammates.map(
             (player) => `<@${player.user_id}>`
-        )
-        if (team) {
-            formattedTeam = team?.join(", ");
-        }
+        ).join(", ");
 
         fields.push({
-            name: bossData.display_name,
-            value: `${formattedTime} ${formattedTeam}`,
+            name: boss.display_name,
+            value: `${time} ${team}`,
         })
     }
 
-    embed.addFields(...fields)
+    embed.addFields(fields)
 
     await message.edit({ embeds: [embed] })
 }
