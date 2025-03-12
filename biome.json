@@ -1,50 +1,55 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "formatter": {
-        "enabled": true
-    },
-    "linter": {
-        "enabled": true,
-        "ignore": [],
-        "include": [],
-        "rules": {
-            "recommended": true,
-            "all": false,
-            "a11y": {
-                "recommended": true,
-                "all": false
-            },
-            "complexity": {
-                "recommended": true,
-                "all": false
-            },
-            "correctness": {
-                "recommended": true,
-                "all": false
-            },
-            "nursery": {
-                "recommended": true,
-                "all": false
-            },
-            "performance": {
-                "recommended": true,
-                "all": false
-            },
-            "security": {
-                "recommended": true,
-                "all": false
-            },
-            "style": {
-                "recommended": true,
-                "all": false
-            },
-            "suspicious": {
-                "recommended": true,
-                "all": false
-            }
-        }
-    },
-    "organizeImports": {
-        "enabled": true
-    }
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"formatter": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"ignore": [],
+		"include": [],
+		"rules": {
+			"recommended": true,
+			"all": false,
+			"a11y": {
+				"recommended": true,
+				"all": false
+			},
+			"complexity": {
+				"recommended": true,
+				"all": false
+			},
+			"correctness": {
+				"recommended": true,
+				"all": false
+			},
+			"nursery": {
+				"recommended": true,
+				"all": false
+			},
+			"performance": {
+				"recommended": true,
+				"all": false
+			},
+			"security": {
+				"recommended": true,
+				"all": false
+			},
+			"style": {
+				"recommended": true,
+				"all": false
+			},
+			"suspicious": {
+				"recommended": true,
+				"all": false
+			}
+		}
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
+	}
 }
