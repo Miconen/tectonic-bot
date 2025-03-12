@@ -24,6 +24,7 @@ async function updateEmbed(
     })
     if (!category || !category.message_id) return
 
+    if (!res.data.pb_channel_id) return
     let channel = (await interaction.client.channels.fetch(res.data.pb_channel_id)) as TextChannel
     if (!channel) return
     let message = await channel.messages.fetch(category.message_id)
