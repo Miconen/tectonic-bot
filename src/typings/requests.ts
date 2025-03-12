@@ -54,7 +54,7 @@ export type DetailedUser = User & { times: DetailedTime[] }
 export type Guild = {
     guild_id: string,
     multiplier: number,
-    pb_channel_id: string
+    pb_channel_id: string | undefined
 }
 
 export type UserById = {
@@ -122,8 +122,8 @@ export type GuildUpdate = {
 export type CompetitionResponse = {
     title: string
     participant_count: number
-    participants: DetailedUser[]
-    accounts: string[]
+    participants: DetailedUser[] | undefined
+    accounts: string[] | undefined
     cutoff: number
     points_given: number
 }
@@ -144,13 +144,13 @@ export type Category = {
 export type GuildBoss = {
     boss: string
     guild_id: string
-    pb_id: number | null
+    pb_id: number | undefined
 }
 
 export type GuildCategory = {
     guild_id: string
     category: string
-    message_id: string | null
+    message_id: string | undefined
 }
 
 export type Time = {
@@ -169,11 +169,11 @@ export type Team = {
 
 export type GuildTimes = {
     guild_id: string
-    pb_channel_id: string | null
+    pb_channel_id: string | undefined
     bosses: Boss[]
     categories: Category[]
     guild_bosses: GuildBoss[]
     guild_categories: GuildCategory[]
-    pbs: Time[] | null
-    teammates: Team[] | null
+    pbs: Time[] | undefined
+    teammates: Team[] | undefined
 }
