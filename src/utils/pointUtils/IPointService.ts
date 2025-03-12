@@ -1,4 +1,4 @@
-import { BaseInteraction, Collection, GuildMember } from "discord.js";
+import type { BaseInteraction, Collection, GuildMember } from "discord.js";
 
 interface IPointService {
 	pointRewards: Map<string, number>;

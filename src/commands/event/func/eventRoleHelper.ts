@@ -3,6 +3,7 @@ import type IPointService from "@utils/pointUtils/IPointService";
 import { replyHandler } from "@utils/replyHandler.js";
 
 import { container } from "tsyringe";
+import { getString } from "@utils/stringRepo";
 
 const eventHelper = async (
 	users: Role,
@@ -10,6 +11,8 @@ const eventHelper = async (
 	amount: number,
 ) => {
 	const pointService = container.resolve<IPointService>("PointService");
+	if (!interaction.guild)
+		return await interaction.reply(getString("errors", "noGuild"));
 
 	if (!interaction.guild)
 		return interaction.reply({
@@ -19,9 +22,9 @@ const eventHelper = async (
 
 	await interaction.deferReply();
 
-	let addedPoints = await pointService.pointsHandler(
+	const addedPoints = await pointService.pointsHandler(
 		amount,
-		interaction.guild!.id,
+		interaction.guild.id,
 	);
 
 	// Populate the guild members cache for this scope

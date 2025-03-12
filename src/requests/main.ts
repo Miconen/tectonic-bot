@@ -1,7 +1,7 @@
 import * as User from "@requests/user";
 import * as Guild from "@requests/guild";
 import { HTTPError } from "discord.js";
-import { ApiResponse } from "typings/requests";
+import type { ApiResponse } from "typings/requests";
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`

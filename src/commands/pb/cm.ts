@@ -1,14 +1,14 @@
-import { notEmpty } from "@utils/notEmpty.js";
-import {
-	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
-} from "discord.js";
-import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import IsActivated from "@guards/IsActivated.js";
 import IsAdmin from "@guards/IsAdmin.js";
 import IsValidTime from "@guards/IsValidTime.js";
+import { notEmpty } from "@utils/notEmpty.js";
 import { replyHandler } from "@utils/replyHandler.js";
+import {
+	ApplicationCommandOptionType,
+	type CommandInteraction,
+	type GuildMember,
+} from "discord.js";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { getBossCox } from "./func/getBoss.js";
 import submitHandler from "./func/submitHandler.js";
 
@@ -83,7 +83,7 @@ class cmpb {
 		player8: GuildMember | null,
 		interaction: CommandInteraction,
 	) {
-		let team = [
+		const team = [
 			player1.user.id,
 			player2?.user.id,
 			player3?.user.id,
@@ -95,7 +95,7 @@ class cmpb {
 		].filter(notEmpty);
 
 		await interaction.deferReply();
-		let response = await submitHandler(
+		const response = await submitHandler(
 			getBossCox("cm", team),
 			time,
 			team,

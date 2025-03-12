@@ -1,9 +1,9 @@
-import { CommandInteraction, GuildMember } from "discord.js";
+import type { CommandInteraction, GuildMember } from "discord.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { container } from "tsyringe";
 
 import { Requests } from "@requests/main";
-import IRankService from "@utils/rankUtils/IRankService";
+import type IRankService from "@utils/rankUtils/IRankService";
 import capitalizeFirstLetter from "@utils/capitalizeFirstLetter";
 import { getString } from "@utils/stringRepo";
 

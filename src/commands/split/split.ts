@@ -1,21 +1,21 @@
-import {
-	CommandInteraction,
-	ApplicationCommandOptionType,
-	Snowflake,
-	AutocompleteInteraction,
-	TextChannel,
-} from "discord.js";
+import IsAdmin from "@guards/IsAdmin.js";
 import type { SplitCache, SplitData } from "@typings/splitTypes.js";
 import type IPointService from "@utils/pointUtils/IPointService";
-import { Discord, Slash, SlashChoice, SlashOption, Guard } from "discordx";
-import splitHelper from "./func/splitHelper.js";
-import IsAdmin from "@guards/IsAdmin.js";
+import { formatTimeAgo } from "@utils/timeFormatter.js";
+import {
+	ApplicationCommandOptionType,
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type Snowflake,
+	type TextChannel,
+} from "discord.js";
+import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
 import { container, injectable } from "tsyringe";
 import acceptHelper from "./func/acceptHelper.js";
 import denyHelper from "./func/denyHelper.js";
-import { formatTimeAgo } from "@utils/timeFormatter.js";
+import splitHelper from "./func/splitHelper.js";
 
-let state: SplitCache = new Map<Snowflake, SplitData>();
+const state: SplitCache = new Map<Snowflake, SplitData>();
 
 function autocompleter(interaction: AutocompleteInteraction) {
 	// Convert Map entries to an array of autocomplete options
@@ -56,7 +56,7 @@ class split {
 	) {
 		const pointService = container.resolve<IPointService>("PointService");
 
-		let rewardValue = pointService.pointRewards.get(value) ?? 0;
+		const rewardValue = pointService.pointRewards.get(value) ?? 0;
 		await splitHelper(rewardValue, interaction, state);
 	}
 

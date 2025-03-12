@@ -12,13 +12,13 @@ type HandlerResponse = HandlerError | HandlerOkay;
 // Handle common HTTP error responses in one place instead of individually
 export function httpErrorHandler(status: number): HandlerResponse {
 	if (status === 401) {
-		return { error: true, message: `Internal authorization error.` };
+		return { error: true, message: "Internal authorization error." };
 	}
 
 	if (status === 429) {
 		return {
 			error: true,
-			message: `Too many requests, try again in a minute.`,
+			message: "Too many requests, try again in a minute.",
 		};
 	}
 

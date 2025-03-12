@@ -1,12 +1,12 @@
-import { Discord, Slash, SlashOption, Guard } from "discordx";
 import {
-	CommandInteraction,
-	GuildMember,
 	ApplicationCommandOptionType,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
-import multiplierHelper from "./func/multiplierHelper.js";
-import giveHelper from "./func/giveHelper.js";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import IsAdmin from "../../guards/IsAdmin.js";
+import giveHelper from "./func/giveHelper.js";
+import multiplierHelper from "./func/multiplierHelper.js";
 import startHelper from "./func/startHelper.js";
 
 @Discord()

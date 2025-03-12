@@ -1,17 +1,15 @@
 import "reflect-metadata";
 
 import { dirname, importx } from "@discordx/importer";
-import { Interaction, Message } from "discord.js";
+import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
-import { RankService } from "./utils/rankUtils/RankService.js";
-import { PointService } from "./utils/pointUtils/PointService.js";
 import { container } from "tsyringe";
+import { PointService } from "./utils/pointUtils/PointService.js";
+import { RankService } from "./utils/rankUtils/RankService.js";
 
-// TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import events from "events";
+// biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 (BigInt.prototype as any).toJSON = function () {
 	return this.toString();
 };
@@ -68,7 +66,7 @@ async function run() {
 
 	// Import commands
 	await importx(
-		dirname(import.meta.url) + "/{events,commands}/**/**/*.{ts,js}",
+		`${dirname(import.meta.url)}/{events,commands}/**/**/*.{ts,js}`,
 	);
 	// Let's start the bot
 	if (!process.env.BOT_TOKEN) {

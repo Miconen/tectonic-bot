@@ -1,10 +1,10 @@
-import {
+import type {
 	ButtonInteraction,
 	GuildMember,
 	InteractionReplyOptions,
 } from "discord.js";
-import { GuardFunction } from "discordx";
-import { SplitCache } from "../typings/splitTypes";
+import type { GuardFunction } from "discordx";
+import type { SplitCache } from "../typings/splitTypes";
 
 export function IsValidInteraction(state: SplitCache) {
 	const guard: GuardFunction<ButtonInteraction> = async (
@@ -13,8 +13,8 @@ export function IsValidInteraction(state: SplitCache) {
 		next,
 	) => {
 		const member = interaction.member as GuildMember;
-		let splitId = interaction.message.interaction?.id ?? "0";
-		let split = state.get(splitId);
+		const splitId = interaction.message.interaction?.id ?? "0";
+		const split = state.get(splitId);
 
 		console.log(
 			`Checking state validity for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`,
@@ -23,7 +23,7 @@ export function IsValidInteraction(state: SplitCache) {
 		// If command has not been stored in memory, don't run.
 		// Idea is not to handle commands that haven't been stored since restart.
 		if (!split) {
-			let reply: InteractionReplyOptions = {
+			const reply: InteractionReplyOptions = {
 				content: "❌ Point request expired...",
 				ephemeral: true,
 			};
@@ -32,8 +32,8 @@ export function IsValidInteraction(state: SplitCache) {
 			return;
 		}
 
-		if (split.points == 0) {
-			let reply: InteractionReplyOptions = {
+		if (split.points === 0) {
+			const reply: InteractionReplyOptions = {
 				content: "❌ Point request failed internally...",
 				ephemeral: true,
 			};

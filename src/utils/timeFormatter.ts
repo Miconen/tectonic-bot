@@ -17,26 +17,26 @@ export function formatTimeAgo(timestamp: number): string {
 	if (hours === 0) {
 		if (minutes === 0) {
 			return "just now";
-		} else if (minutes === 1) {
-			return "1 minute ago";
-		} else {
-			return `${minutes} minutes ago`;
 		}
-	} else if (hours === 1) {
+		if (minutes === 1) {
+			return "1 minute ago";
+		}
+		return `${minutes} minutes ago`;
+	}
+	if (hours === 1) {
 		if (minutes === 0) {
 			return "1 hour ago";
-		} else if (minutes === 1) {
+		}
+		if (minutes === 1) {
 			return "1 hour and 1 minute ago";
-		} else {
-			return `1 hour and ${minutes} minutes ago`;
 		}
-	} else {
-		if (minutes === 0) {
-			return `${hours} hours ago`;
-		} else if (minutes === 1) {
-			return `${hours} hours and 1 minute ago`;
-		} else {
-			return `${hours} hours and ${minutes} minutes ago`;
-		}
+		return `1 hour and ${minutes} minutes ago`;
 	}
+	if (minutes === 0) {
+		return `${hours} hours ago`;
+	}
+	if (minutes === 1) {
+		return `${hours} hours and 1 minute ago`;
+	}
+	return `${hours} hours and ${minutes} minutes ago`;
 }

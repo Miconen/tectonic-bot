@@ -1,11 +1,11 @@
-import {
+import type {
 	ButtonInteraction,
 	CommandInteraction,
 	GuildMember,
 	InteractionReplyOptions,
 	PermissionsBitField,
 } from "discord.js";
-import { GuardFunction } from "discordx";
+import type { GuardFunction } from "discordx";
 
 function hasPermissions(userPermissions: PermissionsBitField) {
 	return userPermissions.has("ModerateMembers");

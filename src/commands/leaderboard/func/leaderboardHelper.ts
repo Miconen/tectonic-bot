@@ -1,6 +1,6 @@
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { type CommandInteraction, EmbedBuilder } from "discord.js";
 import { Pagination } from "@discordx/pagination";
-import type IRankService from "../../../utils/rankUtils/IRankService";
+import type IRankService from "@utils/rankUtils/IRankService";
 import { Requests } from "@requests/main.js";
 
 import { container } from "tsyringe";
@@ -17,24 +17,24 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
 	if (!interaction.guild) return;
 	await interaction.deferReply();
 
-	let lb = await Requests.getLeaderboard(interaction.guild.id);
+	const lb = await Requests.getLeaderboard(interaction.guild.id);
 	if (lb.error)
 		return replyHandler("Error outputting leaderboard", interaction);
-	let users = lb.data;
+	const users = lb.data;
 	if (!users || users.length === 0)
 		return replyHandler("No activated users for leaderboard", interaction);
 
-	let userIds = users.map((user) => user.user_id);
-	let usersData = await interaction.guild.members.fetch({ user: userIds });
+	const userIds = users.map((user) => user.user_id);
+	const usersData = await interaction.guild.members.fetch({ user: userIds });
 	if (!usersData) return;
 
-	let leaderboard: LeaderboardUser[] = [];
+	const leaderboard: LeaderboardUser[] = [];
 	let serverRank = 0;
-	for (let user of users) {
-		let userData = usersData.get(user.user_id);
+	for (const user of users) {
+		const userData = usersData.get(user.user_id);
 		if (!userData) continue;
 
-		let rank = rankService.getRankByPoints(user.points);
+		const rank = rankService.getRankByPoints(user.points);
 		serverRank++;
 
 		leaderboard.push({
@@ -43,7 +43,7 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
 		});
 	}
 
-	let botIconUrl = interaction.client.user?.avatarURL() ?? "";
+	const botIconUrl = interaction.client.user?.avatarURL() ?? "";
 
 	const embedMaker = (): EmbedBuilder => {
 		return new EmbedBuilder()
@@ -57,9 +57,9 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
 			.setTimestamp();
 	};
 
-	let pages: any = [];
-	const pageMaker = (i: number) => {
-		let fields = leaderboard.slice(i, i + 10);
+	const pages = [];
+	function pageMaker(i: number) {
+		const fields = leaderboard.slice(i, i + 10);
 
 		return {
 			embeds: [
@@ -70,9 +70,9 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
 					.addFields(...fields),
 			],
 		};
-	};
+	}
 	for (let i = 0; i <= leaderboard.length; i++) {
-		if (i % 10 == 0) pages.push(pageMaker(i));
+		if (i % 10 === 0) pages.push(pageMaker(i));
 	}
 
 	await new Pagination(interaction, [...pages]).send();

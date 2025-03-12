@@ -1,7 +1,11 @@
+import IsActivated from "@guards/IsActivated.js";
+import IsAdmin from "@guards/IsAdmin.js";
+import IsValidTime from "@guards/IsValidTime.js";
+import { replyHandler } from "@utils/replyHandler.js";
 import {
 	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
 import {
 	Discord,
@@ -11,10 +15,6 @@ import {
 	SlashGroup,
 	SlashOption,
 } from "discordx";
-import IsActivated from "@guards/IsActivated.js";
-import IsAdmin from "@guards/IsAdmin.js";
-import IsValidTime from "@guards/IsValidTime.js";
-import { replyHandler } from "@utils/replyHandler.js";
 import bossCategories from "./func/getBosses.js";
 import submitHandler from "./func/submitHandler.js";
 
@@ -24,7 +24,7 @@ import submitHandler from "./func/submitHandler.js";
 class tzhaarpb {
 	@Slash({ name: "tzhaar", description: "Request your new pb to be added" })
 	async slayer(
-		@SlashChoice(...bossCategories["TzHaar"])
+		@SlashChoice(...bossCategories.TzHaar)
 		@SlashOption({
 			name: "boss",
 			description: "Boss to submit time for",
@@ -48,10 +48,10 @@ class tzhaarpb {
 		player: GuildMember,
 		interaction: CommandInteraction,
 	) {
-		let team = [player.user.id];
+		const team = [player.user.id];
 
 		await interaction.deferReply();
-		let response = await submitHandler(boss, time, team, interaction);
+		const response = await submitHandler(boss, time, team, interaction);
 		await replyHandler(response, interaction);
 	}
 }

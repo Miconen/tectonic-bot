@@ -1,7 +1,7 @@
 import type { CommandInteraction, GuildMember } from "discord.js";
 import type IRankService from "@utils/rankUtils/IRankService";
 import { Requests } from "@requests/main.js";
-import { UserParam } from "@typings/requests.js";
+import type { UserParam } from "@typings/requests.js";
 
 import { container } from "tsyringe";
 import TimeConverter from "@commands/pb/func/TimeConverter";
@@ -12,23 +12,24 @@ const pointsHelper = async (
 	rsn: string | null,
 	interaction: CommandInteraction,
 ) => {
-	if (!interaction.guild) return `❌ Critical error determining guild.`;
-	let guildId = interaction.guild.id;
+	if (!interaction.guild) return "❌ Critical error determining guild.";
+	const guildId = interaction.guild.id;
 
 	const rankService = container.resolve<IRankService>("RankService");
 
+	let target = member;
 	let query: UserParam | undefined;
-	let errorMsg = `❌ Error fetching user data.`;
+	let errorMsg = "❌ Error fetching user data.";
 
-	if (!member) {
-		member = interaction.member as GuildMember;
+	if (!target) {
+		target = interaction.member as GuildMember;
 	}
 
 	// User wants to check self
 	if (!rsn) {
-		query = { type: "user_id", user_id: member.id };
+		query = { type: "user_id", user_id: target.id };
 		errorMsg = getString("accounts", "notActivated", {
-			username: member.displayName,
+			username: target.displayName,
 		});
 	}
 
@@ -46,42 +47,42 @@ const pointsHelper = async (
 	if (res.error) return errorMsg;
 	if (!res.data) {
 		return getString("accounts", "notActivated", {
-			username: member.displayName,
+			username: target.displayName,
 		});
 	}
 
-	member = await interaction.guild.members.fetch(res.data.user_id);
+	target = await interaction.guild.members.fetch(res.data.user_id);
 
 	const user = res.data;
 	const points = user.points;
 
 	// Rank info and icons
-	let nextRankUntil = rankService.pointsToNextRank(points);
-	let nextRank = rankService.getRankByPoints(points + nextRankUntil);
-	let nextRankIcon = rankService.getIcon(nextRank);
-	let currentRank = rankService.getRankByPoints(points);
-	let currentRankIcon = rankService.getIcon(currentRank);
+	const nextRankUntil = rankService.pointsToNextRank(points);
+	const nextRank = rankService.getRankByPoints(points + nextRankUntil);
+	const nextRankIcon = rankService.getIcon(nextRank);
+	const currentRank = rankService.getRankByPoints(points);
+	const currentRankIcon = rankService.getIcon(currentRank);
 
 	let response: string;
-	response = `# ${currentRankIcon} **${member.displayName}**`;
+	response = `# ${currentRankIcon} **${target.displayName}**`;
 	response += `\nCurrent points: ${points}${currentRankIcon}`;
-	if (currentRank != "wrath") {
+	if (currentRank !== "wrath") {
 		response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`;
 	}
 	if (user.rsns.length) {
 		response += "\n# Accounts";
-		user.rsns.forEach((account) => {
+		for (const account of user.rsns) {
 			response += `\n\`${account.rsn}\``;
-		});
+		}
 	} else {
 		response +=
 			"\n`Link your OSRS account to be eligible for event rank points`";
 	}
 	if (user.times.length) {
 		response += "\n# Clan PBs";
-		user.times.forEach((pb) => {
+		for (const pb of user.times) {
 			response += `\n\`${pb.category} | ${pb.display_name}\` - \`${TimeConverter.ticksToTime(pb.time)} (${pb.time} ticks)\``;
-		});
+		}
 	}
 
 	return response;

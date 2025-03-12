@@ -11,7 +11,7 @@ const giveHelper = async (
 	const pointService = container.resolve<IPointService>("PointService");
 
 	// Handle giving of points, returns a string to be sent as a message.
-	let pointsResponse = await pointService.givePoints(
+	const pointsResponse = await pointService.givePoints(
 		addedPoints,
 		user,
 		interaction,

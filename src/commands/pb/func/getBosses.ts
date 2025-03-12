@@ -1,5 +1,5 @@
 import { Requests } from "@requests/main";
-import { SlashChoiceType } from "discordx";
+import type { SlashChoiceType } from "discordx";
 
 async function bossesAsChoices() {
 	const res = await Requests.getBosses();
@@ -17,7 +17,7 @@ async function bossesAsChoices() {
 			bossesByCategory[category] = [];
 		}
 
-		let choice = {
+		const choice = {
 			name: display_name,
 			value: name,
 		};

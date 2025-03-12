@@ -1,30 +1,31 @@
-import { CommandInteraction } from "discord.js";
 import type IPointService from "@utils/pointUtils/IPointService";
+import type { CommandInteraction } from "discord.js";
 
 import { container } from "tsyringe";
 
 const pointsHelp = async (interaction: CommandInteraction) => {
 	const pointService = container.resolve<IPointService>("PointService");
 
-	let response =
-		`**Point sources**:\n\n` +
-		`**Splits**:\n` +
-		`Low value: ${pointService.pointRewards.get("split_low")}\n` +
-		`Medium value: ${pointService.pointRewards.get("split_medium")}\n` +
-		`High value: ${pointService.pointRewards.get("split_high")}` +
-		`\n\n` +
-		`**Events**:\n` +
-		`Participation: ${pointService.pointRewards.get("event_participation")}\n` +
-		`Hosting: ${pointService.pointRewards.get("event_hosting")}` +
-		`\n\n` +
-		`**Learners**:\n` +
-		`Half: ${pointService.pointRewards.get("learner_half")}\n` +
-		`Full: ${pointService.pointRewards.get("learner_full")}` +
-		`\n\n` +
-		`**Forum**:\n` +
-		`Bumping: ${pointService.pointRewards.get("forum_bump")}`;
+	const response = [];
+	response.push("**Point sources**:\n");
+	response.push("**Splits**:");
+	response.push(`Low value: ${pointService.pointRewards.get("split_low")}`);
+	response.push(
+		`Medium value: ${pointService.pointRewards.get("split_medium")}`,
+	);
+	response.push(`High value: ${pointService.pointRewards.get("split_high")}`);
+	response.push("**Events**:");
+	response.push(
+		`Participation: ${pointService.pointRewards.get("event_participation")}`,
+	);
+	response.push(`Hosting: ${pointService.pointRewards.get("event_hosting")}`);
+	response.push("**Learners**:");
+	response.push(`Half: ${pointService.pointRewards.get("learner_half")}`);
+	response.push(`Full: ${pointService.pointRewards.get("learner_full")}`);
+	response.push("**Forum**:");
+	response.push(`Bumping: ${pointService.pointRewards.get("forum_bump")}`);
 
-	await interaction.reply(response);
+	await interaction.reply(response.join("\n"));
 };
 
 export default pointsHelp;

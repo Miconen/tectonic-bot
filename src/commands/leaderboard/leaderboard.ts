@@ -1,5 +1,5 @@
 import { Discord, Guard, Slash } from "discordx";
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
 import leaderboardHelper from "./func/leaderboardHelper.js";
 

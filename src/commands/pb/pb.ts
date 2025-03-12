@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup } from "discordx";
 import IsAdmin from "../../guards/IsAdmin.js";
 import initializeHelper from "./func/initializeHelper.js";

@@ -1,18 +1,18 @@
-import {
+import type {
 	BaseInteraction,
 	Guild,
 	GuildMember,
 	RoleResolvable,
 } from "discord.js";
 import { singleton } from "tsyringe";
-import IRankService from "./IRankService";
+import type IRankService from "./IRankService";
 
 @singleton()
 export class RankService implements IRankService {
-	public readonly ironmanIcon: Map<string, string>;
-	public readonly rankIcon: Map<string, string>;
-	public readonly roleIds: Map<string, string>;
-	public readonly roleValues: Map<number, string>;
+	readonly ironmanIcon: Map<string, string>;
+	readonly rankIcon: Map<string, string>;
+	readonly roleIds: Map<string, string>;
+	readonly roleValues: Map<number, string>;
 
 	constructor() {
 		this.ironmanIcon = new Map([
@@ -76,18 +76,18 @@ export class RankService implements IRankService {
 		]);
 	}
 
-	public getIcon(icon: string) {
+	getIcon(icon: string) {
 		return this.rankIcon.get(icon) ?? "";
 	}
 
-	public async rankUpHandler(
+	async rankUpHandler(
 		interaction: BaseInteraction,
 		target: GuildMember,
 		oldPoints: number,
 		newPoints: number,
 	) {
 		// Determine if user received a new rank
-		let newRank = this.rankUpdater(oldPoints, newPoints);
+		const newRank = this.rankUpdater(oldPoints, newPoints);
 		// If no new rank then return
 		if (!newRank) return;
 		// Remove old roles before adding new one
@@ -97,13 +97,13 @@ export class RankService implements IRankService {
 	}
 
 	// Returns new if there is one, returns false if no rank up happened
-	public rankUpdater(oldPoints: number, newPoints: number) {
+	rankUpdater(oldPoints: number, newPoints: number) {
 		const oldRank = this.getRankByPoints(oldPoints);
 		const newRank = this.getRankByPoints(newPoints);
-		return oldRank != newRank ? newRank : false;
+		return oldRank !== newRank ? newRank : false;
 	}
 
-	public async removeOldRoles(target: GuildMember) {
+	async removeOldRoles(target: GuildMember) {
 		// const oldRoles = target.roles.cache.filter((role) => {
 		//     this.getByValue(this.roleIds, role.id);
 		// })
@@ -115,40 +115,40 @@ export class RankService implements IRankService {
 		await target.roles.remove(roles);
 	}
 
-	public getRankByPoints(points: number) {
+	getRankByPoints(points: number) {
 		const rank = [...this.roleValues.entries()]
 			.reverse()
 			.find(([key]) => points >= key);
 		return rank ? rank[1] : [...this.roleValues.values()][0];
 	}
 
-	public pointsToNextRank(points: number) {
+	pointsToNextRank(points: number) {
 		const nextRank = [...this.roleValues.entries()].find(
 			([minPoints]) => minPoints > points,
 		);
 		return nextRank ? nextRank[0] - points : -1;
 	}
 
-	public async addRole(
+	async addRole(
 		interaction: BaseInteraction,
 		target: GuildMember,
 		roleName: string,
 	) {
 		if (!interaction.guild) return;
-		let role = this.getRole(interaction.guild, roleName);
-		if (role == undefined) return;
+		const role = this.getRole(interaction.guild, roleName);
+		if (role === undefined) return;
 		console.log(`↳ Adding new role to ${target.displayName} (${role.name})`);
 		await target.roles.add(role as RoleResolvable);
 	}
 
 	private getRole(guild: Guild, roleName: string) {
-		if (guild.id != "979445890064470036") return undefined;
-		let roleId = this.roleIds.get(roleName);
+		if (guild.id !== "979445890064470036") return undefined;
+		const roleId = this.roleIds.get(roleName);
 		if (!roleId) return undefined;
 		return guild.roles.cache.get(roleId);
 	}
 
-	public getRoleValue(searchValue: string) {
+	getRoleValue(searchValue: string) {
 		return this.getByValue(this.roleValues, searchValue);
 	}
 
@@ -156,7 +156,7 @@ export class RankService implements IRankService {
 		map: Map<TKey, TValue>,
 		searchValue: string,
 	) {
-		for (let [key, value] of map.entries()) {
+		for (const [key, value] of map.entries()) {
 			if (value === searchValue) return key;
 		}
 		return;

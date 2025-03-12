@@ -1,12 +1,12 @@
 import { Requests } from "@requests/main.js";
-import { CategoryUpdate } from "@typings/requests.js";
+import type { CategoryUpdate } from "@typings/requests.js";
 import { formatGuildTimes } from "@utils/guilds.js";
 import { getString } from "@utils/stringRepo.js";
-import { CommandInteraction, TextChannel } from "discord.js";
+import type { CommandInteraction, TextChannel } from "discord.js";
+import TimeConverter from "./TimeConverter.js";
 import embedBuilder from "./embedBuilder.js";
 import removeOldEmbeds from "./removeOldEmbeds.js";
-import TimeConverter from "./TimeConverter.js";
-import { TimeField } from "./types.js";
+import type { TimeField } from "./types.js";
 
 async function initializeHelper(interaction: CommandInteraction) {
 	if (!interaction.guild) {
@@ -17,7 +17,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 		return;
 	}
 	const guildId = interaction.guild.id;
-	let channel = interaction.channel as TextChannel;
+	const channel = interaction.channel as TextChannel;
 
 	await interaction.deferReply({ ephemeral: true });
 
@@ -51,14 +51,14 @@ async function initializeHelper(interaction: CommandInteraction) {
 	});
 	const msgs: CategoryUpdate[] = [];
 
-	for (let category of categories) {
-		let embed = embedBuilder(interaction)
+	for (const category of categories) {
+		const embed = embedBuilder(interaction)
 			.setTitle(category.name)
 			.setThumbnail(category.thumbnail);
 
-		let fields: TimeField[] = [];
+		const fields: TimeField[] = [];
 
-		for (let boss of category.bosses) {
+		for (const boss of category.bosses) {
 			let time = "No time yet";
 			if (boss.pb) {
 				time = TimeConverter.ticksToTime(boss.pb.time);
@@ -77,7 +77,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 
 		embed.addFields(fields);
 
-		let { id } = await channel.send({ embeds: [embed] });
+		const { id } = await channel.send({ embeds: [embed] });
 		msgs.push({ message_id: id, category: category.category });
 	}
 

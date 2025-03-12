@@ -1,10 +1,10 @@
 import { Requests } from "@requests/main.js";
 import { formatGuildTimes } from "@utils/guilds.js";
 import { getString } from "@utils/stringRepo.js";
-import { CommandInteraction, TextChannel } from "discord.js";
+import type { CommandInteraction, TextChannel } from "discord.js";
 import embedBuilder from "./embedBuilder.js";
 import TimeConverter from "./TimeConverter.js";
-import { TimeField } from "./types.js";
+import type { TimeField } from "./types.js";
 
 async function updateEmbed(
 	bossId: string,
@@ -31,20 +31,20 @@ async function updateEmbed(
 	if (!category || !category.message_id) return;
 
 	if (!res.data.pb_channel_id) return;
-	let channel = (await interaction.client.channels.fetch(
+	const channel = (await interaction.client.channels.fetch(
 		res.data.pb_channel_id,
 	)) as TextChannel;
 	if (!channel) return;
-	let message = await channel.messages.fetch(category.message_id);
+	const message = await channel.messages.fetch(category.message_id);
 	if (!message) return;
 
-	let embed = embedBuilder(interaction)
+	const embed = embedBuilder(interaction)
 		.setTitle(category.name)
 		.setThumbnail(category.thumbnail);
 
-	let fields: TimeField[] = [];
+	const fields: TimeField[] = [];
 
-	for (let boss of category.bosses) {
+	for (const boss of category.bosses) {
 		let time = "No time yet";
 		if (boss.pb) {
 			time = TimeConverter.ticksToTime(boss.pb.time);

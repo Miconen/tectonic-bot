@@ -1,23 +1,27 @@
-import {
-	CommandInteraction,
-	GuildMember,
-	InteractionReplyOptions,
-} from "discord.js";
-import { GuardFunction } from "discordx";
 import { Requests } from "@requests/main.js";
+import {
+	type CommandInteraction,
+	GuildMember,
+	type InteractionReplyOptions,
+} from "discord.js";
+import type { GuardFunction } from "discordx";
 
-function IsActivated(target: string = "player") {
+function IsActivated(target = "player") {
 	const guard: GuardFunction<CommandInteraction> = async (
 		interaction,
 		_,
 		next,
 	) => {
-		console.log(`Checking if all players are activated`);
+		console.log("Checking if all players are activated (IsActivated guard)");
 
-		let players: GuildMember[] = [];
+		const players: GuildMember[] = [];
 
 		// Dirty hack to extract GuildMembers from the guarded commands options
-		interaction.options.data[0].options?.forEach((option) => {
+		const options = interaction.options.data[0].options;
+		if (!options)
+			return await interaction.reply("Could not find player options");
+
+		for (const option of options) {
 			if (
 				option.name.includes(target) &&
 				option.member &&
@@ -30,7 +34,7 @@ function IsActivated(target: string = "player") {
 					"### Something went wrong with IsActivated guard finding GuildMembers ###",
 				);
 			}
-		});
+		}
 
 		if (!players.length) {
 			console.log("↳ Error retrieving players");
@@ -39,9 +43,8 @@ function IsActivated(target: string = "player") {
 				ephemeral: true,
 			};
 			return await interaction.reply(warning);
-		} else {
-			console.log("↳ Players list populated");
 		}
+		console.log("↳ Players list populated");
 
 		if (!interaction.guild?.id) {
 			console.log("↳ Error getting guild ID");
@@ -58,16 +61,16 @@ function IsActivated(target: string = "player") {
 			`Checking activation statuses for: ${playersUserNames.join(", ")}`,
 		);
 
-		let res = await Requests.getUsers(interaction.guild.id, {
+		const res = await Requests.getUsers(interaction.guild.id, {
 			type: "user_id",
 			user_id: playersUserIds,
 		});
 		if (res.error)
 			return await interaction.reply("Error checking activated users");
-		if (res.data.length)
+		if (!res.data.length)
 			return await interaction.reply("Error checking activated users");
 
-		let existingUsers = res.data;
+		const existingUsers = res.data;
 
 		let warning = "";
 
@@ -83,7 +86,7 @@ function IsActivated(target: string = "player") {
 
 		if (warning) {
 			console.log(warning);
-			return await interaction.reply("## Could not submit pb\n" + warning);
+			return await interaction.reply(`## Could not submit pb\n${warning}`);
 		}
 
 		console.log("↳ Passed");

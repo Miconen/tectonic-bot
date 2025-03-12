@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import { Requests } from "@requests/main.js";
 import { getString } from "@utils/stringRepo";
 
@@ -14,7 +14,7 @@ const multiplierHelper = async (
 		return;
 	}
 
-	let newMultiplier = await Requests.updateGuild(interaction.guild.id, {
+	const newMultiplier = await Requests.updateGuild(interaction.guild.id, {
 		multiplier,
 	});
 

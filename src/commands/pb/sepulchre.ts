@@ -1,7 +1,11 @@
+import IsActivated from "@guards/IsActivated.js";
+import IsAdmin from "@guards/IsAdmin.js";
+import IsValidTime from "@guards/IsValidTime.js";
+import { replyHandler } from "@utils/replyHandler.js";
 import {
 	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
 import {
 	Discord,
@@ -11,10 +15,6 @@ import {
 	SlashGroup,
 	SlashOption,
 } from "discordx";
-import IsActivated from "@guards/IsActivated.js";
-import IsAdmin from "@guards/IsAdmin.js";
-import IsValidTime from "@guards/IsValidTime.js";
-import { replyHandler } from "@utils/replyHandler.js";
 import bossCategories from "./func/getBosses.js";
 import submitHandler from "./func/submitHandler.js";
 
@@ -27,7 +27,7 @@ class sepulchrepb {
 		description: "Request your new pb to be added",
 	})
 	async sepulchre(
-		@SlashChoice(...bossCategories["Sepulchre"])
+		@SlashChoice(...bossCategories.Sepulchre)
 		@SlashOption({
 			name: "floor",
 			description: "Floor to submit time for",
@@ -51,10 +51,10 @@ class sepulchrepb {
 		player: GuildMember,
 		interaction: CommandInteraction,
 	) {
-		let team = [player.user.id];
+		const team = [player.user.id];
 
 		await interaction.deferReply();
-		let response = await submitHandler(floor, time, team, interaction);
+		const response = await submitHandler(floor, time, team, interaction);
 		await replyHandler(response, interaction);
 	}
 }

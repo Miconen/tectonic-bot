@@ -10,14 +10,16 @@ const pointsHelper = async (
 	interaction: CommandInteraction,
 ) => {
 	const rankService = container.resolve<IRankService>("RankService");
+	if (!interaction.guild)
+		return await interaction.reply(getString("errors", "noGuild"));
 
-	let targetUser = user?.user?.id ?? interaction.user.id ?? "0";
-	let targetUserName =
+	const targetUser = user?.user?.id ?? interaction.user.id ?? "0";
+	const targetUserName =
 		user?.displayName ??
 		(interaction.member as GuildMember).displayName ??
 		"???";
 
-	let res = await Requests.getUser(interaction.guildId!, {
+	const res = await Requests.getUser(interaction.guild.id, {
 		type: "user_id",
 		user_id: targetUser,
 	});
@@ -32,15 +34,15 @@ const pointsHelper = async (
 
 	const points = res.data.points;
 
-	let nextRankUntil = rankService.pointsToNextRank(points);
-	let nextRankIcon = rankService.getIcon(
+	const nextRankUntil = rankService.pointsToNextRank(points);
+	const nextRankIcon = rankService.getIcon(
 		rankService.getRankByPoints(points + nextRankUntil),
 	);
 
 	let response = `${rankService.getIcon(
 		rankService.getRankByPoints(points),
 	)} **${targetUserName}** has: ${points} points`;
-	if (rankService.getRankByPoints(points) != "zenyte")
+	if (rankService.getRankByPoints(points) !== "zenyte")
 		response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`;
 
 	return await interaction.reply(response);

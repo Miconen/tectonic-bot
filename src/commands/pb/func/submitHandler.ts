@@ -40,9 +40,9 @@ async function submitHandler(
 
 	console.log("↳ Time added");
 
-	if (res.status == 200) {
+	if (res.status === 200) {
 		console.log("↳ Not a new pb");
-		return `Time submitted, not a new pb :)`;
+		return "Time submitted, not a new pb :)";
 	}
 
 	// Pb updated
@@ -52,12 +52,12 @@ async function submitHandler(
 	);
 
 	// Fetch and map user ids to GuildMember types
-	let members = await interaction.guild.members.fetch({ user: team });
+	const members = await interaction.guild.members.fetch({ user: team });
 	let pointsResponses = [];
 	if (members) {
 		// Give points
 		// TODO: Use new API endpoints instead of hard coding points
-		let PB_POINTS = 10;
+		const PB_POINTS = 10;
 		pointsResponses = await pointService.givePointsToMultiple(
 			PB_POINTS,
 			members,

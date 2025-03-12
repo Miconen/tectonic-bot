@@ -1,4 +1,4 @@
-import { ButtonInteraction } from "discord.js";
+import type { ButtonInteraction } from "discord.js";
 
 const getInteractionId = (interaction: ButtonInteraction) => {
 	if (!interaction.message.interaction?.id)

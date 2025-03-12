@@ -1,9 +1,9 @@
-import {
+import type {
 	CommandInteraction,
 	GuildMember,
 	InteractionReplyOptions,
 } from "discord.js";
-import { GuardFunction } from "discordx";
+import type { GuardFunction } from "discordx";
 
 type ParseTimeResult = {
 	hours?: number;
@@ -49,19 +49,19 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 	}
 
 	// Parse hours, minutes, and seconds
-	let hours = hasHours ? parseInt(timeParts[0], 10) : undefined;
-	let minutes = parseInt(hasHours ? timeParts[1] : timeParts[0], 10);
-	let seconds = parseInt(hasHours ? timeParts[2] : timeParts[1], 10);
-	let milliseconds = hasMilliseconds
-		? parseInt(timeParts[1].split(".")[0], 10)
+	const hours = hasHours ? Number.parseInt(timeParts[0], 10) : undefined;
+	const minutes = Number.parseInt(hasHours ? timeParts[1] : timeParts[0], 10);
+	const seconds = Number.parseInt(hasHours ? timeParts[2] : timeParts[1], 10);
+	const milliseconds = hasMilliseconds
+		? Number.parseInt(timeParts[1].split(".")[0], 10)
 		: undefined;
 
 	// Check if minutes are valid numeric values
-	if (isNaN(minutes)) {
+	if (Number.isNaN(minutes)) {
 		errors.push("Invalid time format. Expected numeric value for minutes.");
 	}
 	// Check if seconds are valid numeric values
-	if (isNaN(seconds)) {
+	if (Number.isNaN(seconds)) {
 		errors.push("Invalid time format. Expected numeric value for seconds.");
 		console.log(seconds);
 	}
@@ -82,7 +82,7 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 	// Parse hours if present
 	if (hours) {
 		// Check if hours is a valid number
-		if (isNaN(hours)) {
+		if (Number.isNaN(hours)) {
 			errors.push("Invalid time format. Expected a numeric value for hours.");
 		}
 
@@ -96,7 +96,7 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 	// Parse milliseconds if present
 	if (milliseconds) {
 		// Check if milliseconds is a valid number
-		if (isNaN(milliseconds)) {
+		if (Number.isNaN(milliseconds)) {
 			errors.push(
 				"Invalid time format. Expected a numeric value for milliseconds.",
 			);
@@ -138,14 +138,14 @@ function IsValidTime(option: string) {
 			`Checking time validity for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`,
 		);
 
-		if (typeof timeString != "string") {
+		if (typeof timeString !== "string") {
 			console.log(
-				"↳ Invalid parameter type, expected a string, found: " + timeStringType,
+				`↳ Invalid parameter type, expected a string, found: ${timeStringType}`,
 			);
 			return;
 		}
 
-		const time = parseTime(timeString!);
+		const time = parseTime(timeString);
 		if ("errors" in time) {
 			console.log("↳ Invalid time");
 			console.error(`↳ ${time.errors}`);
@@ -155,10 +155,9 @@ function IsValidTime(option: string) {
 				ephemeral: true,
 			};
 			return await interaction.reply(warning);
-		} else {
-			console.log("↳ Passed");
-			await next();
 		}
+		console.log("↳ Passed");
+		await next();
 	};
 
 	return guard;

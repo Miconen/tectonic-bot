@@ -1,8 +1,12 @@
+import IsActivated from "@guards/IsActivated.js";
+import IsAdmin from "@guards/IsAdmin.js";
+import IsValidTime from "@guards/IsValidTime.js";
 import { notEmpty } from "@utils/notEmpty.js";
+import { replyHandler } from "@utils/replyHandler.js";
 import {
 	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
 import {
 	Discord,
@@ -12,10 +16,6 @@ import {
 	SlashGroup,
 	SlashOption,
 } from "discordx";
-import IsActivated from "@guards/IsActivated.js";
-import IsAdmin from "@guards/IsAdmin.js";
-import IsValidTime from "@guards/IsValidTime.js";
-import { replyHandler } from "@utils/replyHandler.js";
 import bossCategories from "./func/getBosses.js";
 import submitHandler from "./func/submitHandler.js";
 
@@ -28,7 +28,7 @@ class nightmarepb {
 		description: "Request your new pb to be added",
 	})
 	async nightmare(
-		@SlashChoice(...bossCategories["Nightmare"])
+		@SlashChoice(...bossCategories.Nightmare)
 		@SlashOption({
 			name: "boss",
 			description: "Boss to submit time for",
@@ -80,7 +80,7 @@ class nightmarepb {
 		player5: GuildMember | null,
 		interaction: CommandInteraction,
 	) {
-		let team = [
+		const team = [
 			player1.user.id,
 			player2?.user.id,
 			player3?.user.id,
@@ -91,7 +91,7 @@ class nightmarepb {
 		await interaction.deferReply();
 
 		// Handle solos
-		if (team.length > 1 && (boss == "pnm" || boss == "nm_1")) {
+		if (team.length > 1 && (boss === "pnm" || boss === "nm_1")) {
 			return interaction.reply({
 				ephemeral: true,
 				content: "Selected boss can't include more than one player.",
@@ -99,14 +99,14 @@ class nightmarepb {
 		}
 
 		// Handle 5-man nightmare
-		if (team.length != 5 && boss == "nm_5") {
+		if (team.length !== 5 && boss === "nm_5") {
 			return interaction.reply({
 				ephemeral: true,
 				content: "Invalid amount of players for 5-man nightmare.",
 			});
 		}
 
-		let response = await submitHandler(boss, time, team, interaction);
+		const response = await submitHandler(boss, time, team, interaction);
 		await replyHandler(response, interaction);
 	}
 }

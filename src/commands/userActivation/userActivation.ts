@@ -1,8 +1,8 @@
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import {
 	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
 import activationHelper from "./func/activationHelper.js";
 import deactivationHelper from "./func/deactivationHelper.js";

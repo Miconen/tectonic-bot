@@ -1,4 +1,4 @@
-import { GuildTimes } from "@typings/requests";
+import type { GuildTimes } from "@typings/requests";
 import { notEmpty } from "./notEmpty";
 import { getString } from "./stringRepo";
 
@@ -6,8 +6,8 @@ export function formatGuildTimes(data: GuildTimes) {
 	// Create combined bosses data
 	const bosses = data.guild_bosses
 		.map((gb) => {
-			let pb = data.pbs?.find((t) => t.run_id === gb.pb_id);
-			let teammates = data.teammates?.filter((tm) => tm.run_id === gb.pb_id);
+			const pb = data.pbs?.find((t) => t.run_id === gb.pb_id);
+			const teammates = data.teammates?.filter((tm) => tm.run_id === gb.pb_id);
 
 			// Find all guild_bosses entries for this boss
 			const boss = data.bosses.find((b) => b.name === gb.boss);
@@ -26,7 +26,7 @@ export function formatGuildTimes(data: GuildTimes) {
 	// Create combined categories data
 	const categories = data.guild_categories
 		.map((gc) => {
-			let bs = bosses.filter((b) => b.category === gc.category);
+			const bs = bosses.filter((b) => b.category === gc.category);
 
 			// Find all guild_categories entries for this category
 			const category = data.categories.find((c) => gc.category === c.name);

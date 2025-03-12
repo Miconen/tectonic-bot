@@ -1,4 +1,4 @@
-import { CommandInteraction, TextChannel } from "discord.js";
+import { type CommandInteraction, TextChannel } from "discord.js";
 
 /**
  * Handles the reply to a Discord interaction, deferring or replying based on context, as you cannot reply to deferred commands.
@@ -42,19 +42,20 @@ async function replyer(
 
 function splitMessage(message: string, CHARACTER_LIMIT: number) {
 	const chunks = [];
+	let m = message;
 
-	while (message.length > CHARACTER_LIMIT) {
-		let lastLineBreakIndex = message.lastIndexOf("\n", CHARACTER_LIMIT - 1);
+	while (m.length > CHARACTER_LIMIT) {
+		let lastLineBreakIndex = m.lastIndexOf("\n", CHARACTER_LIMIT - 1);
 		if (lastLineBreakIndex === -1) {
 			lastLineBreakIndex = CHARACTER_LIMIT;
 		}
 
-		chunks.push(message.substring(0, lastLineBreakIndex));
-		message = message.substring(lastLineBreakIndex).trim();
+		chunks.push(m.substring(0, lastLineBreakIndex));
+		m = m.substring(lastLineBreakIndex).trim();
 	}
 
 	// Add the remaining part of the message
-	chunks.push(message);
+	chunks.push(m);
 
 	return chunks;
 }

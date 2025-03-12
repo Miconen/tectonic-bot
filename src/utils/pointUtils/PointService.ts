@@ -1,9 +1,9 @@
-import { injectable, inject, singleton } from "tsyringe";
-import IPointService from "./IPointService.js";
-import { BaseInteraction, Collection, GuildMember } from "discord.js";
-import IRankService from "../rankUtils/IRankService.js";
 import { Requests } from "@requests/main.js";
 import { getString } from "@utils/stringRepo.js";
+import type { BaseInteraction, Collection, GuildMember } from "discord.js";
+import { inject, injectable, singleton } from "tsyringe";
+import type IRankService from "../rankUtils/IRankService.js";
+import type IPointService from "./IPointService.js";
 
 @singleton()
 @injectable()
@@ -26,19 +26,19 @@ export class PointService implements IPointService {
 		this.pointMultiplierCache = new Map();
 	}
 
-	async pointsHandler(points: number = 0, guild_id: string) {
+	async pointsHandler(points: number, guild_id: string) {
 		// Check if the multiplier is already cached
 		if (this.pointMultiplierCache.has(guild_id)) {
-			let cachedMultiplier = this.pointMultiplierCache.get(guild_id);
+			const cachedMultiplier = this.pointMultiplierCache.get(guild_id);
 			if (!cachedMultiplier) return points;
 			return points * cachedMultiplier;
 		}
 
-		let res = await Requests.getGuild(guild_id);
+		const res = await Requests.getGuild(guild_id);
 		if (res.error) return points;
-		let multi = res.data.multiplier;
+		const multi = res.data.multiplier;
 		if (!multi) return points;
-		if (isNaN(multi) || multi == 0) return points;
+		if (Number.isNaN(multi) || multi === 0) return points;
 
 		this.pointMultiplierCache.set(guild_id, multi);
 		return points * multi;
@@ -51,9 +51,9 @@ export class PointService implements IPointService {
 		extraPoints?: { [key: string]: number },
 	) {
 		if (!interaction.guild) return ["Error fetching guild ID"];
-		let response: string[] = [];
+		const response: string[] = [];
 
-		let user_ids = Array.from(users.keys());
+		const user_ids = Array.from(users.keys());
 		const res = await Requests.givePointsToMultiple(interaction.guild.id, {
 			user_id: user_ids,
 			points: { type: "custom", amount: addedPoints },
@@ -68,9 +68,9 @@ export class PointService implements IPointService {
 			givenTo.set(k, false);
 		});
 
-		for (let u of res.data) {
-			let newPoints = u.points;
-			let member = users.get(u.user_id);
+		for (const u of res.data) {
+			const newPoints = u.points;
+			const member = users.get(u.user_id);
 
 			if (!member) return [`Couldn't get user for ID: ${u.user_id}`];
 
@@ -83,7 +83,7 @@ export class PointService implements IPointService {
 					totalPoints: newPoints,
 				}),
 			);
-			let newRank = await this.rankService.rankUpHandler(
+			const newRank = await this.rankService.rankUpHandler(
 				interaction,
 				member,
 				newPoints - addedPoints,
@@ -93,7 +93,7 @@ export class PointService implements IPointService {
 			if (!newRank) continue;
 
 			// Concatenate level up message to response if user leveled up
-			let newRankIcon = this.rankService.getIcon(newRank);
+			const newRankIcon = this.rankService.getIcon(newRank);
 			response.push(
 				getString("ranks", "levelUpMessage", {
 					username: member.displayName,
@@ -105,7 +105,7 @@ export class PointService implements IPointService {
 
 		givenTo.forEach((v, k) => {
 			if (v) return;
-			let member = users.get(k);
+			const member = users.get(k);
 			if (!member) return;
 
 			response.push();
@@ -145,7 +145,7 @@ export class PointService implements IPointService {
 		}
 
 		if (res.status === 200) {
-			let newPoints = res.data.points;
+			const newPoints = res.data.points;
 
 			const response: string[] = [];
 
@@ -157,7 +157,7 @@ export class PointService implements IPointService {
 					totalPoints: newPoints,
 				}),
 			);
-			let newRank = await this.rankService.rankUpHandler(
+			const newRank = await this.rankService.rankUpHandler(
 				interaction,
 				user,
 				newPoints - addedPoints,
@@ -167,7 +167,7 @@ export class PointService implements IPointService {
 			if (!newRank) return response.join("\n");
 
 			// Concatenate level up message to response if user leveled up
-			let newRankIcon = this.rankService.getIcon(newRank);
+			const newRankIcon = this.rankService.getIcon(newRank);
 			response.push(
 				getString("ranks", "levelUpMessage", {
 					username: member.displayName,

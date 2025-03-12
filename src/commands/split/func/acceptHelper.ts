@@ -10,8 +10,8 @@ const acceptHelper = async (
 ) => {
 	const pointService = container.resolve<IPointService>("PointService");
 
-	let receivingUser = split.member;
-	let addedPoints = split.points;
+	const receivingUser = split.member;
+	const addedPoints = split.points;
 
 	const channel = (await interaction.client.channels.fetch(
 		split.channel,

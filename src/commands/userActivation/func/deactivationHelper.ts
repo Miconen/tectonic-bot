@@ -14,26 +14,26 @@ const deactivationHelper = async (
 	const rankService = container.resolve<IRankService>("RankService");
 	await interaction.deferReply();
 
-	let result = await Requests.removeUser(interaction.guild.id, {
+	const result = await Requests.removeUser(interaction.guild.id, {
 		type: "user_id",
 		user_id: user.user.id,
 	});
 
 	if (result.status === 204) {
-		let response = `✔ **${user.displayName}** has been deactivated.`;
+		const response = `✔ **${user.displayName}** has been deactivated.`;
 		// Remove all rank roles
 		await rankService.removeOldRoles(user);
 		return await replyHandler(response, interaction);
 	}
 
 	if (result.status === 404) {
-		let response = `❌ **${user.displayName}** is not activated.`;
+		const response = `❌ **${user.displayName}** is not activated.`;
 		return await replyHandler(response, interaction);
 	}
 
-	let handler = httpErrorHandler(result.status);
+	const handler = httpErrorHandler(result.status);
 	if (handler.error) {
-		let response = handler.message;
+		const response = handler.message;
 		return await replyHandler(response, interaction);
 	}
 

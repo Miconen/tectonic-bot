@@ -1,7 +1,7 @@
 import {
 	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import IsAdmin from "../../guards/IsAdmin.js";

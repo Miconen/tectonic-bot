@@ -3,6 +3,7 @@ import capitalizeFirstLetter from "./capitalizeFirstLetter";
 /**
  * Interface defining the structure of string templates
  */
+// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
 type StringTemplate = string | ((args: Record<string, any>) => string);
 
 /**
@@ -28,10 +29,10 @@ const strings: StringRepository = {
 		header: (args) => `## ${args.title}`,
 		participantCount: (args) => `Participants: ${args.count}`,
 		eligibleCount: (args) => `Eligible for points: ${args.eligibleCount}`,
-		pointsHeader: `\n## Points`,
+		pointsHeader: "\n## Points",
 	},
 	accounts: {
-		unlinkedHeader: `\n## Unlinked accounts`,
+		unlinkedHeader: "\n## Unlinked accounts",
 		unlinkedAccount: (args) =>
 			`**${args.rsn}** +${args.pointsGiven} points, once Discord linked to RSN`,
 		unlinkInstructions:
@@ -58,6 +59,7 @@ const strings: StringRepository = {
 export function getString(
 	category: string,
 	key: string,
+	// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
 	args?: Record<string, any>,
 ): string {
 	const c = strings[category];
@@ -76,12 +78,12 @@ export function getString(
 
 	if (typeof template === "function" && args) {
 		return template(args);
-	} else if (typeof template === "string") {
-		return template;
-	} else {
-		console.warn(`Missing arguments for string template: ${category}.${key}`);
-		return `[${category}.${key}:missing-args]`;
 	}
+	if (typeof template === "string") {
+		return template;
+	}
+	console.warn(`Missing arguments for string template: ${category}.${key}`);
+	return `[${category}.${key}:missing-args]`;
 }
 
 /**
@@ -94,9 +96,10 @@ export function getMultipleStrings(
 	stringRequests: Array<{
 		category: string;
 		key: string;
+		// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
 		args?: Record<string, any>;
 	}>,
-	separator: string = "\n",
+	separator = "\n",
 ): string {
 	return stringRequests
 		.map((request) => getString(request.category, request.key, request.args))

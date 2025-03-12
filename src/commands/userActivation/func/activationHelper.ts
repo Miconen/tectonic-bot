@@ -14,7 +14,7 @@ const activationHelper = async (
 	const rankService = container.resolve<IRankService>("RankService");
 	await interaction.deferReply();
 
-	let result = await Requests.createUser(
+	const result = await Requests.createUser(
 		interaction.guild.id,
 		user.user.id,
 		rsn,
@@ -35,15 +35,15 @@ const activationHelper = async (
 	}
 
 	if (result.status === 201) {
-		let response = `**${user.user}** has been activated and linked by **${interaction.member}**.`;
+		const response = `**${user.user}** has been activated and linked by **${interaction.member}**.`;
 		// Set default role
 		await rankService.addRole(interaction, user, "jade");
 		return await replyHandler(response, interaction);
 	}
 
-	let handler = httpErrorHandler(result.status);
+	const handler = httpErrorHandler(result.status);
 	if (handler.error) {
-		let response = handler.message;
+		const response = handler.message;
 		return await replyHandler(response, interaction);
 	}
 

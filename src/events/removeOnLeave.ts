@@ -1,4 +1,4 @@
-import { Discord, On, ArgsOf } from "discordx";
+import { Discord, On, type ArgsOf } from "discordx";
 import { Requests } from "@requests/main.js";
 
 @Discord()

@@ -1,4 +1,4 @@
-import {
+import type {
 	Boss,
 	CompetitionResponse,
 	Guild,
@@ -25,7 +25,7 @@ export async function getGuild(guild_id: string) {
 }
 
 export async function createGuild(guild_id: string) {
-	const url = `guilds`;
+	const url = "guilds";
 	const options = {
 		method: "POST",
 		body: JSON.stringify({ guild_id }),
@@ -63,7 +63,7 @@ export async function newTime(guild_id: string, query: NewTime) {
 }
 
 export async function getBosses() {
-	const url = `bosses`;
+	const url = "bosses";
 	const status = await fetchData<Boss[]>(url);
 
 	return status;

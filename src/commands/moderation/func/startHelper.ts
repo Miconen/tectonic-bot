@@ -6,7 +6,7 @@ const startHelper = async (interaction: CommandInteraction) => {
 		return await interaction.reply("Error initializing guild");
 
 	// Handle giving of points, returns a string to be sent as a message.
-	let res = await Requests.createGuild(interaction.guild.id);
+	const res = await Requests.createGuild(interaction.guild.id);
 	if (res.error) return await interaction.reply("Error initializing guild");
 	await interaction.reply("Guild initialized");
 };

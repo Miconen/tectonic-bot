@@ -1,9 +1,9 @@
-import { Discord, Slash, SlashOption } from "discordx";
 import {
 	ApplicationCommandOptionType,
-	CommandInteraction,
-	GuildMember,
+	type CommandInteraction,
+	type GuildMember,
 } from "discord.js";
+import { Discord, Slash, SlashOption } from "discordx";
 import pointsHelper from "./func/pointsHelper.js";
 
 @Discord()

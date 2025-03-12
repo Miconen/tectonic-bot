@@ -7,11 +7,11 @@ async function addTime(
 	team: (string | undefined)[],
 	guildId: string,
 ) {
-	if (team.filter((player) => player).length == 0) return;
+	if (team.filter((player) => player).length === 0) return;
 	if (hasDuplicates(team)) return;
 
 	const user_ids: string[] = [];
-	for (let teammate of team) {
+	for (const teammate of team) {
 		if (!teammate) continue;
 		user_ids.push(teammate);
 	}

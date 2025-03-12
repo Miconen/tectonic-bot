@@ -1,8 +1,8 @@
+import type { CommandInteraction } from "discord.js";
 import { Discord, Slash, SlashGroup } from "discordx";
-import { CommandInteraction } from "discord.js";
-import splitHelp from "./func/splitHelp.js";
 import pointsHelp from "./func/pointsHelp.js";
 import ranksHelp from "./func/ranksHelp.js";
+import splitHelp from "./func/splitHelp.js";
 
 @Discord()
 @SlashGroup({ name: "help", description: "Commands to help you use commands" })
