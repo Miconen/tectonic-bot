@@ -5,6 +5,7 @@ export function formatGuildTimes(data: GuildTimes) {
 
     // Create combined bosses data
     const bosses = data.guild_bosses.map(gb => {
+        if (!data.pbs) return
         let pb = data.pbs.find(t => t.run_id === gb.pb_id)
         let teammates = data.teammates.filter(tm => tm.run_id === gb.pb_id)
 
