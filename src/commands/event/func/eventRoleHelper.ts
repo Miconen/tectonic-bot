@@ -1,36 +1,40 @@
-import type { CommandInteraction, Role } from "discord.js"
-import type IPointService from "@utils/pointUtils/IPointService"
-import { replyHandler } from "@utils/replyHandler.js"
+import type { CommandInteraction, Role } from "discord.js";
+import type IPointService from "@utils/pointUtils/IPointService";
+import { replyHandler } from "@utils/replyHandler.js";
 
-import { container } from "tsyringe"
+import { container } from "tsyringe";
 
 const eventHelper = async (
-    users: Role,
-    interaction: CommandInteraction,
-    amount: number
+	users: Role,
+	interaction: CommandInteraction,
+	amount: number,
 ) => {
-    const pointService = container.resolve<IPointService>("PointService")
+	const pointService = container.resolve<IPointService>("PointService");
 
-    if (!interaction.guild) return interaction.reply({ ephemeral: true, content: "Something went **really** wrong" })
+	if (!interaction.guild)
+		return interaction.reply({
+			ephemeral: true,
+			content: "Something went **really** wrong",
+		});
 
-    await interaction.deferReply();
+	await interaction.deferReply();
 
-    let addedPoints = await pointService.pointsHandler(
-        amount,
-        interaction.guild!.id
-    )
+	let addedPoints = await pointService.pointsHandler(
+		amount,
+		interaction.guild!.id,
+	);
 
-    // Populate the guild members cache for this scope
-    await interaction.guild.members.fetch()
+	// Populate the guild members cache for this scope
+	await interaction.guild.members.fetch();
 
-    // Handle giving of points, returns a string to be sent as a message.
-    const pointsResponse = await pointService.givePointsToMultiple(
-        addedPoints,
-        users.members,
-        interaction
-    )
+	// Handle giving of points, returns a string to be sent as a message.
+	const pointsResponse = await pointService.givePointsToMultiple(
+		addedPoints,
+		users.members,
+		interaction,
+	);
 
-    await replyHandler(pointsResponse.join("\n"), interaction);
-}
+	await replyHandler(pointsResponse.join("\n"), interaction);
+};
 
-export default eventHelper
+export default eventHelper;

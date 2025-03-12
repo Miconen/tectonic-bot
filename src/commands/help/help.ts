@@ -8,34 +8,34 @@ import ranksHelp from "./func/ranksHelp.js";
 @SlashGroup({ name: "help", description: "Commands to help you use commands" })
 @SlashGroup("help")
 class Help {
-    @Slash({
-        name: "commands",
-        description: "Information about all commands",
-    })
-    async commands(interaction: CommandInteraction) {
-        await interaction.reply(
-            `Information on how to use the bot along with it's commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands`,
-        );
-    }
+	@Slash({
+		name: "commands",
+		description: "Information about all commands",
+	})
+	async commands(interaction: CommandInteraction) {
+		await interaction.reply(
+			`Information on how to use the bot along with it's commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands`,
+		);
+	}
 
-    @Slash({
-        name: "ranks",
-        description: "Information about all the ranks",
-    })
-    ranks(interaction: CommandInteraction) {
-        return ranksHelp(interaction);
-    }
+	@Slash({
+		name: "ranks",
+		description: "Information about all the ranks",
+	})
+	ranks(interaction: CommandInteraction) {
+		return ranksHelp(interaction);
+	}
 
-    @Slash({
-        name: "points",
-        description: "Information about points",
-    })
-    points(interaction: CommandInteraction) {
-        return pointsHelp(interaction);
-    }
+	@Slash({
+		name: "points",
+		description: "Information about points",
+	})
+	points(interaction: CommandInteraction) {
+		return pointsHelp(interaction);
+	}
 
-    @Slash({ name: "split", description: "Information about splitting" })
-    split(interaction: CommandInteraction) {
-        return splitHelp(interaction);
-    }
+	@Slash({ name: "split", description: "Information about splitting" })
+	split(interaction: CommandInteraction) {
+		return splitHelp(interaction);
+	}
 }

@@ -1,179 +1,185 @@
 export type SuccessResponse<T> = {
-    error: false;
-    status: number;
-    data: T;
+	error: false;
+	status: number;
+	data: T;
 };
 
 export type ErrorResponse = {
-    error: true;
-    status: number;
-    message: string;
+	error: true;
+	status: number;
+	message: string;
 };
 
 export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 
 export type RSN = {
-    rsn: string,
-    wom_id: string,
-}
+	rsn: string;
+	wom_id: string;
+};
 
 export type User = {
-    user_id: string,
-    guild_id: string,
-    points: number,
-    rsns: RSN[],
-}
+	user_id: string;
+	guild_id: string;
+	points: number;
+	rsns: RSN[];
+};
 
-export type SimpleUser = Omit<User, "rsns">
+export type SimpleUser = Omit<User, "rsns">;
 
 export type DetailedTime = {
-    time: number,
-    boss_name: string,
-    display_name: string,
-    category: string,
-    run_id: number,
-    date: string,
-    team: User[],
-}
+	time: number;
+	boss_name: string;
+	display_name: string;
+	category: string;
+	run_id: number;
+	date: string;
+	team: User[];
+};
 
 export type NewTime = {
-    user_ids: string[],
-    time: number,
-    boss_name: string,
-}
+	user_ids: string[];
+	time: number;
+	boss_name: string;
+};
 
 export type TimeResponse = {
-    boss_name: string,
-    time: number,
-    time_old: number,
-    run_id: number,
-}
+	boss_name: string;
+	time: number;
+	time_old: number;
+	run_id: number;
+};
 
-export type DetailedUser = User & { times: DetailedTime[] }
+export type DetailedUser = User & { times: DetailedTime[] };
 
 export type Guild = {
-    guild_id: string,
-    multiplier: number,
-    pb_channel_id: string | undefined
-}
+	guild_id: string;
+	multiplier: number;
+	pb_channel_id: string | undefined;
+};
 
 export type UserById = {
-    type: "user_id";
-    user_id: string;
+	type: "user_id";
+	user_id: string;
 };
 
 export type UserByWom = {
-    type: "wom";
-    wom: string;
+	type: "wom";
+	wom: string;
 };
 
 export type UserByRsn = {
-    type: "rsn";
-    rsn: string;
+	type: "rsn";
+	rsn: string;
 };
 
 export type UserParam = UserById | UserByWom | UserByRsn;
 
 export type UsersById = {
-    type: "user_id";
-    user_id: string[];
+	type: "user_id";
+	user_id: string[];
 };
 
 export type UsersByWom = {
-    type: "wom";
-    wom: string[];
+	type: "wom";
+	wom: string[];
 };
 
 export type UsersByRsn = {
-    type: "rsn";
-    rsn: string[];
+	type: "rsn";
+	rsn: string[];
 };
 
 export type UsersParam = UsersById | UsersByWom | UsersByRsn;
 
 export type CustomPoints = {
-    type: "custom";
-    amount: number;
-}
+	type: "custom";
+	amount: number;
+};
 
 export type PresetPoints = {
-    type: "preset";
-    event: 'event_participation' | 'event_hosting' | 'clan_pb' | 'split_low' | 'split_medium' | 'split_high';
-}
+	type: "preset";
+	event:
+		| "event_participation"
+		| "event_hosting"
+		| "clan_pb"
+		| "split_low"
+		| "split_medium"
+		| "split_high";
+};
 
 export type Points = CustomPoints | PresetPoints;
 
 export type PointsParam = {
-    user_id: string | string[];
-    points: Points;
+	user_id: string | string[];
+	points: Points;
 };
 
 export type CategoryUpdate = {
-    message_id: string
-    category: string
-}
+	message_id: string;
+	category: string;
+};
 
 export type GuildUpdate = {
-    pb_channel?: string;
-    multiplier?: number;
-    category_messages?: CategoryUpdate[]
-}
+	pb_channel?: string;
+	multiplier?: number;
+	category_messages?: CategoryUpdate[];
+};
 
 export type CompetitionResponse = {
-    title: string
-    participant_count: number
-    participants: DetailedUser[] | undefined
-    accounts: string[] | undefined
-    cutoff: number
-    points_given: number
-}
+	title: string;
+	participant_count: number;
+	participants: DetailedUser[] | undefined;
+	accounts: string[] | undefined;
+	cutoff: number;
+	points_given: number;
+};
 
 export type Boss = {
-    name: string;
-    display_name: string;
-    category: string;
-    solo: boolean
-}
+	name: string;
+	display_name: string;
+	category: string;
+	solo: boolean;
+};
 
 export type Category = {
-    thumbnail: string
-    order: number
-    name: string
-}
+	thumbnail: string;
+	order: number;
+	name: string;
+};
 
 export type GuildBoss = {
-    boss: string
-    guild_id: string
-    pb_id: number | undefined
-}
+	boss: string;
+	guild_id: string;
+	pb_id: number | undefined;
+};
 
 export type GuildCategory = {
-    guild_id: string
-    category: string
-    message_id: string | undefined
-}
+	guild_id: string;
+	category: string;
+	message_id: string | undefined;
+};
 
 export type Time = {
-    time: number,
-    boss_name: string,
-    run_id: number,
-    date: string,
-    guild_id: string
-}
+	time: number;
+	boss_name: string;
+	run_id: number;
+	date: string;
+	guild_id: string;
+};
 
 export type Team = {
-    run_id: number
-    user_id: string
-    guild_id: string
-}
+	run_id: number;
+	user_id: string;
+	guild_id: string;
+};
 
 export type GuildTimes = {
-    guild_id: string
-    pb_channel_id: string | undefined
-    bosses: Boss[]
-    categories: Category[]
-    guild_bosses: GuildBoss[]
-    guild_categories: GuildCategory[]
-    pbs: Time[] | undefined
-    teammates: Team[] | undefined
-}
+	guild_id: string;
+	pb_channel_id: string | undefined;
+	bosses: Boss[];
+	categories: Category[];
+	guild_bosses: GuildBoss[];
+	guild_categories: GuildCategory[];
+	pbs: Time[] | undefined;
+	teammates: Team[] | undefined;
+};
