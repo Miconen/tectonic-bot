@@ -1,19 +1,20 @@
 import { GuildTimes } from "@typings/requests";
 import { notEmpty } from "./notEmpty";
+import { getString } from "./stringRepo";
 
 export function formatGuildTimes(data: GuildTimes) {
 
     // Create combined bosses data
     const bosses = data.guild_bosses.map(gb => {
-        if (!data.pbs) return
-        if (!data.teammates) return
-        let pb = data.pbs.find(t => t.run_id === gb.pb_id)
-        let teammates = data.teammates.filter(tm => tm.run_id === gb.pb_id)
+        let pb = data.pbs?.find(t => t.run_id === gb.pb_id)
+        let teammates = data.teammates?.filter(tm => tm.run_id === gb.pb_id)
 
         // Find all guild_bosses entries for this boss
         const boss = data.bosses.find(b => b.name === gb.boss);
-
-        if (!boss) return
+        if (!boss) {
+            console.log(getString("error", "empty", { target: "boss in formatGuildTimes()" }))
+            return
+        }
 
         // Return combined data
         return { ...gb, ...boss, pb, teammates };
@@ -25,8 +26,10 @@ export function formatGuildTimes(data: GuildTimes) {
 
         // Find all guild_categories entries for this category
         const category = data.categories.find(c => gc.category === c.name);
-
-        if (!category) return
+        if (!category) {
+            console.log(getString("error", "empty", { target: "category in formatGuildTimes()" }))
+            return
+        }
 
         // Return combined data
         return { ...gc, ...category, bosses: bs };
