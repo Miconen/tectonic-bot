@@ -51,9 +51,9 @@ async function initializeHelper(interaction: CommandInteraction) {
                 time = TimeConverter.ticksToTime(boss.pb.time)
             }
 
-            const team = boss.teammates.map(
+            const team = boss.teammates?.map(
                 (player) => `**${members.get(player.user_id)?.displayName}**`
-            ).join(", ")
+            ).join(", ") ?? ""
 
             fields.push({
                 name: boss.display_name,

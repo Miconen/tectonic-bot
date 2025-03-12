@@ -42,9 +42,9 @@ async function updateEmbed(
             time = TimeConverter.ticksToTime(boss.pb.time)
         }
 
-        const team = boss.teammates.map(
+        const team = boss.teammates?.map(
             (player) => `<@${player.user_id}>`
-        ).join(", ");
+        ).join(", ") ?? "";
 
         fields.push({
             name: boss.display_name,
