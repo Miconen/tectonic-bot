@@ -34,7 +34,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 
     // Create combined categories data
     const categories = formatGuildTimes(res.data)
-    const players = new Set<string>(res.data.teammates.map(t => t.user_id))
+    const players = new Set<string>(res.data.teammates?.map(t => t.user_id) ?? [])
     const members = await interaction.guild.members.fetch({ user: Array.from(players) })
     const msgs: CategoryUpdate[] = []
 

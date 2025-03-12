@@ -169,11 +169,11 @@ export type Team = {
 
 export type GuildTimes = {
     guild_id: string
-    pb_channel_id: string
+    pb_channel_id: string | null
     bosses: Boss[]
     categories: Category[]
     guild_bosses: GuildBoss[]
     guild_categories: GuildCategory[]
-    pbs: Time[]
-    teammates: Team[]
+    pbs: Time[] | null
+    teammates: Team[] | null
 }
