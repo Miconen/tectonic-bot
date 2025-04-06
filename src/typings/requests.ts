@@ -188,3 +188,10 @@ export type GuildTimes = {
 	pbs: Time[] | undefined;
 	teammates: Team[] | undefined;
 };
+
+export type Achievement = {
+	name: string;
+	icon: string;
+};
+
+export type AchievementParam = { achievement: string } & (UserById | UserByRsn);

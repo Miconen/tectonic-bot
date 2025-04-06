@@ -1,5 +1,6 @@
 import * as User from "@requests/user";
 import * as Guild from "@requests/guild";
+import * as General from "@requests/general";
 import { HTTPError } from "discord.js";
 import type { ApiErrorBody, ApiResponse } from "typings/requests";
 
@@ -64,4 +65,4 @@ export async function fetchData<T>(
 	}
 }
 
-export const Requests = { ...User, ...Guild };
+export const Requests = { ...User, ...Guild, ...General };
