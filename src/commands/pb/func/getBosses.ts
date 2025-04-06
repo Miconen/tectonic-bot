@@ -3,10 +3,11 @@ import type { SlashChoiceType } from "discordx";
 
 async function bossesAsChoices() {
 	const res = await Requests.getBosses();
-	if (res.error)
+	if (res.error) {
 		throw new Error(
 			"Could not fetch bosses from database in bossesAsChoices()",
 		);
+	}
 
 	const bossesByCategory: Record<string, SlashChoiceType[]> = {};
 
