@@ -84,6 +84,13 @@ const pointsHelper = async (
 			response += `\n\`${pb.category} | ${pb.display_name}\` - \`${TimeConverter.ticksToTime(pb.time)} (${pb.time} ticks)\``;
 		}
 	}
+	// TODO: Also check if user has any events where placed below position_cutoff
+	if (user.events.length) {
+		response += "\n# Event placements";
+		for (const event of user.events) {
+			response += `\n[${event.name}](https://wiseoldman.net/competitions/${event.wom_id}) - Placement: #${event.placement}`;
+		}
+	}
 
 	return response;
 };
