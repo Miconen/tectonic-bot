@@ -1,7 +1,7 @@
 import * as User from "@requests/user";
 import * as Guild from "@requests/guild";
 import { HTTPError } from "discord.js";
-import type { ApiResponse } from "typings/requests";
+import type { ApiErrorBody, ApiResponse } from "typings/requests";
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`
@@ -29,15 +29,21 @@ export async function fetchData<T>(
 
 		// Check if the response is ok (status code 200-299)
 		if (!response.ok) {
-			// Handle non-2xx responses
-			const error = `Error: ${response.statusText} (${response.status})`;
-			console.log(error);
-			return { error: true, status: response.status, message: error };
+			const body = (await response.json()) as ApiErrorBody;
+
+			return {
+				error: true,
+				status: response.status,
+				code: body.code,
+				name: body.name,
+				message: body.message,
+			};
 		}
 
 		console.log(`Success: ${response.status}`);
 
 		let data = {} as T;
+
 		// Hack to avoid parsing an empty body
 		if (response.status !== 204) {
 			// Parse the JSON response if it's successful
@@ -51,6 +57,8 @@ export async function fetchData<T>(
 		return {
 			error: true,
 			status: error instanceof HTTPError ? error.status : 500,
+			code: -1,
+			name: "Unknown error",
 			message: error instanceof Error ? error.message : "Unknown error",
 		};
 	}

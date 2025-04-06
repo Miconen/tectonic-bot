@@ -1,3 +1,9 @@
+export type ApiErrorBody = {
+	code: number;
+	name: string;
+	message: string;
+};
+
 export type SuccessResponse<T> = {
 	error: false;
 	status: number;
@@ -7,8 +13,7 @@ export type SuccessResponse<T> = {
 export type ErrorResponse = {
 	error: true;
 	status: number;
-	message: string;
-};
+} & ApiErrorBody;
 
 export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 
@@ -99,12 +104,12 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-		| "event_participation"
-		| "event_hosting"
-		| "clan_pb"
-		| "split_low"
-		| "split_medium"
-		| "split_high";
+	| "event_participation"
+	| "event_hosting"
+	| "clan_pb"
+	| "split_low"
+	| "split_medium"
+	| "split_high";
 };
 
 export type Points = CustomPoints | PresetPoints;
