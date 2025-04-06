@@ -22,11 +22,21 @@ export type RSN = {
 	wom_id: string;
 };
 
+export type Event = {
+	name: string;
+	wom_id: string;
+	guild_id: string;
+	postition_cutoff: number;
+	user_id: string;
+	placement: number;
+};
+
 export type User = {
 	user_id: string;
 	guild_id: string;
 	points: number;
 	rsns: RSN[];
+	events: Event[];
 };
 
 export type SimpleUser = Omit<User, "rsns">;
@@ -104,12 +114,12 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-	| "event_participation"
-	| "event_hosting"
-	| "clan_pb"
-	| "split_low"
-	| "split_medium"
-	| "split_high";
+		| "event_participation"
+		| "event_hosting"
+		| "clan_pb"
+		| "split_low"
+		| "split_medium"
+		| "split_high";
 };
 
 export type Points = CustomPoints | PresetPoints;
