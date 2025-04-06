@@ -191,7 +191,24 @@ export type GuildTimes = {
 
 export type Achievement = {
 	name: string;
-	icon: string;
+	thumbnail: string;
+	discord_icon: string;
+	order: number;
 };
 
 export type AchievementParam = { achievement: string } & (UserById | UserByRsn);
+
+export type EventIndividualWinParam = {
+	type: "individual";
+	top: number;
+};
+
+export type EventTeamWinParam = {
+	type: "team";
+	team: string;
+	position: number;
+};
+
+export type EventWinParam = {
+	competition: number;
+} & (EventIndividualWinParam | EventTeamWinParam);

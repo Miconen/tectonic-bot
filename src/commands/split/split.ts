@@ -1,3 +1,4 @@
+import IsActivated from "@guards/IsActivated.js";
 import IsAdmin from "@guards/IsAdmin.js";
 import type { SplitCache, SplitData } from "@typings/splitTypes.js";
 import type IPointService from "@utils/pointUtils/IPointService";

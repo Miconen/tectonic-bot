@@ -1,6 +1,9 @@
+import { WomParticipations } from "@typings/womRequests";
 import type {
 	Boss,
 	CompetitionResponse,
+	EventTeamWinParam,
+	EventWinParam,
 	Guild,
 	GuildTimes,
 	GuildUpdate,
@@ -85,4 +88,16 @@ export async function getGuildTimes(guild_id: string) {
 	const status = await fetchData<GuildTimes>(url);
 
 	return status;
+}
+
+export async function eventWinners(guild_id: string, params: EventWinParam) {
+	const endpoint = `guilds/${guild_id}/wom/winners/${params.competition}`;
+
+	if (params.type === "individual") {
+		endpoint.concat(`?top=${params.top}`);
+	} else {
+		endpoint.concat(`/team/${params.team}`);
+	}
+
+	return await fetchData<WomParticipations[]>(endpoint);
 }

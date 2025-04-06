@@ -1,75 +1,12 @@
 import IsAdmin from "@guards/IsAdmin.js";
-import { Requests } from "@requests/main";
-import type { DetailedUser } from "@typings/requests";
-import { Achievements } from "@utils/achievements";
+import { getString } from "@utils/stringRepo";
 import {
 	ApplicationCommandOptionType,
-	type AutocompleteInteraction,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
-
-const cache = new Map<string, DetailedUser>(); // simple in-memory cache
-
-async function fetchUser(guildId: string, userId: string) {
-	if (cache.has(userId)) {
-		console.log(`Hit autocomplete cache for user ${userId}`);
-		return cache.get(userId);
-	}
-
-	const user = await Requests.getUser(guildId, {
-		type: "user_id",
-		user_id: userId,
-	});
-
-	if (user.error) return;
-	if (!user.data) return;
-	cache.set(userId, user.data);
-
-	setTimeout(() => cache.delete(userId), 30 * 1000);
-	return user.data;
-}
-
-async function achievementPicker(interaction: AutocompleteInteraction) {
-	if (!interaction.guild?.id) return;
-
-	const options = Achievements.map((a) => ({
-		name: a.name,
-		value: a.name,
-	}));
-
-	// Respond with the options (limit to 25 as per Discord's requirements)
-	interaction.respond(options.slice(0, 25));
-}
-
-async function autocompleter(interaction: AutocompleteInteraction) {
-	if (!interaction.guild?.id) return;
-	const id = interaction.options.get("username")?.value ?? interaction.user.id;
-	if (!id || typeof id !== "string") return;
-
-	const user = await fetchUser(interaction.guild.id, id);
-
-	if (!user) return;
-
-	let rsns = user.rsns;
-
-	const query = interaction.options.getFocused(true).value.toLowerCase();
-	if (query) {
-		rsns = user.rsns.filter((rsn) => rsn.rsn.toLowerCase().includes(query));
-	}
-
-	if (!rsns) return interaction.respond([]);
-
-	// Convert Map entries to an array of autocomplete options
-	const options = rsns.map((rsn) => ({
-		name: rsn.rsn,
-		value: rsn.rsn,
-	}));
-
-	// Respond with the options (limit to 25 as per Discord's requirements)
-	interaction.respond(options.slice(0, 25));
-}
+import { achievementPicker, rsnPicker } from "./func/autocomplete";
 
 @Discord()
 class achievement {
@@ -77,14 +14,13 @@ class achievement {
 		name: "request",
 		description: "Submit an achievement request",
 	})
-	@Guard(IsAdmin)
 	async request(
 		@SlashOption({
 			name: "rsn",
 			description: "RSN of the account",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: autocompleter,
+			autocomplete: rsnPicker,
 		})
 		rsn: string,
 		@SlashOption({
@@ -92,12 +28,18 @@ class achievement {
 			description: "Achievement to request",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: autocompleter,
+			autocomplete: achievementPicker,
 		})
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await interaction.reply(rsn);
+		return await interaction.reply(
+			getString("achievements", "request", {
+				username: interaction.user.username,
+				rsn,
+				achievement,
+			}),
+		);
 	}
 
 	@Slash({
@@ -118,20 +60,22 @@ class achievement {
 			description: "RSN of the user",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: autocompleter,
+			autocomplete: rsnPicker,
 		})
 		rsn: string,
 		@SlashOption({
 			name: "achievement",
-			description: "Achievement to request",
+			description: "Achievement to grant to user",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: autocompleter,
+			autocomplete: achievementPicker,
 		})
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await interaction.reply(`${user.displayName} ${rsn} ${achievement}`);
+		return await interaction.reply(
+			`**Granting:** ${user.displayName} ${rsn} ${achievement}`,
+		);
 	}
 
 	@Slash({
@@ -152,19 +96,21 @@ class achievement {
 			description: "RSN of the user",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: autocompleter,
+			autocomplete: rsnPicker,
 		})
 		rsn: string,
 		@SlashOption({
 			name: "achievement",
-			description: "Achievement to request",
+			description: "Achievement to remove",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: autocompleter,
+			autocomplete: achievementPicker,
 		})
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await interaction.reply(rsn);
+		return await interaction.reply(
+			`**Removing:** ${user.displayName} ${rsn} ${achievement}`,
+		);
 	}
 }

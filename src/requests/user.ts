@@ -1,5 +1,4 @@
 import type {
-	ApiResponse,
 	DetailedUser,
 	PointsParam,
 	SimpleUser,
@@ -7,6 +6,7 @@ import type {
 	UsersParam,
 } from "@typings/requests";
 import { fetchData } from "./main";
+import { rewrapResponse } from "./utils";
 
 // Allows for creation of multiple convinience functions that return more specific data
 function userParamHandler(query: UserParam | UsersParam) {
@@ -20,16 +20,6 @@ function userParamHandler(query: UserParam | UsersParam) {
 		return `rsn/${handleArray(query.rsn)}`;
 	}
 	return handleArray(query.user_id);
-}
-
-// Utility function to preserve the HTTP information while changing the inner data
-function rewrapResponse<T, R>(res: ApiResponse<R>, field: T): ApiResponse<T> {
-	if (res.error) return res;
-	return {
-		error: res.error,
-		status: res.status,
-		data: field,
-	};
 }
 
 export async function getUser(guild_id: string, query: UserParam) {

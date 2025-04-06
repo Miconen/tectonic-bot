@@ -1,6 +1,7 @@
 import * as User from "@requests/user";
 import * as Guild from "@requests/guild";
 import * as General from "@requests/general";
+import * as Wom from "@requests/wom";
 import { HTTPError } from "discord.js";
 import type { ApiErrorBody, ApiResponse } from "typings/requests";
 
@@ -15,8 +16,9 @@ if (!AUTH_KEY) {
 
 // Standard variation
 export async function fetchData<T>(
-	url: string,
+	endpoint: string,
 	options: RequestInit = {},
+	url: string = API_URL,
 ): Promise<ApiResponse<T>> {
 	options.headers = {
 		...options.headers,
@@ -25,8 +27,8 @@ export async function fetchData<T>(
 	};
 
 	try {
-		console.log(`Fetching (${options.method ?? "GET"})`, API_URL + url);
-		const response = await fetch(API_URL + url, options);
+		console.log(`Fetching (${options.method ?? "GET"})`, url + endpoint);
+		const response = await fetch(url + endpoint, options);
 
 		// Check if the response is ok (status code 200-299)
 		if (!response.ok) {
@@ -65,4 +67,4 @@ export async function fetchData<T>(
 	}
 }
 
-export const Requests = { ...User, ...Guild, ...General };
+export const Requests = { ...User, ...Guild, ...General, ...Wom };

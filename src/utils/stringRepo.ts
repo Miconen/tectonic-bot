@@ -39,6 +39,10 @@ const strings: StringRepository = {
 			"\n_Once you link your rsn to the bot you'll be eligible to gain event points_\n_Please tag leadership to help with linking your account with your rsn_",
 		notActivated: (args) => `❌ **${args.username}** is not an activated user.`,
 	},
+	achievements: {
+		request: (args) =>
+			`# Achievement Request\n\nUser: ${args.username}\nRSN: ${args.rsn}\nAchievement: ${args.achievement}`,
+	},
 	errors: {
 		noGuild: "This command must be used in a guild.",
 		noMember: "Couldn't retrieve member information.",
