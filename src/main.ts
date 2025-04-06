@@ -10,7 +10,7 @@ import { PointService } from "./utils/pointUtils/PointService.js";
 import { RankService } from "./utils/rankUtils/RankService.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
-(BigInt.prototype as any).toJSON = function () {
+(BigInt.prototype as any).toJSON = function() {
 	return this.toString();
 };
 
@@ -24,7 +24,7 @@ export const bot = new Client({
 		IntentsBitField.Flags.GuildMembers,
 		IntentsBitField.Flags.GuildMessages,
 		IntentsBitField.Flags.GuildMessageReactions,
-		IntentsBitField.Flags.GuildPresences, // ADD THIS
+		IntentsBitField.Flags.GuildPresences,
 	],
 
 	// Debug logs are disabled in silent mode
