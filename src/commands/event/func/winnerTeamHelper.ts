@@ -5,8 +5,7 @@ import type { CommandInteraction } from "discord.js";
 export async function winnerTeamHelper(
 	interaction: CommandInteraction,
 	competitionId: number,
-	team: string,
-	position = 1,
+	team_names: string[],
 ) {
 	if (!interaction.guild) {
 		await interaction.reply({
@@ -19,21 +18,22 @@ export async function winnerTeamHelper(
 	const res = await Requests.eventWinners(interaction.guild.id, {
 		type: "team",
 		competition: competitionId,
-		position,
-		team,
+		team_names,
 	});
 
 	if (res.error) {
 		return interaction.reply(res.message);
 	}
 
-	const winners = res.data;
-	const response: string[] = [];
+	// const winners = res.data;
+	// const response: string[] = [];
+	//
+	// response.push("# Team event positions given");
+	// for (const winner of winners) {
+	// 	response.push(winner.player.displayName);
+	// }
+	//
+	// return interaction.reply(response.join("\n"));
 
-	response.push("# Team event positions given");
-	for (const winner of winners) {
-		response.push(winner.player.displayName);
-	}
-
-	return interaction.reply(response.join("\n"));
+	return interaction.reply("Success");
 }

@@ -1,4 +1,5 @@
 import IsAdmin from "@guards/IsAdmin";
+import { notEmpty } from "@utils/notEmpty";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
@@ -26,25 +27,34 @@ class Winners {
 			type: ApplicationCommandOptionType.Integer,
 		})
 		@SlashOption({
-			name: "team",
+			name: "team1",
 			description: "Name of the winning team",
 			required: true,
 			type: ApplicationCommandOptionType.String,
 			autocomplete: teamPicker,
 		})
 		@SlashOption({
-			name: "position",
-			description: "Which placement did the team end up in",
-			type: ApplicationCommandOptionType.Integer,
-			minValue: 1,
-			maxValue: 3,
+			name: "team2",
+			description: "Name of the second team",
+			required: false,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: teamPicker,
+		})
+		@SlashOption({
+			name: "team3",
+			description: "Name of the third team",
+			required: false,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: teamPicker,
 		})
 		competitionId: number,
-		team: string,
-		position: number | undefined,
+		team1: string,
+		team2: string | undefined,
+		team3: string | undefined,
 		interaction: CommandInteraction,
 	) {
-		return winnerTeamHelper(interaction, competitionId, team, position);
+		const team_names = [team1, team2, team3].filter(notEmpty);
+		return winnerTeamHelper(interaction, competitionId, team_names);
 	}
 
 	@Slash({ name: "individual", description: "Reward individual event winners" })

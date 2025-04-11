@@ -1,8 +1,7 @@
-import { WomParticipations } from "@typings/womRequests";
+import type { WomParticipations } from "@typings/womRequests";
 import type {
 	Boss,
 	CompetitionResponse,
-	EventTeamWinParam,
 	EventWinParam,
 	Guild,
 	GuildTimes,
@@ -91,13 +90,25 @@ export async function getGuildTimes(guild_id: string) {
 }
 
 export async function eventWinners(guild_id: string, params: EventWinParam) {
-	const endpoint = `guilds/${guild_id}/wom/winners/${params.competition}`;
+	const endpoint = `guilds/${guild_id}/events`;
 
-	if (params.type === "individual") {
-		endpoint.concat(`?top=${params.top}`);
-	} else {
-		endpoint.concat(`/team/${params.team}`);
-	}
+	const body =
+		params.type === "individual"
+			? { position_cutoff: params.top, event_id: params.competition }
+			: { team_names: params.team_names, event_id: params.competition };
 
-	return await fetchData<WomParticipations[]>(endpoint);
+	const options = {
+		method: "POST",
+		body: JSON.stringify(body),
+	};
+
+	console.log(options.body);
+
+	return await fetchData<WomParticipations[]>(endpoint, options);
+}
+
+export async function getEvents(guild_id: string) {
+	const endpoint = `guilds/${guild_id}/events`;
+
+	return await fetchData<Event[]>(endpoint);
 }

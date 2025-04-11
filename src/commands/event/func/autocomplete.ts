@@ -20,11 +20,8 @@ export async function fetchTeams(competitionId: number) {
 }
 
 export async function teamPicker(interaction: AutocompleteInteraction) {
-	console.log("Got to team picker");
 	if (!interaction.guild?.id) return;
-	console.log("Found guild");
 	const competitionId = interaction.options.get("competition")?.value;
-	console.log("Competition ID:", competitionId);
 	if (!competitionId || typeof competitionId !== "number") return;
 
 	const teams = await fetchTeams(competitionId);

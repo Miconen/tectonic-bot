@@ -114,12 +114,12 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-		| "event_participation"
-		| "event_hosting"
-		| "clan_pb"
-		| "split_low"
-		| "split_medium"
-		| "split_high";
+	| "event_participation"
+	| "event_hosting"
+	| "clan_pb"
+	| "split_low"
+	| "split_medium"
+	| "split_high";
 };
 
 export type Points = CustomPoints | PresetPoints;
@@ -215,8 +215,7 @@ export type EventIndividualWinParam = {
 
 export type EventTeamWinParam = {
 	type: "team";
-	team: string;
-	position: number;
+	team_names: string[];
 };
 
 export type EventWinParam = {

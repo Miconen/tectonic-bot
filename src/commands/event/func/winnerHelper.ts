@@ -35,13 +35,15 @@ export async function winnerHelper(
 		return interaction.reply(res.message);
 	}
 
-	const winners = res.data;
-	const response: string[] = [];
+	// const winners = res.data;
+	// const response: string[] = [];
+	//
+	// response.push("# Event positions given");
+	// for (const winner of winners) {
+	// 	response.push(winner.player.displayName);
+	// }
+	//
+	// return interaction.reply(response.join("\n"));
 
-	response.push("# Event positions given");
-	for (const winner of winners) {
-		response.push(winner.player.displayName);
-	}
-
-	return interaction.reply(response.join("\n"));
+	return interaction.reply("Success");
 }
