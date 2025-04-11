@@ -6,11 +6,11 @@ import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
 import { container } from "tsyringe";
-import { PointService } from "./utils/pointUtils/PointService.js";
-import { RankService } from "./utils/rankUtils/RankService.js";
+import { PointService } from "./utils/pointUtils/PointService.ts";
+import { RankService } from "./utils/rankUtils/RankService.ts";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
-(BigInt.prototype as any).toJSON = function() {
+(BigInt.prototype as any).toJSON = function () {
 	return this.toString();
 };
 

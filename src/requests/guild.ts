@@ -9,7 +9,7 @@ import type {
 	NewTime,
 	TimeResponse,
 	User,
-} from "typings/requests";
+} from "@typings/requests";
 import { fetchData } from "./main";
 
 export async function getLeaderboard(guild_id: string) {
@@ -101,8 +101,6 @@ export async function eventWinners(guild_id: string, params: EventWinParam) {
 		method: "POST",
 		body: JSON.stringify(body),
 	};
-
-	console.log(options.body);
 
 	return await fetchData<WomParticipations[]>(endpoint, options);
 }

@@ -3,7 +3,7 @@ import * as Guild from "@requests/guild";
 import * as General from "@requests/general";
 import * as Wom from "@requests/wom";
 import { HTTPError } from "discord.js";
-import type { ApiErrorBody, ApiResponse } from "typings/requests";
+import type { ApiErrorBody, ApiResponse } from "@typings/requests";
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`
@@ -27,7 +27,7 @@ export async function fetchData<T>(
 	};
 
 	try {
-		console.log(`Fetching (${options.method ?? "GET"})`, url + endpoint);
+		// console.log(`Fetching (${options.method ?? "GET"})`, url + endpoint);
 		const response = await fetch(url + endpoint, options);
 
 		// Check if the response is ok (status code 200-299)
@@ -43,7 +43,7 @@ export async function fetchData<T>(
 			};
 		}
 
-		console.log(`Success: ${response.status}`);
+		// console.log(`Success: ${response.status}`);
 
 		let data = {} as T;
 
