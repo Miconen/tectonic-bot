@@ -6,7 +6,7 @@ import { HTTPError } from "discord.js";
 import type { ApiErrorBody, ApiResponse } from "@typings/requests";
 import { pino } from "pino";
 
-const logger = pino();
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`

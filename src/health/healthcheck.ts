@@ -1,7 +1,7 @@
 import { Requests } from "@requests/main";
 import { pino } from "pino";
 
-const logger = pino();
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
 let isHealthy = false;
 let isChecked = false;
