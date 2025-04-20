@@ -49,6 +49,7 @@ const strings: StringRepository = {
 		competitionError: "Failed to retrieve competition data.",
 		givingPoints: "Error giving points.",
 		apiError: (args) => `Error ${args.activity}.\n\`${args.error}\``,
+		apiHealth: "Error reaching application, try again in 30~ seconds.",
 		empty: (args) => `Error accessing empty ${args.target}.`,
 	},
 };

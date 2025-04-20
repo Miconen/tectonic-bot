@@ -55,8 +55,7 @@ export async function fetchData<T>(
 				};
 			}
 
-			// console.log(`Success: ${response.status}`);
-
+			// We have success from this point on
 			let data = {} as T;
 
 			// Hack to avoid parsing an empty body

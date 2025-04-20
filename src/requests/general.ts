@@ -36,8 +36,12 @@ export async function removeAchievement(params: AchievementParam) {
 }
 
 export async function checkHealth() {
+	const API_URL = process.env.API_URL
+		? `https://${process.env.API_URL}/`
+		: "http://localhost:8080/";
+
 	const url = "ping";
-	const res = await fetchData(url);
+	const res = await fetchData(url, {}, API_URL);
 
 	return res;
 }

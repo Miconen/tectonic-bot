@@ -8,9 +8,10 @@ import "dotenv/config";
 import { container } from "tsyringe";
 import { PointService } from "./utils/pointUtils/PointService.js";
 import { RankService } from "./utils/rankUtils/RankService.js";
+import { IsHealthy } from "@guards/IsHealthy.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
-(BigInt.prototype as any).toJSON = function() {
+(BigInt.prototype as any).toJSON = function () {
 	return this.toString();
 };
 
@@ -26,6 +27,9 @@ export const bot = new Client({
 		IntentsBitField.Flags.GuildMessageReactions,
 		IntentsBitField.Flags.GuildPresences,
 	],
+
+	// Perform healthchecks before each command
+	guards: [IsHealthy],
 
 	// Debug logs are disabled in silent mode
 	silent: false,
