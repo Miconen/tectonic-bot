@@ -15,28 +15,22 @@ export async function getAchievements() {
 	return achievements;
 }
 
-export async function giveAchievement(
-	guild_id: string,
-	params: AchievementParam,
-) {
-	const url = `achievements/${params.achievement}/guilds/${guild_id}/users/${achievementParamHandler(params)}`;
+export async function giveAchievement(params: AchievementParam) {
+	const url = `achievements/${params.achievement}/users/${achievementParamHandler(params)}`;
 
 	const options = { method: "POST" };
 
-	const res = await fetchData(url);
+	const res = await fetchData(url, options);
 
 	return res;
 }
 
-export async function removeAchievement(
-	guild_id: string,
-	params: AchievementParam,
-) {
-	const url = `achievements/${params.achievement}/guilds/${guild_id}/users/${achievementParamHandler(params)}`;
+export async function removeAchievement(params: AchievementParam) {
+	const url = `achievements/${params.achievement}/users/${achievementParamHandler(params)}`;
 
 	const options = { method: "DELETE" };
 
-	const res = await fetchData(url);
+	const res = await fetchData(url, options);
 
 	return res;
 }
