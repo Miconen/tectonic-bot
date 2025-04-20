@@ -34,3 +34,10 @@ export async function removeAchievement(params: AchievementParam) {
 
 	return res;
 }
+
+export async function checkHealth() {
+	const url = "ping";
+	const res = await fetchData(url);
+
+	return res;
+}
