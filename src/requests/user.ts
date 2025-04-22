@@ -45,11 +45,8 @@ export async function createUser(
 	user_id: string,
 	rsn: string,
 ) {
-	const url = `guilds/${guild_id}/users/${user_id}`;
-	const options = {
-		method: "POST",
-		body: JSON.stringify({ rsn }),
-	};
+	const url = `guilds/${guild_id}/users`;
+	const options = { method: "POST", body: JSON.stringify({ rsn, user_id }) };
 	const status = await fetchData(url, options);
 
 	return status;
@@ -64,8 +61,8 @@ export async function removeUser(guild_id: string, query: UserParam) {
 }
 
 export async function addRsn(guild_id: string, user_id: string, rsn: string) {
-	const url = `guilds/${guild_id}/users/${user_id}/rsns/${rsn}`;
-	const options = { method: "POST" };
+	const url = `guilds/${guild_id}/users/${user_id}/rsns`;
+	const options = { method: "POST", body: JSON.stringify({ rsn }) };
 	const status = await fetchData<never>(url, options);
 
 	return status;
