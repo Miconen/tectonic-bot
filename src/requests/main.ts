@@ -17,82 +17,125 @@ if (!AUTH_KEY) {
 	throw new Error("No AUTH_KEY found.");
 }
 
-// Standard variation
+// API fetching and parsing utility
 export async function fetchData<T>(
 	endpoint: string,
 	options: RequestInit = {},
 	url: string = API_URL,
 ): Promise<ApiResponse<T>> {
-	options.headers = {
-		...options.headers,
-		Authorization: AUTH_KEY,
-		"Content-Type": "application/json",
+	const requestOptions: RequestInit = {
+		...options,
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: AUTH_KEY,
+			...options.headers,
+		},
 	};
+
+	const fullUrl = url + endpoint;
 
 	logger.info(
 		{
-			endpoint: url + endpoint,
-			method: options.method ?? "GET",
-			body: options.body,
+			endpoint: fullUrl,
+			method: requestOptions.method ?? "GET",
+			body: requestOptions.body,
 		},
-		"Fetching request",
+		"Pre-fetch request details",
 	);
 
-	async function inner(): Promise<ApiResponse<T>> {
-		try {
-			const response = await fetch(url + endpoint, options);
+	try {
+		const response = await fetch(fullUrl, requestOptions);
+		const status = response.status;
 
-			// Check if the response is ok (status code 200-299)
-			if (!response.ok) {
-				const body = (await response.json()) as ApiErrorBody;
-
-				return {
-					error: true,
-					status: response.status,
-					code: body.code,
-					name: body.name,
-					message: body.message,
-				};
-			}
-
-			// We have success from this point on
-			let data = {} as T;
-
-			// Hack to avoid parsing an empty body
-			if (response.status !== 204) {
-				// Parse the JSON response if it's successful
-				data = (await response.json()) as T;
-			}
-
-			return {
+		// Handle 204 No Content responses without parsing the body
+		if (status === 204) {
+			const successResponse: ApiResponse<T> = {
 				error: false,
-				status: response.status,
-				data,
+				status,
+				data: {} as T,
 			};
-		} catch (error) {
-			// Handle errors that occur during the fetch request
-			return {
-				error: true,
-				status: error instanceof HTTPError ? error.status : 500,
-				code: -1,
-				name: "Unknown error",
-				message: error instanceof Error ? error.message : "Unknown error",
-			};
+
+			logger.info({ code: status }, "Request success code");
+			logger.debug({ response: successResponse }, "Request response");
+			return successResponse;
 		}
+
+		// Check Content-Type for non-204 responses
+		const contentType = response.headers.get("Content-Type");
+		if (!contentType?.includes("application/json")) {
+			const error: ApiResponse<T> = {
+				error: true,
+				status,
+				code: -1,
+				name: "Unsupported Content-Type",
+				message: `Unsupported Content-Type header "${contentType}" from endpoint "${fullUrl}"`,
+			};
+
+			logger.error(error, "Request error");
+			logger.debug({ response: error }, "Request response");
+			return error;
+		}
+
+		// Parse JSON response
+		let data: unknown;
+		try {
+			data = await response.json();
+		} catch (e) {
+			const error: ApiResponse<T> = {
+				error: true,
+				status,
+				code: -1,
+				name: "JSON Parse Error",
+				message:
+					e instanceof Error ? e.message : "Failed to parse JSON response",
+			};
+
+			logger.error(error, "Request error");
+			logger.debug({ response: error }, "Request response");
+			return error;
+		}
+
+		// Handle non-successful status codes
+		if (!response.ok) {
+			const errorBody = data as ApiErrorBody;
+			const error: ApiResponse<T> = {
+				error: true,
+				status,
+				code: errorBody.code,
+				name: errorBody.name,
+				message: errorBody.message,
+			};
+
+			logger.error(error, "Request error");
+			logger.debug({ response: error }, "Request response");
+			return error;
+		}
+
+		// Success case
+		const successResponse: ApiResponse<T> = {
+			error: false,
+			status,
+			data: data as T,
+		};
+
+		logger.info({ code: status }, "Request success code");
+		logger.debug({ response: successResponse }, "Request response");
+
+		return successResponse;
+	} catch (error) {
+		// Handle network or other fetch errors
+		const errorResponse: ApiResponse<T> = {
+			error: true,
+			status: error instanceof HTTPError ? error.status : 500,
+			code: -1,
+			name: "Network Error",
+			message: error instanceof Error ? error.message : "Unknown network error",
+		};
+
+		logger.error(errorResponse, "Request error");
+		logger.debug({ response: errorResponse }, "Request response");
+		return errorResponse;
 	}
-
-	const res = await inner();
-
-	if (res.error) {
-		const { status, code, message, name } = res;
-		logger.error({ status, code, message, name }, "Request error");
-	} else {
-		logger.info({ code: res.status }, "Request success code");
-	}
-
-	logger.debug({ res }, "Request response");
-
-	return res;
 }
 
 export const Requests = { ...User, ...Guild, ...General, ...Wom };
