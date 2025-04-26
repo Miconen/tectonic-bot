@@ -37,6 +37,15 @@ export async function createGuild(guild_id: string) {
 	return status;
 }
 
+export async function removeGuild(guild_id: string) {
+	const url = `guilds/${guild_id}`;
+	const options = { method: "DELETE" };
+
+	const status = await fetchData(url, options);
+
+	return status;
+}
+
 export async function updateGuild(guild_id: string, query: GuildUpdate) {
 	const url = `guilds/${guild_id}`;
 	const options = {
