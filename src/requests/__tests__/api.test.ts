@@ -18,7 +18,7 @@ const rsn = { name: "Comfy hug", id: "39527" };
 const competition = 77922;
 const team_competition = 82737;
 
-const HAS_ERROR = "Rerturned an error";
+const HAS_ERROR = "Returned an error";
 const WRONG_STATUS = "Unexpected status code";
 
 const guild_update: GuildUpdate = {
@@ -124,15 +124,14 @@ const achievement_by_rsn: AchievementParam = {
 
 async function clearData() {
 	// Remove pre-existing test user
-	const users_url = `guilds/${guild}/${user}`;
-	const users_options = { method: "DELETE" };
-	const u = await fetchData(users_url, users_options);
+	const u = await Requests.removeUser(guild, {
+		type: "user_id",
+		user_id: user,
+	});
 	if (u.error && u.status !== 404) throw new Error("Couldn't remove user");
 
 	// Remove pre-existing test guild
-	const guilds_url = `guilds/${guild}`;
-	const guilds_options = { method: "DELETE" };
-	const g = await fetchData(guilds_url, guilds_options);
+	const g = await Requests.removeGuild(guild);
 	if (g.error && u.status !== 404) throw new Error("Couldn't remove guild");
 }
 
@@ -147,7 +146,7 @@ const logger = (res: ApiResponse<unknown>) => {
 	console.log(res);
 };
 
-describe("API Tests", () => {
+describe("API Tests", async function () {
 	after(async () => await clearData());
 
 	describe("POST Endpoints", async function () {
@@ -182,11 +181,11 @@ describe("API Tests", () => {
 
 		describe("Generic Endpoints", async function () {
 			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give points by preset", async function () {
+			it("should succesfully give achievement", async function () {
 				const res = await Requests.giveAchievement(achievement_by_id);
 				logger(res);
 				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(201);
+				expect(res.status, WRONG_STATUS).to.equal(204);
 			});
 			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
 			// TODO: Requires functionality to be added first
