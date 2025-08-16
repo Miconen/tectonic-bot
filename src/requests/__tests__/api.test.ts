@@ -10,7 +10,7 @@ import type {
 	UserParam,
 	UsersParam,
 } from "@typings/requests";
-import { Requests, fetchData } from "@requests/main";
+import { Requests } from "@requests/main";
 
 const guild = "test_guild";
 const user = "test_user";
@@ -18,9 +18,7 @@ const rsn = { name: "Comfy hug", id: "39527" };
 const competition = 77922;
 const team_competition = 82737;
 
-const HAS_ERROR = "Returned an error";
-const WRONG_STATUS = "Unexpected status code";
-
+// Test data
 const guild_update: GuildUpdate = {
 	pb_channel: "test_channel",
 	multiplier: 3,
@@ -36,424 +34,305 @@ const new_time: NewTime = {
 	boss_name: "vardorvis",
 };
 
-const event_win_individual: EventWinParam = {
-	competition,
-	type: "individual",
-	top: 3,
-};
-
-const event_win_team: EventWinParam = {
-	competition: team_competition,
-	type: "team",
-	team_names: ["Unlucky Charms"],
-};
-
-const user_id_query: UserParam = {
-	type: "user_id",
-	user_id: user,
-};
-
-const user_wom_query: UserParam = {
-	type: "wom",
-	wom: rsn.id,
-};
-
-const user_rsn_query: UserParam = {
-	type: "rsn",
-	rsn: rsn.name,
-};
-
-const users_id_query: UsersParam = {
-	type: "user_id",
-	user_id: [user],
-};
-
-const users_wom_query: UsersParam = {
-	type: "wom",
-	wom: [rsn.id],
-};
-
-const users_rsn_query: UsersParam = {
-	type: "rsn",
-	rsn: [rsn.name],
-};
-
-const point_query_custom: PointsParam = {
-	user_id: user,
-	points: {
-		type: "custom",
-		amount: 30,
+const event_wins: EventWinParam[] = [
+	{ competition, type: "individual", top: 3 },
+	{
+		competition: team_competition,
+		type: "team",
+		team_names: ["Unlucky Charms"],
 	},
-};
+];
 
-const point_query_preset: PointsParam = {
-	user_id: user,
-	points: {
-		type: "preset",
-		event: "split_low",
-	},
-};
+const user_queries: UserParam[] = [
+	{ type: "user_id", user_id: user },
+	{ type: "wom", wom: rsn.id },
+	{ type: "rsn", rsn: rsn.name },
+];
 
-const points_query_custom: PointsParam = {
-	user_id: [user],
-	points: {
-		type: "custom",
-		amount: 30,
-	},
-};
+const users_queries: UsersParam[] = [
+	{ type: "user_id", user_id: [user] },
+	{ type: "wom", wom: [rsn.id] },
+	{ type: "rsn", rsn: [rsn.name] },
+];
 
-const points_query_preset: PointsParam = {
-	user_id: [user],
-	points: {
-		type: "preset",
-		event: "split_low",
-	},
-};
+const point_queries: PointsParam[] = [
+	{ user_id: user, points: { type: "custom", amount: 30 } },
+	{ user_id: user, points: { type: "preset", event: "split_low" } },
+];
 
-const achievement_by_id: AchievementParam = {
-	achievement: "Maxed",
-	type: "user_id",
-	user_id: user,
-};
+const points_queries: PointsParam[] = [
+	{ user_id: [user], points: { type: "custom", amount: 30 } },
+	{ user_id: [user], points: { type: "preset", event: "split_low" } },
+];
 
-const achievement_by_rsn: AchievementParam = {
-	achievement: "Maxed",
-	type: "rsn",
-	rsn: rsn.name,
-};
+const achievements: AchievementParam[] = [
+	{ achievement: "Maxed", type: "user_id", user_id: user },
+	{ achievement: "Maxed", type: "rsn", rsn: rsn.name },
+];
 
+// Helper functions
 async function clearData() {
-	// Remove pre-existing test user
 	const u = await Requests.removeUser(guild, {
 		type: "user_id",
 		user_id: user,
 	});
 	if (u.error && u.status !== 404) throw new Error("Couldn't remove user");
 
-	// Remove pre-existing test guild
 	const g = await Requests.removeGuild(guild);
-	if (g.error && u.status !== 404) throw new Error("Couldn't remove guild");
+	if (g.error && g.status !== 404) throw new Error("Couldn't remove guild");
 }
 
 async function fillData() {
-	// Create test guild
 	await Requests.createGuild(guild);
 	await Requests.createUser(guild, user, rsn.name);
 }
 
-const logger = (res: ApiResponse<unknown>) => {
-	if (!res.error) return;
-	console.log(res);
-};
+function expectSuccess(
+	res: ApiResponse<unknown>,
+	expectedStatus: number | number[] = 200,
+) {
+	if (res.error) console.log(res);
+	expect(res.error, "Returned an error").to.be.false;
 
-describe("API Tests", async function () {
-	after(async () => await clearData());
+	if (Array.isArray(expectedStatus)) {
+		expect(res.status, "Unexpected status code").to.be.oneOf(expectedStatus);
+	} else {
+		expect(res.status, "Unexpected status code").to.equal(expectedStatus);
+	}
+}
 
-	describe("POST Endpoints", async function () {
-		describe("Guild Endpoints", async function () {
-			before(async () => await clearData());
+// Test runner helper
+function testEndpoint(
+	description: string,
+	apiCall: () => Promise<ApiResponse<unknown>>,
+	expectedStatus: number | number[] = 200,
+) {
+	// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+	it(description, async function () {
+		const res = await apiCall();
+		expectSuccess(res, expectedStatus);
+	});
+}
 
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully create a guild", async function () {
-				const res = await Requests.createGuild(guild);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(201);
+describe("API Tests", function () {
+	// Increase timeout for all tests due to external API calls
+	this.timeout(10000);
+
+	// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+	after(async function () {
+		await clearData();
+	});
+
+	describe("POST Endpoints", function () {
+		describe("Guild Endpoints", function () {
+			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+			before(async function () {
+				await clearData();
 			});
+
+			testEndpoint(
+				"should successfully create a guild",
+				() => Requests.createGuild(guild),
+				201,
+			);
 		});
 
-		describe("User Endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully create a user", async function () {
-				const res = await Requests.createUser(guild, user, rsn.name);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(201);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully add an rsn to a user", async function () {
-				const res = await Requests.addRsn(guild, user, rsn.name);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		describe("User Endpoints", function () {
+			testEndpoint(
+				"should successfully create a user",
+				() => Requests.createUser(guild, user, rsn.name),
+				201,
+			);
+
+			testEndpoint(
+				"should successfully add an rsn to a user",
+				() => Requests.addRsn(guild, user, rsn.name),
+				204,
+			);
 		});
 
-		describe("Generic Endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give achievement", async function () {
-				const res = await Requests.giveAchievement(achievement_by_id);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			// TODO: Requires functionality to be added first
-			// it("should succesfully give points by preset", async function () {
-			// 	const res = await Requests.giveAchievement(achievement_by_rsn);
-			// 	expect(res.error, HAS_ERROR).to.be.false;
-			// 	expect(res.status, WRONG_STATUS).to.equal(201);
-			// });
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully add a new time", async function () {
-				const res = await Requests.newTime(guild, new_time);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.be.oneOf([200, 201]);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully handle event winners", async function () {
-				const res = await Requests.eventWinners(guild, event_win_individual);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(201);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully handle team winners", async function () {
-				const res = await Requests.eventWinners(guild, event_win_team);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(201);
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		describe("Generic Endpoints", function () {
+			testEndpoint(
+				"should successfully give achievement",
+				() => Requests.giveAchievement(achievements[0]),
+				204,
+			);
+
+			testEndpoint(
+				"should successfully add a new time",
+				() => Requests.newTime(guild, new_time),
+				[200, 201],
+			);
+
+			event_wins.forEach((event_win, _) => {
+				const type = event_win.type === "individual" ? "individual" : "team";
+				testEndpoint(
+					`should successfully handle event winners (${type})`,
+					() => Requests.eventWinners(guild, event_win),
+					201,
+				);
 			});
 		});
 	});
 
-	describe("GET Endpoints", async function () {
-		before(async () => {
+	describe("GET Endpoints", function () {
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		before(async function () {
 			await clearData();
 			await fillData();
 		});
 
-		describe("Guild endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully return the guild", async function () {
-				const res = await Requests.getGuild(guild);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		describe("Guild endpoints", function () {
+			const guildEndpoints = [
+				{ desc: "return the guild", call: () => Requests.getGuild(guild) },
+				{ desc: "get guild times", call: () => Requests.getGuildTimes(guild) },
+				{ desc: "get events", call: () => Requests.getEvents(guild) },
+				{ desc: "return all bosses", call: () => Requests.getBosses() },
+			];
 
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get guild times", async function () {
-				const res = await Requests.getGuildTimes(guild);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get events", async function () {
-				const res = await Requests.getEvents(guild);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully return all bosses", async function () {
-				const res = await Requests.getBosses();
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
+			for (const { desc, call } of guildEndpoints) {
+				testEndpoint(`should successfully ${desc}`, call);
+			}
 		});
 
-		describe("User endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully return the leaderboard", async function () {
-				const res = await Requests.getLeaderboard(guild);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		describe("User endpoints", function () {
+			testEndpoint("should successfully return the leaderboard", () =>
+				Requests.getLeaderboard(guild),
+			);
+
+			user_queries.forEach((query, _) => {
+				const queryType =
+					query.type === "user_id"
+						? "discord id"
+						: query.type === "wom"
+							? "wom id"
+							: "rsn";
+				testEndpoint(`should successfully get a user by ${queryType}`, () =>
+					Requests.getUser(guild, query),
+				);
 			});
 
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get a user by discord id", async function () {
-				const res = await Requests.getUser(guild, user_id_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get a user by wom id", async function () {
-				const res = await Requests.getUser(guild, user_wom_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get a user by rsn", async function () {
-				const res = await Requests.getUser(guild, user_rsn_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get multiple users by discord id array", async function () {
-				const res = await Requests.getUsers(guild, users_id_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get multiple users by wom id array", async function () {
-				const res = await Requests.getUsers(guild, users_wom_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully get multiple users by rsn array", async function () {
-				const res = await Requests.getUsers(guild, users_rsn_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
+			for (const query of users_queries) {
+				const queryType =
+					query.type === "user_id"
+						? "discord id array"
+						: query.type === "wom"
+							? "wom id array"
+							: "rsn array";
+				testEndpoint(
+					`should successfully get multiple users by ${queryType}`,
+					() => Requests.getUsers(guild, query),
+				);
+			}
 		});
 
-		describe("Generic endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully retrieve achievements", async function () {
-				const res = await Requests.getAchievements();
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully retrieve a competition", async function () {
-				const res = await Requests.getCompetition(competition);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully retrieve teamnames from competition", async function () {
-				const res = await Requests.getCompetitionTeams(team_competition);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully handle event ending and points", async function () {
-				const res = await Requests.eventCompetition(guild, competition, 3);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		describe("Generic endpoints", function () {
+			const genericEndpoints = [
+				{
+					desc: "retrieve achievements",
+					call: () => Requests.getAchievements(),
+				},
+				{
+					desc: "retrieve a competition",
+					call: () => Requests.getCompetition(competition),
+				},
+				{
+					desc: "retrieve teamnames from competition",
+					call: () => Requests.getCompetitionTeams(team_competition),
+				},
+				{
+					desc: "handle event ending and points",
+					call: () => Requests.eventCompetition(guild, competition, 3),
+				},
+			];
+
+			for (const { desc, call } of genericEndpoints) {
+				testEndpoint(`should successfully ${desc}`, call);
+			}
 		});
 	});
 
-	describe("DELETE Endpoints", async function () {
-		describe("User Endpoints", async function () {
-			beforeEach(async () => {
+	describe("DELETE Endpoints", function () {
+		describe("User Endpoints", function () {
+			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+			beforeEach(async function () {
 				await clearData();
 				await fillData();
 			});
 
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully remove a user by discord id", async function () {
-				const res = await Requests.removeUser(guild, user_id_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully remove a user by wom id", async function () {
-				const res = await Requests.removeUser(guild, user_wom_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully remove a user by rsn", async function () {
-				const res = await Requests.removeUser(guild, user_rsn_query);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully remove an rsn from a user", async function () {
-				const res = await Requests.removeRsn(guild, user, rsn.name);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
+			for (const query of user_queries) {
+				const queryType =
+					query.type === "user_id"
+						? "discord id"
+						: query.type === "wom"
+							? "wom id"
+							: "rsn";
+				testEndpoint(
+					`should successfully remove a user by ${queryType}`,
+					() => Requests.removeUser(guild, query),
+					204,
+				);
+			}
+
+			testEndpoint(
+				"should successfully remove an rsn from a user",
+				() => Requests.removeRsn(guild, user, rsn.name),
+				204,
+			);
 		});
 
-		describe("Generic Endpoints", async function () {
-			beforeEach(async () => {
+		describe("Generic Endpoints", function () {
+			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+			beforeEach(async function () {
 				await clearData();
 				await fillData();
 			});
 
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give points by preset", async function () {
-				const res = await Requests.removeAchievement(achievement_by_id);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			// TODO: Requires functionality to be added first
-			// it("should succesfully give points by preset", async function () {
-			// 	const res = await Requests.removeAchievement(achievement_by_rsn);
-			// 	expect(res.error, HAS_ERROR).to.be.false;
-			// 	expect(res.status, WRONG_STATUS).to.equal(204);
-			// });
+			testEndpoint(
+				"should successfully remove achievement",
+				() => Requests.removeAchievement(achievements[0]),
+				204,
+			);
 		});
 	});
 
-	describe("PUT Endpoints", async function () {
-		before(async () => {
+	describe("PUT Endpoints", function () {
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		before(async function () {
 			await clearData();
 			await fillData();
 		});
 
-		describe("Points Endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give points to multiple by custom value", async function () {
-				const res = await Requests.givePointsToMultiple(
-					guild,
-					points_query_custom,
+		describe("Points Endpoints", function () {
+			points_queries.forEach((query, _) => {
+				const type = query.points.type === "custom" ? "custom value" : "preset";
+				testEndpoint(
+					`should successfully give points to multiple by ${type}`,
+					() => Requests.givePointsToMultiple(guild, query),
 				);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
 			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give points to multiple by preset", async function () {
-				const res = await Requests.givePointsToMultiple(
-					guild,
-					points_query_preset,
+
+			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+			for (const query of point_queries) {
+				const type = query.points.type === "custom" ? "custom value" : "preset";
+				testEndpoint(`should successfully give points by ${type}`, () =>
+					Requests.givePoints(guild, query),
 				);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give points by custom value", async function () {
-				const res = await Requests.givePoints(guild, point_query_custom);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully give points by preset", async function () {
-				const res = await Requests.givePoints(guild, point_query_preset);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(200);
-			});
+			}
 		});
 
-		describe("Guild Endpoints", async function () {
-			// biome-ignore lint/complexity/useArrowFunction: <Mocha discourages the usage of arrow functions: https://mochajs.org/#arrow-functions>
-			it("should succesfully update the guild", async function () {
-				const res = await Requests.updateGuild(guild, guild_update);
-				logger(res);
-				expect(res.error, HAS_ERROR).to.be.false;
-				expect(res.status, WRONG_STATUS).to.equal(204);
-			});
+		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
+		describe("Guild Endpoints", function () {
+			testEndpoint(
+				"should successfully update the guild",
+				() => Requests.updateGuild(guild, guild_update),
+				204,
+			);
 		});
 	});
 });
