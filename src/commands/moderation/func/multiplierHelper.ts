@@ -1,30 +1,30 @@
 import type { CommandInteraction } from "discord.js";
 import { Requests } from "@requests/main.js";
 import { getString } from "@utils/stringRepo";
+import { replyHandler } from "@utils/replyHandler";
 
 const multiplierHelper = async (
 	multiplier: number,
 	interaction: CommandInteraction,
 ) => {
 	if (!interaction.guild) {
-		await interaction.reply({
-			content: getString("errors", "noGuild"),
-			ephemeral: true,
-		});
+		await replyHandler(getString("errors", "noGuild"), interaction);
 		return;
 	}
 
-	const newMultiplier = await Requests.updateGuild(interaction.guild.id, {
+	const res = await Requests.updateGuild(interaction.guild.id, {
 		multiplier,
 	});
 
-	let response = "Something went wrong...";
-
-	if (newMultiplier) {
-		response = `Updated server point multiplier to ${newMultiplier}`;
+	if (res.error) {
+		await replyHandler(getString("errors", "internalError"), interaction);
+		return;
 	}
 
-	await interaction.reply(response);
+	await replyHandler(
+		getString("moderation", "multiplierSet", { multiplier }),
+		interaction,
+	);
 };
 
 export default multiplierHelper;

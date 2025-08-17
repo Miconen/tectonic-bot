@@ -1,3 +1,5 @@
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 import type {
 	ButtonInteraction,
 	CommandInteraction,
@@ -26,11 +28,7 @@ export const IsAdmin: GuardFunction<
 	} else {
 		console.log("↳ Denied");
 
-		const warning: InteractionReplyOptions = {
-			content: "You do not have the required permissions for this action",
-			ephemeral: true,
-		};
-		await interaction.reply(warning);
+		await replyHandler(getString("permissions", "adminRequired"), interaction);
 	}
 };
 

@@ -1,7 +1,8 @@
-import IsActivated from "@guards/IsActivated.js";
 import IsAdmin from "@guards/IsAdmin.js";
 import type { SplitCache, SplitData } from "@typings/splitTypes.js";
 import type IPointService from "@utils/pointUtils/IPointService";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import { formatTimeAgo } from "@utils/timeFormatter.js";
 import {
 	ApplicationCommandOptionType,
@@ -78,13 +79,17 @@ class split {
 		interaction: CommandInteraction,
 	) {
 		const split = state.get(id);
-		if (!split) return await interaction.reply("Internal error");
+		if (!split)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+			);
 
 		const response = await acceptHelper(interaction, split);
 
 		// Free up memory
 		state.delete(id);
-		return await interaction.reply(response);
+		return await replyHandler(response, interaction);
 	}
 
 	@Slash({
@@ -104,13 +109,17 @@ class split {
 		interaction: CommandInteraction,
 	) {
 		const split = state.get(id);
-		if (!split) return await interaction.reply("Internal error");
+		if (!split)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+			);
 
 		const response = await denyHelper(interaction, split);
 
 		// Free up memory
 		state.delete(id);
-		return await interaction.reply(response);
+		return await replyHandler(response, interaction);
 	}
 
 	@Slash({
@@ -130,7 +139,11 @@ class split {
 		interaction: CommandInteraction,
 	) {
 		const split = state.get(id);
-		if (!split) return await interaction.reply("Internal error");
+		if (!split)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+			);
 
 		const channel = (await interaction.client.channels.fetch(
 			split.channel,
@@ -140,6 +153,6 @@ class split {
 
 		const response = `# Split: ${split.member.displayName}\nPoints: ${split.points} points\nCreated: ${formatTimeAgo(split.timestamp)}\nMessage: ${message.url}`;
 
-		return await interaction.reply({ content: response, ephemeral: true });
+		return await replyHandler(response, interaction);
 	}
 }

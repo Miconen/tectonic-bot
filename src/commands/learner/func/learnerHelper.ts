@@ -3,6 +3,7 @@ import type IPointService from "@utils/pointUtils/IPointService";
 
 import { container } from "tsyringe";
 import { getString } from "@utils/stringRepo";
+import { replyHandler } from "@utils/replyHandler";
 
 type PointAmount = "learner_full" | "learner_half";
 
@@ -13,7 +14,7 @@ const learnerHelper = async (
 ) => {
 	const pointService = container.resolve<IPointService>("PointService");
 	if (!interaction.guild)
-		return await interaction.reply(getString("errors", "noGuild"));
+		return await replyHandler(getString("errors", "noGuild"), interaction);
 
 	const addedPoints = await pointService.pointsHandler(
 		pointService.pointRewards.get(amount) ?? 0,
@@ -26,7 +27,7 @@ const learnerHelper = async (
 		user,
 		interaction,
 	);
-	await interaction.reply(pointsResponse);
+	await replyHandler(pointsResponse, interaction);
 };
 
 export default learnerHelper;

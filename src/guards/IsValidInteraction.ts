@@ -1,3 +1,5 @@
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 import type {
 	ButtonInteraction,
 	GuildMember,
@@ -23,21 +25,13 @@ export function IsValidInteraction(state: SplitCache) {
 		// If command has not been stored in memory, don't run.
 		// Idea is not to handle commands that haven't been stored since restart.
 		if (!split) {
-			const reply: InteractionReplyOptions = {
-				content: "❌ Point request expired...",
-				ephemeral: true,
-			};
-			await interaction.reply(reply);
+			await replyHandler(getString("splits", "expiredRequest"), interaction);
 			console.log("↳ Expired");
 			return;
 		}
 
 		if (split.points === 0) {
-			const reply: InteractionReplyOptions = {
-				content: "❌ Point request failed internally...",
-				ephemeral: true,
-			};
-			await interaction.reply(reply);
+			await replyHandler(getString("errors", "internalError"), interaction);
 			console.log("↳ Failed, 0 points");
 			return;
 		}

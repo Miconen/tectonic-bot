@@ -1,11 +1,12 @@
-import { type CommandInteraction, TextChannel } from "discord.js";
+import type { ButtonInteraction } from "discord.js";
+import { CommandInteraction, TextChannel } from "discord.js";
 
 /**
  * Handles the reply to a Discord interaction, deferring or replying based on context, as you cannot reply to deferred commands.
  */
 export async function replyHandler(
 	message: string,
-	interaction: CommandInteraction,
+	interaction: CommandInteraction | ButtonInteraction,
 ) {
 	const CHARACTER_LIMIT = 2000;
 
@@ -14,7 +15,7 @@ export async function replyHandler(
 			await replyer(chunk, interaction, true);
 		}
 
-		if (interaction.deferred) {
+		if (interaction instanceof CommandInteraction && interaction.deferred) {
 			await interaction.deleteReply();
 		}
 
@@ -26,14 +27,14 @@ export async function replyHandler(
 
 async function replyer(
 	message: string,
-	interaction: CommandInteraction,
+	interaction: CommandInteraction | ButtonInteraction,
 	split?: boolean,
 ) {
 	if (interaction.channel instanceof TextChannel && split) {
 		return await interaction.channel.send(message);
 	}
 
-	if (interaction.deferred) {
+	if (interaction instanceof CommandInteraction && interaction.deferred) {
 		return await interaction.followUp(message);
 	}
 

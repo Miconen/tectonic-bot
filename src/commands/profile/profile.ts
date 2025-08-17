@@ -1,3 +1,5 @@
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
@@ -31,10 +33,13 @@ class profile {
 		interaction: CommandInteraction,
 	) {
 		if (user && rsn) {
-			return await interaction.reply({
-				ephemeral: true,
-				content: `❌ Can't look for a member by @ AND rsn.`,
-			});
+			return await replyHandler(
+				getString("validation", "conflictingParams", {
+					param1: "username",
+					param2: "rsn",
+				}),
+				interaction,
+			);
 		}
 
 		const response = await profileHelper(user, rsn, interaction);

@@ -1,6 +1,7 @@
-import type { CommandInteraction } from "discord.js";
 import type IRankService from "@utils/rankUtils/IRankService";
+import type { CommandInteraction } from "discord.js";
 
+import { replyHandler } from "@utils/replyHandler";
 import { container } from "tsyringe";
 
 const ranksHelp = async (interaction: CommandInteraction) => {
@@ -51,7 +52,7 @@ const ranksHelp = async (interaction: CommandInteraction) => {
 		`${rankService.getIcon("wrath")} Wrath - ${rankService.getRoleValue("wrath")} points`,
 	);
 
-	await interaction.reply(response.join("\n"));
+	await replyHandler(response.join("\n"), interaction);
 };
 
 export default ranksHelp;

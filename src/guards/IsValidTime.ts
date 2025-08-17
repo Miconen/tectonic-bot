@@ -1,3 +1,4 @@
+import { replyHandler } from "@utils/replyHandler";
 import type {
 	CommandInteraction,
 	GuildMember,
@@ -150,11 +151,7 @@ function IsValidTime(option: string) {
 			console.log("↳ Invalid time");
 			console.error(`↳ ${time.errors}`);
 
-			const warning: InteractionReplyOptions = {
-				content: time.errors.join("\n"),
-				ephemeral: true,
-			};
-			return await interaction.reply(warning);
+			return await replyHandler(time.errors.join("\n"), interaction);
 		}
 		console.log("↳ Passed");
 		await next();

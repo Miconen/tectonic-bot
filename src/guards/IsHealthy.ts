@@ -1,3 +1,4 @@
+import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction } from "discord.js";
 import type { GuardFunction } from "discordx";
@@ -11,10 +12,7 @@ export const IsHealthy: GuardFunction<CommandInteraction> = async (
 	const healthy = await checkHealth();
 
 	if (!healthy) {
-		return await interaction.reply({
-			content: getString("errors", "apiHealth"),
-			ephemeral: true,
-		});
+		return await replyHandler(getString("errors", "apiHealth"), interaction);
 	}
 
 	return await next();

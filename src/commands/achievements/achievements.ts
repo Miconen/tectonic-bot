@@ -1,4 +1,5 @@
 import IsAdmin from "@guards/IsAdmin.js";
+import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import {
 	ApplicationCommandOptionType,
@@ -33,12 +34,13 @@ class achievement {
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await interaction.reply(
+		return await replyHandler(
 			getString("achievements", "request", {
 				username: interaction.user.username,
 				rsn,
 				achievement,
 			}),
+			interaction,
 		);
 	}
 
@@ -73,8 +75,13 @@ class achievement {
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await interaction.reply(
-			`**Granting:** ${user.displayName} ${rsn} ${achievement}`,
+		return await replyHandler(
+			getString("achievements", "granted", {
+				achievement,
+				username: user.displayName,
+				rsn,
+			}),
+			interaction,
 		);
 	}
 
@@ -109,8 +116,13 @@ class achievement {
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await interaction.reply(
-			`**Removing:** ${user.displayName} ${rsn} ${achievement}`,
+		return await replyHandler(
+			getString("achievements", "removed", {
+				achievement,
+				username: user.displayName,
+				rsn,
+			}),
+			interaction,
 		);
 	}
 }

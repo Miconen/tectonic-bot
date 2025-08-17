@@ -1,4 +1,6 @@
 import { Requests } from "@requests/main.js";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 import {
 	type CommandInteraction,
 	GuildMember,
@@ -19,7 +21,10 @@ function IsActivated(target = "player") {
 		// Dirty hack to extract GuildMembers from the guarded commands options
 		const options = interaction.options.data[0].options;
 		if (!options)
-			return await interaction.reply("Could not find player options");
+			return await replyHandler(
+				getString("errors", "parameterMissing", { parameter: "players" }),
+				interaction,
+			);
 
 		for (const option of options) {
 			if (
@@ -38,21 +43,14 @@ function IsActivated(target = "player") {
 
 		if (!players.length) {
 			console.log("↳ Error retrieving players");
-			const warning: InteractionReplyOptions = {
-				content: "Failed to fetch players from command",
-				ephemeral: true,
-			};
-			return await interaction.reply(warning);
+			const warning = "Failed to fetch players from command";
+			return await replyHandler(warning, interaction);
 		}
 		console.log("↳ Players list populated");
 
 		if (!interaction.guild?.id) {
 			console.log("↳ Error getting guild ID");
-			const warning: InteractionReplyOptions = {
-				content: "Failed to fetch guild id",
-				ephemeral: true,
-			};
-			return await interaction.reply(warning);
+			return await replyHandler(getString("errors", "noGuild"), interaction);
 		}
 
 		const playersUserIds = players.map((member) => member.id);
@@ -66,9 +64,15 @@ function IsActivated(target = "player") {
 			user_id: playersUserIds,
 		});
 		if (res.error)
-			return await interaction.reply("Error checking activated users");
+			return await replyHandler(
+				getString("errors", "fetchFailed", { resource: "users" }),
+				interaction,
+			);
 		if (!res.data.length)
-			return await interaction.reply("Error checking activated users");
+			return await replyHandler(
+				getString("errors", "fetchFailed", { resource: "users" }),
+				interaction,
+			);
 
 		const existingUsers = res.data;
 
@@ -86,7 +90,10 @@ function IsActivated(target = "player") {
 
 		if (warning) {
 			console.log(warning);
-			return await interaction.reply(`## Could not submit pb\n${warning}`);
+			return await replyHandler(
+				getString("errors", "commandFailed", { reason: warning }),
+				interaction,
+			);
 		}
 
 		console.log("↳ Passed");

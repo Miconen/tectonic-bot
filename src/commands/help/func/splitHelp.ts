@@ -1,8 +1,9 @@
-import type { CommandInteraction } from "discord.js";
 import type IPointService from "@utils/pointUtils/IPointService";
+import type { CommandInteraction } from "discord.js";
 
-import { container } from "tsyringe";
 import { getString } from "@utils/stringRepo";
+import { container } from "tsyringe";
+import { replyHandler } from "@utils/replyHandler";
 
 const splitHelp = async (interaction: CommandInteraction) => {
 	if (!interaction.guild)
@@ -22,8 +23,13 @@ const splitHelp = async (interaction: CommandInteraction) => {
 		interaction.guild.id,
 	);
 
-	await interaction.reply(
-		`Gain points for recieving a drop and splitting with your clan mates, screenshot of loot and teammates names required as proof.\nRequires user to be an activated user\nPoint rewards: ${points_low}, ${points_medium} & ${points_high}`,
+	await replyHandler(
+		getString("splits", "helpText", {
+			lowPoints: points_low,
+			mediumPoints: points_medium,
+			highPoints: points_high,
+		}),
+		interaction,
 	);
 };
 

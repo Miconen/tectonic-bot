@@ -1,5 +1,7 @@
 import type { SplitCache, SplitData } from "@typings/splitTypes.js";
 import type IPointService from "@utils/pointUtils/IPointService";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 
 import type { CommandInteraction, GuildMember } from "discord.js";
 import { container } from "tsyringe";
@@ -13,14 +15,13 @@ const splitHelper = async (
 	if (!interaction.channel) return;
 	if (!interaction.guild) return;
 
-	const guild = await pointService.pointsHandler(value, interaction.guild.id);
+	const points = await pointService.pointsHandler(value, interaction.guild.id);
 
-	const msg = `**${
-		(interaction.member as GuildMember).displayName
-	}** has submitted a request for ${guild} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
-	await interaction.reply({
-		content: msg,
-	});
+	const username = (interaction.member as GuildMember).displayName;
+	await replyHandler(
+		getString("splits", "requestSubmitted", { username, points }),
+		interaction,
+	);
 
 	const message = await interaction.fetchReply();
 
@@ -28,7 +29,7 @@ const splitHelper = async (
 		member: interaction.member as GuildMember,
 		channel: interaction.channel.id,
 		message: message.id,
-		points: guild,
+		points,
 		timestamp: Date.now(),
 	};
 

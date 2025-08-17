@@ -4,6 +4,7 @@ import { Requests } from "@requests/main.js";
 
 import { container } from "tsyringe";
 import { getString } from "@utils/stringRepo";
+import { replyHandler } from "@utils/replyHandler";
 
 const pointsHelper = async (
 	user: GuildMember | null,
@@ -11,7 +12,7 @@ const pointsHelper = async (
 ) => {
 	const rankService = container.resolve<IRankService>("RankService");
 	if (!interaction.guild)
-		return await interaction.reply(getString("errors", "noGuild"));
+		return await replyHandler(getString("errors", "noGuild"), interaction);
 
 	const targetUser = user?.user?.id ?? interaction.user.id ?? "0";
 	const targetUserName =
@@ -24,8 +25,10 @@ const pointsHelper = async (
 		user_id: targetUser,
 	});
 	if (res.error) {
-		const response = `❌ ${targetUserName} is not activated.`;
-		return await interaction.reply(response);
+		return await replyHandler(
+			getString("accounts", "notActivated", { username: targetUserName }),
+			interaction,
+		);
 	}
 
 	if (!res.data) {
@@ -45,7 +48,7 @@ const pointsHelper = async (
 	if (rankService.getRankByPoints(points) !== "zenyte")
 		response += `\n${nextRankIcon} Points to next level: ${nextRankUntil}`;
 
-	return await interaction.reply(response);
+	return await replyHandler(response, interaction);
 };
 
 export default pointsHelper;

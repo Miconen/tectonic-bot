@@ -81,13 +81,13 @@ const strings: StringRepository = {
 		request: (args) =>
 			`# Achievement Request\n\nUser: ${args.username}\nRSN: ${args.rsn}\nAchievement: ${args.achievement}`,
 		granted: (args) =>
-			`✔ Granted achievement **${args.achievement}** to **${args.username}**.`,
+			`✔ Granted achievement **${args.achievement}** to **${args.username}** (${args.rsn}).`,
 		removed: (args) =>
-			`✔ Removed achievement **${args.achievement}** from **${args.username}**.`,
+			`✔ Removed achievement **${args.achievement}** from **${args.username}** (${args.rsn}.`,
 		alreadyHas: (args) =>
 			`❌ **${args.username}** already has achievement **${args.achievement}**.`,
 		notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
-		userNotFound: (args) => `❌ User not found for achievement operation.`,
+		userNotFound: (args) => "❌ User not found for achievement operation.",
 		requestSubmitted: (args) =>
 			`Achievement request submitted for **${args.achievement}**. Please wait for admin approval.`,
 	},

@@ -1,3 +1,5 @@
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction } from "discord.js";
 import { Discord, Slash, SlashGroup } from "discordx";
 import pointsHelp from "./func/pointsHelp.js";
@@ -13,9 +15,7 @@ class Help {
 		description: "Information about all commands",
 	})
 	async commands(interaction: CommandInteraction) {
-		await interaction.reply(
-			`Information on how to use the bot along with it's commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands`,
-		);
+		await replyHandler(getString("help", "commandsInfo"), interaction);
 	}
 
 	@Slash({

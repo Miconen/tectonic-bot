@@ -1,4 +1,5 @@
 import type IPointService from "@utils/pointUtils/IPointService";
+import { replyHandler } from "@utils/replyHandler";
 import type { CommandInteraction } from "discord.js";
 
 import { container } from "tsyringe";
@@ -25,7 +26,7 @@ const pointsHelp = async (interaction: CommandInteraction) => {
 	response.push("**Forum**:");
 	response.push(`Bumping: ${pointService.pointRewards.get("forum_bump")}`);
 
-	await interaction.reply(response.join("\n"));
+	await replyHandler(response.join("\n"), interaction);
 };
 
 export default pointsHelp;
