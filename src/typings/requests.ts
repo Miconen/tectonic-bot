@@ -1,19 +1,30 @@
-export type ApiErrorBody = {
+export type GenericError = {
 	code: number;
 	name: string;
 	message: string;
 };
+
+export type ValidationError = {
+	details: ValidationErrorBody[];
+} & GenericError;
+
+export type ValidationErrorBody = {
+	field: string;
+	value: unknown;
+	tag: string;
+	message: string;
+};
+
+export type ErrorResponse = {
+	error: true;
+	status: number;
+} & (GenericError | ValidationError);
 
 export type SuccessResponse<T> = {
 	error: false;
 	status: number;
 	data: T;
 };
-
-export type ErrorResponse = {
-	error: true;
-	status: number;
-} & ApiErrorBody;
 
 export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 

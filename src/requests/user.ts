@@ -46,7 +46,7 @@ export async function createUser(
 	rsn: string,
 ) {
 	const url = `guilds/${guild_id}/users`;
-	const options = { method: "POST", body: JSON.stringify({ rsn, user_id }) };
+	const options = { method: "POST", body: JSON.stringify({ user_id, rsn }) };
 	const status = await fetchData(url, options);
 
 	return status;

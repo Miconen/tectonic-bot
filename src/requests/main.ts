@@ -3,7 +3,11 @@ import * as Guild from "@requests/guild";
 import * as General from "@requests/general";
 import * as Wom from "@requests/wom";
 import { HTTPError } from "discord.js";
-import type { ApiErrorBody, ApiResponse } from "@typings/requests";
+import type {
+	GenericError,
+	ApiResponse,
+	ValidationError,
+} from "@typings/requests";
 import { pino } from "pino";
 
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
@@ -97,13 +101,12 @@ export async function fetchData<T>(
 
 		// Handle non-successful status codes
 		if (!response.ok) {
-			const errorBody = data as ApiErrorBody;
+			const errorBody = data as GenericError | ValidationError;
+
 			const error: ApiResponse<T> = {
 				error: true,
 				status,
-				code: errorBody.code,
-				name: errorBody.name,
-				message: errorBody.message,
+				...errorBody,
 			};
 
 			logger.error(error, "Request error");

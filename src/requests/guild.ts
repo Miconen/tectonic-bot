@@ -66,7 +66,7 @@ export async function newTime(guild_id: string, query: NewTime) {
 	const { user_ids, time, boss_name } = query;
 	const options = {
 		method: "POST",
-		body: JSON.stringify({ guild_id, user_ids, time, boss_name }),
+		body: JSON.stringify({ user_ids, time, boss_name }),
 	};
 	const status = await fetchData<TimeResponse>(url, options);
 
