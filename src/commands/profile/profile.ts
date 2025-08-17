@@ -39,6 +39,7 @@ class profile {
 					param2: "rsn",
 				}),
 				interaction,
+				{ ephemeral: true },
 			);
 		}
 

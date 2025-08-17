@@ -12,7 +12,9 @@ export const IsHealthy: GuardFunction<CommandInteraction> = async (
 	const healthy = await checkHealth();
 
 	if (!healthy) {
-		return await replyHandler(getString("errors", "apiHealth"), interaction);
+		return await replyHandler(getString("errors", "apiHealth"), interaction, {
+			ephemeral: true,
+		});
 	}
 
 	return await next();

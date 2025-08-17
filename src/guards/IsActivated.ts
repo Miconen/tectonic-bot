@@ -24,6 +24,7 @@ function IsActivated(target = "player") {
 			return await replyHandler(
 				getString("errors", "parameterMissing", { parameter: "players" }),
 				interaction,
+				{ ephemeral: true },
 			);
 
 		for (const option of options) {
@@ -67,11 +68,13 @@ function IsActivated(target = "player") {
 			return await replyHandler(
 				getString("errors", "fetchFailed", { resource: "users" }),
 				interaction,
+				{ ephemeral: true },
 			);
 		if (!res.data.length)
 			return await replyHandler(
 				getString("errors", "fetchFailed", { resource: "users" }),
 				interaction,
+				{ ephemeral: true },
 			);
 
 		const existingUsers = res.data;
@@ -93,6 +96,7 @@ function IsActivated(target = "player") {
 			return await replyHandler(
 				getString("errors", "commandFailed", { reason: warning }),
 				interaction,
+				{ ephemeral: true },
 			);
 		}
 

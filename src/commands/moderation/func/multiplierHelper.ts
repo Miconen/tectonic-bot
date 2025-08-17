@@ -8,7 +8,9 @@ const multiplierHelper = async (
 	interaction: CommandInteraction,
 ) => {
 	if (!interaction.guild) {
-		await replyHandler(getString("errors", "noGuild"), interaction);
+		await replyHandler(getString("errors", "noGuild"), interaction, {
+			ephemeral: true,
+		});
 		return;
 	}
 
@@ -17,7 +19,9 @@ const multiplierHelper = async (
 	});
 
 	if (res.error) {
-		await replyHandler(getString("errors", "internalError"), interaction);
+		await replyHandler(getString("errors", "internalError"), interaction, {
+			ephemeral: true,
+		});
 		return;
 	}
 

@@ -28,7 +28,9 @@ export const IsAdmin: GuardFunction<
 	} else {
 		console.log("↳ Denied");
 
-		await replyHandler(getString("permissions", "adminRequired"), interaction);
+		await replyHandler(getString("permissions", "adminRequired"), interaction, {
+			ephemeral: true,
+		});
 	}
 };
 

@@ -83,6 +83,7 @@ class split {
 			return await replyHandler(
 				getString("errors", "internalError"),
 				interaction,
+				{ ephemeral: true },
 			);
 
 		const response = await acceptHelper(interaction, split);
@@ -113,6 +114,7 @@ class split {
 			return await replyHandler(
 				getString("errors", "internalError"),
 				interaction,
+				{ ephemeral: true },
 			);
 
 		const response = await denyHelper(interaction, split);
@@ -143,6 +145,7 @@ class split {
 			return await replyHandler(
 				getString("errors", "internalError"),
 				interaction,
+				{ ephemeral: true },
 			);
 
 		const channel = (await interaction.client.channels.fetch(
