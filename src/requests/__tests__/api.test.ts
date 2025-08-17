@@ -66,8 +66,8 @@ const points_queries: PointsParam[] = [
 ];
 
 const achievements: AchievementParam[] = [
-	{ achievement: "Maxed", type: "user_id", user_id: user },
-	{ achievement: "Maxed", type: "rsn", rsn: rsn.name },
+	{ achievement: "Maxed", guild_id: guild, type: "user_id", user_id: user },
+	{ achievement: "Grandmaster", guild_id: guild, type: "rsn", rsn: rsn.name },
 ];
 
 // Helper functions
@@ -108,25 +108,25 @@ function testEndpoint(
 	expectedStatus: number | number[] = 200,
 ) {
 	// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-	it(description, async function () {
+	it(description, async function() {
 		const res = await apiCall();
 		expectSuccess(res, expectedStatus);
 	});
 }
 
-describe("API Tests", function () {
+describe("API Tests", function() {
 	// Increase timeout for all tests due to external API calls
-	this.timeout(10000);
+	this.timeout(20000);
 
 	// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-	after(async function () {
+	after(async function() {
 		await clearData();
 	});
 
-	describe("POST Endpoints", function () {
-		describe("Guild Endpoints", function () {
+	describe("POST Endpoints", function() {
+		describe("Guild Endpoints", function() {
 			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-			before(async function () {
+			before(async function() {
 				await clearData();
 			});
 
@@ -138,7 +138,7 @@ describe("API Tests", function () {
 		});
 
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		describe("User Endpoints", function () {
+		describe("User Endpoints", function() {
 			testEndpoint(
 				"should successfully create a user",
 				() => Requests.createUser(guild, user, rsn.name),
@@ -153,10 +153,16 @@ describe("API Tests", function () {
 		});
 
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		describe("Generic Endpoints", function () {
+		describe("Generic Endpoints", function() {
 			testEndpoint(
-				"should successfully give achievement",
+				"should successfully give achievement by user id",
 				() => Requests.giveAchievement(achievements[0]),
+				204,
+			);
+
+			testEndpoint(
+				"should successfully give achievement by user rsn",
+				() => Requests.giveAchievement(achievements[1]),
 				204,
 			);
 
@@ -177,15 +183,15 @@ describe("API Tests", function () {
 		});
 	});
 
-	describe("GET Endpoints", function () {
+	describe("GET Endpoints", function() {
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		before(async function () {
+		before(async function() {
 			await clearData();
 			await fillData();
 		});
 
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		describe("Guild endpoints", function () {
+		describe("Guild endpoints", function() {
 			const guildEndpoints = [
 				{ desc: "return the guild", call: () => Requests.getGuild(guild) },
 				{ desc: "get guild times", call: () => Requests.getGuildTimes(guild) },
@@ -199,7 +205,7 @@ describe("API Tests", function () {
 		});
 
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		describe("User endpoints", function () {
+		describe("User endpoints", function() {
 			testEndpoint("should successfully return the leaderboard", () =>
 				Requests.getLeaderboard(guild),
 			);
@@ -231,7 +237,7 @@ describe("API Tests", function () {
 		});
 
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		describe("Generic endpoints", function () {
+		describe("Generic endpoints", function() {
 			const genericEndpoints = [
 				{
 					desc: "retrieve achievements",
@@ -257,23 +263,17 @@ describe("API Tests", function () {
 		});
 	});
 
-	describe("DELETE Endpoints", function () {
-		describe("User Endpoints", function () {
+	describe("DELETE Endpoints", function() {
+		describe("User Endpoints", function() {
 			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-			beforeEach(async function () {
+			beforeEach(async function() {
 				await clearData();
 				await fillData();
 			});
 
 			for (const query of user_queries) {
-				const queryType =
-					query.type === "user_id"
-						? "discord id"
-						: query.type === "wom"
-							? "wom id"
-							: "rsn";
 				testEndpoint(
-					`should successfully remove a user by ${queryType}`,
+					`should successfully remove a user by ${query.type}`,
 					() => Requests.removeUser(guild, query),
 					204,
 				);
@@ -286,29 +286,37 @@ describe("API Tests", function () {
 			);
 		});
 
-		describe("Generic Endpoints", function () {
+		describe("Generic Endpoints", function() {
 			// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-			beforeEach(async function () {
+			before(async function() {
 				await clearData();
 				await fillData();
+				await Requests.giveAchievement(achievements[0]);
+				await Requests.giveAchievement(achievements[1]);
 			});
 
 			testEndpoint(
-				"should successfully remove achievement",
+				"should successfully remove achievement by user id",
 				() => Requests.removeAchievement(achievements[0]),
+				204,
+			);
+
+			testEndpoint(
+				"should successfully remove achievement by user rsn",
+				() => Requests.removeAchievement(achievements[1]),
 				204,
 			);
 		});
 	});
 
-	describe("PUT Endpoints", function () {
+	describe("PUT Endpoints", function() {
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		before(async function () {
+		before(async function() {
 			await clearData();
 			await fillData();
 		});
 
-		describe("Points Endpoints", function () {
+		describe("Points Endpoints", function() {
 			points_queries.forEach((query, _) => {
 				const type = query.points.type === "custom" ? "custom value" : "preset";
 				testEndpoint(
@@ -327,7 +335,7 @@ describe("API Tests", function () {
 		});
 
 		// biome-ignore lint/complexity/useArrowFunction: Mocha discourages arrow functions
-		describe("Guild Endpoints", function () {
+		describe("Guild Endpoints", function() {
 			testEndpoint(
 				"should successfully update the guild",
 				() => Requests.updateGuild(guild, guild_update),

@@ -114,12 +114,12 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-	| "event_participation"
-	| "event_hosting"
-	| "clan_pb"
-	| "split_low"
-	| "split_medium"
-	| "split_high";
+		| "event_participation"
+		| "event_hosting"
+		| "clan_pb"
+		| "split_low"
+		| "split_medium"
+		| "split_high";
 };
 
 export type Points = CustomPoints | PresetPoints;
@@ -206,7 +206,10 @@ export type Achievement = {
 	order: number;
 };
 
-export type AchievementParam = { achievement: string } & (UserById | UserByRsn);
+export type AchievementParam = { achievement: string; guild_id: string } & (
+	| UserById
+	| UserByRsn
+);
 
 export type EventIndividualWinParam = {
 	type: "individual";
