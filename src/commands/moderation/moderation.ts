@@ -20,13 +20,13 @@ class Moderation {
 			required: true,
 			type: ApplicationCommandOptionType.User,
 		})
+		user: GuildMember,
 		@SlashOption({
 			name: "amount",
 			description: "Amount of points to give",
 			required: true,
 			type: ApplicationCommandOptionType.Number,
 		})
-		user: GuildMember,
 		addedPoints: number,
 		interaction: CommandInteraction,
 	) {
