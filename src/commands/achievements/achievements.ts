@@ -7,12 +7,12 @@ import {
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
-import { giveAchievementHelper } from "./func/achievementsHelper";
+import { giveAchievementHelper } from "./func/giveAchievement";
 import {
 	achievementAddPicker,
-	achievementPicker,
 	achievementRemovePicker,
 } from "@utils/pickers.js";
+import { removeAchievementHelper } from "./func/removeAchievement";
 
 @Discord()
 class achievement {
@@ -89,12 +89,6 @@ class achievement {
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await replyHandler(
-			getString("achievements", "removed", {
-				achievement,
-				username: user.displayName,
-			}),
-			interaction,
-		);
+		await removeAchievementHelper(user, interaction, achievement);
 	}
 }
