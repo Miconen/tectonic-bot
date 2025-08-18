@@ -1,5 +1,5 @@
 import { Requests } from "@requests/main";
-import type { DetailedUser } from "@typings/requests";
+import type { Achievement, DetailedUser } from "@typings/requests";
 import { Achievements } from "@utils/achievements";
 import type { AutocompleteInteraction } from "discord.js";
 import { TTLCache } from "@utils/ttlCache";
@@ -88,8 +88,25 @@ async function safeRespond(
 	}
 }
 
+export async function achievementAddPicker(
+	interaction: AutocompleteInteraction,
+): Promise<void> {
+	const picker = (u: Achievement[], a: Achievement) =>
+		!u.some((ua) => ua.name === a.name);
+	achievementPicker(interaction, picker);
+}
+
+export async function achievementRemovePicker(
+	interaction: AutocompleteInteraction,
+): Promise<void> {
+	const picker = (u: Achievement[], a: Achievement) =>
+		u.some((ua) => ua.name === a.name);
+	achievementPicker(interaction, picker);
+}
+
 export async function achievementPicker(
 	interaction: AutocompleteInteraction,
+	picker: (u: Achievement[], a: Achievement) => boolean,
 ): Promise<void> {
 	if (!interaction.guild?.id) {
 		await safeRespond(interaction, []);
@@ -108,9 +125,7 @@ export async function achievementPicker(
 		return;
 	}
 
-	const achievements = Achievements.filter(
-		(a) => !user.achievements.some((ua) => ua.name === a.name),
-	);
+	const achievements = Achievements.filter((a) => picker(user.achievements, a));
 
 	const options = achievements.map((achievement) => ({
 		name: achievement.name,

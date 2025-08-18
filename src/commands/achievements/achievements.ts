@@ -8,7 +8,11 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { giveAchievementHelper } from "./func/achievementsHelper";
-import { achievementPicker, invalidateUserCache } from "@utils/pickers.js";
+import {
+	achievementAddPicker,
+	achievementPicker,
+	achievementRemovePicker,
+} from "@utils/pickers.js";
 
 @Discord()
 class achievement {
@@ -22,7 +26,7 @@ class achievement {
 			description: "Achievement to request",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: achievementPicker,
+			autocomplete: achievementAddPicker,
 		})
 		achievement: string,
 		interaction: CommandInteraction,
@@ -54,7 +58,7 @@ class achievement {
 			description: "Achievement to grant to user",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: achievementPicker,
+			autocomplete: achievementAddPicker,
 		})
 		achievement: string,
 		interaction: CommandInteraction,
@@ -80,7 +84,7 @@ class achievement {
 			description: "Achievement to remove",
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			autocomplete: achievementPicker,
+			autocomplete: achievementRemovePicker,
 		})
 		achievement: string,
 		interaction: CommandInteraction,
