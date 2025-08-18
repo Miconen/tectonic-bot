@@ -5,7 +5,7 @@ import {
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import { teamPicker } from "./func/autocomplete";
+import { teamPicker } from "@utils/pickers.js";
 import { winnerHelper } from "./func/winnerHelper";
 import { winnerTeamHelper } from "./func/winnerTeamHelper";
 

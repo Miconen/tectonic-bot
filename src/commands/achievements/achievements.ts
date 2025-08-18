@@ -7,7 +7,8 @@ import {
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
-import { achievementPicker, rsnPicker } from "./func/autocomplete";
+import { giveAchievementHelper } from "./func/achievementsHelper";
+import { achievementPicker } from "@utils/pickers.js";
 
 @Discord()
 class achievement {
@@ -16,14 +17,6 @@ class achievement {
 		description: "Submit an achievement request",
 	})
 	async request(
-		@SlashOption({
-			name: "rsn",
-			description: "RSN of the account",
-			required: true,
-			type: ApplicationCommandOptionType.String,
-			autocomplete: rsnPicker,
-		})
-		rsn: string,
 		@SlashOption({
 			name: "achievement",
 			description: "Achievement to request",
@@ -37,7 +30,6 @@ class achievement {
 		return await replyHandler(
 			getString("achievements", "request", {
 				username: interaction.user.username,
-				rsn,
 				achievement,
 			}),
 			interaction,
@@ -58,14 +50,6 @@ class achievement {
 		})
 		user: GuildMember,
 		@SlashOption({
-			name: "rsn",
-			description: "RSN of the user",
-			required: true,
-			type: ApplicationCommandOptionType.String,
-			autocomplete: rsnPicker,
-		})
-		rsn: string,
-		@SlashOption({
 			name: "achievement",
 			description: "Achievement to grant to user",
 			required: true,
@@ -75,14 +59,7 @@ class achievement {
 		achievement: string,
 		interaction: CommandInteraction,
 	) {
-		return await replyHandler(
-			getString("achievements", "granted", {
-				achievement,
-				username: user.displayName,
-				rsn,
-			}),
-			interaction,
-		);
+		await giveAchievementHelper(user, interaction, achievement);
 	}
 
 	@Slash({
@@ -99,14 +76,6 @@ class achievement {
 		})
 		user: GuildMember,
 		@SlashOption({
-			name: "rsn",
-			description: "RSN of the user",
-			required: true,
-			type: ApplicationCommandOptionType.String,
-			autocomplete: rsnPicker,
-		})
-		rsn: string,
-		@SlashOption({
 			name: "achievement",
 			description: "Achievement to remove",
 			required: true,
@@ -120,7 +89,6 @@ class achievement {
 			getString("achievements", "removed", {
 				achievement,
 				username: user.displayName,
-				rsn,
 			}),
 			interaction,
 		);
