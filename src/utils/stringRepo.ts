@@ -79,11 +79,11 @@ const strings: StringRepository = {
 
 	achievements: {
 		request: (args) =>
-			`# Achievement Request\n\nUser: ${args.username}\nRSN: ${args.rsn}\nAchievement: ${args.achievement}`,
+			`# Achievement Request\n\nUser: ${args.username}\nAchievement: ${args.achievement}`,
 		granted: (args) =>
-			`✔ Granted achievement **${args.achievement}** to **${args.username}** (${args.rsn}).`,
+			`✔ Granted achievement **${args.achievement}** to **${args.username}**.`,
 		removed: (args) =>
-			`✔ Removed achievement **${args.achievement}** from **${args.username}** (${args.rsn}.`,
+			`✔ Removed achievement **${args.achievement}** from **${args.username}**.`,
 		alreadyHas: (args) =>
 			`❌ **${args.username}** already has achievement **${args.achievement}**.`,
 		notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
