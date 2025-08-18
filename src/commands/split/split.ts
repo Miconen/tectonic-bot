@@ -1,5 +1,6 @@
 import IsAdmin from "@guards/IsAdmin.js";
 import type { SplitCache, SplitData } from "@typings/splitTypes.js";
+import { getPoints } from "@utils/pointSources.js";
 import type IPointService from "@utils/pointUtils/IPointService";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
@@ -56,9 +57,10 @@ class split {
 		value: string,
 		interaction: CommandInteraction,
 	) {
-		const pointService = container.resolve<IPointService>("PointService");
+		if (!interaction.guild)
+			return await replyHandler(getString("errors", "noGuild"), interaction);
 
-		const rewardValue = pointService.pointRewards.get(value) ?? 0;
+		const rewardValue = (await getPoints(value, interaction.guild.id)) ?? 0;
 		await splitHelper(rewardValue, interaction, state);
 	}
 
@@ -156,6 +158,6 @@ class split {
 
 		const response = `# Split: ${split.member.displayName}\nPoints: ${split.points} points\nCreated: ${formatTimeAgo(split.timestamp)}\nMessage: ${message.url}`;
 
-		return await replyHandler(response, interaction);
+		return await replyHandler(response, interaction, { ephemeral: true });
 	}
 }

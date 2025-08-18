@@ -4,6 +4,7 @@ import { replyHandler } from "@utils/replyHandler.js";
 
 import { container } from "tsyringe";
 import { getString } from "@utils/stringRepo";
+import { getPoints } from "@utils/pointSources";
 
 const eventHelper = async (
 	users: Role,
@@ -22,17 +23,14 @@ const eventHelper = async (
 
 	await interaction.deferReply();
 
-	const addedPoints = await pointService.pointsHandler(
-		amount,
-		interaction.guild.id,
-	);
+	const points = await getPoints(amount, interaction.guild.id);
 
 	// Populate the guild members cache for this scope
 	await interaction.guild.members.fetch();
 
 	// Handle giving of points, returns a string to be sent as a message.
 	const pointsResponse = await pointService.givePointsToMultiple(
-		addedPoints,
+		points,
 		users.members,
 		interaction,
 	);

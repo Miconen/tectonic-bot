@@ -1,7 +1,8 @@
 import { Requests } from "@requests/main";
 import type { Achievement } from "@typings/requests";
+import { TTLCache } from "@utils/ttlCache";
 
-export let Achievements: Achievement[] = [];
+export const Achievements = new TTLCache<Achievement>(null);
 
 const res = await Requests.getAchievements();
 
@@ -15,4 +16,6 @@ if (!res.data.length) {
 	);
 }
 
-Achievements = res.data;
+for (const achievement of res.data) {
+	Achievements.set(achievement.name, achievement);
+}

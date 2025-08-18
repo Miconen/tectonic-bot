@@ -2,6 +2,7 @@ import type { CommandInteraction } from "discord.js";
 import { Requests } from "@requests/main.js";
 import { getString } from "@utils/stringRepo";
 import { replyHandler } from "@utils/replyHandler";
+import { Multipliers } from "@utils/pointSources";
 
 const multiplierHelper = async (
 	multiplier: number,
@@ -24,6 +25,9 @@ const multiplierHelper = async (
 		});
 		return;
 	}
+
+	// Update multiplier cache
+	Multipliers.set(interaction.guild.id, multiplier);
 
 	await replyHandler(
 		getString("moderation", "multiplierSet", { multiplier }),

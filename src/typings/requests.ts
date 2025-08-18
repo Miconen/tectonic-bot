@@ -126,12 +126,12 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-	| "event_participation"
-	| "event_hosting"
-	| "clan_pb"
-	| "split_low"
-	| "split_medium"
-	| "split_high";
+		| "event_participation"
+		| "event_hosting"
+		| "clan_pb"
+		| "split_low"
+		| "split_medium"
+		| "split_high";
 };
 
 export type Points = CustomPoints | PresetPoints;
@@ -198,6 +198,11 @@ export type Team = {
 	run_id: number;
 	user_id: string;
 	guild_id: string;
+};
+
+export type GuildPointSource = {
+	source: string;
+	points: number;
 };
 
 export type GuildTimes = {

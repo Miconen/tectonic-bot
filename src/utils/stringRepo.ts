@@ -213,6 +213,7 @@ const strings: StringRepository = {
 
 	errors: {
 		noGuild: "This command must be used in a server.",
+		noChannel: "This command must be used in a channel.",
 		noMember: "Could not retrieve member information.",
 		competitionError: "Failed to retrieve competition data.",
 		givingPoints: "Error giving points. Please try again.",

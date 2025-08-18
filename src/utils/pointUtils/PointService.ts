@@ -8,41 +8,7 @@ import type IPointService from "./IPointService.js";
 @singleton()
 @injectable()
 export class PointService implements IPointService {
-	readonly pointRewards: Map<string, number>;
-	private pointMultiplierCache: Map<string, number>;
-
-	constructor(@inject("RankService") private rankService: IRankService) {
-		this.pointRewards = new Map([
-			["event_participation", 5],
-			["event_hosting", 10],
-			["forum_bump", 5],
-			["learner_half", 5],
-			["learner_full", 10],
-			["split_low", 10],
-			["split_medium", 20],
-			["split_high", 30],
-		]);
-
-		this.pointMultiplierCache = new Map();
-	}
-
-	async pointsHandler(points: number, guild_id: string) {
-		// Check if the multiplier is already cached
-		if (this.pointMultiplierCache.has(guild_id)) {
-			const cachedMultiplier = this.pointMultiplierCache.get(guild_id);
-			if (!cachedMultiplier) return points;
-			return points * cachedMultiplier;
-		}
-
-		const res = await Requests.getGuild(guild_id);
-		if (res.error) return points;
-		const multi = res.data.multiplier;
-		if (!multi) return points;
-		if (Number.isNaN(multi) || multi === 0) return points;
-
-		this.pointMultiplierCache.set(guild_id, multi);
-		return points * multi;
-	}
+	constructor(@inject("RankService") private rankService: IRankService) {}
 
 	async givePointsToMultiple(
 		addedPoints: number,

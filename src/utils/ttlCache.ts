@@ -1,10 +1,9 @@
-// Generic time to live cache implementation
 export class TTLCache<T> {
 	private cache = new Map<string, T>();
-	private ttl: number;
+	private ttl: number | null;
 
-	constructor(ttlMs: number = 30 * 1000) {
-		this.ttl = ttlMs;
+	constructor(ttlMs: number | null = 30 * 1000) {
+		this.ttl = ttlMs; // null = never expire
 	}
 
 	get(key: string): T | undefined {
@@ -13,7 +12,9 @@ export class TTLCache<T> {
 
 	set(key: string, value: T): void {
 		this.cache.set(key, value);
-		setTimeout(() => this.cache.delete(key), this.ttl);
+		if (this.ttl !== null) {
+			setTimeout(() => this.cache.delete(key), this.ttl);
+		}
 	}
 
 	has(key: string): boolean {
@@ -22,5 +23,13 @@ export class TTLCache<T> {
 
 	delete(key: string): boolean {
 		return this.cache.delete(key);
+	}
+
+	[Symbol.iterator](): IterableIterator<[string, T]> {
+		return this.cache[Symbol.iterator]();
+	}
+
+	toArray(): T[] {
+		return Array.from(this.cache.values());
 	}
 }

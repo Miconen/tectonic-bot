@@ -4,6 +4,7 @@ import type {
 	CompetitionResponse,
 	EventWinParam,
 	Guild,
+	GuildPointSource,
 	GuildTimes,
 	GuildUpdate,
 	NewTime,
@@ -118,4 +119,11 @@ export async function getEvents(guild_id: string) {
 	const endpoint = `guilds/${guild_id}/events`;
 
 	return await fetchData<Event[]>(endpoint);
+}
+
+export async function getGuildPointSources(guild_id: string) {
+	const url = `guilds/${guild_id}/points`;
+	const status = await fetchData<GuildPointSource[]>(url);
+
+	return status;
 }

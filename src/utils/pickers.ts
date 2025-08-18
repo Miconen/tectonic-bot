@@ -125,7 +125,9 @@ export async function achievementPicker(
 		return;
 	}
 
-	const achievements = Achievements.filter((a) => picker(user.achievements, a));
+	const achievements = Achievements.toArray().filter((a) =>
+		picker(user.achievements, a),
+	);
 
 	const options = achievements.map((achievement) => ({
 		name: achievement.name,
