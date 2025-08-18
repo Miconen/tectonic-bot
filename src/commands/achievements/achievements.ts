@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { giveAchievementHelper } from "./func/achievementsHelper";
-import { achievementPicker } from "@utils/pickers.js";
+import { achievementPicker, invalidateUserCache } from "@utils/pickers.js";
 
 @Discord()
 class achievement {

@@ -2,114 +2,208 @@ import { Requests } from "@requests/main";
 import type { DetailedUser } from "@typings/requests";
 import { Achievements } from "@utils/achievements";
 import type { AutocompleteInteraction } from "discord.js";
+import { TTLCache } from "@utils/ttlCache";
 
-const userCache = new Map<string, DetailedUser>(); // simple in-memory cache
+const userCache = new TTLCache<DetailedUser>();
+const teamCache = new TTLCache<string[]>();
 
-export async function fetchUser(guildId: string, userId: string) {
-	if (userCache.has(userId)) {
+export async function fetchUser(
+	guildId: string,
+	userId: string,
+): Promise<DetailedUser | undefined> {
+	const cacheKey = `${guildId}-${userId}`;
+
+	if (userCache.has(cacheKey)) {
 		console.log(`Hit autocomplete cache for user ${userId}`);
-		return userCache.get(userId);
+		return userCache.get(cacheKey);
 	}
 
-	const user = await Requests.getUser(guildId, {
-		type: "user_id",
-		user_id: userId,
-	});
+	try {
+		const response = await Requests.getUser(guildId, {
+			type: "user_id",
+			user_id: userId,
+		});
 
-	if (user.error) return;
-	if (!user.data) return;
-	userCache.set(userId, user.data);
+		if (response.error || !response.data) {
+			console.warn(`Failed to fetch user ${userId}:`, response.error);
+			return undefined;
+		}
 
-	setTimeout(() => userCache.delete(userId), 30 * 1000);
-	return user.data;
+		userCache.set(cacheKey, response.data);
+		return response.data;
+	} catch (error) {
+		console.error(`Error fetching user ${userId}:`, error);
+		return undefined;
+	}
 }
 
-export async function achievementPicker(interaction: AutocompleteInteraction) {
-	if (!interaction.guild?.id) return;
+export async function fetchTeams(
+	competitionId: number,
+): Promise<string[] | undefined> {
+	const cacheKey = competitionId.toString();
 
-	const options = Achievements.map((a) => ({
-		name: a.name,
-		value: a.name,
-	}));
+	if (teamCache.has(cacheKey)) {
+		console.log(`Hit team autocomplete cache for competition ${competitionId}`);
+		return teamCache.get(cacheKey);
+	}
 
-	// Respond with the options (limit to 25 as per Discord's requirements)
-	interaction.respond(options.slice(0, 25));
+	try {
+		const response = await Requests.getCompetitionTeams(competitionId);
+
+		if (response.error || !response.data) {
+			console.warn(
+				`Failed to fetch teams for competition ${competitionId}:`,
+				response.error,
+			);
+			return undefined;
+		}
+
+		teamCache.set(cacheKey, response.data);
+		return response.data;
+	} catch (error) {
+		console.error(
+			`Error fetching teams for competition ${competitionId}:`,
+			error,
+		);
+		return undefined;
+	}
 }
 
-export async function rsnPicker(interaction: AutocompleteInteraction) {
-	if (!interaction.guild?.id) return;
+// Cache invalidation function for when user data changes
+export function invalidateUserCache(guildId: string, userId: string): void {
+	const cacheKey = `${guildId}-${userId}`;
+	userCache.delete(cacheKey);
+	console.log(`Invalidated user cache for ${userId} in guild ${guildId}`);
+}
+
+// Helper function to safely respond to autocomplete interactions
+async function safeRespond(
+	interaction: AutocompleteInteraction,
+	options: { name: string; value: string }[],
+): Promise<void> {
+	try {
+		await interaction.respond(options.slice(0, 25));
+	} catch (error) {
+		console.error("Error responding to autocomplete interaction:", error);
+	}
+}
+
+export async function achievementPicker(
+	interaction: AutocompleteInteraction,
+): Promise<void> {
+	if (!interaction.guild?.id) {
+		await safeRespond(interaction, []);
+		return;
+	}
+
 	const id = interaction.options.get("username")?.value ?? interaction.user.id;
-	if (!id || typeof id !== "string") return;
+	if (!id || typeof id !== "string") {
+		await safeRespond(interaction, []);
+		return;
+	}
 
 	const user = await fetchUser(interaction.guild.id, id);
-
-	if (!user) return;
-
-	// Fix: Check if rsns exists and is an array, provide fallback
-	if (!user.rsns || !Array.isArray(user.rsns)) {
-		return interaction.respond([]);
+	if (!user || !user.achievements || !Array.isArray(user.achievements)) {
+		await safeRespond(interaction, []);
+		return;
 	}
 
-	let rsns = user.rsns;
+	const achievements = Achievements.filter(
+		(a) => !user.achievements.some((ua) => ua.name === a.name),
+	);
 
-	const query = interaction.options.getFocused(true).value.toLowerCase();
-	if (query && query.trim() !== "") {
-		// Additional safety check before filtering
-		rsns = user.rsns.filter((rsn) => {
-			// Safety check: ensure rsn object has rsn property
-			return rsn.rsn?.toLowerCase().includes(query);
+	const options = achievements.map((achievement) => ({
+		name: achievement.name,
+		value: achievement.name,
+	}));
+
+	await safeRespond(interaction, options);
+}
+
+export async function rsnPicker(
+	interaction: AutocompleteInteraction,
+): Promise<void> {
+	if (!interaction.guild?.id) {
+		await safeRespond(interaction, []);
+		return;
+	}
+
+	const id = interaction.options.get("username")?.value ?? interaction.user.id;
+	if (!id || typeof id !== "string") {
+		await safeRespond(interaction, []);
+		return;
+	}
+
+	const user = await fetchUser(interaction.guild.id, id);
+	if (!user || !user.rsns || !Array.isArray(user.rsns)) {
+		await safeRespond(interaction, []);
+		return;
+	}
+
+	const query = interaction.options.getFocused(true).value.toLowerCase().trim();
+
+	let filteredRsns = user.rsns;
+	if (query) {
+		filteredRsns = user.rsns.filter((rsn) => {
+			// More defensive check for rsn object structure
+			return (
+				rsn &&
+				typeof rsn === "object" &&
+				"rsn" in rsn &&
+				typeof rsn.rsn === "string" &&
+				rsn.rsn.toLowerCase().includes(query)
+			);
 		});
 	}
 
-	// Additional safety check
-	if (!rsns || rsns.length === 0) {
+	if (!filteredRsns || filteredRsns.length === 0) {
 		console.log(`No RSNs found for user ${id} after filtering`);
-		return interaction.respond([]);
+		await safeRespond(interaction, []);
+		return;
 	}
 
-	// Convert Map entries to an array of autocomplete options
-	const options = rsns
+	const options = filteredRsns
 		.map((rsn) => ({
 			name: rsn.rsn,
 			value: rsn.rsn,
 		}))
-		.filter((option) => option.name && option.value); // Remove any invalid entries
+		.filter(
+			(option) =>
+				option.name &&
+				option.value &&
+				option.name.trim() !== "" &&
+				option.value.trim() !== "",
+		);
 
-	// Respond with the options (limit to 25 as per Discord's requirements)
-	interaction.respond(options.slice(0, 25));
+	await safeRespond(interaction, options);
 }
 
-const teamCache = new Map<number, string[]>(); // simple in-memory cache
-
-export async function fetchTeams(competitionId: number) {
-	if (teamCache.has(competitionId)) {
-		console.log(`Hit team autocomplete cache for user ${competitionId}`);
-		return teamCache.get(competitionId);
+export async function teamPicker(
+	interaction: AutocompleteInteraction,
+): Promise<void> {
+	if (!interaction.guild?.id) {
+		await safeRespond(interaction, []);
+		return;
 	}
 
-	const user = await Requests.getCompetitionTeams(competitionId);
-
-	if (user.error) return;
-	if (!user.data) return;
-	teamCache.set(competitionId, user.data);
-
-	setTimeout(() => teamCache.delete(competitionId), 30 * 1000);
-	return user.data;
-}
-
-export async function teamPicker(interaction: AutocompleteInteraction) {
-	if (!interaction.guild?.id) return;
 	const competitionId = interaction.options.get("competition")?.value;
-	if (!competitionId || typeof competitionId !== "number") return;
+	if (!competitionId || typeof competitionId !== "number") {
+		await safeRespond(interaction, []);
+		return;
+	}
 
 	const teams = await fetchTeams(competitionId);
-	if (!teams) return;
+	if (!teams || teams.length === 0) {
+		await safeRespond(interaction, []);
+		return;
+	}
 
-	const options = teams.map((team) => ({
-		name: team,
-		value: team,
-	}));
+	const options = teams
+		.filter((team) => team && typeof team === "string" && team.trim() !== "")
+		.map((team) => ({
+			name: team,
+			value: team,
+		}));
 
-	// Respond with the options (limit to 25 as per Discord's requirements)
-	interaction.respond(options.slice(0, 25));
+	await safeRespond(interaction, options);
 }

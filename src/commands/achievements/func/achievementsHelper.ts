@@ -1,5 +1,6 @@
 import { Requests } from "@requests/main";
 import type { AchievementParam } from "@typings/requests";
+import { invalidateUserCache } from "@utils/pickers";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, GuildMember } from "discord.js";
@@ -48,6 +49,8 @@ export const giveAchievementHelper = async (
 			interaction,
 		);
 	}
+
+	invalidateUserCache(interaction.guild.id, user.id);
 
 	return await replyHandler(
 		getString("achievements", "granted", {
