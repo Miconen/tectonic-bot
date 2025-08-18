@@ -92,6 +92,13 @@ const pointsHelper = async (
 		}
 	}
 
+	if (user.achievements.length) {
+		response += "\n# Achievements";
+		for (const achievement of user.achievements) {
+			response += `\n${achievement.discord_icon} - **${achievement.name}**`;
+		}
+	}
+
 	return response;
 };
 
