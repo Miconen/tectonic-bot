@@ -4,7 +4,7 @@ import {
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
-import IsAdmin from "../../guards/IsAdmin.js";
+import IsAdmin from "@guards/IsAdmin.js";
 import giveHelper from "./func/giveHelper.js";
 import multiplierHelper from "./func/multiplierHelper.js";
 import startHelper from "./func/startHelper.js";
@@ -20,7 +20,7 @@ class Moderation {
 			required: true,
 			type: ApplicationCommandOptionType.User,
 		})
-		user: GuildMember,
+		target: GuildMember,
 		@SlashOption({
 			name: "amount",
 			description: "Amount of points to give",
@@ -30,7 +30,7 @@ class Moderation {
 		addedPoints: number,
 		interaction: CommandInteraction,
 	) {
-		return giveHelper(user, addedPoints, interaction);
+		return giveHelper(target, addedPoints, interaction);
 	}
 
 	@Slash({

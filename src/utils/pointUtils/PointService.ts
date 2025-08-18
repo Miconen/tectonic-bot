@@ -8,18 +8,18 @@ import type IPointService from "./IPointService.js";
 @singleton()
 @injectable()
 export class PointService implements IPointService {
-	constructor(@inject("RankService") private rankService: IRankService) {}
+	constructor(@inject("RankService") private rankService: IRankService) { }
 
 	async givePointsToMultiple(
 		addedPoints: number,
-		users: Collection<string, GuildMember>,
+		targets: Collection<string, GuildMember>,
 		interaction: BaseInteraction,
 		extraPoints?: { [key: string]: number },
 	) {
 		if (!interaction.guild) return ["Error fetching guild ID"];
 		const response: string[] = [];
 
-		const user_ids = Array.from(users.keys());
+		const user_ids = Array.from(targets.keys());
 		const res = await Requests.givePointsToMultiple(interaction.guild.id, {
 			user_id: user_ids,
 			points: { type: "custom", amount: addedPoints },
@@ -30,13 +30,13 @@ export class PointService implements IPointService {
 		}
 
 		const givenTo = new Map<string, boolean>();
-		users.forEach((_, k) => {
+		targets.forEach((_, k) => {
 			givenTo.set(k, false);
 		});
 
 		for (const u of res.data) {
 			const newPoints = u.points;
-			const member = users.get(u.user_id);
+			const member = targets.get(u.user_id);
 
 			if (!member) return [`Couldn't get user for ID: ${u.user_id}`];
 
@@ -71,7 +71,7 @@ export class PointService implements IPointService {
 
 		givenTo.forEach((v, k) => {
 			if (v) return;
-			const member = users.get(k);
+			const member = targets.get(k);
 			if (!member) return;
 
 			response.push();
@@ -82,22 +82,20 @@ export class PointService implements IPointService {
 
 	async givePoints(
 		addedPoints: number,
-		user: GuildMember,
+		target: GuildMember,
 		interaction: BaseInteraction,
 	) {
 		if (!interaction.guild) return getString("errors", "noGuild");
 
-		const member = interaction.member as GuildMember;
-
 		const res = await Requests.givePoints(interaction.guild.id, {
-			user_id: user.id,
+			user_id: target.id,
 			points: { type: "custom", amount: addedPoints },
 		});
 
 		if (res.error) {
 			if (res.status === 404) {
 				return getString("accounts", "notActivated", {
-					username: member.displayName,
+					username: target.displayName,
 				});
 			}
 
@@ -106,7 +104,7 @@ export class PointService implements IPointService {
 
 		if (!res.data) {
 			return getString("accounts", "notActivated", {
-				username: member.displayName,
+				username: target.displayName,
 			});
 		}
 
@@ -114,10 +112,11 @@ export class PointService implements IPointService {
 			const newPoints = res.data.points;
 
 			const response: string[] = [];
+			const member = interaction.member as GuildMember;
 
 			response.push(
 				getString("ranks", "pointsGranted", {
-					username: member.displayName,
+					username: target.displayName,
 					pointsGiven: addedPoints,
 					grantedBy: member.displayName,
 					totalPoints: newPoints,
@@ -125,7 +124,7 @@ export class PointService implements IPointService {
 			);
 			const newRank = await this.rankService.rankUpHandler(
 				interaction,
-				user,
+				target,
 				newPoints - addedPoints,
 				newPoints,
 			);
@@ -136,7 +135,7 @@ export class PointService implements IPointService {
 			const newRankIcon = this.rankService.getIcon(newRank);
 			response.push(
 				getString("ranks", "levelUpMessage", {
-					username: member.displayName,
+					username: target.displayName,
 					icon: newRankIcon,
 					rankName: newRank,
 				}),

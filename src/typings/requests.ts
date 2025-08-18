@@ -42,16 +42,17 @@ export type Event = {
 	placement: number;
 };
 
-export type User = {
+export type SimpleUser = {
 	user_id: string;
 	guild_id: string;
 	points: number;
+};
+
+export type User = SimpleUser & {
 	rsns: RSN[];
 	events: Event[];
 	achievements: Achievement[];
 };
-
-export type SimpleUser = Omit<User, "rsns">;
 
 export type DetailedTime = {
 	time: number;
@@ -126,12 +127,12 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-		| "event_participation"
-		| "event_hosting"
-		| "clan_pb"
-		| "split_low"
-		| "split_medium"
-		| "split_high";
+	| "event_participation"
+	| "event_hosting"
+	| "clan_pb"
+	| "split_low"
+	| "split_medium"
+	| "split_high";
 };
 
 export type Points = CustomPoints | PresetPoints;
