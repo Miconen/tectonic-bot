@@ -1,9 +1,6 @@
 import { replyHandler } from "@utils/replyHandler";
-import type {
-	CommandInteraction,
-	GuildMember,
-	InteractionReplyOptions,
-} from "discord.js";
+import { getString } from "@utils/stringRepo";
+import type { CommandInteraction, GuildMember } from "discord.js";
 import type { GuardFunction } from "discordx";
 
 type ParseTimeResult = {
@@ -31,14 +28,22 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 
 	// Check if the time string has the correct number of parts
 	if (timeParts.length < 2 || timeParts.length > 3) {
-		errors.push("Invalid time format. Expected formats: H:M:S, M:S.Ms or M:S");
+		errors.push(
+			getString("validation", "invalidTimeFormat", {
+				error: "Expected formats: H:M:S, M:S.Ms or M:S",
+			}),
+		);
 		// Return early as we rely this not to be the case moving forward
 		return { errors };
 	}
 
 	// Check if hours and milliseconds coexist
 	if (timeParts.length === 3 && timeParts[2].includes(".")) {
-		errors.push("Invalid time format. Hours and milliseconds cannot coexist.");
+		errors.push(
+			getString("validation", "invalidTimeFormat", {
+				error: "Hours and milliseconds cannot coexist.",
+			}),
+		);
 		// Return early as we rely this not to be the case moving forward
 		return { errors };
 	}
@@ -59,24 +64,37 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 
 	// Check if minutes are valid numeric values
 	if (Number.isNaN(minutes)) {
-		errors.push("Invalid time format. Expected numeric value for minutes.");
+		errors.push(
+			getString("validation", "invalidTimeFormat", {
+				error: "Expected numeric value for minutes.",
+			}),
+		);
+		errors.push();
 	}
 	// Check if seconds are valid numeric values
 	if (Number.isNaN(seconds)) {
-		errors.push("Invalid time format. Expected numeric value for seconds.");
+		errors.push(
+			getString("validation", "invalidTimeFormat", {
+				error: "Expected numeric value for seconds.",
+			}),
+		);
 		console.log(seconds);
 	}
 
 	// Check if minutes fall within the valid range
 	if (minutes < MIN_TIMEUNIT || minutes > MAX_MINUTES) {
 		errors.push(
-			`Invalid time range. Minutes fall outside the valid range (${MIN_TIMEUNIT}-${MAX_MINUTES}).`,
+			getString("validation", "invalidTimeRange", {
+				error: `Minutes fall outside the valid range (${MIN_TIMEUNIT}-${MAX_MINUTES}).`,
+			}),
 		);
 	}
 	// Check if seconds fall within the valid range
 	if (seconds < MIN_TIMEUNIT || seconds > MAX_SECONDS) {
 		errors.push(
-			`Invalid time range. Seconds fall outside the valid range (${MIN_TIMEUNIT}-${MAX_SECONDS}).`,
+			getString("validation", "invalidTimeRange", {
+				error: `Seconds fall outside the valid range (${MIN_TIMEUNIT}-${MAX_SECONDS}).`,
+			}),
 		);
 	}
 
@@ -84,30 +102,39 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 	if (hours) {
 		// Check if hours is a valid number
 		if (Number.isNaN(hours)) {
-			errors.push("Invalid time format. Expected a numeric value for hours.");
+			errors.push(
+				getString("validation", "invalidTimeFormat", {
+					error: "Expected a numeric value for hours.",
+				}),
+			);
+			// Check if hours fall within the valid range
+			if (hours < MIN_TIMEUNIT || hours > MAX_HOURS) {
+				errors.push(
+					getString("validation", "invalidTimeFormat", {
+						error: `Hours fall outside the valid range (${MIN_TIMEUNIT}-${MAX_HOURS}).`,
+					}),
+				);
+			}
 		}
+		// Parse milliseconds if present
+		if (milliseconds) {
+			// Check if milliseconds is a valid number
+			if (Number.isNaN(milliseconds)) {
+				errors.push(
+					getString("validation", "invalidTimeFormat", {
+						error: "Expected a numeric value for milliseconds.",
+					}),
+				);
+			}
 
-		// Check if hours fall within the valid range
-		if (hours < MIN_TIMEUNIT || hours > MAX_HOURS) {
-			errors.push(
-				`Invalid time range. Hours fall outside the valid range (${MIN_TIMEUNIT}-${MAX_HOURS}).`,
-			);
-		}
-	}
-	// Parse milliseconds if present
-	if (milliseconds) {
-		// Check if milliseconds is a valid number
-		if (Number.isNaN(milliseconds)) {
-			errors.push(
-				"Invalid time format. Expected a numeric value for milliseconds.",
-			);
-		}
-
-		// Check if milliseconds fall within the valid range
-		if (milliseconds < MIN_TIMEUNIT || milliseconds > MAX_MILLISECONDS) {
-			errors.push(
-				`Invalid time range. Milliseconds fall outside the valid range (${MIN_TIMEUNIT}-${MAX_MILLISECONDS}).`,
-			);
+			// Check if milliseconds fall within the valid range
+			if (milliseconds < MIN_TIMEUNIT || milliseconds > MAX_MILLISECONDS) {
+				errors.push(
+					getString("validation", "invalidTimeFormat", {
+						error: `Milliseconds fall outside the valid range (${MIN_TIMEUNIT}-${MAX_MILLISECONDS}).`,
+					}),
+				);
+			}
 		}
 	}
 

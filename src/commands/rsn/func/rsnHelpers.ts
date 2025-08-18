@@ -8,25 +8,30 @@ export async function addRsnHelper(
 	rsn: string,
 	interaction: CommandInteraction,
 ) {
-	if (!interaction.guild) return;
+	if (!interaction.guild) {
+		await replyHandler(getString("errors", "noGuild"), interaction, {
+			ephemeral: true,
+		});
+		return;
+	}
+
 	await interaction.deferReply();
 
-	let response = `## ${user.displayName} RSNs\n`;
-
 	const res = await Requests.addRsn(interaction.guild.id, user.id, rsn);
+	let error = getString("errors", "rsnFail", { rsn });
 
 	if (res.status === 404) {
-		const error = `Failed to add RSN (**${rsn}**)\nIs the user (**${user.displayName}**) activated?`;
+		error += `\n${getString("errors", "notActivated", { username: user.displayName })}`;
 		return await replyHandler(error, interaction);
 	}
 
 	if (res.status === 409) {
-		const error = `Failed to add RSN (**${rsn}**)\nRSN already exists on user **${user.displayName}**`;
+		error += `\n${getString("errors", "rsnExists", { username: user.displayName })} `;
 		return await replyHandler(error, interaction);
 	}
 
 	if (res.error) {
-		const error = `Failed to add RSN (**${rsn}**)\nInternal server error (${res.message})`;
+		error += `\n${getString("errors", "internalError")}`;
 		return await replyHandler(error, interaction);
 	}
 
@@ -34,21 +39,27 @@ export async function addRsnHelper(
 		type: "user_id",
 		user_id: user.id,
 	});
+
+	const response: string[] = [];
+	response.push(
+		getString("accounts", "rsnListHeader", { username: user.displayName }),
+		getString("accounts", "rsnAdded", {
+			rsn,
+			username: user.displayName,
+		}),
+	);
+
 	if (rsns.error) {
-		const error = "Failed to fetch user RSNs after succesfully adding new one";
-		return await replyHandler(error, interaction);
+		// Failed to fetch user RSNs after succesfully adding new one
+		return await replyHandler(response.join("\n"), interaction);
 	}
 
 	if (!rsns.data) {
-		return getString("accounts", "notActivated", {
-			username: user.displayName,
-		});
+		return getString("errors", "internalError");
 	}
 
-	response += `Succesfully added new RSN (**${rsn}**)\n`;
-	response += rsns.data.rsns.map((rsn) => `\`${rsn.rsn}\``).join("\n");
-
-	return await replyHandler(response, interaction);
+	response.push(rsns.data.rsns.map((rsn) => `\`${rsn.rsn}\``).join("\n"));
+	return await replyHandler(response.join("\n"), interaction);
 }
 
 export async function removeRsnHelper(
@@ -56,26 +67,36 @@ export async function removeRsnHelper(
 	rsn: string,
 	interaction: CommandInteraction,
 ) {
-	if (!interaction.guild?.id) return;
+	if (!interaction.guild) {
+		await replyHandler(getString("errors", "noGuild"), interaction, {
+			ephemeral: true,
+		});
+		return;
+	}
 
 	await interaction.deferReply();
 
-	let response = "";
-	try {
-		const removed = await Requests.removeRsn(
-			interaction.guild.id,
-			user.id,
-			rsn,
+	const removed = await Requests.removeRsn(interaction.guild.id, user.id, rsn);
+
+	if (removed.status === 404) {
+		return await replyHandler(
+			getString("errors", "rsnDoesntExist", {
+				rsn,
+				username: user.displayName,
+			}),
+			interaction,
 		);
-		if (removed) {
-			response = `Removed RSN (**${rsn}**) from **${user.displayName}**`;
-		} else {
-			response = `Couldn't find RSN (**${rsn}**) linked to **${user.displayName}**`;
-		}
-	} catch (e) {
-		const error = `Failed to remove (**${rsn}**), is the user (**${user.displayName}**) activated?`;
-		return await replyHandler(error, interaction);
 	}
 
-	return await replyHandler(response, interaction);
+	if (removed.error) {
+		return await replyHandler(
+			getString("errors", "internalError"),
+			interaction,
+		);
+	}
+
+	return await replyHandler(
+		getString("accounts", "rsnRemoved", { rsn, username: user.displayName }),
+		interaction,
+	);
 }

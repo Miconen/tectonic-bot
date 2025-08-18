@@ -13,16 +13,14 @@ async function womHelper(
 	cutoff: number,
 ) {
 	if (!interaction.guild) {
-		await interaction.reply({
-			content: getString("errors", "noGuild"),
+		await replyHandler(getString("errors", "noGuild"), interaction, {
 			ephemeral: true,
 		});
 		return;
 	}
 
 	if (!interaction.member) {
-		await interaction.reply({
-			content: getString("errors", "noMember"),
+		await replyHandler(getString("errors", "noMember"), interaction, {
 			ephemeral: true,
 		});
 		return;
@@ -40,16 +38,14 @@ async function womHelper(
 
 	// Process RSN data
 	if (competition.error) {
-		await interaction.reply({
-			content: getString("errors", "competitionError"),
+		await replyHandler(getString("errors", "competitionError"), interaction, {
 			ephemeral: true,
 		});
 		return;
 	}
 
 	if (!competition.data.participants || !competition.data.accounts) {
-		await interaction.reply({
-			content: getString("errors", "competitionError"),
+		await replyHandler(getString("errors", "competitionError"), interaction, {
 			ephemeral: true,
 		});
 		return;

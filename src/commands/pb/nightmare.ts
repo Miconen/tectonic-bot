@@ -3,6 +3,7 @@ import IsAdmin from "@guards/IsAdmin.js";
 import IsValidTime from "@guards/IsValidTime.js";
 import { notEmpty } from "@utils/notEmpty.js";
 import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
@@ -92,18 +93,18 @@ class nightmarepb {
 
 		// Handle solos
 		if (team.length > 1 && (boss === "pnm" || boss === "nm_1")) {
-			return interaction.reply({
+			await replyHandler(getString("times", "soloOnlyBoss"), interaction, {
 				ephemeral: true,
-				content: "Selected boss can't include more than one player.",
 			});
 		}
 
 		// Handle 5-man nightmare
 		if (team.length !== 5 && boss === "nm_5") {
-			return interaction.reply({
-				ephemeral: true,
-				content: "Invalid amount of players for 5-man nightmare.",
-			});
+			await replyHandler(
+				getString("times", "invalidFiveManNightmare"),
+				interaction,
+				{ ephemeral: true },
+			);
 		}
 
 		const response = await submitHandler(boss, time, team, interaction);

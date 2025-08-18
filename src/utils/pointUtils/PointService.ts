@@ -8,7 +8,7 @@ import type IPointService from "./IPointService.js";
 @singleton()
 @injectable()
 export class PointService implements IPointService {
-	constructor(@inject("RankService") private rankService: IRankService) { }
+	constructor(@inject("RankService") private rankService: IRankService) {}
 
 	async givePointsToMultiple(
 		addedPoints: number,
@@ -16,7 +16,7 @@ export class PointService implements IPointService {
 		interaction: BaseInteraction,
 		extraPoints?: { [key: string]: number },
 	) {
-		if (!interaction.guild) return ["Error fetching guild ID"];
+		if (!interaction.guild) return [getString("errors", "noGuild")];
 		const response: string[] = [];
 
 		const user_ids = Array.from(targets.keys());
@@ -38,7 +38,8 @@ export class PointService implements IPointService {
 			const newPoints = u.points;
 			const member = targets.get(u.user_id);
 
-			if (!member) return [`Couldn't get user for ID: ${u.user_id}`];
+			if (!member)
+				return [getString("errors", "couldntGetUser", { userId: u.user_id })];
 
 			givenTo.set(u.user_id, true);
 			response.push(

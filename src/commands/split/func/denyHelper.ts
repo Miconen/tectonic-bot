@@ -1,4 +1,5 @@
 import type { SplitData } from "@typings/splitTypes";
+import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, TextChannel } from "discord.js";
 
 const denyHelper = async (
@@ -14,7 +15,7 @@ const denyHelper = async (
 	if (!channel) return "Channel not found";
 	await channel.messages.delete(split.message);
 
-	return `❌ **${receivingUserName}** point request was denied.`;
+	return getString("splits", "denied", { username: receivingUserName });
 };
 
 export default denyHelper;

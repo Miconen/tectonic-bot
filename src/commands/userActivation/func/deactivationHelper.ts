@@ -3,8 +3,8 @@ import type IRankService from "@utils/rankUtils/IRankService";
 import { Requests } from "@requests/main.js";
 
 import { container } from "tsyringe";
-import { httpErrorHandler } from "@utils/httpErrorHandler";
 import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 
 const deactivationHelper = async (
 	user: GuildMember,
@@ -19,25 +19,30 @@ const deactivationHelper = async (
 		user_id: user.user.id,
 	});
 
-	if (result.status === 204) {
-		const response = `✔ **${user.displayName}** has been deactivated.`;
-		// Remove all rank roles
-		await rankService.removeOldRoles(user);
-		return await replyHandler(response, interaction);
-	}
-
 	if (result.status === 404) {
-		const response = `❌ **${user.displayName}** is not activated.`;
-		return await replyHandler(response, interaction);
+		return await replyHandler(
+			getString("errors", "notActivated", {
+				username: user.displayName,
+			}),
+			interaction,
+		);
 	}
 
-	const handler = httpErrorHandler(result.status);
-	if (handler.error) {
-		const response = handler.message;
-		return await replyHandler(response, interaction);
+	if (result.error) {
+		return await replyHandler(
+			getString("errors", "internalError", {
+				username: user.displayName,
+			}),
+			interaction,
+		);
 	}
 
-	return await replyHandler("Something unexpected happened...", interaction);
+	// Remove all rank roles
+	await rankService.removeOldRoles(user);
+	return await replyHandler(
+		getString("accounts", "deactivated", { username: user.displayName }),
+		interaction,
+	);
 };
 
 export default deactivationHelper;

@@ -15,12 +15,6 @@ const eventHelper = async (
 	if (!interaction.guild)
 		return await interaction.reply(getString("errors", "noGuild"));
 
-	if (!interaction.guild)
-		return interaction.reply({
-			ephemeral: true,
-			content: "Something went **really** wrong",
-		});
-
 	await interaction.deferReply();
 
 	const points = await getPoints(amount, interaction.guild.id);

@@ -5,6 +5,7 @@ import { Requests } from "@requests/main.js";
 import TimeConverter from "./TimeConverter.js";
 import updateEmbed from "./updateEmbed.js";
 import { container } from "tsyringe";
+import { getString } from "@utils/stringRepo.js";
 
 async function submitHandler(
 	boss: string,
@@ -16,7 +17,7 @@ async function submitHandler(
 	console.log(`Submitting pb: ${boss} ${time}`);
 	if (!interaction.guild) {
 		console.log("↳ Failed getting guild");
-		return "Failed getting guild";
+		return getString("errors", "noGuild");
 	}
 	const guildId = interaction.guild.id;
 
@@ -24,7 +25,7 @@ async function submitHandler(
 	const ticks = TimeConverter.timeToTicks(time);
 	if (!ticks) {
 		console.log("↳ Failed parsing ticks from time");
-		return "Failed parsing ticks from time";
+		return getString("times", "failedParsingTicks");
 	}
 
 	// Add time
@@ -35,14 +36,14 @@ async function submitHandler(
 	});
 	if (res.error) {
 		console.log("↳ Failed adding time", res.message);
-		return "Failed adding time";
+		return getString("times", "failedAddingTime");
 	}
 
 	console.log("↳ Time added");
 
 	if (res.status === 200) {
 		console.log("↳ Not a new pb");
-		return "Time submitted, not a new pb :)";
+		return getString("times", "timeSubmittedNotPb");
 	}
 
 	// Pb updated
@@ -64,13 +65,11 @@ async function submitHandler(
 			interaction,
 		);
 	} else {
-		pointsResponses.push("Error fetching users to give points to");
+		pointsResponses.push(getString("times", "errorFetchingUsersForPoints"));
 	}
 
 	// Construct response
-	let response = `# New pb: ${time} (${TimeConverter.timeToTicks(
-		time,
-	)} ticks)\n`;
+	let response = getString("times", "newPb");
 	response += pointsResponses.join("\n");
 
 	return response;

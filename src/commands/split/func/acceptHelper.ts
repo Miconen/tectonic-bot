@@ -3,6 +3,7 @@ import type IPointService from "@utils/pointUtils/IPointService";
 import type { SplitData } from "@typings/splitTypes.js";
 
 import { container } from "tsyringe";
+import { getString } from "@utils/stringRepo";
 
 const acceptHelper = async (
 	interaction: CommandInteraction,
@@ -16,7 +17,7 @@ const acceptHelper = async (
 	const channel = (await interaction.client.channels.fetch(
 		split.channel,
 	)) as TextChannel;
-	if (!channel) return "Channel not found";
+	if (!channel) return getString("errors", "channelNotFound");
 	await channel.messages.delete(split.message);
 
 	const pointsResponse = await pointService.givePoints(

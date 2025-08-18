@@ -71,10 +71,10 @@ const strings: StringRepository = {
 		rsnAlreadyExists: (args) =>
 			`❌ RSN **${args.rsn}** already exists for **${args.username}**.`,
 		rsnListHeader: (args) => `## ${args.username} RSNs`,
-		rsnSuccessfullyAdded: (args) =>
-			`Successfully added new RSN (**${args.rsn}**)\n`,
 		noLinkedAccounts:
 			"`Link your OSRS account to be eligible for event rank points`",
+		userActivatedByMember: (args) =>
+			`**${args.user}** has been activated and linked by **${args.member}**.`,
 	},
 
 	achievements: {
@@ -99,6 +99,8 @@ const strings: StringRepository = {
 			`✔ Split request approved for **${args.username}** - ${args.points} points awarded.`,
 		denied: (args) => `❌ **${args.username}** point request was denied.`,
 		notFound: "❌ Split request not found or expired.",
+		expiredRequest:
+			"This split request has expired. Please try again with a fresh submission.",
 		infoHeader: (args) => `# Split: ${args.username}`,
 		infoDetails: (args) =>
 			`Points: ${args.points} points\nCreated: ${args.timeAgo}\nMessage: ${args.messageUrl}`,
@@ -114,14 +116,17 @@ const strings: StringRepository = {
 		accountsHeader: "# Accounts",
 		pbsHeader: "# Clan PBs",
 		eventsHeader: "# Event placements",
+		achievementsHeader: "# Achievements",
 		pbEntry: (args) =>
 			`\`${args.category} | ${args.displayName}\` - \`${args.time} (${args.ticks} ticks)\``,
 		eventEntry: (args) =>
 			`[${args.eventName}](https://wiseoldman.net/competitions/${args.womId}) - Placement: #${args.placement}`,
 		accountEntry: (args) => `\`${args.rsn}\``,
+		achievementEntry: (args) => `${args.icon} - **${args.name}**`,
 		noAccounts: "No linked accounts found.",
 		noPbs: "No personal bests recorded.",
 		noEvents: "No event placements recorded.",
+		criticalError: "❌ Error fetching user data.",
 	},
 
 	leaderboard: {
@@ -130,7 +135,8 @@ const strings: StringRepository = {
 		entryValue: (args) =>
 			`${args.rankIcon} ${args.points} points | Accounts: ${args.accountCount}`,
 		footer: (args) => `Page ${args.page} (${args.start}-${args.end})`,
-		noUsers: "No activated users found for leaderboard.",
+		noUsers: "No activated users for leaderboard",
+		errorOutputting: "Error outputting leaderboard",
 		loading: "Loading leaderboard...",
 	},
 
@@ -157,24 +163,43 @@ const strings: StringRepository = {
 			`⚡ **${args.displayName}** time improved: ${args.oldTime} → ${args.newTime}`,
 		timeAdded: (args) =>
 			`✔ Time recorded for **${args.displayName}**: ${args.time}`,
-		invalidTime:
-			"Invalid time format. Please use M:S, M:S.Ms, or H:M:S format.",
 		bossNotFound: (args) => `Boss **${args.bossName}** not found.`,
 		timeNotFound: "No time records found.",
 		teamEntry: (args) => `Team: ${args.teammates}`,
+		newPb: (args) => `# New pb: ${args.time} (${args.ticks} ticks)\n`,
+		timeSubmittedNotPb: (args) => "Time submitted, not a new pb :)",
+		failedParsingTicks: "Failed parsing ticks from time",
+		failedAddingTime: "Failed adding time",
+		errorFetchingUsersForPoints: "Error fetching users to give points to",
+		fetchingGuildData: "Fetching guild data...",
+		removingOldEmbeds: "Removing old category embeds...",
+		creatingEmbeds: "Creating embeds...",
+		storingData: "Storing data...",
+		finished: "Finished updating embeds.",
+		invalidTeamSize: (args) => `${args.error}`,
+		soloOnlyBoss: "Selected boss can't include more than one player.",
+		invalidFiveManNightmare: "Invalid amount of players for 5-man nightmare.",
 	},
 
 	help: {
 		commandsInfo:
 			"Information on how to use the bot along with its commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands",
-		pointsSourcesHeader: "**Point sources**:",
+		pointsSourcesHeader: "**Point sources**:\n",
 		splitsHeader: "**Splits**:",
 		eventsHeader: "**Events**:",
 		learnersHeader: "**Learners**:",
 		forumHeader: "**Forum**:",
-		ranksHeader: "## Ranks:",
+		ranksHeader: "## Ranks:\n",
 		pointValue: (args) => `${args.name}: ${args.points}`,
 		rankEntry: (args) => `${args.icon} ${args.name} - ${args.points} points`,
+		splitLow: (args) => `Low value: ${args.points}`,
+		splitMedium: (args) => `Medium value: ${args.points}`,
+		splitHigh: (args) => `High value: ${args.points}`,
+		eventParticipation: (args) => `Participation: ${args.points}`,
+		eventHosting: (args) => `Hosting: ${args.points}`,
+		learnerHalf: (args) => `Half: ${args.points}`,
+		learnerFull: (args) => `Full: ${args.points}`,
+		forumBump: (args) => `Bumping: ${args.points}`,
 	},
 
 	validation: {
@@ -183,8 +208,8 @@ const strings: StringRepository = {
 		invalidPoints: (args) =>
 			`Invalid points amount. Must be between ${args.min} and ${args.max}.`,
 		invalidUser: "Invalid user. Please mention a valid Discord user.",
-		invalidTime:
-			"Invalid time format. Please use M:S, M:S.Ms, or H:M:S format.",
+		invalidTimeFormat: (args) => `Invalid time format. ${args.error}`,
+		invalidTimeRange: (args) => `Invalid time range. ${args.error}`,
 		invalidChoice: (args) =>
 			`Invalid choice. Valid options: ${args.options.join(", ")}`,
 		required: (args) => `${args.field} is required.`,
@@ -195,6 +220,8 @@ const strings: StringRepository = {
 		conflictingParams: (args) =>
 			`Cannot use both ${args.param1} and ${args.param2} at the same time.`,
 		userNotInGuild: "User is not a member of this server.",
+		expectedStringParameter: (args) =>
+			`Invalid parameter type, expected a string, found: ${args.type}`,
 	},
 
 	permissions: {
@@ -249,8 +276,21 @@ const strings: StringRepository = {
 		messageNotFound: "Message not found or has been deleted.",
 		expiredRequest: "This request has expired. Please submit a new one.",
 		unauthorized: "You are not authorized to perform this action.",
-		guildNotInitialized:
-			"This server has not been initialized. Please contact an administrator.",
+		guildNotInitialized: "This server has not been initialized.",
+		retrievingPlayers: "Failed to fetch players from command",
+		errorGivingPoints: (args) => `Error giving points: ${args.message}`,
+		couldntGetUser: (args) => `Couldn't get user for ID: ${args.userId}`,
+		unexpectedError: (args) => `Unexpected error occurred...\n${args.message}`,
+		errorFetchingWom: "Error fetching user from Wise Old Man.",
+		fetchingPbEmbeds: "fetching data for pb embeds",
+		somethingWrongActivation: "Something went **really** wrong",
+		somethingUnexpected: "Something unexpected happened...",
+		zeroPoints: "Invalid points amount - cannot give 0 points",
+		rsnFail: (args) => `Failed to add RSN (**${args.rsn}**)`,
+		rsnExists: (args) => `RSN already exists on user ** ${args.username}**`,
+		rsnDoesntExist: (args) =>
+			`Couldn't find RSN (**${args.rsn}**) linked to **${args.username}**`,
+		notActivated: (args) => `The user (**${args.username}**) is not activated.`,
 	},
 
 	success: {
@@ -263,6 +303,9 @@ const strings: StringRepository = {
 		cacheCleared: "Cache cleared successfully.",
 		backupCreated: "Backup created successfully.",
 		maintenanceComplete: "Maintenance completed successfully.",
+		eventPositionsGiven: "# Event positions given",
+		teamEventPositionsGiven: "# Team event positions given",
+		success: "Success",
 	},
 
 	status: {
@@ -278,6 +321,20 @@ const strings: StringRepository = {
 		botStatus: (args) => `Bot Status: ${args.status}`,
 		uptime: (args) => `Uptime: ${args.uptime}`,
 		lastRestart: (args) => `Last Restart: ${args.time}`,
+	},
+
+	autocomplete: {
+		noRsnsFound: (args) =>
+			`No RSNs found for user ${args.userId} after filtering`,
+	},
+
+	api: {
+		internalAuthError: "Internal authorization error.",
+		tooManyRequests: "Too many requests, try again in a minute.",
+		internalServerError: "Internal error :(",
+		externalServerError: "External error :(",
+		couldntRemoveUser: "Couldn't remove user",
+		couldntRemoveGuild: "Couldn't remove guild",
 	},
 };
 

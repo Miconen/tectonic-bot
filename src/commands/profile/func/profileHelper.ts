@@ -12,14 +12,14 @@ const pointsHelper = async (
 	rsn: string | null,
 	interaction: CommandInteraction,
 ) => {
-	if (!interaction.guild) return "❌ Critical error determining guild.";
+	if (!interaction.guild) return getString("errors", "noGuild");
 	const guildId = interaction.guild.id;
 
 	const rankService = container.resolve<IRankService>("RankService");
 
 	let target = member;
 	let query: UserParam | undefined;
-	let errorMsg = "❌ Error fetching user data.";
+	let errorMsg = getString("profile", "criticalError");
 
 	if (!target) {
 		target = interaction.member as GuildMember;
@@ -36,7 +36,7 @@ const pointsHelper = async (
 	// Checks the database for an rns
 	if (rsn) {
 		query = { type: "rsn", rsn };
-		errorMsg = `❌ **${rsn}** is not bound to a known member.`;
+		errorMsg = getString("errors", "rsnNotBound", { rsn });
 	}
 
 	if (!query) {
@@ -63,43 +63,77 @@ const pointsHelper = async (
 	const currentRank = rankService.getRankByPoints(points);
 	const currentRankIcon = rankService.getIcon(currentRank);
 
-	let response: string;
-	response = `# ${currentRankIcon} **${target.displayName}**`;
-	response += `\nCurrent points: ${points}${currentRankIcon}`;
-	if (currentRank !== "wrath") {
-		response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`;
+	const lines: string[] = [];
+	lines.push(
+		getString("profile", "header", {
+			rankIcon: currentRankIcon,
+			username: target.displayName,
+		}),
+		getString("ranks", "rankInfoWithNext", {
+			currentIcon: currentRankIcon,
+			username: target.displayName,
+			points,
+			nextIcon: nextRankIcon,
+			pointsToNext: nextRankUntil,
+		}),
+	);
+	if (currentRank === "wrath") {
+		lines.push(
+			getString("ranks", "rankInfo", {
+				icon: currentRankIcon,
+				username: target.displayName,
+				points,
+			}),
+		);
 	}
 	if (user.rsns.length) {
-		response += "\n# Accounts";
+		lines.push(getString("profile", "accountsHeader"));
 		for (const account of user.rsns) {
-			response += `\n\`${account.rsn}\``;
+			lines.push(getString("profile", "accountEntry", { rsn: account.rsn }));
 		}
 	} else {
-		response +=
-			"\n`Link your OSRS account to be eligible for event rank points`";
+		lines.push(`\`${getString("accounts", "noLinkedAccounts")}\``);
 	}
 	if (user.times.length) {
-		response += "\n# Clan PBs";
+		lines.push(getString("profile", "pbsHeader"));
 		for (const pb of user.times) {
-			response += `\n\`${pb.category} | ${pb.display_name}\` - \`${TimeConverter.ticksToTime(pb.time)} (${pb.time} ticks)\``;
+			lines.push(
+				getString("profile", "pbEntry", {
+					category: pb.category,
+					displayName: pb.display_name,
+					time: TimeConverter.ticksToTime(pb.time),
+					ticks: pb.time,
+				}),
+			);
 		}
 	}
 	// TODO: Also check if user has any events where placed below position_cutoff
 	if (user.events.length) {
-		response += "\n# Event placements";
+		lines.push(getString("profile", "eventsHeader"));
 		for (const event of user.events) {
-			response += `\n[${event.name}](https://wiseoldman.net/competitions/${event.wom_id}) - Placement: #${event.placement}`;
+			lines.push(
+				getString("profile", "eventEntry", {
+					eventName: event.name,
+					womId: event.wom_id,
+					placement: event.placement,
+				}),
+			);
 		}
 	}
 
 	if (user.achievements.length) {
-		response += "\n# Achievements";
+		lines.push(getString("profile", "achievementsHeader"));
 		for (const achievement of user.achievements) {
-			response += `\n${achievement.discord_icon} - **${achievement.name}**`;
+			lines.push(
+				getString("profile", "achievementEntry", {
+					icon: achievement.discord_icon,
+					name: achievement.name,
+				}),
+			);
 		}
 	}
 
-	return response;
+	return lines.join("\n");
 };
 
 export default pointsHelper;

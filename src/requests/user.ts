@@ -63,7 +63,7 @@ export async function removeUser(guild_id: string, query: UserParam) {
 export async function addRsn(guild_id: string, user_id: string, rsn: string) {
 	const url = `guilds/${guild_id}/users/${user_id}/rsns`;
 	const options = { method: "POST", body: JSON.stringify({ rsn }) };
-	const status = await fetchData<never>(url, options);
+	const status = await fetchData(url, options);
 
 	return status;
 }
@@ -75,7 +75,7 @@ export async function removeRsn(
 ) {
 	const url = `guilds/${guild_id}/users/${user_id}/rsns/${rsn}`;
 	const options = { method: "DELETE" };
-	const status = await fetchData<never>(url, options);
+	const status = await fetchData(url, options);
 
 	return status;
 }

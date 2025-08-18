@@ -21,7 +21,9 @@ async function initializeHelper(interaction: CommandInteraction) {
 
 	await interaction.deferReply({ ephemeral: true });
 
-	await interaction.editReply({ content: "Fetching guild data..." });
+	await interaction.editReply({
+		content: getString("times", "fetchingGuildData"),
+	});
 	const res = await Requests.getGuildTimes(guildId);
 
 	if (res.error) {
@@ -36,10 +38,14 @@ async function initializeHelper(interaction: CommandInteraction) {
 		return;
 	}
 
-	await interaction.editReply({ content: "Removing old category embeds..." });
+	await interaction.editReply({
+		content: getString("times", "removingOldEmbeds"),
+	});
 	await removeOldEmbeds(res.data, interaction.client);
 
-	await interaction.editReply({ content: "Creating embeds..." });
+	await interaction.editReply({
+		content: getString("times", "creatingEmbeds"),
+	});
 
 	// Create combined categories data
 	const categories = formatGuildTimes(res.data);
@@ -89,10 +95,12 @@ async function initializeHelper(interaction: CommandInteraction) {
 
 	await interaction.deleteReply();
 	if (update.error) {
-		await interaction.followUp({ content: "Error " });
+		await interaction.followUp({
+			content: getString("errors", "internalError"),
+		});
 		return;
 	}
-	await interaction.followUp({ content: "Finished" });
+	await interaction.followUp({ content: getString("times", "finished") });
 }
 
 export default initializeHelper;

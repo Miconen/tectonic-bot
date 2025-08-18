@@ -1,4 +1,5 @@
 import { Requests } from "@requests/main";
+import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
@@ -8,22 +9,18 @@ export async function winnerHelper(
 	top = 3,
 ) {
 	if (!interaction.guild) {
-		await interaction.reply({
-			content: getString("errors", "noGuild"),
+		await replyHandler(getString("errors", "noGuild"), interaction, {
 			ephemeral: true,
 		});
 		return;
 	}
 
 	if (!interaction.member) {
-		await interaction.reply({
-			content: getString("errors", "noMember"),
+		await replyHandler(getString("errors", "noMember"), interaction, {
 			ephemeral: true,
 		});
 		return;
 	}
-
-	const member = interaction.member as GuildMember;
 
 	const res = await Requests.eventWinners(interaction.guild.id, {
 		type: "individual",
@@ -32,7 +29,7 @@ export async function winnerHelper(
 	});
 
 	if (res.error) {
-		return interaction.reply(res.message);
+		return replyHandler(res.message, interaction);
 	}
 
 	// const winners = res.data;
@@ -43,7 +40,9 @@ export async function winnerHelper(
 	// 	response.push(winner.player.displayName);
 	// }
 	//
-	// return interaction.reply(response.join("\n"));
+	// return responseHandler(response.join("\n"), interaction);
 
-	return interaction.reply("Success");
+	return replyHandler(getString("success", "success"), interaction, {
+		ephemeral: true,
+	});
 }
