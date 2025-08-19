@@ -204,6 +204,7 @@ export type Team = {
 export type GuildPointSource = {
 	source: string;
 	points: number;
+	name: string;
 };
 
 export type GuildTimes = {
