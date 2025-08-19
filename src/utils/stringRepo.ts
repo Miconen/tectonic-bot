@@ -166,7 +166,7 @@ const strings: StringRepository = {
 		bossNotFound: (args) => `Boss **${args.bossName}** not found.`,
 		timeNotFound: "No time records found.",
 		teamEntry: (args) => `Team: ${args.teammates}`,
-		newPb: (args) => `# New pb: ${args.time} (${args.ticks} ticks)\n`,
+		newPb: (args) => `# New clan PB\n\`${args.time} (${args.ticks} ticks)\`\n`,
 		timeSubmittedNotPb: (args) => "Time submitted, not a new pb :)",
 		failedParsingTicks: "Failed parsing ticks from time",
 		failedAddingTime: "Failed adding time",
