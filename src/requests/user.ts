@@ -29,7 +29,7 @@ export async function getUser(guild_id: string, query: UserParam) {
 
 	return rewrapResponse<DetailedUser | undefined, DetailedUser[]>(
 		user,
-		user.data[0],
+		user.data.at(0),
 	);
 }
 
@@ -104,5 +104,8 @@ export async function givePoints(guild_id: string, query: PointsParam) {
 
 	if (res.error) return res;
 
-	return rewrapResponse<SimpleUser | undefined, SimpleUser[]>(res, res.data[0]);
+	return rewrapResponse<SimpleUser | undefined, SimpleUser[]>(
+		res,
+		res.data.at(0),
+	);
 }

@@ -1,11 +1,7 @@
 import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import {
-	type CommandInteraction,
-	GuildMember,
-	type InteractionReplyOptions,
-} from "discord.js";
+import { type CommandInteraction, GuildMember } from "discord.js";
 import type { GuardFunction } from "discordx";
 
 function IsActivated(target = "player") {
@@ -19,7 +15,7 @@ function IsActivated(target = "player") {
 		const players: GuildMember[] = [];
 
 		// Dirty hack to extract GuildMembers from the guarded commands options
-		const options = interaction.options.data[0].options;
+		const options = interaction.options.data.at(0)?.options;
 		if (!options)
 			return await replyHandler(
 				getString("errors", "parameterMissing", { parameter: "players" }),
