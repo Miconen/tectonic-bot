@@ -1,7 +1,7 @@
 import type {
 	DetailedUser,
 	PointsParam,
-	SimpleUser,
+	PointsResponse,
 	UserParam,
 	UsersParam,
 } from "@typings/requests";
@@ -94,7 +94,7 @@ export async function givePointsToMultiple(
 	}
 
 	const options = { method: "PUT" };
-	const status = await fetchData<SimpleUser[]>(url, options);
+	const status = await fetchData<PointsResponse[]>(url, options);
 
 	return status;
 }
@@ -104,7 +104,7 @@ export async function givePoints(guild_id: string, query: PointsParam) {
 
 	if (res.error) return res;
 
-	return rewrapResponse<SimpleUser | undefined, SimpleUser[]>(
+	return rewrapResponse<PointsResponse | undefined, PointsResponse[]>(
 		res,
 		res.data.at(0),
 	);
