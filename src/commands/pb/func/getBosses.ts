@@ -1,5 +1,9 @@
 import { Requests } from "@requests/main";
+import type { Boss } from "@typings/requests";
+import { TTLCache } from "@utils/ttlCache";
 import type { SlashChoiceType } from "discordx";
+
+export const Bosses = new TTLCache<Boss>();
 
 async function bossesAsChoices() {
 	const res = await Requests.getBosses();
@@ -13,6 +17,8 @@ async function bossesAsChoices() {
 
 	for (const boss of res.data) {
 		const { category, name, display_name } = boss;
+
+		Bosses.set(name, boss);
 
 		if (!bossesByCategory[category]) {
 			bossesByCategory[category] = [];
