@@ -3,6 +3,7 @@ import type { Achievement, DetailedUser } from "@typings/requests";
 import { Achievements } from "@utils/achievements";
 import type { AutocompleteInteraction } from "discord.js";
 import { TTLCache } from "@utils/ttlCache";
+import { getSources } from "./pointSources";
 
 const userCache = new TTLCache<DetailedUser>();
 const teamCache = new TTLCache<string[]>();
@@ -224,3 +225,22 @@ export async function teamPicker(
 
 	await safeRespond(interaction, options);
 }
+
+export const pointSourcePicker = async (
+	interaction: AutocompleteInteraction,
+): Promise<void> => {
+	if (!interaction.guild?.id) {
+		await safeRespond(interaction, []);
+		return;
+	}
+
+	const sources = await getSources(interaction.guild.id);
+	if (!sources) return;
+
+	const options = Array.from(sources.values()).map((s) => ({
+		name: s.name,
+		value: s.source,
+	}));
+
+	await safeRespond(interaction, options);
+};

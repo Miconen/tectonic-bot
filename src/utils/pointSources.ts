@@ -1,7 +1,8 @@
 import { Requests } from "@requests/main";
+import type { GuildPointSource } from "@typings/requests";
 import { TTLCache } from "@utils/ttlCache";
 
-export const PointSources = new TTLCache<number>(null);
+export const PointSources = new TTLCache<Map<string, GuildPointSource>>(null);
 export const Multipliers = new TTLCache<number>(null);
 
 export async function getPoints(source: string | number, guild_id: string) {
@@ -17,17 +18,28 @@ export async function getPoints(source: string | number, guild_id: string) {
 		return source * (Multipliers.get(guild_id) ?? 1);
 	}
 
-	if (!PointSources.has(`${guild_id}-${source}`)) {
-		const res = await Requests.getGuildPointSources(guild_id);
-		if (res.error) return 0;
+	await populateSources(guild_id);
 
-		for (const ps of res.data) {
-			PointSources.set(`${guild_id}-${ps.source}`, ps.points);
-		}
-	}
-
-	const points = PointSources.get(`${guild_id}-${source}`) ?? 0;
+	const points = PointSources.get(guild_id)?.get(source)?.points ?? 0;
 	const multi = Multipliers.get(guild_id) ?? 1;
 
 	return points * multi;
+}
+
+export async function getSources(guild_id: string) {
+	await populateSources(guild_id);
+	return PointSources.get(guild_id);
+}
+
+async function populateSources(guild_id: string) {
+	const guild = new Map<string, GuildPointSource>();
+	if (!PointSources.has(guild_id)) {
+		const res = await Requests.getGuildPointSources(guild_id);
+		if (res.error) return guild;
+
+		for (const ps of res.data) {
+			guild.set(ps.source, ps);
+		}
+		PointSources.set(guild_id, guild);
+	}
 }
