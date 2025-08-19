@@ -1,11 +1,10 @@
 import type { CommandInteraction } from "discord.js";
-import type IPointService from "@utils/pointUtils/IPointService";
 import { Requests } from "@requests/main.js";
 
 import TimeConverter from "./TimeConverter.js";
 import updateEmbed from "./updateEmbed.js";
-import { container } from "tsyringe";
 import { getString } from "@utils/stringRepo.js";
+import giveHelper from "@commands/moderation/func/giveHelper.js";
 
 async function submitHandler(
 	boss: string,
@@ -13,7 +12,6 @@ async function submitHandler(
 	team: string[],
 	interaction: CommandInteraction,
 ) {
-	const pointService = container.resolve<IPointService>("PointService");
 	console.log(`Submitting pb: ${boss} ${time}`);
 	if (!interaction.guild) {
 		console.log("↳ Failed getting guild");
@@ -54,19 +52,14 @@ async function submitHandler(
 
 	// Fetch and map user ids to GuildMember types
 	const members = await interaction.guild.members.fetch({ user: team });
-	let pointsResponses = [];
-	if (members) {
-		// Give points
-		// TODO: Use new API endpoints instead of hard coding points
-		const PB_POINTS = 10;
-		pointsResponses = await pointService.givePointsToMultiple(
-			PB_POINTS,
-			members,
-			interaction,
-		);
-	} else {
+	const pointsResponses: string[] = [];
+
+	if (!members) {
 		pointsResponses.push(getString("times", "errorFetchingUsersForPoints"));
 	}
+
+	// Give points
+	pointsResponses.push(await giveHelper(members, "clan_pb", interaction));
 
 	// Construct response
 	let response = getString("times", "newPb");

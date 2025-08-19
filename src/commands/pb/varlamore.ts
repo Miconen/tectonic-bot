@@ -23,7 +23,7 @@ import submitHandler from "./func/submitHandler.js";
 @Guard(IsAdmin, IsValidTime("time"), IsActivated())
 class varlamorepb {
 	@Slash({ name: "varlamore", description: "Request your new pb to be added" })
-	async slayer(
+	async varlamore(
 		@SlashChoice(...bossCategories.Varlamore)
 		@SlashOption({
 			name: "boss",
