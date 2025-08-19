@@ -111,6 +111,9 @@ const pointsHelper = async (
 	if (user.events.length) {
 		lines.push(getString("profile", "eventsHeader"));
 		for (const event of user.events) {
+			// Skip events that are below the position cutoff
+			if (event.postition_cutoff < event.placement) continue;
+
 			lines.push(
 				getString("profile", "eventEntry", {
 					eventName: event.name,
