@@ -120,7 +120,7 @@ const strings: StringRepository = {
 		pbEntry: (args) =>
 			`\`${args.category} | ${args.displayName}\` - \`${args.time} (${args.ticks} ticks)\``,
 		eventEntry: (args) =>
-			`[${args.eventName}](https://wiseoldman.net/competitions/${args.womId}) - Placement: #${args.placement}`,
+			`[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>) - Placement: #${args.placement}`,
 		accountEntry: (args) => `\`${args.rsn}\``,
 		achievementEntry: (args) => `${args.icon} - **${args.name}**`,
 		noAccounts: "No linked accounts found.",
