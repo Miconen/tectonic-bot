@@ -1,51 +1,21 @@
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
-	type GuildMember,
 	type Role,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import IsAdmin from "@guards/IsAdmin.js";
-import eventHelper from "./func/eventHelper.js";
-import eventRoleHelper from "./func/eventRoleHelper.js";
 import womHelper from "./func/womHelper.js";
+import giveHelper from "../func/giveHelper.js";
+import { pointSourcePicker } from "@utils/pickers.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 
 @Discord()
 @SlashGroup({ name: "event", description: "Event specific commands" })
 @SlashGroup("event")
 @Guard(IsAdmin)
 class Event {
-	@Slash({
-		name: "participation",
-		description: "Command for giving out event specific points",
-	})
-	async participation(
-		@SlashOption({
-			name: "username",
-			description: "Participation point rewards",
-			required: true,
-			type: ApplicationCommandOptionType.User,
-		})
-		user: GuildMember,
-		interaction: CommandInteraction,
-	) {
-		return eventHelper(user, interaction, "event_participation");
-	}
-
-	@Slash({ name: "hosting", description: "Event hosting specific command" })
-	async hosting(
-		@SlashOption({
-			name: "username",
-			description: "Event hosting point rewards",
-			required: true,
-			type: ApplicationCommandOptionType.User,
-		})
-		user: GuildMember,
-		interaction: CommandInteraction,
-	) {
-		return eventHelper(user, interaction, "event_hosting");
-	}
-
 	@Slash({ name: "role", description: "Event point for a whole role" })
 	async role(
 		@SlashOption({
@@ -54,17 +24,22 @@ class Event {
 			required: true,
 			type: ApplicationCommandOptionType.Role,
 		})
-		@SlashOption({
-			name: "amount",
-			description: "Amount of points to give",
-			required: true,
-			type: ApplicationCommandOptionType.Number,
-		})
 		role: Role,
-		amount: number,
+		@SlashOption({
+			name: "source",
+			description: "Point source",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: pointSourcePicker,
+		})
+		source: number,
 		interaction: CommandInteraction,
 	) {
-		return eventRoleHelper(role, interaction, amount);
+		if (!interaction.guild?.id) {
+			return await replyHandler(getString("errors", "noGuild"), interaction);
+		}
+		await interaction.guild.members.fetch();
+		return giveHelper(role.members, source, interaction);
 	}
 
 	@Slash({ name: "wom", description: "Wise old man automation" })

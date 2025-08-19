@@ -1,7 +1,7 @@
 import { Requests } from "@requests/main";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction, GuildMember } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 
 export async function winnerHelper(
 	interaction: CommandInteraction,

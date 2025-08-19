@@ -1,7 +1,6 @@
 import IsAdmin from "@guards/IsAdmin.js";
 import type { SplitCache, SplitData } from "@typings/splitTypes.js";
 import { getPoints } from "@utils/pointSources.js";
-import type IPointService from "@utils/pointUtils/IPointService";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import { formatTimeAgo } from "@utils/timeFormatter.js";
@@ -13,7 +12,7 @@ import {
 	type TextChannel,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
-import { container, injectable } from "tsyringe";
+import { injectable } from "tsyringe";
 import acceptHelper from "./func/acceptHelper.js";
 import denyHelper from "./func/denyHelper.js";
 import splitHelper from "./func/splitHelper.js";
@@ -92,7 +91,8 @@ class split {
 
 		// Free up memory
 		state.delete(id);
-		return await replyHandler(response, interaction);
+		const res = Array.isArray(response) ? response.join("\n") : response;
+		return await replyHandler(res, interaction);
 	}
 
 	@Slash({

@@ -5,11 +5,15 @@ import {
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import { addRsnHelper, removeRsnHelper } from "./func/rsnHelpers.js";
+import { addRsnHelper, removeRsnHelper } from "./func/rsnHelpers";
 
 @Discord()
-@SlashGroup({ name: "rsn", description: "RSN specific commands" })
-@SlashGroup("rsn")
+@SlashGroup({
+	name: "rsn",
+	description: "Manage user RSNs",
+	root: "moderation",
+})
+@SlashGroup("rsn", "moderation")
 @Guard(IsAdmin)
 class RSN {
 	@Slash({
