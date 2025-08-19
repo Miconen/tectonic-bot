@@ -1,5 +1,9 @@
 import { Requests } from "@requests/main.js";
-import { getPoints } from "@utils/pointSources.js";
+import type {
+	CustomPoints,
+	PointsParam,
+	PresetPoints,
+} from "@typings/requests.js";
 import { getString } from "@utils/stringRepo.js";
 import type { BaseInteraction, GuildMember } from "discord.js";
 import { Collection } from "discord.js";
@@ -10,7 +14,7 @@ import type IPointService from "./IPointService.js";
 @singleton()
 @injectable()
 export class PointService implements IPointService {
-	constructor(@inject("RankService") private rankService: IRankService) {}
+	constructor(@inject("RankService") private rankService: IRankService) { }
 
 	async givePoints(
 		value: string | number,
@@ -19,33 +23,38 @@ export class PointService implements IPointService {
 	) {
 		if (!interaction.guild) return getString("errors", "noGuild");
 
-		// Ugly ternary to extract points from value parameter
+		const user_id =
+			target instanceof Collection
+				? target.map((member) => member.id)
+				: target.id;
+
 		const points =
 			typeof value === "number"
-				? value
-				: await getPoints(value, interaction.guild.id);
+				? ({ type: "custom" as const, amount: value } as CustomPoints)
+				: ({ type: "preset" as const, event: value } as PresetPoints);
+
+		const param: PointsParam = { user_id, points };
 
 		// Handle single vs multiple GuildMembers
 		if (target instanceof Collection) {
-			return this.giveToManyHandler(points, target, interaction);
+			return this.giveToManyHandler(param, target, interaction);
 		}
 
-		return this.giveHandler(points, target, interaction);
+		return this.giveHandler(param, target, interaction);
 	}
 
 	private async giveToManyHandler(
-		addedPoints: number,
+		param: PointsParam,
 		targets: Collection<string, GuildMember>,
 		interaction: BaseInteraction,
 	) {
 		if (!interaction.guild) return [getString("errors", "noGuild")];
 		const response: string[] = [];
 
-		const user_ids = Array.from(targets.keys());
-		const res = await Requests.givePointsToMultiple(interaction.guild.id, {
-			user_id: user_ids,
-			points: { type: "custom", amount: addedPoints },
-		});
+		const res = await Requests.givePointsToMultiple(
+			interaction.guild.id,
+			param,
+		);
 
 		if (res.error) {
 			return [`Error giving points: ${res.message}`];
@@ -57,7 +66,6 @@ export class PointService implements IPointService {
 		});
 
 		for (const u of res.data) {
-			const newPoints = u.points;
 			const member = targets.get(u.user_id);
 
 			if (!member)
@@ -67,16 +75,16 @@ export class PointService implements IPointService {
 			response.push(
 				getString("ranks", "pointsGranted", {
 					username: member.displayName,
-					pointsGiven: addedPoints,
+					pointsGiven: u.given_points,
 					grantedBy: member.displayName,
-					totalPoints: newPoints,
+					totalPoints: u.points,
 				}),
 			);
 			const newRank = await this.rankService.rankUpHandler(
 				interaction,
 				member,
-				newPoints - addedPoints,
-				newPoints,
+				u.points - u.given_points,
+				u.points,
 			);
 
 			if (!newRank) continue;
@@ -104,16 +112,13 @@ export class PointService implements IPointService {
 	}
 
 	private async giveHandler(
-		addedPoints: number,
+		param: PointsParam,
 		target: GuildMember,
 		interaction: BaseInteraction,
 	) {
 		if (!interaction.guild) return getString("errors", "noGuild");
 
-		const res = await Requests.givePoints(interaction.guild.id, {
-			user_id: target.id,
-			points: { type: "custom", amount: addedPoints },
-		});
+		const res = await Requests.givePoints(interaction.guild.id, param);
 
 		if (res.status === 404) {
 			return getString("accounts", "notActivated", {
@@ -131,24 +136,22 @@ export class PointService implements IPointService {
 			});
 		}
 
-		const newPoints = res.data.points;
-
 		const response: string[] = [];
 		const member = interaction.member as GuildMember;
 
 		response.push(
 			getString("ranks", "pointsGranted", {
 				username: target.displayName,
-				pointsGiven: addedPoints,
+				pointsGiven: res.data.given_points,
 				grantedBy: member.displayName,
-				totalPoints: newPoints,
+				totalPoints: res.data.points,
 			}),
 		);
 		const newRank = await this.rankService.rankUpHandler(
 			interaction,
 			target,
-			newPoints - addedPoints,
-			newPoints,
+			res.data.points - res.data.given_points,
+			res.data.points,
 		);
 
 		if (!newRank) return response.join("\n");

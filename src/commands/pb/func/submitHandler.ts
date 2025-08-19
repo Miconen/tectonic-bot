@@ -5,6 +5,7 @@ import TimeConverter from "./TimeConverter.js";
 import updateEmbed from "./updateEmbed.js";
 import { getString } from "@utils/stringRepo.js";
 import giveHelper from "@commands/moderation/func/giveHelper.js";
+import { Bosses } from "./getBosses.js";
 
 async function submitHandler(
 	boss: string,
@@ -62,10 +63,15 @@ async function submitHandler(
 	pointsResponses.push(await giveHelper(members, "clan_pb", interaction));
 
 	// Construct response
-	let response = getString("times", "newPb");
-	response += pointsResponses.join("\n");
+	const response: string[] = [
+		getString("times", "newPb", {
+			time: TimeConverter.ticksToTime(res.data.time),
+			ticks: res.data.time,
+		}),
+	];
+	response.push(pointsResponses.join("\n"));
 
-	return response;
+	return response.join("\n");
 }
 
 export default submitHandler;

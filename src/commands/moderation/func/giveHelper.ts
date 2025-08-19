@@ -2,6 +2,7 @@ import type { Collection, CommandInteraction, GuildMember } from "discord.js";
 import type IPointService from "@utils/pointUtils/IPointService";
 
 import { container } from "tsyringe";
+import { replyHandler } from "@utils/replyHandler";
 
 const giveHelper = async (
 	target: GuildMember | Collection<string, GuildMember>,

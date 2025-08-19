@@ -6,6 +6,8 @@ import giveHelper from "./func/giveHelper.js";
 import multiplierHelper from "./func/multiplierHelper.js";
 import { pointSourcePicker } from "@utils/pickers.js";
 import { getString } from "@utils/stringRepo.js";
+import womHelper from "./event/func/womHelper.js";
+import { replyHandler } from "@utils/replyHandler.js";
 
 @Discord()
 @Guard(IsAdmin)
@@ -34,7 +36,8 @@ class Points {
 		addedPoints: number,
 		interaction: CommandInteraction,
 	) {
-		return giveHelper(target, addedPoints, interaction);
+		const res = await giveHelper(target, addedPoints, interaction);
+		await replyHandler(res, interaction);
 	}
 
 	@Slash({
@@ -59,7 +62,8 @@ class Points {
 		source: string,
 		interaction: CommandInteraction,
 	) {
-		return giveHelper(target, source, interaction);
+		const res = await giveHelper(target, source, interaction);
+		await replyHandler(res, interaction);
 	}
 
 	@Slash({
@@ -102,7 +106,28 @@ class Points {
 			return await interaction.reply(getString("errors", "noGuild"));
 
 		await interaction.guild.members.fetch();
+		const res = await giveHelper(role.members, source, interaction);
+		await replyHandler(res, interaction);
+	}
 
-		return giveHelper(role.members, source, interaction);
+	@Slash({ name: "wom", description: "Wise old man automation" })
+	async wom(
+		@SlashOption({
+			name: "competition",
+			description: "ID of the WOM competition",
+			required: true,
+			type: ApplicationCommandOptionType.Integer,
+		})
+		@SlashOption({
+			name: "cutoff",
+			description: "Cutoff for xp/kills to gain points",
+			required: true,
+			type: ApplicationCommandOptionType.Integer,
+		})
+		competitionId: number,
+		cutoff: number,
+		interaction: CommandInteraction,
+	) {
+		await womHelper(competitionId, interaction, cutoff);
 	}
 }

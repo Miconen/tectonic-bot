@@ -11,11 +11,11 @@ import { winnerTeamHelper } from "./func/winnerTeamHelper";
 
 @Discord()
 @SlashGroup({
-	name: "winner",
-	description: "Reward event winners",
-	root: "event",
+	description: "Manage user event placements",
+	name: "event",
+	root: "moderation",
 })
-@SlashGroup("winner", "event")
+@SlashGroup("event", "moderation")
 @Guard(IsAdmin)
 class Winners {
 	@Slash({ name: "team", description: "Reward team event winners" })
