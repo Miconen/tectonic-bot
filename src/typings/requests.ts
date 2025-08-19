@@ -48,6 +48,10 @@ export type SimpleUser = {
 	points: number;
 };
 
+export type PointsResponse = SimpleUser & {
+	given_points: number;
+};
+
 export type User = SimpleUser & {
 	rsns: RSN[];
 	events: Event[];
@@ -132,7 +136,12 @@ export type PresetPoints = {
 	| "clan_pb"
 	| "split_low"
 	| "split_medium"
-	| "split_high";
+	| "split_high"
+	| "combat_achievement_low"
+	| "combat_achievement_medium"
+	| "combat_achievement_high"
+	| "combat_achievement_very_high"
+	| "combat_achievement_very_highest";
 };
 
 export type Points = CustomPoints | PresetPoints;
