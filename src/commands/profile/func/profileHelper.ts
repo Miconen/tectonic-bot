@@ -1,88 +1,142 @@
-import type { CommandInteraction, GuildMember } from "discord.js"
-import type IRankService from "../../../utils/rankUtils/IRankService"
-import type IUserService from "../../../utils/userUtils/IUserService"
-import type IDatabase from "@database/IDatabase"
+import type { CommandInteraction, GuildMember } from "discord.js";
+import type IRankService from "@utils/rankUtils/IRankService";
+import { Requests } from "@requests/main.js";
+import type { UserParam } from "@typings/requests.js";
 
-import { container } from "tsyringe"
+import { container } from "tsyringe";
+import TimeConverter from "@commands/pb/func/TimeConverter";
+import { getString } from "@utils/stringRepo";
 
 const pointsHelper = async (
-    user: GuildMember | null,
-    rsn: string | null,
-    interaction: CommandInteraction
+	member: GuildMember | null,
+	rsn: string | null,
+	interaction: CommandInteraction,
 ) => {
-    let guildId = interaction.guildId
-    if (!guildId) return `❌ Critical error determining guild.`
+	if (!interaction.guild) return getString("errors", "noGuild");
+	const guildId = interaction.guild.id;
 
-    const rankService = container.resolve<IRankService>("RankService")
-    const userService = container.resolve<IUserService>("UserService")
-    const database = container.resolve<IDatabase>("Database")
+	const rankService = container.resolve<IRankService>("RankService");
 
-    let targetUser: GuildMember | undefined
-    let targetId = ""
-    let isActivated = false
+	let target = member;
+	let query: UserParam | undefined;
+	let errorMsg = getString("profile", "criticalError");
 
-    // Checks the database for an rns
-    if (rsn) {
-        let userId = await database.getUserByRsn(guildId, rsn)
-        if (!userId) return `❌ **${rsn}** is not bound to a member.`
-        // User exists and is activated
-        targetId = userId
-        targetUser = await interaction.guild?.members.fetch(targetId)
-        isActivated = true
-    }
+	if (!target) {
+		target = interaction.member as GuildMember;
+	}
 
-    // Check user exists if there was no rsn
-    if (!isActivated) {
-        targetUser = user || (interaction.member as GuildMember)
-        targetId = targetUser.id
-        isActivated = await database.userExists(guildId, targetId)
-    }
+	// User wants to check self
+	if (!rsn) {
+		query = { type: "user_id", user_id: target.id };
+		errorMsg = getString("accounts", "notActivated", {
+			username: target.displayName,
+		});
+	}
 
-    if (!targetUser) {
-        return `❌ Couldn't fetch user.`
-    }
+	// Checks the database for an rns
+	if (rsn) {
+		query = { type: "rsn", rsn };
+		errorMsg = getString("errors", "rsnNotBound", { rsn });
+	}
 
-    if (!isActivated) {
-        return `❌ **${targetUser.displayName}** is not activated.`
-    }
+	if (!query) {
+		return errorMsg;
+	}
 
-    let points = (await database.getPoints(interaction.guildId!, targetId)) ?? 0
-    if (!guildId) return "Invalid guild id, something broke bad??"
+	const res = await Requests.getUser(guildId, query);
+	if (res.error) return errorMsg;
+	if (!res.data) {
+		return getString("accounts", "notActivated", {
+			username: target.displayName,
+		});
+	}
 
-    // Rank info and icons
-    let nextRankUntil = rankService.pointsToNextRank(points)
-    let nextRank = rankService.getRankByPoints(points + nextRankUntil)
-    let nextRankIcon = rankService.getIcon(nextRank)
-    let currentRank = rankService.getRankByPoints(points)
-    let currentRankIcon = rankService.getIcon(currentRank)
+	target = await interaction.guild.members.fetch(res.data.user_id);
 
-    // User accounts
-    let accounts = await userService.getAccounts(targetId, guildId)
-    let pbs = (await userService.getPbs(targetId, guildId)).sort()
+	const user = res.data;
+	const points = user.points;
 
-    let response: string
-    response = `# ${currentRankIcon} **${targetUser.displayName}**`
-    response += `\nCurrent points: ${points}${currentRankIcon}`
-    if (currentRank != "wrath") {
-        response += `\nPoints to next level: ${nextRankUntil}${nextRankIcon}`
-    }
-    if (accounts.length) {
-        response += "\n# Accounts"
-        accounts.forEach((account) => {
-            response += `\n\`${account}\``
-        })
-    }
-    // else {
-    //     response += "\n`Link your OSRS account to be eligible for event rank points`"
-    // }
-    if (pbs.length) {
-        response += "\n# Clan PBs"
-        pbs.forEach((pb) => {
-            response += `\n\`${pb.boss}\` - \`${pb.time}\``
-        })
-    }
+	// Rank info and icons
+	const nextRankUntil = rankService.pointsToNextRank(points);
+	const nextRank = rankService.getRankByPoints(points + nextRankUntil);
+	const nextRankIcon = rankService.getIcon(nextRank);
+	const currentRank = rankService.getRankByPoints(points);
+	const currentRankIcon = rankService.getIcon(currentRank);
 
-    return response
-}
+	const lines: string[] = [];
+	lines.push(
+		getString("profile", "header", {
+			rankIcon: currentRankIcon,
+			username: target.displayName,
+		}),
+		getString("ranks", "rankInfoWithNext", {
+			currentIcon: currentRankIcon,
+			username: target.displayName,
+			points,
+			nextIcon: nextRankIcon,
+			pointsToNext: nextRankUntil,
+		}),
+	);
+	if (currentRank === "wrath") {
+		lines.push(
+			getString("ranks", "rankInfo", {
+				icon: currentRankIcon,
+				username: target.displayName,
+				points,
+			}),
+		);
+	}
+	if (user.rsns.length) {
+		lines.push(getString("profile", "accountsHeader"));
+		for (const account of user.rsns) {
+			lines.push(getString("profile", "accountEntry", { rsn: account.rsn }));
+		}
+	} else {
+		lines.push(`\`${getString("accounts", "noLinkedAccounts")}\``);
+	}
+	if (user.times.length) {
+		lines.push(getString("profile", "pbsHeader"));
+		for (const pb of user.times) {
+			lines.push(
+				getString("profile", "pbEntry", {
+					category: pb.category,
+					displayName: pb.display_name,
+					time: TimeConverter.ticksToTime(pb.time),
+					ticks: pb.time,
+				}),
+			);
+		}
+	}
+	// TODO: Also check if user has any events where placed below position_cutoff
+	if (user.events.length) {
+		lines.push(getString("profile", "eventsHeader"));
+		for (const event of user.events) {
+			// Skip events that are below the position cutoff
+			if (event.postition_cutoff < event.placement) continue;
 
-export default pointsHelper
+			lines.push(
+				getString("profile", "eventEntry", {
+					eventName: event.name,
+					womId: event.wom_id,
+					placement: event.placement,
+				}),
+			);
+		}
+	}
+
+	if (user.achievements.length) {
+		lines.push(getString("profile", "achievementsHeader"));
+		for (const achievement of user.achievements) {
+			lines.push(
+				getString("profile", "achievementEntry", {
+					icon: achievement.discord_icon,
+					name: achievement.name,
+				}),
+			);
+		}
+	}
+
+	return lines.join("\n");
+};
+
+export default pointsHelper;

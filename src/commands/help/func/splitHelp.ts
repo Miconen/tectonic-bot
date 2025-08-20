@@ -1,27 +1,22 @@
-import { CommandInteraction } from "discord.js";
-import type IPointService from "../../../utils/pointUtils/IPointService"
+import type { CommandInteraction } from "discord.js";
 
-import { container } from "tsyringe"
+import { getString } from "@utils/stringRepo";
+import { replyHandler } from "@utils/replyHandler";
+import { getPoints } from "@utils/pointSources";
 
 const splitHelp = async (interaction: CommandInteraction) => {
-    const pointService = container.resolve<IPointService>("PointService")
+	if (!interaction.guild)
+		return await interaction.reply(getString("errors", "noGuild"));
 
-    let points_low = await pointService.pointsHandler(
-        pointService.pointRewards.get("split_low") ?? 0,
-        interaction.guild!.id,
-    );
-    let points_medium = await pointService.pointsHandler(
-        pointService.pointRewards.get("split_medium") ?? 0,
-        interaction.guild!.id,
-    );
-    let points_high = await pointService.pointsHandler(
-        pointService.pointRewards.get("split_high") ?? 0,
-        interaction.guild!.id,
-    );
-
-    await interaction.reply(
-        `Gain points for recieving a drop and splitting with your clan mates, screenshot of loot and teammates names required as proof.\nRequires user to be an activated user\nPoint rewards: ${points_low}, ${points_medium} & ${points_high}`,
-    );
-}
+	await replyHandler(
+		getString("splits", "helpText", {
+			lowPoints: (await getPoints("split_low", interaction.guild.id)) ?? 0,
+			mediumPoints:
+				(await getPoints("split_medium", interaction.guild.id)) ?? 0,
+			highPoints: (await getPoints("split_high", interaction.guild.id)) ?? 0,
+		}),
+		interaction,
+	);
+};
 
 export default splitHelp;

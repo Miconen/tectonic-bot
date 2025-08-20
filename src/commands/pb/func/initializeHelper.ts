@@ -1,101 +1,106 @@
-import { CommandInteraction, TextChannel } from "discord.js"
-import embedBuilder from "./embedBuilder.js"
-import removeOldEmbeds from "./removeOldEmbeds.js"
-import TimeConverter from "./TimeConverter.js"
-import { GuildBoss, GuildCategory, TimeField } from "./types.js"
-import type IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
+import { Requests } from "@requests/main.js";
+import type { CategoryUpdate } from "@typings/requests.js";
+import { formatGuildTimes } from "@utils/guilds.js";
+import { getString } from "@utils/stringRepo.js";
+import type { CommandInteraction, TextChannel } from "discord.js";
+import TimeConverter from "./TimeConverter.js";
+import embedBuilder from "./embedBuilder.js";
+import removeOldEmbeds from "./removeOldEmbeds.js";
+import type { TimeField } from "./types.js";
 
 async function initializeHelper(interaction: CommandInteraction) {
-    const database = container.resolve<IDatabase>("Database")
+	if (!interaction.guild) {
+		await interaction.reply({
+			content: getString("errors", "noGuild"),
+			ephemeral: true,
+		});
+		return;
+	}
+	const guildId = interaction.guild.id;
+	const channel = interaction.channel as TextChannel;
 
-    // Guild id should always be set, if not let the program fail for easier debugging
-    const guildId = interaction.guildId!
+	await interaction.deferReply({ ephemeral: true });
 
-    await interaction.deferReply({ ephemeral: true })
-    await interaction.editReply({ content: "Removing old category embeds..." })
+	await interaction.editReply({
+		content: getString("times", "fetchingGuildData"),
+	});
+	const res = await Requests.getGuildTimes(guildId);
 
-    await removeOldEmbeds(guildId, interaction.client)
+	if (res.error) {
+		await interaction.deleteReply();
+		await interaction.followUp({
+			content: getString("errors", "apiError", {
+				activity: "fetching guild times",
+				error: res.message,
+			}),
+			ephemeral: true,
+		});
+		return;
+	}
 
-    await interaction.editReply({ content: "Getting categories and bosses..." })
+	await interaction.editReply({
+		content: getString("times", "removingOldEmbeds"),
+	});
+	await removeOldEmbeds(res.data, interaction.client);
 
-    const categoriesWithBosses = await database.getCategoriesWithBosses()
-    // Accessing categories with associated bosses
-    const categories = categoriesWithBosses.map((category) => {
-        const { bosses, ...categoryData } = category
-        return {
-            ...categoryData,
-            bosses,
-        }
-    })
+	await interaction.editReply({
+		content: getString("times", "creatingEmbeds"),
+	});
 
-    let channel = interaction.channel as TextChannel
+	// Create combined categories data
+	const categories = formatGuildTimes(res.data);
+	const players = new Set<string>(
+		res.data.teammates?.map((t) => t.user_id) ?? [],
+	);
+	const members = await interaction.guild.members.fetch({
+		user: Array.from(players),
+	});
+	const msgs: CategoryUpdate[] = [];
 
-    await interaction.editReply({ content: "Creating embeds..." })
+	for (const category of categories) {
+		const embed = embedBuilder(interaction)
+			.setTitle(category.name)
+			.setThumbnail(category.thumbnail);
 
-    const guildBosses: GuildBoss[] = []
-    const guildCategories: GuildCategory[] = []
+		const fields: TimeField[] = [];
 
-    // Fetch existing boss data from guild_bosses table in a single query
-    const existingBosses = await database.getGuildBossesPbs(guildId)
-    const existingBossesMap = new Map(
-        existingBosses.map((boss) => [boss.boss, boss])
-    )
+		for (const boss of category.bosses) {
+			let time = "No time yet";
+			if (boss.pb) {
+				time = TimeConverter.ticksToTime(boss.pb.time);
+			}
 
-    // Sort categories by category order
-    const sortedCategories = categories.sort((a, b) => a.order - b.order)
+			const team =
+				boss.teammates
+					?.map((player) => `**${members.get(player.user_id)?.displayName}**`)
+					.join(", ") ?? "";
 
-    for (let category of sortedCategories) {
-        let embed = embedBuilder(interaction)
-            .setTitle(category.name)
-            .setThumbnail(category.thumbnail)
+			fields.push({
+				name: boss.display_name,
+				value: `${time} ${team}`,
+			});
+		}
 
-        let fields: TimeField[] = []
+		embed.addFields(fields);
 
-        for (let boss of category.bosses) {
-            const existingBoss = existingBossesMap.get(boss.name)
-            let formattedTime = "No time yet"
-            const time = existingBoss?.times?.time
-            if (time) {
-                formattedTime = TimeConverter.ticksToTime(time)
-            }
+		const { id } = await channel.send({ embeds: [embed] });
+		msgs.push({ message_id: id, category: category.category });
+	}
 
-            let formattedTeam = ""
-            const team = existingBoss?.times?.teams.map(
-                (player) => `<@${player.user_id}>`
-            )
-            if (team) {
-                formattedTeam = team?.join(", ")
-            }
+	await interaction.editReply({ content: "Storing data..." });
+	const update = await Requests.updateGuild(guildId, {
+		pb_channel: interaction.channelId,
+		category_messages: msgs,
+	});
 
-            fields.push({
-                name: boss.display_name,
-                value: `${formattedTime} ${formattedTeam}`,
-            })
-
-            guildBosses.push({
-                boss: boss.name,
-                guild_id: guildId,
-            })
-        }
-
-        embed.addFields(...fields)
-
-        let { id: messageId } = await channel.send({ embeds: [embed] })
-
-        guildCategories.push({
-            guild_id: guildId,
-            category: category.name,
-            message_id: messageId,
-        })
-    }
-
-    await interaction.editReply({ content: "Storing data..." })
-    await database.updatePbChannel(guildId, interaction.channelId)
-    await database.ensureGuildBossesExist(guildBosses)
-    await database.updateGuildCategories(guildId, guildCategories)
-    await interaction.editReply({ content: "Finished" })
+	await interaction.deleteReply();
+	if (update.error) {
+		await interaction.followUp({
+			content: getString("errors", "internalError"),
+		});
+		return;
+	}
+	await interaction.followUp({ content: getString("times", "finished") });
 }
 
-export default initializeHelper
+export default initializeHelper;

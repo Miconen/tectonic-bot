@@ -1,28 +1,21 @@
-import { ButtonInteraction } from "discord.js";
-import { SplitCache } from "../../../typings/splitTypes.js";
-import getInteractionId from "./getInteractionId.js";
+import type { SplitData } from "@typings/splitTypes";
+import { getString } from "@utils/stringRepo";
+import type { CommandInteraction, TextChannel } from "discord.js";
 
-const denyHelper = async (interaction: ButtonInteraction, state: SplitCache) => {
-    let splitId = getInteractionId(interaction);
-    let split = state.get(splitId);
-    if (!split) {
-        await interaction.reply("Split wasn't found in cache");
-        console.log("ERROR: Couldn't get SplitData from SplitCache");
-        return;
-    }
+const denyHelper = async (
+	interaction: CommandInteraction,
+	split: SplitData,
+) => {
+	const receivingUser = split.member;
+	const receivingUserName = receivingUser.displayName;
 
-    let receivingUser = split.member;
-    let receivingUserName = receivingUser.displayName;
+	const channel = (await interaction.client.channels.fetch(
+		split.channel,
+	)) as TextChannel;
+	if (!channel) return "Channel not found";
+	await channel.messages.delete(split.message);
 
-    // Remove buttons on successful button press
-    await interaction.message.edit({ components: [] });
-
-    // Free up memory on point denial
-    state.delete(splitId);
-
-    await interaction.reply(
-        `❌ **${receivingUserName}** point request was denied.`,
-    );
-}
+	return getString("splits", "denied", { username: receivingUserName });
+};
 
 export default denyHelper;

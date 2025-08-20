@@ -1,30 +1,44 @@
-import { CommandInteraction } from "discord.js";
-import type IPointService from "@utils/pointUtils/IPointService"
-
-import { container } from "tsyringe"
+import { getPoints } from "@utils/pointSources";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
+import type { CommandInteraction } from "discord.js";
 
 const pointsHelp = async (interaction: CommandInteraction) => {
-    const pointService = container.resolve<IPointService>("PointService")
+	if (!interaction.guild)
+		return await replyHandler(getString("errors", "noGuild"), interaction);
 
-    let response =
-        `**Point sources**:\n\n` +
-        `**Splits**:\n` +
-        `Low value: ${pointService.pointRewards.get("split_low")}\n` +
-        `Medium value: ${pointService.pointRewards.get("split_medium")}\n` +
-        `High value: ${pointService.pointRewards.get("split_high")}` +
-        `\n\n` +
-        `**Events**:\n` +
-        `Participation: ${pointService.pointRewards.get("event_participation")}\n` +
-        `Hosting: ${pointService.pointRewards.get("event_hosting")}` +
-        `\n\n` +
-        `**Learners**:\n` +
-        `Half: ${pointService.pointRewards.get("learner_half")}\n` +
-        `Full: ${pointService.pointRewards.get("learner_full")}` +
-        `\n\n` +
-        `**Forum**:\n` +
-        `Bumping: ${pointService.pointRewards.get("forum_bump")}`;
+	const response = [];
+	response.push("**Point sources**:\n");
+	response.push("**Splits**:");
+	response.push(
+		`Low value: ${await getPoints("split_low", interaction.guild.id)}`,
+	);
+	response.push(
+		`Medium value: ${await getPoints("split_medium", interaction.guild.id)}`,
+	);
+	response.push(
+		`High value: ${await getPoints("split_high", interaction.guild.id)}`,
+	);
+	response.push("**Events**:");
+	response.push(
+		`Participation: ${await getPoints("event_participation", interaction.guild.id)}`,
+	);
+	response.push(
+		`Hosting: ${await getPoints("event_hosting", interaction.guild.id)}`,
+	);
+	response.push("**Learners**:");
+	response.push(
+		`Half: ${await getPoints("learner_half", interaction.guild.id)}`,
+	);
+	response.push(
+		`Full: ${await getPoints("learner_full", interaction.guild.id)}`,
+	);
+	response.push("**Forum**:");
+	response.push(
+		`Bumping: ${await getPoints("forum_bump", interaction.guild.id)}`,
+	);
 
-    await interaction.reply(response);
-}
+	await replyHandler(response.join("\n"), interaction);
+};
 
 export default pointsHelp;

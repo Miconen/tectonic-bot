@@ -1,108 +1,171 @@
-import { injectable, inject, singleton } from "tsyringe"
-import IPointService from "./IPointService.js"
-import { BaseInteraction, Collection, Guild, GuildMember } from "discord.js"
-import capitalizeFirstLetter from "../capitalizeFirstLetter.js"
-import IRankService from "../rankUtils/IRankService.js"
-import IDatabase from "@database/IDatabase.js"
+import { Requests } from "@requests/main.js";
+import type {
+	CustomPoints,
+	PointsParam,
+	PresetPoints,
+} from "@typings/requests.js";
+import { getString } from "@utils/stringRepo.js";
+import type { BaseInteraction, GuildMember } from "discord.js";
+import { Collection } from "discord.js";
+import { inject, injectable, singleton } from "tsyringe";
+import type IRankService from "../rankUtils/IRankService.js";
+import type IPointService from "./IPointService.js";
 
 @singleton()
 @injectable()
 export class PointService implements IPointService {
-    readonly pointRewards: Map<string, number>
-    private pointMultiplierCache: Map<string, number>
+	constructor(@inject("RankService") private rankService: IRankService) { }
 
-    constructor(
-        @inject("RankService") private rankService: IRankService,
-        @inject("Database") private database: IDatabase
-    ) {
-        this.pointRewards = new Map([
-            ["event_participation", 5],
-            ["event_hosting", 10],
-            ["forum_bump", 5],
-            ["learner_half", 5],
-            ["learner_full", 10],
-            ["split_low", 10],
-            ["split_medium", 20],
-            ["split_high", 30],
-        ])
+	async givePoints(
+		value: string | number,
+		target: GuildMember | Collection<string, GuildMember>,
+		interaction: BaseInteraction,
+	) {
+		if (!interaction.guild) return getString("errors", "noGuild");
 
-        this.pointMultiplierCache = new Map()
-    }
+		const user_id =
+			target instanceof Collection
+				? target.map((member) => member.id)
+				: target.id;
 
-    async pointsHandler(points: number = 0, guild_id: string) {
-        // Check if the multiplier is already cached
-        if (this.pointMultiplierCache.has(guild_id)) {
-            let cachedMultiplier = this.pointMultiplierCache.get(guild_id)
-            if (!cachedMultiplier) return points
-            return points * cachedMultiplier
-        }
+		const points =
+			typeof value === "number"
+				? ({ type: "custom" as const, amount: value } as CustomPoints)
+				: ({ type: "preset" as const, event: value } as PresetPoints);
 
-        let res = await this.database.getPointMultiplier(guild_id)
-        if (!res) return points
-        if (isNaN(res) || res == 0) return points
+		const param: PointsParam = { user_id, points };
 
-        this.pointMultiplierCache.set(guild_id, res)
-        return points * res
-    }
+		// Handle single vs multiple GuildMembers
+		if (target instanceof Collection) {
+			return this.giveToManyHandler(param, target, interaction);
+		}
 
-    async givePointsToMultiple(
-        addedPoints: number,
-        users: Collection<string, GuildMember>,
-        interaction: BaseInteraction,
-        extraPoints?: { [key: string]: number }
-    ) {
-        let responses: Promise<string>[] = []
+		return this.giveHandler(param, target, interaction);
+	}
 
-        users.forEach((user) => {
-            let pointsToGive = addedPoints + (extraPoints?.[user.id] || 0)
-            let points = this.givePoints(pointsToGive, user, interaction)
-            responses.push(points)
-        })
+	private async giveToManyHandler(
+		param: PointsParam,
+		targets: Collection<string, GuildMember>,
+		interaction: BaseInteraction,
+	) {
+		if (!interaction.guild) return [getString("errors", "noGuild")];
+		const response: string[] = [];
 
-        return Promise.all(responses)
-    }
+		const res = await Requests.givePointsToMultiple(
+			interaction.guild.id,
+			param,
+		);
 
-    async givePoints(
-        addedPoints: number,
-        user: GuildMember,
-        interaction: BaseInteraction
-    ) {
-        if (!this.rankService)
-            return "Unexpected error happened with rank service"
-        const { displayName: receivingUser = "???", id: receivingUserId } = user
-        const { displayName: grantingUser = "???" } =
-            interaction.member as GuildMember
-        const { id: guildId } = interaction.guild as Guild
+		if (res.error) {
+			return [`Error giving points: ${res.message}`];
+		}
 
-        let newPoints = await this.database.updateUserPoints(
-            guildId,
-            receivingUserId,
-            addedPoints
-        )
+		const givenTo = new Map<string, boolean>();
+		targets.forEach((_, k) => {
+			givenTo.set(k, false);
+		});
 
-        let response: string
-        // Check for 0 since it evaluates to false otherwise
-        if (newPoints || newPoints === 0) {
-            response = `✔ **${receivingUser}** was granted ${addedPoints} points by **${grantingUser}** and now has a total of ${newPoints} points.`
-            let newRank = await this.rankService.rankUpHandler(
-                interaction,
-                user,
-                newPoints - addedPoints,
-                newPoints
-            )
-            // Concatenate level up message to response if user leveled up
-            if (newRank) {
-                let newRankIcon = this.rankService.getIcon(newRank)
-                response += `\n**${receivingUser}** ranked up to ${newRankIcon} ${capitalizeFirstLetter(
-                    newRank
-                )}!`
-            }
-        } else if (newPoints === false) {
-            response = `❌ **${receivingUser}** is not an activated user.`
-        } else {
-            response = "Error giving points"
-        }
+		for (const u of res.data) {
+			const member = targets.get(u.user_id);
 
-        return response
-    }
+			if (!member)
+				return [getString("errors", "couldntGetUser", { userId: u.user_id })];
+
+			givenTo.set(u.user_id, true);
+			response.push(
+				getString("ranks", "pointsGranted", {
+					username: member.displayName,
+					pointsGiven: u.given_points,
+					grantedBy: member.displayName,
+					totalPoints: u.points,
+				}),
+			);
+			const newRank = await this.rankService.rankUpHandler(
+				interaction,
+				member,
+				u.points - u.given_points,
+				u.points,
+			);
+
+			if (!newRank) continue;
+
+			// Concatenate level up message to response if user leveled up
+			const newRankIcon = this.rankService.getIcon(newRank);
+			response.push(
+				getString("ranks", "levelUpMessage", {
+					username: member.displayName,
+					icon: newRankIcon,
+					rankName: newRank,
+				}),
+			);
+		}
+
+		givenTo.forEach((v, k) => {
+			if (v) return;
+			const member = targets.get(k);
+			if (!member) return;
+
+			response.push();
+		});
+
+		return response;
+	}
+
+	private async giveHandler(
+		param: PointsParam,
+		target: GuildMember,
+		interaction: BaseInteraction,
+	) {
+		if (!interaction.guild) return getString("errors", "noGuild");
+
+		const res = await Requests.givePoints(interaction.guild.id, param);
+
+		if (res.status === 404) {
+			return getString("accounts", "notActivated", {
+				username: target.displayName,
+			});
+		}
+
+		if (res.error) {
+			return getString("errors", "givingPoints");
+		}
+
+		if (!res.data) {
+			return getString("errors", "internalError", {
+				username: target.displayName,
+			});
+		}
+
+		const response: string[] = [];
+		const member = interaction.member as GuildMember;
+
+		response.push(
+			getString("ranks", "pointsGranted", {
+				username: target.displayName,
+				pointsGiven: res.data.given_points,
+				grantedBy: member.displayName,
+				totalPoints: res.data.points,
+			}),
+		);
+		const newRank = await this.rankService.rankUpHandler(
+			interaction,
+			target,
+			res.data.points - res.data.given_points,
+			res.data.points,
+		);
+
+		if (!newRank) return response.join("\n");
+
+		// Concatenate level up message to response if user leveled up
+		const newRankIcon = this.rankService.getIcon(newRank);
+		response.push(
+			getString("ranks", "levelUpMessage", {
+				username: target.displayName,
+				icon: newRankIcon,
+				rankName: newRank,
+			}),
+		);
+
+		return response.join("\n");
+	}
 }

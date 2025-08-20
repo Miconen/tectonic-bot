@@ -1,27 +1,38 @@
-import { CommandInteraction } from "discord.js"
-import IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
+import type { CommandInteraction } from "discord.js";
+import { Requests } from "@requests/main.js";
+import { getString } from "@utils/stringRepo";
+import { replyHandler } from "@utils/replyHandler";
+import { Multipliers } from "@utils/pointSources";
 
 const multiplierHelper = async (
-    multiplier: number,
-    interaction: CommandInteraction
+	multiplier: number,
+	interaction: CommandInteraction,
 ) => {
-    const database = container.resolve<IDatabase>("Database")
+	if (!interaction.guild) {
+		await replyHandler(getString("errors", "noGuild"), interaction, {
+			ephemeral: true,
+		});
+		return;
+	}
 
-    let newMultiplier = await database.setPointMultiplier(
-        interaction.guild!.id,
-        multiplier
-    )
+	const res = await Requests.updateGuild(interaction.guild.id, {
+		multiplier,
+	});
 
-    let response: string
-    if (newMultiplier) {
-        response = `Updated server point multiplier to ${newMultiplier}`
-    } else {
-        response = "Something went wrong..."
-    }
+	if (res.error) {
+		await replyHandler(getString("errors", "internalError"), interaction, {
+			ephemeral: true,
+		});
+		return;
+	}
 
-    await interaction.reply(response)
-}
+	// Update multiplier cache
+	Multipliers.set(interaction.guild.id, multiplier);
 
-export default multiplierHelper
+	await replyHandler(
+		getString("moderation", "multiplierSet", { multiplier }),
+		interaction,
+	);
+};
+
+export default multiplierHelper;

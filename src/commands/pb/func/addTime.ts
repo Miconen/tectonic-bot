@@ -1,35 +1,31 @@
-import hasDuplicates from "./hasDuplicates.js"
-import type IDatabase from "@database/IDatabase"
-
-import { container } from "tsyringe"
+import hasDuplicates from "./hasDuplicates.js";
+import { Requests } from "@requests/main.js";
 
 async function addTime(
-    ticks: number,
-    boss: string,
-    team: (string | undefined)[],
-    guildId: string
+	ticks: number,
+	boss: string,
+	team: (string | undefined)[],
+	guildId: string,
 ) {
-    const database = container.resolve<IDatabase>("Database")
+	if (team.filter((player) => player).length === 0) return;
+	if (hasDuplicates(team)) return;
 
-    if (team.filter((player) => player).length == 0) return
-    if (hasDuplicates(team)) return
+	const user_ids: string[] = [];
+	for (const teammate of team) {
+		if (!teammate) continue;
+		user_ids.push(teammate);
+	}
 
-    const newTime = await database.addTime(ticks, boss)
-    const timeId = newTime.run_id
+	const time = await Requests.newTime(guildId, {
+		user_ids,
+		time: ticks,
+		boss_name: boss,
+	});
 
-    let teamData = []
-    for (let player of team) {
-        if (!player) continue
-        teamData.push({ run_id: timeId, user_id: player, guild_id: guildId })
-    }
-
-    await database.addTeam(teamData)
-
-    return {
-        ...newTime,
-        run_id: timeId,
-        team: teamData,
-    }
+	// TODO: Return proper format
+	return {
+		time,
+	};
 }
 
-export default addTime
+export default addTime;

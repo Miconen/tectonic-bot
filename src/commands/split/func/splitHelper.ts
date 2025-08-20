@@ -1,52 +1,39 @@
-import type { SplitCache, SplitData } from "../../../typings/splitTypes.js";
-import type IPointService from "../../../utils/pointUtils/IPointService"
+import type { SplitCache, SplitData } from "@typings/splitTypes.js";
+import { getPoints } from "@utils/pointSources";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 
-import {
-    ActionRowBuilder,
-    ButtonBuilder, ButtonStyle,
-    CommandInteraction,
-    GuildMember,
-    MessageActionRowComponentBuilder
-} from "discord.js";
-import { container } from "tsyringe"
+import type { CommandInteraction, GuildMember } from "discord.js";
 
-const splitHelper = async (value: number, interaction: CommandInteraction, state: SplitCache) => {
-    const pointService = container.resolve<IPointService>("PointService")
+const splitHelper = async (
+	value: number,
+	interaction: CommandInteraction,
+	state: SplitCache,
+) => {
+	if (!interaction.channel)
+		return await replyHandler(getString("errors", "noChannel"), interaction);
+	if (!interaction.guild)
+		return await replyHandler(getString("errors", "noGuild"), interaction);
 
-    value = await pointService.pointsHandler(value, interaction.guild!.id);
+	const points = await getPoints(value, interaction.guild.id);
 
-    // Create the button, giving it the id: "approve-btn"
-    const approveButton = new ButtonBuilder()
-        .setLabel("Approve")
-        .setStyle(ButtonStyle.Success)
-        .setCustomId("approve-btn");
+	const username = (interaction.member as GuildMember).displayName;
+	await replyHandler(
+		getString("splits", "requestSubmitted", { username, points }),
+		interaction,
+	);
 
-    // Create a button, giving it the id: "deny-btn"
-    const denyButton = new ButtonBuilder()
-        .setLabel("Deny")
-        .setStyle(ButtonStyle.Danger)
-        .setCustomId("deny-btn");
+	const message = await interaction.fetchReply();
 
-    // Create a MessageActionRow and add the button to that row.
-    const row =
-        new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-            approveButton,
-            denyButton,
-        );
+	const split: SplitData = {
+		member: interaction.member as GuildMember,
+		channel: interaction.channel.id,
+		message: message.id,
+		points,
+		timestamp: Date.now(),
+	};
 
-    const msg = `**${(interaction.member as GuildMember).displayName
-    }** has submitted a request for ${value} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`;
-    await interaction.reply({
-        content: msg,
-        components: [row],
-    });
-
-    const split: SplitData = {
-        member: interaction.member as GuildMember,
-        points: value
-    }
-
-    state.set(interaction.id, split)
-}
+	state.set(interaction.id, split);
+};
 
 export default splitHelper;

@@ -1,5 +1,5 @@
 ## build runner
-FROM node:lts-alpine as build-runner
+FROM node:20-alpine3.16 as build-runner
 
 # Set temp directory
 WORKDIR /tmp/app
@@ -9,11 +9,6 @@ COPY package.json package-lock.json* ./
 # Install dependencies
 RUN npm ci && npm cache clean --force
 
-# Move prisma
-COPY prisma ./prisma
-# Generate prisma
-RUN npx prisma generate
-
 # Move source files
 COPY src ./src
 COPY tsconfig.json .
@@ -22,7 +17,7 @@ COPY tsconfig.json .
 RUN npm run build
 
 ## producation runner
-FROM node:lts-alpine as prod-runner
+FROM node:20-alpine3.16 as prod-runner
 
 # Set work directory
 WORKDIR /app
@@ -35,8 +30,6 @@ RUN npm install --omit=dev
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build
-COPY --from=build-runner /tmp/app/node_modules/.prisma /app/node_modules/.prisma
-COPY --from=build-runner /tmp/app/prisma /app/prisma
 
 # Start bot
 CMD [ "node", "build/main.js" ]

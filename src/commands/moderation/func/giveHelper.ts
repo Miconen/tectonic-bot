@@ -1,14 +1,19 @@
-import type {CommandInteraction, GuildMember} from "discord.js";
-import type IPointService from "../../../utils/pointUtils/IPointService"
+import type { Collection, CommandInteraction, GuildMember } from "discord.js";
+import type IPointService from "@utils/pointUtils/IPointService";
 
-import { container } from "tsyringe"
+import { container } from "tsyringe";
+import { replyHandler } from "@utils/replyHandler";
 
-const giveHelper = async (user: GuildMember, addedPoints: number, interaction: CommandInteraction) => {
-    const pointService = container.resolve<IPointService>("PointService")
+const giveHelper = async (
+	target: GuildMember | Collection<string, GuildMember>,
+	value: number | string,
+	interaction: CommandInteraction,
+) => {
+	const pointService = container.resolve<IPointService>("PointService");
 
-    // Handle giving of points, returns a string to be sent as a message.
-    let pointsResponse = await pointService.givePoints(addedPoints, user, interaction);
-    await interaction.reply(pointsResponse);
-}
+	// Handle giving of points, returns a string to be sent as a message.
+	const res = await pointService.givePoints(value, target, interaction);
+	return Array.isArray(res) ? res.join("\n") : res;
+};
 
 export default giveHelper;

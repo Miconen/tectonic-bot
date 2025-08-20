@@ -1,8 +1,0 @@
-{
-    "trailingComma": "es5",
-    "target": "ESNext",
-    "tabWidth": 4,
-    "semi": false,
-    "singleQuote": false,
-    "arrowParens": "always"
-}

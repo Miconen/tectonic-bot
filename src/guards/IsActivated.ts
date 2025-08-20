@@ -1,95 +1,106 @@
-import {
-    ButtonInteraction,
-    CommandInteraction,
-    GuildMember,
-    InteractionReplyOptions,
-} from "discord.js"
-import { GuardFunction } from "discordx"
-import type IDatabase from "../database/IDatabase"
+import { Requests } from "@requests/main.js";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
+import { type CommandInteraction, GuildMember } from "discord.js";
+import type { GuardFunction } from "discordx";
 
-import { container } from "tsyringe"
-const database = container.resolve<IDatabase>("Database")
+function IsActivated(target = "player") {
+	const guard: GuardFunction<CommandInteraction> = async (
+		interaction,
+		_,
+		next,
+	) => {
+		console.log("Checking if all players are activated (IsActivated guard)");
 
-function IsActivated(target: string = "player") {
-    const guard: GuardFunction<CommandInteraction> = async (
-        interaction,
-        _,
-        next
-    ) => {
-        console.log(`Checking if all players are activated`)
+		const players: GuildMember[] = [];
 
-        let players: GuildMember[] = []
+		// Dirty hack to extract GuildMembers from the guarded commands options
+		const options = interaction.options.data.at(0)?.options;
+		if (!options)
+			return await replyHandler(
+				getString("errors", "parameterMissing", { parameter: "players" }),
+				interaction,
+				{ ephemeral: true },
+			);
 
-        // Dirty hack to extract GuildMembers from the guarded commands options
-        interaction.options.data[0].options?.forEach((option) => {
-            if (
-                option.name.includes(target) &&
-                option.member &&
-                option.member instanceof GuildMember
-            ) {
-                console.log("option was guild member")
-                players.push(option.member)
-            } else if (option.name.includes(target)) {
-                console.error(
-                    "### Something went wrong with IsActivated guard finding GuildMembers ###"
-                )
-            }
-        })
+		for (const option of options) {
+			if (
+				option.name.includes(target) &&
+				option.member &&
+				option.member instanceof GuildMember
+			) {
+				console.log("option was guild member");
+				players.push(option.member);
+			} else if (option.name.includes(target)) {
+				console.error(
+					"### Something went wrong with IsActivated guard finding GuildMembers ###",
+				);
+			}
+		}
 
-        if (!players.length) {
-            console.log("↳ Error retrieving players")
-            const warning: InteractionReplyOptions = {
-                content: "Failed to fetch players from command",
-                ephemeral: true,
-            }
-            return await interaction.reply(warning)
-        } else {
-            console.log("↳ Players list populated")
-        }
+		if (!players.length) {
+			console.log("↳ Error retrieving players");
+			const warning = "Failed to fetch players from command";
+			return await replyHandler(warning, interaction);
+		}
+		console.log("↳ Players list populated");
 
-        if (!interaction.guild?.id) {
-            console.log("↳ Error getting guild ID")
-            const warning: InteractionReplyOptions = {
-                content: "Failed to fetch guild id",
-                ephemeral: true,
-            }
-            return await interaction.reply(warning)
-        }
+		if (!interaction.guild?.id) {
+			console.log("↳ Error getting guild ID");
+			return await replyHandler(getString("errors", "noGuild"), interaction);
+		}
 
-        const playersUserIds = players.map((member) => member.id)
-        const playersUserNames = players.map(
-            (member) => `${member.displayName}`
-        )
-        console.log(
-            `Checking activation statuses for: ${playersUserNames.join(", ")}`
-        )
-        let existingUsers = await database.usersExist(
-            interaction.guild.id,
-            playersUserIds
-        )
+		const playersUserIds = players.map((member) => member.id);
+		const playersUserNames = players.map((member) => `${member.displayName}`);
+		console.log(
+			`Checking activation statuses for: ${playersUserNames.join(", ")}`,
+		);
 
-        let warning = ""
+		const res = await Requests.getUsers(interaction.guild.id, {
+			type: "user_id",
+			user_id: playersUserIds,
+		});
+		if (res.error)
+			return await replyHandler(
+				getString("errors", "fetchFailed", { resource: "users" }),
+				interaction,
+				{ ephemeral: true },
+			);
+		if (!res.data.length)
+			return await replyHandler(
+				getString("errors", "fetchFailed", { resource: "users" }),
+				interaction,
+				{ ephemeral: true },
+			);
 
-        for (const member of players) {
-            const userExists = existingUsers.some(
-                (user) => user.user_id === member.id
-            )
-            if (!userExists) {
-                console.log(`↳ Denied, not activated: ${member.displayName}`)
-                warning += `❌ **${member.displayName}** is not activated.\n`
-            }
-        }
+		const existingUsers = res.data;
 
-        if (warning) {
-            console.log(warning)
-            return await interaction.reply("## Could not submit pb\n" + warning)
-        }
+		let warning = "";
 
-        console.log("↳ Passed")
-        await next()
-    }
+		for (const member of players) {
+			const userExists = existingUsers.some(
+				(user) => user.user_id === member.id,
+			);
+			if (!userExists) {
+				console.log(`↳ Denied, not activated: ${member.displayName}`);
+				warning += `❌ **${member.displayName}** is not activated.\n`;
+			}
+		}
 
-    return guard
+		if (warning) {
+			console.log(warning);
+			return await replyHandler(
+				getString("errors", "commandFailed", { reason: warning }),
+				interaction,
+				{ ephemeral: true },
+			);
+		}
+
+		console.log("↳ Passed");
+		await next();
+	};
+
+	return guard;
 }
 
-export default IsActivated
+export default IsActivated;
