@@ -94,6 +94,7 @@ const pointsHelper = async (
 	} else {
 		lines.push(`\`${getString("accounts", "noLinkedAccounts")}\``);
 	}
+	console.log(user.times);
 	if (user.times.length) {
 		lines.push(getString("profile", "pbsHeader"));
 		for (const pb of user.times) {
