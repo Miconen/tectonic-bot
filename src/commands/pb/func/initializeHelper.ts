@@ -77,7 +77,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 
 			fields.push({
 				name: boss.display_name,
-				value: `${time} ${team}`,
+				value: getString("times", "timeFormat", { time, team }),
 			});
 		}
 
