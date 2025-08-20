@@ -158,6 +158,7 @@ const strings: StringRepository = {
 	},
 
 	times: {
+		timeFormat: (args) => `\`${args.time}\` - ${args.team}`,
 		newRecord: (args) =>
 			`🏆 New ${args.category} record! **${args.displayName}**: ${args.time}`,
 		timeImproved: (args) =>
