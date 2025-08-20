@@ -11,7 +11,6 @@ import initializeHelper from "./func/initializeHelper.js";
 @SlashGroup("pb")
 @Guard(IsAdmin)
 class pb {
-	@Guard(IsAdmin)
 	@Slash({
 		name: "initialize",
 		description: "Initialize a channel for pb embeds",

@@ -115,7 +115,7 @@ async function womHelper(
 				getString("ranks", "levelUpMessage", {
 					username: user.displayName,
 					icon: rankService.getIcon(newRank),
-					rankName: capitalizeFirstLetter(newRank),
+					rankName: newRank.replace("_", " "),
 				}),
 			);
 		}

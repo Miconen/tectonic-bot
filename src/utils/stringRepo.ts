@@ -50,6 +50,7 @@ const strings: StringRepository = {
 		eventNotFound: (args) => `Event with ID ${args.eventId} not found.`,
 		teamResultsProcessed: (args) =>
 			`Team event processed. ${args.teamCount} teams awarded points.`,
+		notTeamEvent: "This event is not team based.",
 	},
 
 	accounts: {

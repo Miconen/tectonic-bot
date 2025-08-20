@@ -1,4 +1,4 @@
-import { Discord, Guard, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
@@ -9,6 +9,12 @@ import deactivationHelper from "./func/deactivationHelper.js";
 import IsAdmin from "@guards/IsAdmin.js";
 
 @Discord()
+@SlashGroup({
+	description: "Manage user status",
+	name: "status",
+	root: "moderation",
+})
+@SlashGroup("status", "moderation")
 @Guard(IsAdmin)
 class Activation {
 	@Slash({
