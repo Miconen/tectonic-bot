@@ -65,6 +65,7 @@ export type DetailedTime = {
 	category: string;
 	run_id: number;
 	date: string;
+	solo: boolean;
 	team: User[];
 };
 
