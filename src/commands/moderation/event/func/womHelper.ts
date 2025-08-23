@@ -4,7 +4,6 @@ import { container } from "tsyringe";
 
 import { Requests } from "@requests/main";
 import type IRankService from "@utils/rankUtils/IRankService";
-import capitalizeFirstLetter from "@utils/capitalizeFirstLetter";
 import { getString } from "@utils/stringRepo";
 
 async function womHelper(
