@@ -24,8 +24,6 @@ const strings: StringRepository = {
 			`**${args.username}** ranked up to ${args.icon} ${capitalizeFirstLetter(args.rankName)}!`,
 		pointsGranted: (args) =>
 			`✔ **${args.username}** was granted ${args.pointsGiven} points by **${args.grantedBy}** and now has a total of ${args.totalPoints} points.`,
-		pointsGrantedMultiple: (args) =>
-			`✔ **${args.usernames}** were granted ${args.pointsGiven} points by **${args.grantedBy}**.`,
 		roleAdded: (args) =>
 			`Added role **${args.roleName}** to **${args.username}**.`,
 		roleRemoved: (args) => `Removed all rank roles from **${args.username}**.`,
