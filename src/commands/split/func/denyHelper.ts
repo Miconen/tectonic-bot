@@ -1,9 +1,13 @@
 import type { SplitData } from "@typings/splitTypes";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction, TextChannel } from "discord.js";
+import type {
+	ButtonInteraction,
+	CommandInteraction,
+	TextChannel,
+} from "discord.js";
 
 const denyHelper = async (
-	interaction: CommandInteraction,
+	interaction: CommandInteraction | ButtonInteraction,
 	split: SplitData,
 ) => {
 	const receivingUser = split.member;
@@ -13,6 +17,8 @@ const denyHelper = async (
 		split.channel,
 	)) as TextChannel;
 	if (!channel) return "Channel not found";
+
+	await channel.messages.fetch(split.message);
 	await channel.messages.delete(split.message);
 
 	return getString("splits", "denied", { username: receivingUserName });
