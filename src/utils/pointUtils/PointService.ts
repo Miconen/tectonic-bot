@@ -5,7 +5,12 @@ import type {
 	PresetPoints,
 } from "@typings/requests.js";
 import { getString } from "@utils/stringRepo.js";
-import type { BaseInteraction, GuildMember } from "discord.js";
+import type {
+	BaseInteraction,
+	ButtonInteraction,
+	CommandInteraction,
+	GuildMember,
+} from "discord.js";
 import { Collection } from "discord.js";
 import { inject, injectable, singleton } from "tsyringe";
 import type IRankService from "../rankUtils/IRankService.js";
@@ -19,9 +24,13 @@ export class PointService implements IPointService {
 	async givePoints(
 		value: string | number,
 		target: GuildMember | Collection<string, GuildMember>,
-		interaction: BaseInteraction,
+		interaction: CommandInteraction | ButtonInteraction,
 	) {
 		if (!interaction.guild) return getString("errors", "noGuild");
+
+		const member = await interaction.guild.members.fetch({
+			user: interaction.user.id,
+		});
 
 		const user_id =
 			target instanceof Collection
@@ -37,18 +46,20 @@ export class PointService implements IPointService {
 
 		// Handle single vs multiple GuildMembers
 		if (target instanceof Collection) {
-			return this.giveToManyHandler(param, target, interaction);
+			return this.giveToManyHandler(param, target, member, interaction);
 		}
 
-		return this.giveHandler(param, target, interaction);
+		return this.giveHandler(param, target, member, interaction);
 	}
 
 	private async giveToManyHandler(
 		param: PointsParam,
 		targets: Collection<string, GuildMember>,
-		interaction: BaseInteraction,
+		invoker: GuildMember,
+		interaction: CommandInteraction | ButtonInteraction,
 	) {
 		if (!interaction.guild) return [getString("errors", "noGuild")];
+		if (!interaction.member) return [getString("errors", "noMember")];
 		const response: string[] = [];
 
 		const res = await Requests.givePointsToMultiple(
@@ -76,7 +87,7 @@ export class PointService implements IPointService {
 				getString("ranks", "pointsGranted", {
 					username: member.displayName,
 					pointsGiven: u.given_points,
-					grantedBy: member.displayName,
+					grantedBy: invoker.displayName,
 					totalPoints: u.points,
 				}),
 			);
@@ -114,6 +125,7 @@ export class PointService implements IPointService {
 	private async giveHandler(
 		param: PointsParam,
 		target: GuildMember,
+		invoker: GuildMember,
 		interaction: BaseInteraction,
 	) {
 		if (!interaction.guild) return getString("errors", "noGuild");
@@ -137,13 +149,11 @@ export class PointService implements IPointService {
 		}
 
 		const response: string[] = [];
-		const member = interaction.member as GuildMember;
-
 		response.push(
 			getString("ranks", "pointsGranted", {
 				username: target.displayName,
 				pointsGiven: res.data.given_points,
-				grantedBy: member.displayName,
+				grantedBy: invoker.displayName,
 				totalPoints: res.data.points,
 			}),
 		);
