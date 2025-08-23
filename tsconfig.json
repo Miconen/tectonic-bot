@@ -1,45 +1,31 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "outDir": "build",
-        "rootDir": "src",
-        "strict": true,
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "skipLibCheck": false,
-        "forceConsistentCasingInFileNames": true,
-        "baseUrl": "./src",
-        "paths": {
-            "@commands/*": [
-                "commands/*"
-            ],
-            "@utils/*": [
-                "utils/*"
-            ],
-            "@database/*": [
-                "database/*"
-            ],
-            "@guards/*": [
-                "guards/*"
-            ],
-            "@requests/*": [
-                "requests/*"
-            ],
-            "@typings/*": [
-                "typings/*"
-            ]
-        }
-    },
-    "exclude": [
-        "build",
-        "node_modules"
-    ],
-    "tsc-alias": {
-        "resolveFullPaths": true
-    }
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"outDir": "build",
+		"rootDir": "src",
+		"strict": true,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"skipLibCheck": false,
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@commands/*": ["commands/*"],
+			"@utils/*": ["utils/*"],
+			"@database/*": ["database/*"],
+			"@guards/*": ["guards/*"],
+			"@requests/*": ["requests/*"],
+			"@typings/*": ["typings/*"],
+			"@logging/*": ["logging/*"]
+		}
+	},
+	"exclude": ["build", "node_modules"],
+	"tsc-alias": {
+		"resolveFullPaths": true
+	}
 }
