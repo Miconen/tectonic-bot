@@ -1,4 +1,8 @@
-import type { CommandInteraction, TextChannel } from "discord.js";
+import type {
+	ButtonInteraction,
+	CommandInteraction,
+	TextChannel,
+} from "discord.js";
 import type IPointService from "@utils/pointUtils/IPointService";
 import type { SplitData } from "@typings/splitTypes.js";
 
@@ -6,7 +10,7 @@ import { container } from "tsyringe";
 import { getString } from "@utils/stringRepo";
 
 const acceptHelper = async (
-	interaction: CommandInteraction,
+	interaction: CommandInteraction | ButtonInteraction,
 	split: SplitData,
 ) => {
 	const pointService = container.resolve<IPointService>("PointService");
@@ -18,6 +22,8 @@ const acceptHelper = async (
 		split.channel,
 	)) as TextChannel;
 	if (!channel) return getString("errors", "channelNotFound");
+
+	await channel.messages.fetch(split.message);
 	await channel.messages.delete(split.message);
 
 	const pointsResponse = await pointService.givePoints(

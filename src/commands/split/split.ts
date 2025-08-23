@@ -6,12 +6,20 @@ import { getString } from "@utils/stringRepo.js";
 import { formatTimeAgo } from "@utils/timeFormatter.js";
 import {
 	ApplicationCommandOptionType,
+	ButtonInteraction,
 	type AutocompleteInteraction,
 	type CommandInteraction,
 	type Snowflake,
 	type TextChannel,
 } from "discord.js";
-import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
+import {
+	ButtonComponent,
+	Discord,
+	Guard,
+	Slash,
+	SlashChoice,
+	SlashOption,
+} from "discordx";
 import { injectable } from "tsyringe";
 import acceptHelper from "./func/acceptHelper.js";
 import denyHelper from "./func/denyHelper.js";
@@ -61,6 +69,59 @@ class split {
 
 		const rewardValue = (await getPoints(value, interaction.guild.id)) ?? 0;
 		await splitHelper(rewardValue, interaction, state);
+	}
+
+	@Guard(IsAdmin)
+	@ButtonComponent({ id: "buttonAccept" })
+	async buttonAccept(interaction: ButtonInteraction) {
+		const message = interaction.message.interactionMetadata;
+		if (!message)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+				{ ephemeral: true },
+			);
+
+		const split = state.get(message.id);
+		if (!split)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+				{ ephemeral: true },
+			);
+
+		const response = await acceptHelper(interaction, split);
+
+		// Free up memory
+		state.delete(message.id);
+		const res = Array.isArray(response) ? response.join("\n") : response;
+		return await replyHandler(res, interaction);
+	}
+
+	@Guard(IsAdmin)
+	@ButtonComponent({ id: "buttonDeny" })
+	async buttonDeny(interaction: ButtonInteraction) {
+		const message = interaction.message.interactionMetadata;
+		if (!message)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+				{ ephemeral: true },
+			);
+
+		const split = state.get(message.id);
+		if (!split)
+			return await replyHandler(
+				getString("errors", "internalError"),
+				interaction,
+				{ ephemeral: true },
+			);
+
+		const response = await denyHelper(interaction, split);
+
+		// Free up memory
+		state.delete(message.id);
+		return await replyHandler(response, interaction);
 	}
 
 	@Slash({

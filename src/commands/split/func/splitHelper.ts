@@ -3,7 +3,13 @@ import { getPoints } from "@utils/pointSources";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 
-import type { CommandInteraction, GuildMember } from "discord.js";
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	type CommandInteraction,
+	type GuildMember,
+} from "discord.js";
 
 const splitHelper = async (
 	value: number,
@@ -17,13 +23,28 @@ const splitHelper = async (
 
 	const points = await getPoints(value, interaction.guild.id);
 
+	const confirm = new ButtonBuilder()
+		.setCustomId("buttonAccept")
+		.setLabel("Accept")
+		.setStyle(ButtonStyle.Success);
+
+	const deny = new ButtonBuilder()
+		.setCustomId("buttonDeny")
+		.setLabel("Deny")
+		.setStyle(ButtonStyle.Danger);
+
+	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+		confirm,
+		deny,
+	);
+
 	const username = (interaction.member as GuildMember).displayName;
 	await replyHandler(
 		getString("splits", "requestSubmitted", { username, points }),
 		interaction,
 	);
 
-	const message = await interaction.fetchReply();
+	const message = await interaction.editReply({ components: [row] });
 
 	const split: SplitData = {
 		member: interaction.member as GuildMember,
