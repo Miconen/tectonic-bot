@@ -1,6 +1,6 @@
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction, GuildMember } from "discord.js";
+import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import type { GuardFunction } from "discordx";
 
 type ParseTimeResult = {
@@ -153,7 +153,7 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 }
 
 function IsValidTime(option: string) {
-	const guard: GuardFunction<CommandInteraction> = async (
+	const guard: GuardFunction<ChatInputCommandInteraction> = async (
 		interaction,
 		_,
 		next,
