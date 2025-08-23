@@ -331,11 +331,11 @@ export const bossTimePicker = withAutocompleteLogging(
 			const boss = guild.bosses.find((b) => b.name === t.boss_name);
 			return boss
 				? [
-						{
-							name: `${boss.category} | ${boss.display_name} - ${TimeConverter.ticksToTime(t.time)} (${t.time} ticks)`,
-							value: t.boss_name,
-						},
-					]
+					{
+						name: `${boss.category} | ${boss.display_name} - ${TimeConverter.ticksToTime(t.time)} (${t.time} ticks)`,
+						value: t.boss_name,
+					},
+				]
 				: [];
 		});
 
