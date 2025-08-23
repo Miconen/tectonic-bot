@@ -10,7 +10,7 @@ import { LoggingGuard } from "@logging/guard.js";
 import { container } from "tsyringe";
 import { PointService } from "./utils/pointUtils/PointService.js";
 import { RankService } from "./utils/rankUtils/RankService.js";
-import { IsHealthy } from "@guards/IsHealthy.js";
+import { rootLogger } from "@logging/logger.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 (BigInt.prototype as any).toJSON = function () {
@@ -50,7 +50,7 @@ bot.once("ready", async () => {
 
 	// await bot.clearApplicationCommands(...bot.guilds.cache.map((g) => g.id));
 
-	console.log("Bot started");
+	rootLogger.info("Bot started");
 });
 
 bot.on("interactionCreate", (interaction: Interaction) => {
