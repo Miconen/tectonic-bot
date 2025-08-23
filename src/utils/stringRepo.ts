@@ -126,8 +126,12 @@ const strings: StringRepository = {
 		achievementEntry: (args) => `${args.icon} - **${args.name}**`,
 		noAccounts: "No linked accounts found.",
 		noPbs: "No personal bests recorded.",
-		noEvents: "No event placements recorded.",
+		noEvents: "No events found.",
 		criticalError: "❌ Error fetching user data.",
+	},
+
+	events: {
+		wrongId: "Could not find event with specified ID.",
 	},
 
 	leaderboard: {
@@ -293,6 +297,7 @@ const strings: StringRepository = {
 		rsnDoesntExist: (args) =>
 			`Couldn't find RSN (**${args.rsn}**) linked to **${args.username}**`,
 		notActivated: (args) => `The user (**${args.username}**) is not activated.`,
+		noEvents: "Couldn't find events belonging to this guild.",
 	},
 
 	success: {
