@@ -5,6 +5,8 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
+import { IsHealthy } from "@guards/IsHealthy.js";
+import { LoggingGuard } from "@logging/guard.js";
 import { container } from "tsyringe";
 import { PointService } from "./utils/pointUtils/PointService.js";
 import { RankService } from "./utils/rankUtils/RankService.js";
@@ -28,8 +30,8 @@ export const bot = new Client({
 		IntentsBitField.Flags.GuildPresences,
 	],
 
-	// Perform healthchecks before each command
-	guards: [IsHealthy],
+	// Perform these before each command
+	guards: [LoggingGuard, IsHealthy],
 
 	// Debug logs are disabled in silent mode
 	silent: false,
