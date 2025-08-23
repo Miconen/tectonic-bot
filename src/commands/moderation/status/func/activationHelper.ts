@@ -38,7 +38,7 @@ const activationHelper = async (
 
 	if (result.status === 409 && result.error) {
 		return await replyHandler(
-			getString("accounts", "alreadyActivated"),
+			getString("accounts", "alreadyActivated", { username: user.displayName }),
 			interaction,
 			{ ephemeral: true },
 		);
