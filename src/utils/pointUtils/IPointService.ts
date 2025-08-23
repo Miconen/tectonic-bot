@@ -1,10 +1,15 @@
-import type { BaseInteraction, Collection, GuildMember } from "discord.js";
+import type {
+	ButtonInteraction,
+	Collection,
+	CommandInteraction,
+	GuildMember,
+} from "discord.js";
 
 interface IPointService {
 	givePoints: (
 		addedPoints: number | string,
 		users: GuildMember | Collection<string, GuildMember>,
-		interaction: BaseInteraction,
+		interaction: CommandInteraction | ButtonInteraction,
 	) => Promise<string | string[]>;
 }
 
