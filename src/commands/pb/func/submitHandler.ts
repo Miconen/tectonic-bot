@@ -5,7 +5,7 @@ import TimeConverter from "./TimeConverter.js";
 import updateEmbed from "./updateEmbed.js";
 import { getString } from "@utils/stringRepo.js";
 import giveHelper from "@commands/moderation/func/giveHelper.js";
-import { Bosses } from "./getBosses.js";
+import { getLogger } from "@logging/context.js";
 
 async function submitHandler(
 	boss: string,
@@ -13,18 +13,18 @@ async function submitHandler(
 	team: string[],
 	interaction: CommandInteraction,
 ) {
-	console.log(`Submitting pb: ${boss} ${time}`);
 	if (!interaction.guild) {
-		console.log("↳ Failed getting guild");
 		return getString("errors", "noGuild");
 	}
 	const guildId = interaction.guild.id;
+	const logger = getLogger();
 
 	// Parse time
 	const ticks = TimeConverter.timeToTicks(time);
 	if (!ticks) {
-		console.log("↳ Failed parsing ticks from time");
-		return getString("times", "failedParsingTicks");
+		const response = getString("times", "failedParsingTicks");
+		logger.error(response);
+		return response;
 	}
 
 	// Add time
@@ -34,22 +34,18 @@ async function submitHandler(
 		boss_name: boss,
 	});
 	if (res.error) {
-		console.log("↳ Failed adding time", res.message);
-		return getString("times", "failedAddingTime");
+		const response = getString("times", "failedAddingTime");
+		logger.error({ err: res.message }, response);
+		return response;
 	}
 
-	console.log("↳ Time added");
-
 	if (res.status === 200) {
-		console.log("↳ Not a new pb");
 		return getString("times", "timeSubmittedNotPb");
 	}
 
 	// Pb updated
 	await updateEmbed(boss, guildId, interaction);
-	console.log(
-		`↳ New pb: ${TimeConverter.ticksToTime(res.data.time)} (${res.data.time} ticks)\nBeating the old time ${TimeConverter.ticksToTime(res.data.time_old)} (${res.data.time_old} ticks)`,
-	);
+	logger.info(res.data, "New clan best time");
 
 	// Fetch and map user ids to GuildMember types
 	const members = await interaction.guild.members.fetch({ user: team });
