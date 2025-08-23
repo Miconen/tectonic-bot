@@ -4,9 +4,9 @@ import { Achievements } from "@utils/achievements";
 import type { AutocompleteInteraction } from "discord.js";
 import { TTLCache } from "@utils/ttlCache";
 import { getSources } from "./pointSources";
-import { getEvents } from "@requests/guild";
 import { withAutocompleteLogging } from "@logging/guard";
 import { getLogger } from "@logging/context";
+import { getEvents } from "./events";
 
 const userCache = new TTLCache<DetailedUser>();
 const teamCache = new TTLCache<string[]>();
@@ -288,9 +288,9 @@ export const eventPicker = withAutocompleteLogging(
 		}
 
 		const events = await getEvents(interaction.guild.id);
-		if (events.error || !events.data) return;
+		if (!events) return;
 
-		const options = events.data.map((e) => ({
+		const options = events.map((e) => ({
 			name: e.name,
 			value: e.wom_id,
 		}));
