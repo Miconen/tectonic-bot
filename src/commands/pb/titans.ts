@@ -38,7 +38,7 @@ class royaltitanspb {
 			required: false,
 			type: ApplicationCommandOptionType.User,
 		})
-		player2: GuildMember | null,
+		player2: GuildMember,
 		interaction: CommandInteraction,
 	) {
 		const team = [player.user.id, player2?.user.id].filter(notEmpty);

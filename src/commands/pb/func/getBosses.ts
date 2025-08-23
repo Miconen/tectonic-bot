@@ -31,16 +31,10 @@ async function bossesAsChoices() {
 		};
 
 		// HACK: We want to exclude these from the miscellaneous command since they have their own... for now...
-		if (
-			category === "Miscellaneous" &&
-			(name === "royal_titans_1" || name === "royal_titans_2")
-		) {
+		if (category === "Miscellaneous" && name === "royal_titans_2") {
 			continue;
 		}
-		if (
-			category === "Miscellaneous" &&
-			(name === "yama_1" || name === "yama_2")
-		) {
+		if (category === "Miscellaneous" && name === "yama_2") {
 			continue;
 		}
 
