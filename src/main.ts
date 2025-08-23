@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import { dirname, importx } from "@discordx/importer";
-import { ActivityType, Interaction, Message } from "discord.js";
+import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
