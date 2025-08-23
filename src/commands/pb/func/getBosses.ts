@@ -1,3 +1,4 @@
+import { withInitLogging } from "@logging/context";
 import { Requests } from "@requests/main";
 import type { Boss } from "@typings/requests";
 import { TTLCache } from "@utils/ttlCache";
@@ -33,8 +34,15 @@ async function bossesAsChoices() {
 		if (
 			category === "Miscellaneous" &&
 			(name === "royal_titans_1" || name === "royal_titans_2")
-		)
+		) {
 			continue;
+		}
+		if (
+			category === "Miscellaneous" &&
+			(name === "yama_1" || name === "yama_2")
+		) {
+			continue;
+		}
 
 		bossesByCategory[category].push(choice);
 	}
@@ -42,7 +50,9 @@ async function bossesAsChoices() {
 	return bossesByCategory;
 }
 
-const bossCategories: Record<string, SlashChoiceType[]> =
-	await bossesAsChoices();
+const bossCategories: Record<string, SlashChoiceType[]> = await withInitLogging(
+	"Boss categories initialization",
+	bossesAsChoices,
+);
 
 export default bossCategories;
