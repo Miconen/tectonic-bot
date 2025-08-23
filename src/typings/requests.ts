@@ -33,7 +33,7 @@ export type RSN = {
 	wom_id: string;
 };
 
-export type Event = {
+export type GuildEvent = {
 	name: string;
 	wom_id: string;
 	guild_id: string;
@@ -54,7 +54,7 @@ export type PointsResponse = SimpleUser & {
 
 export type User = SimpleUser & {
 	rsns: RSN[];
-	events: Event[];
+	events: GuildEvent[];
 	achievements: Achievement[];
 };
 
@@ -132,17 +132,17 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-	| "event_participation"
-	| "event_hosting"
-	| "clan_pb"
-	| "split_low"
-	| "split_medium"
-	| "split_high"
-	| "combat_achievement_low"
-	| "combat_achievement_medium"
-	| "combat_achievement_high"
-	| "combat_achievement_very_high"
-	| "combat_achievement_very_highest";
+		| "event_participation"
+		| "event_hosting"
+		| "clan_pb"
+		| "split_low"
+		| "split_medium"
+		| "split_high"
+		| "combat_achievement_low"
+		| "combat_achievement_medium"
+		| "combat_achievement_high"
+		| "combat_achievement_very_high"
+		| "combat_achievement_very_highest";
 };
 
 export type Points = CustomPoints | PresetPoints;

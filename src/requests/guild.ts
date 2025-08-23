@@ -4,6 +4,7 @@ import type {
 	CompetitionResponse,
 	EventWinParam,
 	Guild,
+	GuildEvent,
 	GuildPointSource,
 	GuildTimes,
 	GuildUpdate,
@@ -118,7 +119,7 @@ export async function eventWinners(guild_id: string, params: EventWinParam) {
 export async function getEvents(guild_id: string) {
 	const endpoint = `guilds/${guild_id}/events`;
 
-	return await fetchData<Event[]>(endpoint);
+	return await fetchData<GuildEvent[]>(endpoint);
 }
 
 export async function getGuildPointSources(guild_id: string) {
@@ -126,4 +127,16 @@ export async function getGuildPointSources(guild_id: string) {
 	const status = await fetchData<GuildPointSource[]>(url);
 
 	return status;
+}
+
+export async function getEventParticipants(guild_id: string, event_id: string) {
+	const url = `guilds/${guild_id}/events/${event_id}`;
+	const placements = await fetchData<{
+		participations: {
+			user_id: string;
+			placement: number;
+		}[];
+	}>(url);
+
+	return placements;
 }
