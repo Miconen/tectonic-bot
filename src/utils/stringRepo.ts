@@ -88,12 +88,12 @@ const strings: StringRepository = {
 		notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
 		userNotFound: (args) => "❌ User not found for achievement operation.",
 		requestSubmitted: (args) =>
-			`Achievement request submitted for **${args.achievement}**. Please wait for admin approval.`,
+			`#Achievement Request\nAchievement request submitted for **${args.achievement}**.\nPlease wait for admin approval.`,
 	},
 
 	splits: {
 		requestSubmitted: (args) =>
-			`**${args.username}** has submitted a request for ${args.points} points. Please wait for admin approval and make sure you have posted a screenshot of your drop as proof.`,
+			`# Split Request\n**${args.username}** has submitted a request for ${args.points} points.\nPlease wait for admin approval and make sure you have posted a screenshot of your drop as proof.`,
 		approved: (args) =>
 			`✔ Split request approved for **${args.username}** - ${args.points} points awarded.`,
 		denied: (args) => `❌ **${args.username}** point request was denied.`,
