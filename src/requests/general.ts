@@ -36,8 +36,8 @@ export async function checkHealth() {
 		? `https://${process.env.API_URL}/`
 		: "http://localhost:8080/";
 
-	const url = "ping";
-	const res = await fetchData(url, {}, API_URL);
+	const endpoint = "ping";
+	const res = await fetchData(endpoint, {}, API_URL);
 
 	return res;
 }

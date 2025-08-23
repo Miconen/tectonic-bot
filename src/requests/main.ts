@@ -8,9 +8,7 @@ import type {
 	ApiResponse,
 	ValidationError,
 } from "@typings/requests";
-import { pino } from "pino";
-
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+import { getChildLogger, getContext } from "@logging/context";
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`
@@ -37,14 +35,16 @@ export async function fetchData<T>(
 	};
 
 	const fullUrl = url + endpoint;
+	const method = requestOptions.method ?? "GET";
+	const logger = getChildLogger({});
 
 	logger.info(
 		{
 			endpoint: fullUrl,
-			method: requestOptions.method ?? "GET",
+			method,
 			body: requestOptions.body,
 		},
-		"Pre-fetch request details",
+		"Preparing API request",
 	);
 
 	try {
@@ -59,7 +59,10 @@ export async function fetchData<T>(
 				data: {} as T,
 			};
 
-			logger.info({ code: status }, "Request success code");
+			logger.info(
+				{ endpoint: fullUrl, method, code: status },
+				"API request succeeded",
+			);
 			logger.debug({ response: successResponse }, "Request response");
 			return successResponse;
 		}
@@ -75,7 +78,7 @@ export async function fetchData<T>(
 				message: `Unsupported Content-Type header "${contentType}" from endpoint "${fullUrl}"`,
 			};
 
-			logger.error(error, "Request error");
+			logger.error(error, "API request failed");
 			logger.debug({ response: error }, "Request response");
 			return error;
 		}
@@ -94,7 +97,7 @@ export async function fetchData<T>(
 					e instanceof Error ? e.message : "Failed to parse JSON response",
 			};
 
-			logger.error(error, "Request error");
+			logger.error(error, "API request failed");
 			logger.debug({ response: error }, "Request response");
 			return error;
 		}
@@ -109,7 +112,7 @@ export async function fetchData<T>(
 				...errorBody,
 			};
 
-			logger.error(error, "Request error");
+			logger.error(error, "API request failed");
 			logger.debug({ response: error }, "Request response");
 			return error;
 		}
@@ -121,7 +124,7 @@ export async function fetchData<T>(
 			data: data as T,
 		};
 
-		logger.info({ code: status }, "Request success code");
+		logger.info({ code: status }, "API request succeeded");
 		logger.debug({ response: successResponse }, "Request response");
 
 		return successResponse;
@@ -135,7 +138,7 @@ export async function fetchData<T>(
 			message: error instanceof Error ? error.message : "Unknown network error",
 		};
 
-		logger.error(errorResponse, "Request error");
+		logger.error(errorResponse, "API request failed");
 		logger.debug({ response: errorResponse }, "Request response");
 		return errorResponse;
 	}

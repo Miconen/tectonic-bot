@@ -4,6 +4,9 @@ import { Achievements } from "@utils/achievements";
 import type { AutocompleteInteraction } from "discord.js";
 import { TTLCache } from "@utils/ttlCache";
 import { getSources } from "./pointSources";
+import { getEvents } from "@requests/guild";
+import { withAutocompleteLogging } from "@logging/guard";
+import { getLogger } from "@logging/context";
 
 const userCache = new TTLCache<DetailedUser>();
 const teamCache = new TTLCache<string[]>();
@@ -12,10 +15,11 @@ export async function fetchUser(
 	guildId: string,
 	userId: string,
 ): Promise<DetailedUser | undefined> {
+	const logger = getLogger();
 	const cacheKey = `${guildId}-${userId}`;
 
 	if (userCache.has(cacheKey)) {
-		console.log(`Hit autocomplete cache for user ${userId}`);
+		logger.debug(`Hit autocomplete cache for user ${userId}`);
 		return userCache.get(cacheKey);
 	}
 
@@ -26,14 +30,19 @@ export async function fetchUser(
 		});
 
 		if (response.error || !response.data) {
-			console.warn(`Failed to fetch user ${userId}:`, response.error);
+			logger.warn(
+				{
+					err: response.error,
+				},
+				`Failed to fetch user ${userId}`,
+			);
 			return undefined;
 		}
 
 		userCache.set(cacheKey, response.data);
 		return response.data;
 	} catch (error) {
-		console.error(`Error fetching user ${userId}:`, error);
+		logger.error({ err: error }, `Error fetching user ${userId}`);
 		return undefined;
 	}
 }
@@ -41,10 +50,13 @@ export async function fetchUser(
 export async function fetchTeams(
 	competitionId: number,
 ): Promise<string[] | undefined> {
+	const logger = getLogger();
 	const cacheKey = competitionId.toString();
 
 	if (teamCache.has(cacheKey)) {
-		console.log(`Hit team autocomplete cache for competition ${competitionId}`);
+		logger.debug(
+			`Hit team autocomplete cache for competition ${competitionId}`,
+		);
 		return teamCache.get(cacheKey);
 	}
 
@@ -52,9 +64,11 @@ export async function fetchTeams(
 		const response = await Requests.getCompetitionTeams(competitionId);
 
 		if (response.error || !response.data) {
-			console.warn(
-				`Failed to fetch teams for competition ${competitionId}:`,
-				response.error,
+			logger.warn(
+				{
+					err: response.error,
+				},
+				`Failed to fetch teams for competition ${competitionId}`,
 			);
 			return undefined;
 		}
@@ -62,9 +76,11 @@ export async function fetchTeams(
 		teamCache.set(cacheKey, response.data);
 		return response.data;
 	} catch (error) {
-		console.error(
-			`Error fetching teams for competition ${competitionId}:`,
-			error,
+		logger.error(
+			{
+				err: error,
+			},
+			`Error fetching teams for competition ${competitionId}`,
 		);
 		return undefined;
 	}
@@ -72,9 +88,10 @@ export async function fetchTeams(
 
 // Cache invalidation function for when user data changes
 export function invalidateUserCache(guildId: string, userId: string): void {
+	const logger = getLogger();
 	const cacheKey = `${guildId}-${userId}`;
 	userCache.delete(cacheKey);
-	console.log(`Invalidated user cache for ${userId} in guild ${guildId}`);
+	logger.debug(`Invalidated user cache for ${userId} in guild ${guildId}`);
 }
 
 // Helper function to safely respond to autocomplete interactions
@@ -82,28 +99,36 @@ async function safeRespond(
 	interaction: AutocompleteInteraction,
 	options: { name: string; value: string }[],
 ): Promise<void> {
+	const logger = getLogger();
 	try {
 		await interaction.respond(options.slice(0, 25));
 	} catch (error) {
-		console.error("Error responding to autocomplete interaction:", error);
+		logger.error(
+			{
+				err: error,
+			},
+			"Error responding to autocomplete interaction:",
+		);
 	}
 }
 
-export async function achievementAddPicker(
-	interaction: AutocompleteInteraction,
-): Promise<void> {
-	const picker = (u: Achievement[], a: Achievement) =>
-		!u.some((ua) => ua.name === a.name);
-	achievementPicker(interaction, picker);
-}
+export const achievementAddPicker = withAutocompleteLogging(
+	"achievementAddPicker",
+	async (interaction: AutocompleteInteraction): Promise<void> => {
+		const picker = (u: Achievement[], a: Achievement) =>
+			!u.some((ua) => ua.name === a.name);
+		achievementPicker(interaction, picker);
+	},
+);
 
-export async function achievementRemovePicker(
-	interaction: AutocompleteInteraction,
-): Promise<void> {
-	const picker = (u: Achievement[], a: Achievement) =>
-		u.some((ua) => ua.name === a.name);
-	achievementPicker(interaction, picker);
-}
+export const achievementRemovePicker = withAutocompleteLogging(
+	"achievementRemovePicker",
+	async (interaction: AutocompleteInteraction): Promise<void> => {
+		const picker = (u: Achievement[], a: Achievement) =>
+			u.some((ua) => ua.name === a.name);
+		achievementPicker(interaction, picker);
+	},
+);
 
 export async function achievementPicker(
 	interaction: AutocompleteInteraction,
@@ -138,109 +163,138 @@ export async function achievementPicker(
 	await safeRespond(interaction, options);
 }
 
-export async function rsnPicker(
-	interaction: AutocompleteInteraction,
-): Promise<void> {
-	if (!interaction.guild?.id) {
-		await safeRespond(interaction, []);
-		return;
-	}
+export const rsnPicker = withAutocompleteLogging(
+	"rsnPicker",
+	async (interaction: AutocompleteInteraction): Promise<void> => {
+		if (!interaction.guild?.id) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-	const id = interaction.options.get("username")?.value ?? interaction.user.id;
-	if (!id || typeof id !== "string") {
-		await safeRespond(interaction, []);
-		return;
-	}
+		const logger = getLogger();
 
-	const user = await fetchUser(interaction.guild.id, id);
-	if (!user || !user.rsns || !Array.isArray(user.rsns)) {
-		await safeRespond(interaction, []);
-		return;
-	}
+		const id =
+			interaction.options.get("username")?.value ?? interaction.user.id;
+		if (!id || typeof id !== "string") {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-	const query = interaction.options.getFocused(true).value.toLowerCase().trim();
+		const user = await fetchUser(interaction.guild.id, id);
+		if (!user || !user.rsns || !Array.isArray(user.rsns)) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-	let filteredRsns = user.rsns;
-	if (query) {
-		filteredRsns = user.rsns.filter((rsn) => {
-			// More defensive check for rsn object structure
-			return (
-				rsn &&
-				typeof rsn === "object" &&
-				"rsn" in rsn &&
-				typeof rsn.rsn === "string" &&
-				rsn.rsn.toLowerCase().includes(query)
+		const query = interaction.options
+			.getFocused(true)
+			.value.toLowerCase()
+			.trim();
+
+		let filteredRsns = user.rsns;
+		if (query) {
+			filteredRsns = user.rsns.filter((rsn) => {
+				// More defensive check for rsn object structure
+				return (
+					rsn &&
+					typeof rsn === "object" &&
+					"rsn" in rsn &&
+					typeof rsn.rsn === "string" &&
+					rsn.rsn.toLowerCase().includes(query)
+				);
+			});
+		}
+
+		if (!filteredRsns || filteredRsns.length === 0) {
+			logger.debug(`No RSNs found for user ${id} after filtering`);
+			await safeRespond(interaction, []);
+			return;
+		}
+
+		const options = filteredRsns
+			.map((rsn) => ({
+				name: rsn.rsn,
+				value: rsn.rsn,
+			}))
+			.filter(
+				(option) =>
+					option.name &&
+					option.value &&
+					option.name.trim() !== "" &&
+					option.value.trim() !== "",
 			);
-		});
-	}
 
-	if (!filteredRsns || filteredRsns.length === 0) {
-		console.log(`No RSNs found for user ${id} after filtering`);
-		await safeRespond(interaction, []);
-		return;
-	}
+		await safeRespond(interaction, options);
+	},
+);
 
-	const options = filteredRsns
-		.map((rsn) => ({
-			name: rsn.rsn,
-			value: rsn.rsn,
-		}))
-		.filter(
-			(option) =>
-				option.name &&
-				option.value &&
-				option.name.trim() !== "" &&
-				option.value.trim() !== "",
-		);
+export const teamPicker = withAutocompleteLogging(
+	"teamPicker",
+	async (interaction: AutocompleteInteraction): Promise<void> => {
+		if (!interaction.guild?.id) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-	await safeRespond(interaction, options);
-}
+		const competitionId = interaction.options.get("competition")?.value;
+		if (!competitionId || typeof competitionId !== "number") {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-export async function teamPicker(
-	interaction: AutocompleteInteraction,
-): Promise<void> {
-	if (!interaction.guild?.id) {
-		await safeRespond(interaction, []);
-		return;
-	}
+		const teams = await fetchTeams(competitionId);
+		if (!teams || teams.length === 0) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-	const competitionId = interaction.options.get("competition")?.value;
-	if (!competitionId || typeof competitionId !== "number") {
-		await safeRespond(interaction, []);
-		return;
-	}
+		const options = teams
+			.filter((team) => team && typeof team === "string" && team.trim() !== "")
+			.map((team) => ({
+				name: team,
+				value: team,
+			}));
 
-	const teams = await fetchTeams(competitionId);
-	if (!teams || teams.length === 0) {
-		await safeRespond(interaction, []);
-		return;
-	}
+		await safeRespond(interaction, options);
+	},
+);
 
-	const options = teams
-		.filter((team) => team && typeof team === "string" && team.trim() !== "")
-		.map((team) => ({
-			name: team,
-			value: team,
+export const pointSourcePicker = withAutocompleteLogging(
+	"pointSourcePicker",
+	async (interaction: AutocompleteInteraction): Promise<void> => {
+		if (!interaction.guild?.id) {
+			await safeRespond(interaction, []);
+			return;
+		}
+
+		const sources = await getSources(interaction.guild.id);
+		if (!sources) return;
+
+		const options = Array.from(sources.values()).map((s) => ({
+			name: s.name,
+			value: s.source,
 		}));
 
-	await safeRespond(interaction, options);
-}
+		await safeRespond(interaction, options);
+	},
+);
 
-export const pointSourcePicker = async (
-	interaction: AutocompleteInteraction,
-): Promise<void> => {
-	if (!interaction.guild?.id) {
-		await safeRespond(interaction, []);
-		return;
-	}
+export const eventPicker = withAutocompleteLogging(
+	"eventPicker",
+	async (interaction: AutocompleteInteraction): Promise<void> => {
+		if (!interaction.guild?.id) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-	const sources = await getSources(interaction.guild.id);
-	if (!sources) return;
+		const events = await getEvents(interaction.guild.id);
+		if (events.error || !events.data) return;
 
-	const options = Array.from(sources.values()).map((s) => ({
-		name: s.name,
-		value: s.source,
-	}));
+		const options = events.data.map((e) => ({
+			name: e.name,
+			value: e.wom_id,
+		}));
 
-	await safeRespond(interaction, options);
-};
+		await safeRespond(interaction, options);
+	},
+);
