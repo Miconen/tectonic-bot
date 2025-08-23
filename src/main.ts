@@ -34,7 +34,7 @@ export const bot = new Client({
 	guards: [LoggingGuard, IsHealthy],
 
 	// Debug logs are disabled in silent mode
-	silent: false,
+	silent: true,
 });
 
 bot.once("ready", async () => {
