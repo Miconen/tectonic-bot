@@ -157,6 +157,8 @@ const strings: StringRepository = {
 			`Updated server point multiplier to ${args.multiplier}.`,
 		guildInitialized: "Guild initialized successfully.",
 		guildAlreadyExists: "Guild is already initialized.",
+		timeRollback: (args) =>
+			`Succesfully reverted current clan PB for \`${args.boss}\`.`,
 	},
 
 	times: {
@@ -183,6 +185,17 @@ const strings: StringRepository = {
 		invalidTeamSize: (args) => `${args.error}`,
 		soloOnlyBoss: "Selected boss can't include more than one player.",
 		invalidFiveManNightmare: "Invalid amount of players for 5-man nightmare.",
+	},
+
+	teams: {
+		addedToBoss: (args) =>
+			`Succesfully added ${args.user} to team for \`${args.boss}\` clan PB.`,
+		addedToRunId: (args) =>
+			`Succesfully added ${args.user} to team for run \`#${args.run_id}\`.`,
+		removedFromBoss: (args) =>
+			`Successfully removed ${args.user} from team for \`${args.boss}\` clan PB.`,
+		removedFromRunId: (args) =>
+			`Successfully removed ${args.user} from team for run \`#${args.run_id}\`.`,
 	},
 
 	help: {
@@ -336,8 +349,8 @@ const strings: StringRepository = {
 	api: {
 		internalAuthError: "Internal authorization error.",
 		tooManyRequests: "Too many requests, try again in a minute.",
-		internalServerError: "Internal error :(",
-		externalServerError: "External error :(",
+		internalError: "Internal server error.",
+		externalError: "External server error.",
 		couldntRemoveUser: "Couldn't remove user",
 		couldntRemoveGuild: "Couldn't remove guild",
 	},

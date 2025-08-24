@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import { dirname, importx } from "@discordx/importer";
-import { ActivityType, Interaction, Message } from "discord.js";
+import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
@@ -14,7 +14,7 @@ import { rootLogger } from "@logging/logger.js";
 import { startStatusRotation } from "@utils/status.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
-(BigInt.prototype as any).toJSON = function() {
+(BigInt.prototype as any).toJSON = function () {
 	return this.toString();
 };
 

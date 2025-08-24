@@ -9,13 +9,13 @@ import deactivationHelper from "./func/deactivationHelper.js";
 import IsAdmin from "@guards/IsAdmin.js";
 
 @Discord()
+@Guard(IsAdmin)
 @SlashGroup({
 	description: "Manage user status",
 	name: "status",
 	root: "moderation",
 })
 @SlashGroup("status", "moderation")
-@Guard(IsAdmin)
 class Activation {
 	@Slash({
 		name: "activate",

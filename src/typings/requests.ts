@@ -217,7 +217,7 @@ export type GuildPointSource = {
 	name: string;
 };
 
-export type GuildTimes = {
+export type DetailedGuild = {
 	guild_id: string;
 	pb_channel_id: string | undefined;
 	bosses: Boss[];
@@ -253,3 +253,15 @@ export type EventTeamWinParam = {
 export type EventWinParam = {
 	competition: number;
 } & (EventIndividualWinParam | EventTeamWinParam);
+
+export type TeamByRunId = {
+	type: "run_id";
+	run_id: number;
+};
+
+export type TeamByBoss = {
+	type: "boss";
+	boss: string;
+};
+
+export type TeamParam = TeamByRunId | TeamByBoss;

@@ -1,3 +1,4 @@
+import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
 import type { GuildPointSource } from "@typings/requests";
 import { TTLCache } from "@utils/ttlCache";
@@ -6,11 +7,14 @@ export const PointSources = new TTLCache<Map<string, GuildPointSource>>(null);
 export const Multipliers = new TTLCache<number>(null);
 
 export async function getPoints(source: string | number, guild_id: string) {
+	const logger = getLogger();
 	if (!Multipliers.has(guild_id)) {
 		const res = await Requests.getGuild(guild_id);
 		if (res.error) return 0;
 
 		Multipliers.set(guild_id, res.data.multiplier);
+	} else {
+		logger.debug("Multipliers cache hit");
 	}
 
 	// Discriminate number out of the source type leaving it as a string
@@ -32,14 +36,20 @@ export async function getSources(guild_id: string) {
 }
 
 async function populateSources(guild_id: string) {
+	const logger = getLogger();
 	const guild = new Map<string, GuildPointSource>();
-	if (!PointSources.has(guild_id)) {
-		const res = await Requests.getGuildPointSources(guild_id);
-		if (res.error) return guild;
 
-		for (const ps of res.data) {
-			guild.set(ps.source, ps);
-		}
-		PointSources.set(guild_id, guild);
+	if (PointSources.has(guild_id)) {
+		logger.debug("PointSources cache hit");
+		return;
 	}
+
+	const res = await Requests.getGuildPointSources(guild_id);
+	if (res.error) return guild;
+
+	for (const ps of res.data) {
+		guild.set(ps.source, ps);
+	}
+
+	PointSources.set(guild_id, guild);
 }

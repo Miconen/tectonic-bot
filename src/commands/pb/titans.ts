@@ -35,7 +35,7 @@ class royaltitanspb {
 		@SlashOption({
 			name: "player2",
 			description: "Teammate discord @name",
-			required: false,
+			required: true,
 			type: ApplicationCommandOptionType.User,
 		})
 		player2: GuildMember,

@@ -6,7 +6,7 @@ import type {
 	Guild,
 	GuildEvent,
 	GuildPointSource,
-	GuildTimes,
+	DetailedGuild,
 	GuildUpdate,
 	NewTime,
 	TimeResponse,
@@ -95,7 +95,17 @@ export async function eventCompetition(
 
 export async function getGuildTimes(guild_id: string) {
 	const url = `guilds/${guild_id}/times`;
-	const status = await fetchData<GuildTimes>(url);
+	const status = await fetchData<DetailedGuild>(url);
+
+	return status;
+}
+
+export async function removeGuildTime(guild_id: string, time_id: string) {
+	const url = `guilds/${guild_id}/times/${time_id}`;
+	const options = {
+		method: "DELETE",
+	};
+	const status = await fetchData(url, options);
 
 	return status;
 }
