@@ -1,12 +1,10 @@
 import { Requests } from "@requests/main";
-import type { TeamParam } from "@typings/requests";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction, GuildMember } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 
-export async function removeTimeHelper(
-	user: GuildMember,
+export async function revertTimeHelper(
 	boss: string,
 	interaction: CommandInteraction,
 ) {
@@ -16,27 +14,25 @@ export async function removeTimeHelper(
 		});
 	}
 
-	const params: TeamParam = { type: "boss", boss };
-	const res = await Requests.addToTeam(interaction.guild.id, user.id, params);
-	if (res.error && res.status === 404) {
-		return await replyHandler(res.message, interaction, {
+	const res = await Requests.removeGuildTime(interaction.guild.id, boss);
+	if (res.error && res.code === 1008) {
+		return await replyHandler(getString("times", "timeNotFound"), interaction, {
 			ephemeral: true,
 		});
 	}
 
 	if (res.error) {
-		return await replyHandler(getString("api", "internalError"), interaction, {
-			ephemeral: true,
-		});
+		return await replyHandler(
+			getString("errors", "internalError"),
+			interaction,
+			{ ephemeral: true },
+		);
 	}
 
 	invalidateGuildCache(interaction.guild.id);
 
 	await replyHandler(
-		getString("teams", "removedFromBoss", {
-			user: user.displayName,
-			boss,
-		}),
+		getString("moderation", "timeRollback", { boss }),
 		interaction,
 		{ ephemeral: true },
 	);

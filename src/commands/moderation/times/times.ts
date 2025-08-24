@@ -6,7 +6,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import IsAdmin from "@guards/IsAdmin.js";
 import { bossTimePicker } from "@utils/pickers";
-import { removeTimeHelper } from "./func/removeTimeHelper";
+import { revertTimeHelper } from "./func/removeTimeHelper";
 import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
 import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 
@@ -31,7 +31,7 @@ class Times {
 		boss: string,
 		interaction: CommandInteraction,
 	) {
-		await removeTimeHelper(boss, interaction);
+		await revertTimeHelper(boss, interaction);
 	}
 
 	@Slash({ name: "adduser", description: "Manually add a user to a time" })
