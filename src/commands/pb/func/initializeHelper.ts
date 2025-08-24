@@ -100,7 +100,10 @@ async function initializeHelper(interaction: CommandInteraction) {
 		});
 		return;
 	}
-	await interaction.followUp({ content: getString("times", "finished") });
+	await interaction.followUp({
+		content: getString("times", "finished"),
+		ephemeral: true,
+	});
 }
 
 export default initializeHelper;
