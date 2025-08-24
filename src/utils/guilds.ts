@@ -26,7 +26,9 @@ export function formatGuildTimes(data: DetailedGuild) {
 	// Create combined categories data
 	const categories = data.guild_categories
 		.map((gc) => {
-			const bs = bosses.filter((b) => b.category === gc.category);
+			const bs = bosses
+				.filter((b) => b.category === gc.category)
+				.sort((a, b) => a.name.localeCompare(b.name));
 
 			// Find all guild_categories entries for this category
 			const category = data.categories.find((c) => gc.category === c.name);
