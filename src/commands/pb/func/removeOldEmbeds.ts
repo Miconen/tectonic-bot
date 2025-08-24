@@ -1,8 +1,8 @@
-import type { GuildTimes } from "@typings/requests";
+import type { DetailedGuild } from "@typings/requests";
 import { notEmpty } from "@utils/notEmpty";
 import type { Client, TextChannel } from "discord.js";
 
-async function removeOldEmbeds(guild: GuildTimes, client: Client) {
+async function removeOldEmbeds(guild: DetailedGuild, client: Client) {
 	if (!guild.pb_channel_id) return;
 
 	// Try to fetch old messages

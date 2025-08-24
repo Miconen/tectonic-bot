@@ -2,13 +2,14 @@ import * as User from "@requests/user";
 import * as Guild from "@requests/guild";
 import * as General from "@requests/general";
 import * as Wom from "@requests/wom";
+import * as Teams from "@requests/teams";
 import { HTTPError } from "discord.js";
 import type {
 	GenericError,
 	ApiResponse,
 	ValidationError,
 } from "@typings/requests";
-import { getChildLogger, getContext } from "@logging/context";
+import { getChildLogger } from "@logging/context";
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`
@@ -144,4 +145,4 @@ export async function fetchData<T>(
 	}
 }
 
-export const Requests = { ...User, ...Guild, ...General, ...Wom };
+export const Requests = { ...User, ...Guild, ...General, ...Wom, ...Teams };

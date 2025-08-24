@@ -1,8 +1,8 @@
-import type { GuildTimes } from "@typings/requests";
+import type { DetailedGuild } from "@typings/requests";
 import { notEmpty } from "./notEmpty";
 import { getString } from "./stringRepo";
 
-export function formatGuildTimes(data: GuildTimes) {
+export function formatGuildTimes(data: DetailedGuild) {
 	// Create combined bosses data
 	const bosses = data.guild_bosses
 		.map((gb) => {
