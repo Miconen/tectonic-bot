@@ -13,7 +13,10 @@ export async function getEvents(guild_id: string) {
 async function populateEvents(guild_id: string) {
 	const logger = getLogger();
 
-	if (GuildEvents.has(guild_id)) return;
+	if (GuildEvents.has(guild_id)) {
+		logger.debug("TimeEvents cache hit");
+		return;
+	}
 
 	const res = await Requests.getEvents(guild_id);
 	if (res.error) {
