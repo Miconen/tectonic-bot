@@ -8,6 +8,12 @@ import embedBuilder from "./embedBuilder.js";
 import removeOldEmbeds from "./removeOldEmbeds.js";
 import type { TimeField } from "./types.js";
 
+// Adds invisible non space padding to expand embeds to a consistent size
+function padTo(to: number, s: string) {
+	if (s.length === to) return s;
+	return s + "‎ ".repeat(to - s.length);
+}
+
 async function initializeHelper(interaction: CommandInteraction) {
 	if (!interaction.guild) {
 		await interaction.reply({
@@ -58,8 +64,10 @@ async function initializeHelper(interaction: CommandInteraction) {
 	const msgs: CategoryUpdate[] = [];
 
 	for (const category of categories) {
+		// Amount of padding to give to guarantee maximum width on Discord embeds
+		const PADDING = 110;
 		const embed = embedBuilder(interaction)
-			.setTitle(category.name)
+			.setTitle(padTo(PADDING, category.name))
 			.setThumbnail(category.thumbnail);
 
 		const fields: TimeField[] = [];
