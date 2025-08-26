@@ -8,6 +8,15 @@ import embedBuilder from "./embedBuilder.js";
 import removeOldEmbeds from "./removeOldEmbeds.js";
 import type { TimeField } from "./types.js";
 
+// Amount of padding to give to guarantee maximum width on Discord embeds
+const PADDING = 110;
+
+// Adds invisible non space padding to expand embeds to a consistent size
+function padTo(to: number, s: string) {
+	if (s.length === to) return s;
+	return s + "‎ ".repeat(to - s.length);
+}
+
 async function initializeHelper(interaction: CommandInteraction) {
 	if (!interaction.guild) {
 		await interaction.reply({
@@ -49,21 +58,17 @@ async function initializeHelper(interaction: CommandInteraction) {
 
 	// Create combined categories data
 	const categories = formatGuildTimes(res.data);
-	const players = new Set<string>(
-		res.data.teammates?.map((t) => t.user_id) ?? [],
-	);
-	const members = await interaction.guild.members.fetch({
-		user: Array.from(players),
-	});
-	const msgs: CategoryUpdate[] = [];
+	// Get rid of duplicate user_ids
+	const players = [...new Set(res.data.teammates?.map((t) => t.user_id) ?? [])];
+	const members = await interaction.guild.members.fetch({ user: players });
 
+	const msgs: CategoryUpdate[] = [];
 	for (const category of categories) {
 		const embed = embedBuilder(interaction)
-			.setTitle(category.name)
+			.setTitle(padTo(PADDING, category.name))
 			.setThumbnail(category.thumbnail);
 
 		const fields: TimeField[] = [];
-
 		for (const boss of category.bosses) {
 			let time = "No time yet";
 			if (boss.pb) {
