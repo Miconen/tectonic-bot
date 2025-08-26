@@ -65,7 +65,7 @@ async function initializeHelper(interaction: CommandInteraction) {
 	const msgs: CategoryUpdate[] = [];
 	for (const category of categories) {
 		const embed = embedBuilder(interaction)
-			.setTitle(padTo(PADDING, category.name))
+			.setTitle(padTo(80, category.name))
 			.setThumbnail(category.thumbnail);
 
 		const fields: TimeField[] = [];
