@@ -2,55 +2,109 @@ import {
 	type AutocompleteInteraction,
 	type ButtonInteraction,
 	CommandInteraction,
+	GuildMember,
 } from "discord.js";
-import type { GuardFunction } from "discordx";
+import type { ArgsOf, GuardFunction } from "discordx";
 import { withContext } from "./context";
 import { rootLogger } from "./logger";
 
-export const LoggingGuard: GuardFunction<
-	CommandInteraction | ButtonInteraction
-> = async (
-	interaction,
+type Leave = ArgsOf<"guildMemberRemove">;
+type InteractionType = CommandInteraction | ButtonInteraction | AutocompleteInteraction;
+
+// Type guard to check if the parameter is an interaction
+function isInteraction(param: InteractionType | Leave): param is InteractionType {
+	return 'id' in param && 'user' in param;
+}
+
+// Type guard to check if the parameter is a guild leave event
+function isGuildLeave(param: InteractionType | Leave): param is Leave {
+	return Array.isArray(param) && param[0] instanceof GuildMember;
+}
+
+export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
+	param,
 	_, // Client
 	next,
 ) => {
-		const correlationId = interaction.id;
-		const startTime = Date.now();
+	const startTime = Date.now();
+	let correlationId: string;
+	let command: string;
+	let baseContext: Record<string, unknown>;
 
-		let command = "Button interaction";
-		if (interaction instanceof CommandInteraction) {
-			command = interaction.commandName;
+	if (isInteraction(param)) {
+		correlationId = param.id;
+		command = "Button interaction";
+		if (param instanceof CommandInteraction) {
+			command = param.commandName;
 		}
 
 		// Extract command info from interaction
-		const baseContext = {
+		baseContext = {
 			correlationId,
 			command,
-			userId: interaction.user.id,
-			username: interaction.user.username,
-			guildId: interaction.guildId,
-			channelId: interaction.channelId,
+			userId: param.user.id,
+			username: param.user.username,
+			guildId: param.guildId,
+			channelId: param.channelId,
 		};
+	}
+	else if (isGuildLeave(param)) {
+		// Handle guild member leave events
+		const [member] = param;
+		correlationId = `leave-${member.id}-${Date.now()}`;
+		command = "Guild member leave";
 
-		const logger = rootLogger.child(baseContext);
+		baseContext = {
+			correlationId,
+			command,
+			userId: member.id,
+			username: member.user.username,
+			displayName: member.displayName,
+			guildId: member.guild.id,
+			guildName: member.guild.name,
+			joinedAt: member.joinedAt?.toISOString(),
+		};
+	} else {
+		// Fallback for unknown types
+		correlationId = `unknown-${Date.now()}`;
+		command = "Unknown event";
+		baseContext = {
+			correlationId,
+			command,
+		};
+	}
 
-		return withContext({ logger, correlationId }, async () => {
+	const logger = rootLogger.child(baseContext);
+
+	return withContext({ logger, correlationId }, async () => {
+		if (isGuildLeave(param)) {
+			logger.info("Member left guild");
+		} else {
 			logger.info("Command started");
+		}
 
-			try {
-				const result = await next();
+		try {
+			const result = await next();
 
-				const duration = Date.now() - startTime;
+			const duration = Date.now() - startTime;
+			if (isGuildLeave(param)) {
+				logger.info({ duration }, "Guild leave processed");
+			} else {
 				logger.info({ duration }, "Command completed");
-
-				return result;
-			} catch (error) {
-				const duration = Date.now() - startTime;
-				logger.error({ err: error, duration }, "Command failed");
-				throw error;
 			}
-		});
-	};
+
+			return result;
+		} catch (error) {
+			const duration = Date.now() - startTime;
+			if (isGuildLeave(param)) {
+				logger.error({ err: error, duration }, "Guild leave processing failed");
+			} else {
+				logger.error({ err: error, duration }, "Command failed");
+			}
+			throw error;
+		}
+	});
+};
 
 // Autocomplete logging guard
 export const AutocompleteLoggingGuard: GuardFunction<

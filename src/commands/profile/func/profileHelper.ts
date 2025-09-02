@@ -44,12 +44,7 @@ const pointsHelper = async (
 	}
 
 	const res = await Requests.getUser(guildId, query);
-	if (res.error) return errorMsg;
-	if (!res.data) {
-		return getString("accounts", "notActivated", {
-			username: target.displayName,
-		});
-	}
+	if (res.error || !res.data) return errorMsg;
 
 	target = await interaction.guild.members.fetch(res.data.user_id);
 
