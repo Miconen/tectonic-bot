@@ -25,6 +25,7 @@ async function womHelper(
 		return;
 	}
 
+	interaction.deferReply();
 	const member = interaction.member as GuildMember;
 
 	// Services and data fetching
@@ -49,8 +50,6 @@ async function womHelper(
 		});
 		return;
 	}
-
-	interaction.deferReply();
 
 	const rsns = competition.data.participants.flatMap((u) =>
 		u.rsns.map((r) => r.rsn),
