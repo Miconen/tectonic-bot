@@ -6,7 +6,7 @@ import giveHelper from "./func/giveHelper.js";
 import multiplierHelper from "./func/multiplierHelper.js";
 import { pointSourcePicker } from "@utils/pickers.js";
 import { getString } from "@utils/stringRepo.js";
-import womHelper from "./event/func/womHelper.js";
+import womHelper from "./func/womHelper.js";
 import { replyHandler } from "@utils/replyHandler.js";
 
 @Discord()
