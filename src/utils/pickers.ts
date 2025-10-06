@@ -273,7 +273,7 @@ export const pointSourcePicker = withAutocompleteLogging(
 		if (!sources) return;
 
 		const options = Array.from(sources.values()).map((s) => ({
-			name: s.name,
+			name: `${s.name} | ${s.points} points`,
 			value: s.source,
 		}));
 
@@ -331,11 +331,11 @@ export const bossTimePicker = withAutocompleteLogging(
 			const boss = guild.bosses.find((b) => b.name === t.boss_name);
 			return boss
 				? [
-						{
-							name: `${boss.category} | ${boss.display_name} - ${TimeConverter.ticksToTime(t.time)} (${t.time} ticks)`,
-							value: t.boss_name,
-						},
-					]
+					{
+						name: `${boss.category} | ${boss.display_name} - ${TimeConverter.ticksToTime(t.time)} (${t.time} ticks)`,
+						value: t.boss_name,
+					},
+				]
 				: [];
 		});
 
