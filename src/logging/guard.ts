@@ -3,6 +3,7 @@ import {
 	type ButtonInteraction,
 	CommandInteraction,
 	GuildMember,
+	ChatInputCommandInteraction,
 } from "discord.js";
 import type { ArgsOf, GuardFunction } from "discordx";
 import { withContext } from "./context";
@@ -34,9 +35,20 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 	if (isInteraction(param)) {
 		correlationId = param.id;
 		command = "Button interaction";
-		if (param instanceof CommandInteraction) {
+
+		if (param instanceof ChatInputCommandInteraction) {
+			const subcommandGroup = param.options.getSubcommandGroup(false);
+			const subcommand = param.options.getSubcommand(false);
+
+			command = [param.commandName, subcommandGroup, subcommand]
+				.filter(Boolean)
+				.join(" ");
+
+		} else if (param instanceof CommandInteraction) {
 			command = param.commandName;
 		}
+
+		console.log("COMMAND NAME", command)
 
 		// Extract command info from interaction
 		baseContext = {

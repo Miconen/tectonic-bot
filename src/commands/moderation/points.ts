@@ -36,6 +36,7 @@ class Points {
 		addedPoints: number,
 		interaction: CommandInteraction,
 	) {
+		await interaction.deferReply()
 		const res = await giveHelper(target, addedPoints, interaction);
 		await replyHandler(res, interaction);
 	}
@@ -62,6 +63,7 @@ class Points {
 		source: string,
 		interaction: CommandInteraction,
 	) {
+		await interaction.deferReply()
 		const res = await giveHelper(target, source, interaction);
 		await replyHandler(res, interaction);
 	}
@@ -80,6 +82,7 @@ class Points {
 		multiplier: number,
 		interaction: CommandInteraction,
 	) {
+		await interaction.deferReply()
 		return multiplierHelper(multiplier, interaction);
 	}
 
@@ -105,7 +108,9 @@ class Points {
 		if (!interaction.guild)
 			return await interaction.reply(getString("errors", "noGuild"));
 
+		await interaction.deferReply()
 		await interaction.guild.members.fetch();
+
 		const res = await giveHelper(role.members, source, interaction);
 		await replyHandler(res, interaction);
 	}
