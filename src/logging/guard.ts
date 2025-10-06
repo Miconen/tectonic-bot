@@ -48,8 +48,6 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 			command = param.commandName;
 		}
 
-		console.log("COMMAND NAME", command)
-
 		// Extract command info from interaction
 		baseContext = {
 			correlationId,
