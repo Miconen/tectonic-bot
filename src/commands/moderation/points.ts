@@ -115,6 +115,34 @@ class Points {
 		await replyHandler(res, interaction);
 	}
 
+	@Slash({ name: "rolebypoints", description: "Event point for a whole role by point amount" })
+	async rolebypoints(
+		@SlashOption({
+			name: "role",
+			description: "Role for which to award points",
+			required: true,
+			type: ApplicationCommandOptionType.Role,
+		})
+		role: Role,
+		@SlashOption({
+			name: "amount",
+			description: "Amount of points to give",
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
+		addedPoints: number,
+		interaction: CommandInteraction,
+	) {
+		if (!interaction.guild)
+			return await interaction.reply(getString("errors", "noGuild"));
+
+		await interaction.deferReply()
+		await interaction.guild.members.fetch();
+
+		const res = await giveHelper(role.members, addedPoints, interaction);
+		await replyHandler(res, interaction);
+	}
+
 	@Slash({ name: "wom", description: "Wise old man automation" })
 	async wom(
 		@SlashOption({
