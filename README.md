@@ -3,8 +3,8 @@
 ## Branches
 
 - **main**: Deployed version of the bot (Autodeploy)
-- **develop**: Most up-to-date branch used for development
-- **feature/{name}**: New WIP features
+- **develop**: Special development branch that gets deleted after merging (Autodeploy) 
+- **feature/{name}**: Feature branches that do not get autodeployed
 
 **[All planned features and ideas can be found here.](https://github.com/Miconen/tectonic-bot/projects/1)**
 
