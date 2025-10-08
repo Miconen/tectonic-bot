@@ -49,6 +49,11 @@ const strings: StringRepository = {
 		teamResultsProcessed: (args) =>
 			`Team event processed. ${args.teamCount} teams awarded points.`,
 		notTeamEvent: "This event is not team based.",
+		eventUpdatedHeader: "# Event Updated",
+		eventUpdatedField: (args) => `**Updated event ${args.field}**`,
+		eventUpdatedFieldFrom: (args) => `From: ${args.value}`,
+		eventUpdatedFieldTo: (args) => `To: ${args.value}`,
+		eventUpdateNoParams: "No parameters provided for event update",
 	},
 
 	accounts: {
