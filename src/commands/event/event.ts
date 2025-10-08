@@ -4,7 +4,8 @@ import {
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
-import { eventInfoHelper } from "./func/eventHelper";
+import { eventInfoHelper } from "./func/eventInfoHelper";
+import { eventUpdateHelper } from "./func/eventUpdateHelper";
 
 @Discord()
 @SlashGroup({ description: "Guild event information", name: "event" })
@@ -23,5 +24,51 @@ class EventInfo {
 		interaction: CommandInteraction,
 	) {
 		return eventInfoHelper(event, interaction);
+	}
+
+	@Slash({ name: "rename", description: "Rename a guild event" })
+	async rename(
+		@SlashOption({
+			name: "event",
+			description: "Event to rename",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: eventPicker,
+		})
+		event: string,
+		@SlashOption({
+			name: "name",
+			description: "New name for the event",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+		})
+		name: string,
+		interaction: CommandInteraction,
+	) {
+		return eventUpdateHelper(event, { name }, interaction);
+	}
+
+	@Slash({ name: "cutoff", description: "Change the cutoff of a guild event." })
+	async cutoff(
+		@SlashOption({
+			name: "event",
+			description: "Event change the cutoff of",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: eventPicker,
+		})
+		event: string,
+		@SlashOption({
+			name: "cutoff",
+			description: "New cutoff value for an event",
+			required: true,
+			type: ApplicationCommandOptionType.Integer,
+			minValue: 1,
+			maxValue: 3,
+		})
+		position_cutoff: number,
+		interaction: CommandInteraction,
+	) {
+		return eventUpdateHelper(event, { position_cutoff }, interaction);
 	}
 }

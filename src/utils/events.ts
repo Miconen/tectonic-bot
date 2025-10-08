@@ -1,6 +1,6 @@
 import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
-import type { GuildEvent } from "@typings/requests";
+import type { EventUpdateParam, GuildEvent } from "@typings/requests";
 import { TTLCache } from "@utils/ttlCache";
 
 export const GuildEvents = new TTLCache<GuildEvent[]>();
@@ -8,6 +8,50 @@ export const GuildEvents = new TTLCache<GuildEvent[]>();
 export async function getEvents(guild_id: string) {
 	await populateEvents(guild_id);
 	return GuildEvents.get(guild_id);
+}
+
+// Cache invalidation function for when event data changes
+export function invalidateEventCache(guild_id: string): void {
+	const logger = getLogger();
+	GuildEvents.delete(guild_id);
+	logger.debug(`Invalidated event cache for guild ${guild_id}`);
+}
+
+export async function updateEventCache(guild_id: string, event: string, params: EventUpdateParam) {
+	const logger = getLogger();
+
+	if (!params.name && !params.position_cutoff) {
+		logger.error("Invalid event update params");
+		return;
+	}
+
+	const ev = await getEvent(guild_id, event)
+	if (!ev) {
+		logger.error("Error fetching guild events");
+		return;
+	}
+
+	if (params.position_cutoff) {
+		ev.postition_cutoff = params.position_cutoff
+	}
+
+	if (params.name) {
+		ev.name = params.name
+	}
+
+	logger.debug(`Updated event ${event} for guild ${guild_id}`);
+}
+
+export async function getEvent(guild_id: string, event: string) {
+	const logger = getLogger();
+
+	const events = await getEvents(guild_id);
+	if (!events) {
+		logger.error("Error fetching guild events");
+		return;
+	}
+
+	return events.find(e => e.wom_id === event);
 }
 
 async function populateEvents(guild_id: string) {

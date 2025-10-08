@@ -132,17 +132,17 @@ export type CustomPoints = {
 export type PresetPoints = {
 	type: "preset";
 	event:
-		| "event_participation"
-		| "event_hosting"
-		| "clan_pb"
-		| "split_low"
-		| "split_medium"
-		| "split_high"
-		| "combat_achievement_low"
-		| "combat_achievement_medium"
-		| "combat_achievement_high"
-		| "combat_achievement_very_high"
-		| "combat_achievement_very_highest";
+	| "event_participation"
+	| "event_hosting"
+	| "clan_pb"
+	| "split_low"
+	| "split_medium"
+	| "split_high"
+	| "combat_achievement_low"
+	| "combat_achievement_medium"
+	| "combat_achievement_high"
+	| "combat_achievement_very_high"
+	| "combat_achievement_very_highest";
 };
 
 export type Points = CustomPoints | PresetPoints;
@@ -253,6 +253,11 @@ export type EventTeamWinParam = {
 export type EventWinParam = {
 	competition: number;
 } & (EventIndividualWinParam | EventTeamWinParam);
+
+export type EventUpdateParam = {
+	name?: string;
+	position_cutoff?: number;
+}
 
 export type TeamByRunId = {
 	type: "run_id";

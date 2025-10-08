@@ -11,6 +11,7 @@ import type {
 	NewTime,
 	TimeResponse,
 	User,
+	EventUpdateParam,
 } from "@typings/requests";
 import { fetchData } from "./main";
 
@@ -130,6 +131,17 @@ export async function getEvents(guild_id: string) {
 	const endpoint = `guilds/${guild_id}/events`;
 
 	return await fetchData<GuildEvent[]>(endpoint);
+}
+
+export async function updateEvent(guild_id: string, event_id: string, params: EventUpdateParam) {
+	const endpoint = `guilds/${guild_id}/events/${event_id}`;
+
+	const options = {
+		method: "PUT",
+		body: JSON.stringify(params),
+	};
+
+	return await fetchData<GuildEvent[]>(endpoint, options);
 }
 
 export async function getGuildPointSources(guild_id: string) {
