@@ -1,8 +1,3 @@
-export type TimeField = {
-	name: string;
-	value: string;
-};
-
 export type GuildCategory = {
 	guild_id: string;
 	category: string;
