@@ -31,6 +31,7 @@ class Times {
 		boss: string,
 		interaction: CommandInteraction,
 	) {
+		await interaction.deferReply()
 		await revertTimeHelper(boss, interaction);
 	}
 
@@ -53,6 +54,7 @@ class Times {
 		boss: string,
 		interaction: CommandInteraction,
 	) {
+		await interaction.deferReply()
 		await addUserToTimeHelper(user, boss, interaction);
 	}
 
@@ -78,6 +80,7 @@ class Times {
 		boss: string,
 		interaction: CommandInteraction,
 	) {
+		await interaction.deferReply()
 		await removeUserFromTimeHelper(user, boss, interaction);
 	}
 }
