@@ -167,7 +167,6 @@ const strings: StringRepository = {
 	},
 
 	times: {
-		timeFormat: (args) => `\`${args.time}\` - ${args.team}`,
 		newRecord: (args) =>
 			`🏆 New ${args.category} record! **${args.displayName}**: ${args.time}`,
 		timeImproved: (args) =>
@@ -178,9 +177,10 @@ const strings: StringRepository = {
 		timeNotFound: "No time records found.",
 		teamEntry: (args) => `Team: ${args.teammates}`,
 		newPb: (args) => `# New clan PB\n\`${args.time} (${args.ticks} ticks)\`\n`,
-		timeSubmittedNotPb: (args) => "Time submitted, not a new pb :)",
+		timeSubmittedNotPb: "Time submitted, not a new pb :)",
 		failedParsingTicks: "Failed parsing ticks from time",
 		failedAddingTime: "Failed adding time",
+		failedUpdatingEmbed: "Failed to update the leaderboard embed. The time was saved but the display may be out of date.",
 		errorFetchingUsersForPoints: "Error fetching users to give points to",
 		fetchingGuildData: "Fetching guild data...",
 		removingOldEmbeds: "Removing old category embeds...",
