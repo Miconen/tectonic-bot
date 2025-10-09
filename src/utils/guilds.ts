@@ -1,51 +1,63 @@
-import type { DetailedGuild } from "@typings/requests";
+import type { Category, DetailedGuild } from "@typings/requests";
 import { notEmpty } from "./notEmpty";
 import { getString } from "./stringRepo";
 
-export function formatGuildTimes(data: DetailedGuild) {
-	// Create combined bosses data
-	const bosses = data.guild_bosses
-		.map((gb) => {
-			const pb = data.pbs?.find((t) => t.run_id === gb.pb_id);
-			const teammates = data.teammates?.filter((tm) => tm.run_id === gb.pb_id);
+export type EmbedBossData = {
+	name: string;
+	display_name: string;
+	pb_time_ticks: number | null;
+	teammate_user_ids: string[];
+};
 
-			// Find all guild_bosses entries for this boss
-			const boss = data.bosses.find((b) => b.name === gb.boss);
-			if (!boss) {
-				console.log(
-					getString("error", "empty", { target: "boss in formatGuildTimes()" }),
-				);
-				return;
-			}
+export type EmbedCategoryData = {
+	name: string;
+	thumbnail: string;
+	message_id: string | null;
+	bosses: EmbedBossData[];
+};
 
-			// Return combined data
-			return { ...gb, ...boss, pb, teammates };
-		})
-		.filter(notEmpty);
-
-	// Create combined categories data
-	const categories = data.guild_categories
+export function formatGuildTimesForEmbeds(
+	data: DetailedGuild
+): EmbedCategoryData[] {
+	return data.guild_categories
 		.map((gc) => {
-			const bs = bosses
-				.filter((b) => b.category === gc.category)
-				.sort((a, b) => a.name.localeCompare(b.name));
+			const category = data.categories.find((c) => c.name === gc.category);
+			if (!category) return null;
 
-			// Find all guild_categories entries for this category
-			const category = data.categories.find((c) => gc.category === c.name);
-			if (!category) {
-				console.log(
-					getString("error", "empty", {
-						target: "category in formatGuildTimes()",
-					}),
-				);
-				return;
-			}
+			const bosses = formatGuildBossesForEmbeds(data, category)
 
-			// Return combined data
-			return { ...gc, ...category, bosses: bs };
+			return {
+				name: category.name,
+				thumbnail: category.thumbnail,
+				message_id: gc.message_id ?? null,
+				bosses,
+				order: category.order,
+			};
 		})
 		.filter(notEmpty)
 		.sort((a, b) => a.order - b.order);
+}
 
-	return categories;
+export function formatGuildBossesForEmbeds(data: DetailedGuild, category: Category) {
+	return data.guild_bosses
+		.filter((gb) => gb.category === category.name)
+		.map((gb) => {
+			const boss = data.bosses.find((b) => b.name === gb.boss);
+			if (!boss) return null;
+
+			const pb = data.pbs?.find((t) => t.run_id === gb.pb_id);
+			const teammates = data.teammates?.filter(
+				(tm) => tm.run_id === gb.pb_id
+			);
+
+			// Extract ONLY what embeds need
+			return {
+				display_name: boss.display_name,
+				name: boss.name,
+				pb_time_ticks: pb?.time ?? null,
+				teammate_user_ids: teammates?.map(t => t.user_id) ?? [],
+			};
+		})
+		.filter(notEmpty)
+		.sort((a, b) => a.display_name.localeCompare(b.display_name));
 }
