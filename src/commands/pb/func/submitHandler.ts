@@ -44,7 +44,13 @@ async function submitHandler(
 	}
 
 	// Pb updated
-	await updateEmbed(boss, guildId, interaction);
+	const success = await updateEmbed(boss, interaction);
+	if (!success) {
+		await interaction.followUp({
+			content: getString("times", "failedUpdatingEmbed"),
+			ephemeral: true,
+		});
+	}
 	logger.info(res.data, "New clan best time");
 
 	// Fetch and map user ids to GuildMember types

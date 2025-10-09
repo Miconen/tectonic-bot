@@ -187,6 +187,7 @@ export type Category = {
 
 export type GuildBoss = {
 	boss: string;
+	category: string;
 	guild_id: string;
 	pb_id: number | undefined;
 };

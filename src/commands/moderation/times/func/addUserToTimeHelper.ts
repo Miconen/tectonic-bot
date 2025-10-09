@@ -1,3 +1,4 @@
+import updateEmbed from "@commands/pb/func/updateEmbed";
 import { Requests } from "@requests/main";
 import type { TeamParam } from "@typings/requests";
 import { invalidateGuildCache } from "@utils/guildTimes";
@@ -40,4 +41,13 @@ export async function addUserToTimeHelper(
 		interaction,
 		{ ephemeral: true },
 	);
+
+	const success = await updateEmbed(boss, interaction);
+	if (!success) {
+		await replyHandler(
+			getString("times", "failedUpdatingEmbed"),
+			interaction,
+			{ ephemeral: true },
+		);
+	}
 }

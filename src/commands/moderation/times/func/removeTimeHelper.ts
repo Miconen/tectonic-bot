@@ -1,3 +1,4 @@
+import updateEmbed from "@commands/pb/func/updateEmbed";
 import { Requests } from "@requests/main";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
@@ -36,4 +37,13 @@ export async function revertTimeHelper(
 		interaction,
 		{ ephemeral: true },
 	);
+
+	const success = await updateEmbed(boss, interaction);
+	if (!success) {
+		await replyHandler(
+			getString("times", "failedUpdatingEmbed"),
+			interaction,
+			{ ephemeral: true },
+		);
+	}
 }
