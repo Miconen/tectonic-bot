@@ -17,8 +17,11 @@ export async function eventUpdateHelper(
 		return;
 	}
 
-	if (!params.position_cutoff && !params.name) {
-		return replyHandler(getString("competitions", "eventUpdatedField", { field: "cutoff", value: params.position_cutoff }), interaction, { ephemeral: true })
+	if (!params.position_cutoff && !params.name && !params.solo) {
+		await replyHandler(getString("errors", "noEvents"), interaction, {
+			ephemeral: true,
+		});
+		return;
 	}
 
 	const response = await updateEvent(interaction.guild.id, event, params)
@@ -28,8 +31,6 @@ export async function eventUpdateHelper(
 		});
 		return;
 	}
-
-	await updateEventCache(interaction.guild.id, event, params)
 
 	const ev = await getEvent(interaction.guild.id, event)
 	if (!ev) {
@@ -45,7 +46,7 @@ export async function eventUpdateHelper(
 	if (params.position_cutoff) {
 		const r: string[] = []
 		r.push(getString("competitions", "eventUpdatedField", { field: "cutoff" }))
-		r.push(getString("competitions", "eventUpdatedFieldFrom", { value: ev.postition_cutoff }))
+		r.push(getString("competitions", "eventUpdatedFieldFrom", { value: ev.position_cutoff }))
 		r.push(getString("competitions", "eventUpdatedFieldTo", { value: params.position_cutoff }))
 
 		reply.push(r.join("\n"))
@@ -60,6 +61,16 @@ export async function eventUpdateHelper(
 		reply.push(r.join("\n"))
 	}
 
+	if (params.solo) {
+		const r: string[] = []
+		r.push(getString("competitions", "eventUpdatedField", { field: "solo" }))
+		r.push(getString("competitions", "eventUpdatedFieldFrom", { value: ev.solo }))
+		r.push(getString("competitions", "eventUpdatedFieldTo", { value: params.solo }))
+
+		reply.push(r.join("\n"))
+	}
+
+	await updateEventCache(interaction.guild.id, event, params)
 
 	return replyHandler(reply.join("\n"), interaction, { ephemeral: true });
 }

@@ -123,8 +123,10 @@ const strings: StringRepository = {
 		achievementsHeader: "# Achievements",
 		pbEntry: (args) =>
 			`\`${args.category} | ${args.displayName}\` - \`${args.time} (${args.ticks} ticks)\``,
+		eventPlacementChunk: (args) => `${args.emoji} ${args.placement}${args.suffix} Place`,
+		eventWinnerChunk: "🏆 Winner",
 		eventEntry: (args) =>
-			`[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>) - Placement: #${args.placement}`,
+			`[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>) - ${args.chunk}`,
 		accountEntry: (args) => `\`${args.rsn}\``,
 		achievementEntry: (args) => `${args.icon} - **${args.name}**`,
 		noAccounts: "No linked accounts found.",
