@@ -61,7 +61,7 @@ export async function eventUpdateHelper(
 		reply.push(r.join("\n"))
 	}
 
-	if (params.solo) {
+	if (params.solo !== undefined) {
 		const r: string[] = []
 		r.push(getString("competitions", "eventUpdatedField", { field: "solo" }))
 		r.push(getString("competitions", "eventUpdatedFieldFrom", { value: ev.solo }))
