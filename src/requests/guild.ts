@@ -12,6 +12,7 @@ import type {
 	TimeResponse,
 	User,
 	EventUpdateParam,
+	EventDetails,
 } from "@typings/requests";
 import { fetchData } from "./main";
 
@@ -130,7 +131,7 @@ export async function eventWinners(guild_id: string, params: EventWinParam) {
 export async function getEvents(guild_id: string) {
 	const endpoint = `guilds/${guild_id}/events`;
 
-	return await fetchData<GuildEvent[]>(endpoint);
+	return await fetchData<EventDetails[]>(endpoint);
 }
 
 export async function updateEvent(guild_id: string, event_id: string, params: EventUpdateParam) {
@@ -141,7 +142,7 @@ export async function updateEvent(guild_id: string, event_id: string, params: Ev
 		body: JSON.stringify(params),
 	};
 
-	return await fetchData<GuildEvent[]>(endpoint, options);
+	return await fetchData<never>(endpoint, options);
 }
 
 export async function getGuildPointSources(guild_id: string) {

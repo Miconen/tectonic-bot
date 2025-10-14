@@ -33,11 +33,14 @@ export type RSN = {
 	wom_id: string;
 };
 
-export type GuildEvent = {
+export type EventDetails = {
 	name: string;
 	wom_id: string;
-	guild_id: string;
 	postition_cutoff: number;
+}
+
+export type GuildEvent = EventDetails & {
+	guild_id: string;
 	user_id: string;
 	placement: number;
 };
