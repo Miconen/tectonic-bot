@@ -20,7 +20,7 @@ export function invalidateEventCache(guild_id: string): void {
 export async function updateEventCache(guild_id: string, event: string, params: EventUpdateParam) {
 	const logger = getLogger();
 
-	if (!params.name && !params.position_cutoff) {
+	if (!params.name && !params.position_cutoff && !params.solo) {
 		logger.error("Invalid event update params");
 		return;
 	}
@@ -37,6 +37,10 @@ export async function updateEventCache(guild_id: string, event: string, params: 
 
 	if (params.name) {
 		ev.name = params.name
+	}
+
+	if (params.solo) {
+		ev.solo = params.solo
 	}
 
 	logger.debug(`Updated event ${event} for guild ${guild_id}`);

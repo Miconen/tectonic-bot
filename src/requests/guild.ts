@@ -4,7 +4,6 @@ import type {
 	CompetitionResponse,
 	EventWinParam,
 	Guild,
-	GuildEvent,
 	GuildPointSource,
 	DetailedGuild,
 	GuildUpdate,

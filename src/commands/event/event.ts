@@ -52,7 +52,7 @@ class EventInfo {
 	async cutoff(
 		@SlashOption({
 			name: "event",
-			description: "Event change the cutoff of",
+			description: "Event to change the cutoff of",
 			required: true,
 			type: ApplicationCommandOptionType.String,
 			autocomplete: eventPicker,
@@ -70,5 +70,27 @@ class EventInfo {
 		interaction: CommandInteraction,
 	) {
 		return eventUpdateHelper(event, { position_cutoff }, interaction);
+	}
+
+	@Slash({ name: "solo", description: "Change the solo flag of a guild event." })
+	async solo(
+		@SlashOption({
+			name: "event",
+			description: "Event to change the solo flag of",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: eventPicker,
+		})
+		event: string,
+		@SlashOption({
+			name: "solo",
+			description: "New solo flag value for an event",
+			required: true,
+			type: ApplicationCommandOptionType.Boolean,
+		})
+		solo: boolean,
+		interaction: CommandInteraction,
+	) {
+		return eventUpdateHelper(event, { solo }, interaction);
 	}
 }

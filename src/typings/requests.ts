@@ -36,14 +36,14 @@ export type RSN = {
 export type EventDetails = {
 	name: string;
 	wom_id: string;
+	guild_id: string;
 	position_cutoff: number;
+	solo: boolean;
 }
 
 export type GuildEvent = EventDetails & {
-	guild_id: string;
 	user_id: string;
 	placement: number;
-	solo: boolean;
 };
 
 export type SimpleUser = {
@@ -262,6 +262,7 @@ export type EventWinParam = {
 export type EventUpdateParam = {
 	name?: string;
 	position_cutoff?: number;
+	solo?: boolean;
 }
 
 export type TeamByRunId = {
