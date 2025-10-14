@@ -290,12 +290,22 @@ export const eventPicker = withAutocompleteLogging(
 		}
 
 		const events = await getEvents(interaction.guild.id);
-		if (!events) return;
+		if (!events) {
+			await safeRespond(interaction, [])
+			return
+		};
 
-		const options = events.map((e) => ({
-			name: e.name,
-			value: e.wom_id,
-		}));
+		const query = interaction.options
+			.getFocused(true)
+			.value.toLowerCase()
+			.trim() ?? "";
+
+		const options = events
+			.filter((e) => e.name.toLowerCase().includes(query))
+			.map((e) => ({
+				name: e.name,
+				value: e.wom_id,
+			}));
 
 		await safeRespond(interaction, options);
 	},
