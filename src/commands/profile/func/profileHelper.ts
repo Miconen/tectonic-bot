@@ -6,6 +6,7 @@ import type { UserParam } from "@typings/requests.js";
 import { container } from "tsyringe";
 import TimeConverter from "@commands/pb/func/TimeConverter";
 import { getString } from "@utils/stringRepo";
+import { formatPlacement } from "@utils/formatEventPlacement";
 
 const pointsHelper = async (
 	member: GuildMember | null,
@@ -107,13 +108,18 @@ const pointsHelper = async (
 		lines.push(getString("profile", "eventsHeader"));
 		for (const event of user.events) {
 			// Skip events that are below the position cutoff
-			if (event.postition_cutoff < event.placement) continue;
+			if (event.position_cutoff < event.placement) continue;
+
+			const isWinner = !event.solo && event.position_cutoff === 1
+
+			// Right side part of result string which shows the users placement
+			let chunk = formatPlacement(event.placement, isWinner)
 
 			lines.push(
 				getString("profile", "eventEntry", {
 					eventName: event.name,
 					womId: event.wom_id,
-					placement: event.placement,
+					chunk,
 				}),
 			);
 		}

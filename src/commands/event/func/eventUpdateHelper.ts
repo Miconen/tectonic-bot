@@ -45,7 +45,7 @@ export async function eventUpdateHelper(
 	if (params.position_cutoff) {
 		const r: string[] = []
 		r.push(getString("competitions", "eventUpdatedField", { field: "cutoff" }))
-		r.push(getString("competitions", "eventUpdatedFieldFrom", { value: ev.postition_cutoff }))
+		r.push(getString("competitions", "eventUpdatedFieldFrom", { value: ev.position_cutoff }))
 		r.push(getString("competitions", "eventUpdatedFieldTo", { value: params.position_cutoff }))
 
 		reply.push(r.join("\n"))

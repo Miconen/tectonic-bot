@@ -36,13 +36,14 @@ export type RSN = {
 export type EventDetails = {
 	name: string;
 	wom_id: string;
-	postition_cutoff: number;
+	position_cutoff: number;
 }
 
 export type GuildEvent = EventDetails & {
 	guild_id: string;
 	user_id: string;
 	placement: number;
+	solo: boolean;
 };
 
 export type SimpleUser = {

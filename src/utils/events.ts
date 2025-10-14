@@ -1,9 +1,9 @@
 import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
-import type { EventUpdateParam, GuildEvent } from "@typings/requests";
+import type { EventDetails, EventUpdateParam } from "@typings/requests";
 import { TTLCache } from "@utils/ttlCache";
 
-export const GuildEvents = new TTLCache<GuildEvent[]>();
+export const GuildEvents = new TTLCache<EventDetails[]>();
 
 export async function getEvents(guild_id: string) {
 	await populateEvents(guild_id);
@@ -32,7 +32,7 @@ export async function updateEventCache(guild_id: string, event: string, params: 
 	}
 
 	if (params.position_cutoff) {
-		ev.postition_cutoff = params.position_cutoff
+		ev.position_cutoff = params.position_cutoff
 	}
 
 	if (params.name) {
