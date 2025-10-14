@@ -6,6 +6,7 @@ import {
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventInfoHelper } from "./func/eventInfoHelper";
 import { eventUpdateHelper } from "./func/eventUpdateHelper";
+import { eventRemoveHelper } from "./func/eventRemover";
 
 @Discord()
 @SlashGroup({ description: "Guild event information", name: "event" })
@@ -92,5 +93,21 @@ class EventInfo {
 		interaction: CommandInteraction,
 	) {
 		return eventUpdateHelper(event, { solo }, interaction);
+	}
+
+
+	@Slash({ name: "remove", description: "Remove a stored guild event." })
+	async remove(
+		@SlashOption({
+			name: "event",
+			description: "Event to remove from the guild",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: eventPicker,
+		})
+		event: string,
+		interaction: CommandInteraction,
+	) {
+		return eventRemoveHelper(event, interaction);
 	}
 }

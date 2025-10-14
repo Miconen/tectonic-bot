@@ -144,6 +144,16 @@ export async function updateEvent(guild_id: string, event_id: string, params: Ev
 	return await fetchData<never>(endpoint, options);
 }
 
+export async function deleteEvent(guild_id: string, event_id: string) {
+	const endpoint = `guilds/${guild_id}/events/${event_id}`;
+
+	const options = {
+		method: "DELETE",
+	};
+
+	return await fetchData<never>(endpoint, options);
+}
+
 export async function getGuildPointSources(guild_id: string) {
 	const url = `guilds/${guild_id}/points`;
 	const status = await fetchData<GuildPointSource[]>(url);

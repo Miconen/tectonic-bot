@@ -54,6 +54,7 @@ const strings: StringRepository = {
 		eventUpdatedFieldFrom: (args) => `From: ${args.value}`,
 		eventUpdatedFieldTo: (args) => `To: ${args.value}`,
 		eventUpdateNoParams: "No parameters provided for event update",
+		eventDeleted: (args) => `**Deleted event ${args.field}**`,
 	},
 
 	accounts: {
