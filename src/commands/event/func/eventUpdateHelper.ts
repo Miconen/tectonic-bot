@@ -17,7 +17,7 @@ export async function eventUpdateHelper(
 		return;
 	}
 
-	if (!params.position_cutoff && !params.name && params.solo !== undefined) {
+	if (!params.position_cutoff && !params.name && params.solo === undefined) {
 		await replyHandler(getString("errors", "noEvents"), interaction, {
 			ephemeral: true,
 		});
