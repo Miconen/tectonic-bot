@@ -10,6 +10,7 @@ import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
 import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 import { timeDeleteHelper } from "./func/timeDeleteHelper";
 import { Requests } from "@requests/main";
+import { IsValidBoss } from "@guards/IsValidBoss";
 
 @Discord()
 @SlashGroup({
@@ -21,6 +22,7 @@ import { Requests } from "@requests/main";
 @Guard(IsAdmin)
 class Times {
   @Slash({ name: "revert", description: "Revert a time to an older one" })
+  @Guard(IsValidBoss)
   async revert(
     @SlashOption({
       name: "boss",
@@ -42,6 +44,7 @@ class Times {
   }
 
   @Slash({ name: "clear", description: "Clear a time from a boss" })
+  @Guard(IsValidBoss)
   async clear(
     @SlashOption({
       name: "boss",

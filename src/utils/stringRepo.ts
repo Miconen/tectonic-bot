@@ -356,6 +356,8 @@ const strings: StringRepository = {
   },
 
   autocomplete: {
+    invalidBossName: (args) =>
+      `Invalid boss name: \`${args.boss}\`\nPlease select a boss from the autocomplete suggestions.`,
     noRsnsFound: (args) =>
       `No RSNs found for user ${args.userId} after filtering`,
   },
