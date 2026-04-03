@@ -1,6 +1,6 @@
 import IsAdmin from "@guards/IsAdmin.js";
 import type { CaCache, CaData } from "@typings/caTypes.js";
-import { combatAchievementPicker } from "@utils/pickers.js";
+import { combatAchievementPicker } from "@pickers/combatAchievements";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import { formatTimeAgo } from "@utils/timeFormatter.js";
@@ -50,10 +50,10 @@ class CombatAchievement {
     @SlashOption({
       name: "player2",
       description: "Team member",
-      required: false,
+      required: true,
       type: ApplicationCommandOptionType.User,
     })
-    player2: GuildMember | undefined,
+    player2: GuildMember,
     @SlashOption({
       name: "player3",
       description: "Team member",
