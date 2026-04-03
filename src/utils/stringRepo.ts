@@ -101,7 +101,7 @@ const strings: StringRepository = {
 
   splits: {
     requestSubmitted: (args) =>
-      `# Split Request\n**${args.username}** has submitted a request for ${args.points} points.\nPlease wait for admin approval and make sure you have posted a screenshot of your drop as proof.`,
+      `# Split Request\n**${args.username}** has submitted a request for ${args.points} points.\nPlease wait for admin approval.`,
     approved: (args) =>
       `✔ Split request approved for **${args.username}** - ${args.points} points awarded.`,
     denied: (args) => `❌ **${args.username}** point request was denied.`,

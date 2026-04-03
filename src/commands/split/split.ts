@@ -17,6 +17,7 @@ import acceptHelper from "./func/acceptHelper.js";
 import denyHelper from "./func/denyHelper.js";
 import splitHelper from "./func/splitHelper.js";
 import type {
+  Attachment,
   AutocompleteInteraction,
   ButtonInteraction,
   CommandInteraction,
@@ -64,13 +65,20 @@ class split {
       type: ApplicationCommandOptionType.String,
     })
     value: string,
+    @SlashOption({
+      name: "screenshot",
+      description: "Screenshot proof of the drop",
+      required: true,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    screenshot: Attachment,
     interaction: CommandInteraction
   ) {
     if (!interaction.guild)
       return await replyHandler(getString("errors", "noGuild"), interaction);
 
     const rewardValue = (await getPoints(value, interaction.guild.id)) ?? 0;
-    await splitHelper(rewardValue, interaction, state);
+    await splitHelper(rewardValue, interaction, state, screenshot.url);
   }
 
   @Guard(IsAdmin)

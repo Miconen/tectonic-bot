@@ -15,7 +15,8 @@ const caHelper = async (
   caName: string,
   members: GuildMember[],
   interaction: CommandInteraction,
-  state: CaCache
+  state: CaCache,
+  screenshot: string
 ) => {
   if (!interaction.channel)
     return await replyHandler(getString("errors", "noChannel"), interaction);
@@ -100,7 +101,10 @@ const caHelper = async (
     interaction
   );
 
-  const message = await interaction.editReply({ components: [row] });
+  const message = await interaction.editReply({
+    components: [row],
+    files: [screenshot],
+  });
 
   const data: CaData = {
     caName,

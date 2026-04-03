@@ -10,6 +10,7 @@ import type {
   CommandInteraction,
   GuildMember,
   Snowflake,
+  Attachment,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { ButtonComponent, Discord, Guard, Slash, SlashOption } from "discordx";
@@ -47,6 +48,13 @@ class CombatAchievement {
       autocomplete: combatAchievementPicker,
     })
     achievement: string,
+    @SlashOption({
+      name: "screenshot",
+      description: "Screenshot proof of the combat achievement",
+      required: true,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    screenshot: Attachment,
     @SlashOption({
       name: "player2",
       description: "Team member",
@@ -114,7 +122,13 @@ class CombatAchievement {
       return true;
     });
 
-    await caHelper(achievement, uniqueMembers, interaction, state);
+    await caHelper(
+      achievement,
+      uniqueMembers,
+      interaction,
+      state,
+      screenshot.url
+    );
   }
 
   @Guard(IsAdmin)
