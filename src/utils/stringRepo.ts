@@ -96,7 +96,9 @@ const strings: StringRepository = {
     notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
     userNotFound: (args) => "❌ User not found for achievement operation.",
     requestSubmitted: (args) =>
-      `#Achievement Request\nAchievement request submitted for **${args.achievement}**.\nPlease wait for admin approval.`,
+      `# Achievement Request\n**${args.username}** has submitted a request for **${args.achievement}**.\nPlease wait for admin approval.`,
+    denied: (args) =>
+      `❌ Achievement request for **${args.achievement}** by **${args.username}** was denied.`,
   },
 
   splits: {
