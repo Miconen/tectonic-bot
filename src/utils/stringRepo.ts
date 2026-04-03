@@ -370,6 +370,18 @@ const strings: StringRepository = {
     couldntRemoveUser: "Couldn't remove user",
     couldntRemoveGuild: "Couldn't remove guild",
   },
+
+  ca: {
+    requestSubmitted: (args) =>
+      `# Combat Achievement Request\n**${args.caName}**\nRequested by: ${args.requester}\nPlayers: ${args.players}\n\n**Already completed:** ${args.alreadyCompleted}\n**New completers:** ${args.newCompleters}`,
+    approved: (args) => `✔ Combat Achievement **${args.caName}** approved.`,
+    denied: (args) =>
+      `❌ Combat Achievement request for **${args.caName}** was denied.`,
+    allAlreadyCompleted:
+      "❌ All players have already completed this combat achievement.",
+    caNotFound: (args) => `❌ Combat Achievement **${args.caName}** not found.`,
+    noGuild: "This command must be used in a server.",
+  },
 };
 
 /**
