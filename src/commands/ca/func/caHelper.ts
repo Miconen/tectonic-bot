@@ -1,5 +1,8 @@
-import type { CaCache, CaData } from "@typings/caTypes.js";
+import type { CaRequest } from "@typings/requestTypes.js";
+import { pendingRequests } from "@commands/requests/state.js";
 import { Requests } from "@requests/main.js";
+import { getGuildCAs } from "@utils/combatAchievement";
+import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
@@ -8,14 +11,13 @@ import {
   ButtonStyle,
   type CommandInteraction,
   type GuildMember,
-  Collection,
 } from "discord.js";
+import { getSources } from "@utils/pointSources";
 
 const caHelper = async (
   caName: string,
   members: GuildMember[],
   interaction: CommandInteraction,
-  state: CaCache,
   screenshot: string
 ) => {
   if (!interaction.channel)
@@ -25,7 +27,6 @@ const caHelper = async (
 
   const userIds = members.map((m) => m.id);
 
-  // Fetch detailed users to check CA completion status
   const usersRes = await Requests.getUsers(interaction.guild.id, {
     type: "user_id",
     user_id: userIds,
@@ -38,7 +39,6 @@ const caHelper = async (
     );
   }
 
-  // Check which users already have this CA
   const alreadyCompleted: string[] = [];
   const newCompleters: string[] = [];
 
@@ -50,7 +50,7 @@ const caHelper = async (
     }
 
     const hasCA = userData.combat_achievements?.some(
-      (ca) => ca.name.toLowerCase() === caName.toLowerCase()
+      (ca) => ca.name === caName
     );
 
     if (hasCA) {
@@ -60,7 +60,6 @@ const caHelper = async (
     }
   }
 
-  // If all users already have the CA, deny
   if (newCompleters.length === 0) {
     return await replyHandler(
       getString("ca", "allAlreadyCompleted"),
@@ -68,13 +67,28 @@ const caHelper = async (
     );
   }
 
+  // Resolve point info from CA entry
+  const cas = await getGuildCAs(interaction.guild.id);
+  const caEntry = cas?.find((ca) => ca.name === caName);
+  const points = caEntry?.points ?? 0;
+
+  const sources = await getSources(interaction.guild.id);
+  const pointSource = caEntry?.point_source ?? "";
+  const sourceName = sources?.get(pointSource)?.name ?? pointSource;
+
+  const preview = await buildPlayerPreview(
+    interaction.guild.id,
+    members,
+    points
+  );
+
   const confirm = new ButtonBuilder()
-    .setCustomId("caButtonAccept")
+    .setCustomId("requestAccept")
     .setLabel("Accept")
     .setStyle(ButtonStyle.Success);
 
   const deny = new ButtonBuilder()
-    .setCustomId("caButtonDeny")
+    .setCustomId("requestDeny")
     .setLabel("Deny")
     .setStyle(ButtonStyle.Danger);
 
@@ -83,7 +97,6 @@ const caHelper = async (
     deny
   );
 
-  const playerMentions = members.map((m) => `<@${m.id}>`).join(", ");
   const alreadyMentions =
     alreadyCompleted.length > 0
       ? alreadyCompleted.map((id) => `<@${id}>`).join(", ")
@@ -94,9 +107,11 @@ const caHelper = async (
     getString("ca", "requestSubmitted", {
       caName,
       requester: (interaction.member as GuildMember).displayName,
-      players: playerMentions,
+      sourceName,
+      points,
       alreadyCompleted: alreadyMentions,
       newCompleters: newMentions,
+      preview,
     }),
     interaction
   );
@@ -106,19 +121,23 @@ const caHelper = async (
     files: [screenshot],
   });
 
-  const data: CaData = {
+  const data: CaRequest = {
+    type: "ca",
     caName,
     guildId: interaction.guild.id,
     members,
-    userIds,
     alreadyCompleted,
     newCompleters,
+    points,
+    source: caEntry?.point_source ?? "Unknown",
+    sourceName,
     channel: interaction.channel.id,
     message: message.id,
+    screenshot,
     timestamp: Date.now(),
   };
 
-  state.set(interaction.id, data);
+  pendingRequests.set(interaction.id, data);
 };
 
 export default caHelper;

@@ -1,5 +1,8 @@
-import type { PbCache, PbData } from "@typings/pbTypes.js";
+import type { PbRequest } from "@typings/requestTypes.js";
+import { pendingRequests } from "@commands/requests/state.js";
 import { Requests } from "@requests/main.js";
+import { getPoints, getSources } from "@utils/pointSources.js";
+import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import TimeConverter from "./TimeConverter.js";
@@ -10,14 +13,14 @@ import {
   type CommandInteraction,
   type GuildMember,
 } from "discord.js";
+import { Bosses } from "./getBosses.js";
 
 const pbRequestHelper = async (
   boss: string,
   time: string,
   team: string[],
   screenshot: string,
-  interaction: CommandInteraction,
-  state: PbCache
+  interaction: CommandInteraction
 ) => {
   if (!interaction.channel)
     return await replyHandler(getString("errors", "noChannel"), interaction);
@@ -32,7 +35,6 @@ const pbRequestHelper = async (
     );
   }
 
-  // Check if this would actually be a new PB
   const guildTimes = await Requests.getGuildTimes(interaction.guild.id);
   if (!guildTimes.error && guildTimes.data?.pbs) {
     const currentPb = guildTimes.data.pbs.find((pb) => pb.boss_name === boss);
@@ -42,22 +44,31 @@ const pbRequestHelper = async (
           time: TimeConverter.ticksToTime(ticks),
           currentTime: TimeConverter.ticksToTime(currentPb.time),
         }),
-        interaction,
-        { ephemeral: true }
+        interaction
       );
     }
   }
 
-  const members = await interaction.guild.members.fetch({ user: team });
-  const playerMentions = members.map((m) => `<@${m.id}>`).join(", ");
+  const points = (await getPoints("clan_pb", interaction.guild.id)) ?? 0;
+  const sources = await getSources(interaction.guild.id);
+  const sourceName = sources?.get("clan_pb")?.name ?? "Clan PB";
+
+  const fetchedMembers = await interaction.guild.members.fetch({ user: team });
+  const membersArray = [...fetchedMembers.values()];
+
+  const preview = await buildPlayerPreview(
+    interaction.guild.id,
+    membersArray,
+    points
+  );
 
   const confirm = new ButtonBuilder()
-    .setCustomId("pbButtonAccept")
+    .setCustomId("requestAccept")
     .setLabel("Accept")
     .setStyle(ButtonStyle.Success);
 
   const deny = new ButtonBuilder()
-    .setCustomId("pbButtonDeny")
+    .setCustomId("requestDeny")
     .setLabel("Deny")
     .setStyle(ButtonStyle.Danger);
 
@@ -66,12 +77,17 @@ const pbRequestHelper = async (
     deny
   );
 
+  const bossData = Bosses.get(boss);
+  const bossTitle = `${bossData?.category}: ${bossData?.display_name}`;
+
   await replyHandler(
     getString("pb", "requestSubmitted", {
       username: (interaction.member as GuildMember).displayName,
-      boss,
+      bossTitle,
       time: `${TimeConverter.ticksToTime(ticks)} (${ticks} ticks)`,
-      players: playerMentions,
+      sourceName,
+      points,
+      preview,
     }),
     interaction
   );
@@ -81,16 +97,22 @@ const pbRequestHelper = async (
     files: [screenshot],
   });
 
-  const data: PbData = {
+  const data: PbRequest = {
+    type: "pb",
     boss,
+    bossTitle,
     time,
     team,
+    points,
+    source: "clan_pb",
+    sourceName,
     channel: interaction.channel.id,
     message: message.id,
+    screenshot,
     timestamp: Date.now(),
   };
 
-  state.set(interaction.id, data);
+  pendingRequests.set(interaction.id, data);
 };
 
 export default pbRequestHelper;

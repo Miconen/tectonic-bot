@@ -1,181 +1,133 @@
 import { Requests } from "@requests/main.js";
 import type {
-	CustomPoints,
-	PointsParam,
-	PresetPoints,
+  CustomPoints,
+  PointsParam,
+  PointsResponse,
+  PresetPoints,
 } from "@typings/requests.js";
 import { getString } from "@utils/stringRepo.js";
 import type {
-	BaseInteraction,
-	ButtonInteraction,
-	CommandInteraction,
-	GuildMember,
+  BaseInteraction,
+  ButtonInteraction,
+  CommandInteraction,
+  GuildMember,
 } from "discord.js";
 import { Collection } from "discord.js";
 import { inject, injectable, singleton } from "tsyringe";
 import type IRankService from "../rankUtils/IRankService.js";
 import type IPointService from "./IPointService.js";
+import { formatDisplayName } from "@utils/formatDisplayName.js";
 
 @singleton()
 @injectable()
 export class PointService implements IPointService {
-	constructor(@inject("RankService") private rankService: IRankService) { }
+  constructor(@inject("RankService") private rankService: IRankService) {}
 
-	async givePoints(
-		value: string | number,
-		target: GuildMember | Collection<string, GuildMember>,
-		interaction: CommandInteraction | ButtonInteraction,
-	) {
-		if (!interaction.guild) return getString("errors", "noGuild");
+  async givePoints(
+    value: string | number,
+    target: GuildMember | Collection<string, GuildMember>,
+    interaction: CommandInteraction | ButtonInteraction
+  ) {
+    if (!interaction.guild) return getString("errors", "noGuild");
 
-		const member = await interaction.guild.members.fetch({
-			user: interaction.user.id,
-		});
+    const points =
+      typeof value === "number"
+        ? ({ type: "custom" as const, amount: value } as CustomPoints)
+        : ({ type: "preset" as const, event: value } as PresetPoints);
 
-		const user_id =
-			target instanceof Collection
-				? target.map((member) => member.id)
-				: target.id;
+    const userIds =
+      target instanceof Collection ? target.map((m) => m.id) : [target.id];
 
-		const points =
-			typeof value === "number"
-				? ({ type: "custom" as const, amount: value } as CustomPoints)
-				: ({ type: "preset" as const, event: value } as PresetPoints);
+    const members =
+      target instanceof Collection
+        ? target
+        : new Collection<string, GuildMember>([[target.id, target]]);
 
-		const param: PointsParam = { user_id, points };
+    const param: PointsParam = { user_id: userIds, points };
 
-		// Handle single vs multiple GuildMembers
-		if (target instanceof Collection) {
-			return this.giveToManyHandler(param, target, member, interaction);
-		}
+    const res = await Requests.givePointsToMultiple(
+      interaction.guild.id,
+      param
+    );
 
-		return this.giveHandler(param, target, member, interaction);
-	}
+    if (res.error) {
+      return getString("errors", "errorGivingPoints", {
+        message: res.message,
+      });
+    }
 
-	private async giveToManyHandler(
-		param: PointsParam,
-		targets: Collection<string, GuildMember>,
-		invoker: GuildMember,
-		interaction: CommandInteraction | ButtonInteraction,
-	) {
-		if (!interaction.guild) return [getString("errors", "noGuild")];
-		if (!interaction.member) return [getString("errors", "noMember")];
-		const response: string[] = [];
+    return this.buildResponses(res.data, members, interaction);
+  }
 
-		const res = await Requests.givePointsToMultiple(
-			interaction.guild.id,
-			param,
-		);
+  private async buildResponses(
+    data: PointsResponse[],
+    members: Collection<string, GuildMember>,
+    interaction: BaseInteraction
+  ): Promise<string[]> {
+    const response: string[] = [];
 
-		if (res.error) {
-			return [`Error giving points: ${res.message}`];
-		}
+    for (const entry of data) {
+      const member = members.get(entry.user_id);
+      if (!member) {
+        response.push(
+          getString("errors", "couldntGetUser", {
+            userId: entry.user_id,
+          })
+        );
+        continue;
+      }
 
-		const givenTo = new Map<string, boolean>();
-		targets.forEach((_, k) => {
-			givenTo.set(k, false);
-		});
+      response.push(await this.buildPointsLine(entry, member, interaction));
+    }
 
-		for (const u of res.data) {
-			const member = targets.get(u.user_id);
+    return response;
+  }
 
-			if (!member)
-				return [getString("errors", "couldntGetUser", { userId: u.user_id })];
+  private async buildPointsLine(
+    entry: PointsResponse,
+    member: GuildMember,
+    interaction: BaseInteraction
+  ): Promise<string> {
+    const oldPoints = entry.points - entry.given_points;
+    const newPoints = entry.points;
 
-			givenTo.set(u.user_id, true);
-			response.push(
-				getString("ranks", "pointsGranted", {
-					username: member.displayName,
-					pointsGiven: u.given_points,
-					grantedBy: invoker.displayName,
-					totalPoints: u.points,
-				}),
-			);
-			const newRank = await this.rankService.rankUpHandler(
-				interaction,
-				member,
-				u.points - u.given_points,
-				u.points,
-			);
+    const oldRank = this.rankService.getRankByPoints(oldPoints);
+    const newRank = this.rankService.getRankByPoints(newPoints);
+    const oldIcon = this.rankService.getIcon(oldRank);
+    const newIcon = this.rankService.getIcon(newRank);
 
-			if (!newRank) continue;
+    const rankChanged = oldRank !== newRank;
 
-			// Concatenate level up message to response if user leveled up
-			const newRankIcon = this.rankService.getIcon(newRank);
-			response.push(
-				getString("ranks", "levelUpMessage", {
-					username: member.displayName,
-					icon: newRankIcon,
-					rankName: newRank,
-				}),
-			);
-		}
+    if (rankChanged) {
+      await this.rankService.rankUpHandler(
+        interaction,
+        member,
+        oldPoints,
+        newPoints
+      );
 
-		givenTo.forEach((v, k) => {
-			if (v) return;
-			const member = targets.get(k);
-			if (!member) return;
+      const template =
+        entry.given_points >= 0
+          ? "pointsGrantedRankUp"
+          : "pointsGrantedRankDown";
 
-			response.push();
-		});
+      return getString("ranks", template, {
+        username: member.displayName,
+        pointsGiven: entry.given_points,
+        oldPoints,
+        newPoints,
+        oldIcon,
+        newIcon,
+        rankName: formatDisplayName(newRank),
+      });
+    }
 
-		return response;
-	}
-
-	private async giveHandler(
-		param: PointsParam,
-		target: GuildMember,
-		invoker: GuildMember,
-		interaction: BaseInteraction,
-	) {
-		if (!interaction.guild) return getString("errors", "noGuild");
-
-		const res = await Requests.givePoints(interaction.guild.id, param);
-
-		if (res.status === 404) {
-			return getString("accounts", "notActivated", {
-				username: target.displayName,
-			});
-		}
-
-		if (res.error) {
-			return getString("errors", "givingPoints");
-		}
-
-		if (!res.data) {
-			return getString("errors", "internalError", {
-				username: target.displayName,
-			});
-		}
-
-		const response: string[] = [];
-		response.push(
-			getString("ranks", "pointsGranted", {
-				username: target.displayName,
-				pointsGiven: res.data.given_points,
-				grantedBy: invoker.displayName,
-				totalPoints: res.data.points,
-			}),
-		);
-		const newRank = await this.rankService.rankUpHandler(
-			interaction,
-			target,
-			res.data.points - res.data.given_points,
-			res.data.points,
-		);
-
-		if (!newRank) return response.join("\n");
-
-		// Concatenate level up message to response if user leveled up
-		const newRankIcon = this.rankService.getIcon(newRank);
-		response.push(
-			getString("ranks", "levelUpMessage", {
-				username: target.displayName,
-				icon: newRankIcon,
-				rankName: newRank,
-			}),
-		);
-
-		return response.join("\n");
-	}
+    return getString("ranks", "pointsGranted", {
+      username: member.displayName,
+      pointsGiven: entry.given_points,
+      oldPoints,
+      newPoints,
+      icon: newIcon,
+    });
+  }
 }

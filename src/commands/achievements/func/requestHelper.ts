@@ -1,7 +1,5 @@
-import type {
-  AchievementCache,
-  AchievementRequestData,
-} from "@typings/achievementTypes.js";
+import type { AchievementRequest } from "@typings/requestTypes.js";
+import { pendingRequests } from "@commands/requests/state.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
@@ -15,8 +13,7 @@ import {
 const requestHelper = async (
   achievement: string,
   screenshot: string,
-  interaction: CommandInteraction,
-  state: AchievementCache
+  interaction: CommandInteraction
 ) => {
   if (!interaction.channel)
     return await replyHandler(getString("errors", "noChannel"), interaction);
@@ -24,12 +21,12 @@ const requestHelper = async (
     return await replyHandler(getString("errors", "noGuild"), interaction);
 
   const confirm = new ButtonBuilder()
-    .setCustomId("achievementButtonAccept")
+    .setCustomId("requestAccept")
     .setLabel("Accept")
     .setStyle(ButtonStyle.Success);
 
   const deny = new ButtonBuilder()
-    .setCustomId("achievementButtonDeny")
+    .setCustomId("requestDeny")
     .setLabel("Deny")
     .setStyle(ButtonStyle.Danger);
 
@@ -39,7 +36,6 @@ const requestHelper = async (
   );
 
   const username = (interaction.member as GuildMember).displayName;
-
   await replyHandler(
     getString("achievements", "requestSubmitted", { username, achievement }),
     interaction
@@ -50,15 +46,17 @@ const requestHelper = async (
     files: [screenshot],
   });
 
-  const data: AchievementRequestData = {
+  const data: AchievementRequest = {
+    type: "achievement",
     member: interaction.member as GuildMember,
     achievement,
     channel: interaction.channel.id,
     message: message.id,
+    screenshot,
     timestamp: Date.now(),
   };
 
-  state.set(interaction.id, data);
+  pendingRequests.set(interaction.id, data);
 };
 
 export default requestHelper;

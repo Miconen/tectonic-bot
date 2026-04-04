@@ -10,7 +10,6 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { getBossToa } from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import { pbState } from "./func/pbState.js";
 
 @Discord()
 @SlashGroup("pb")
@@ -107,8 +106,7 @@ class toapb {
       time,
       team,
       screenshot.url,
-      interaction,
-      pbState
+      interaction
     );
   }
 }

@@ -19,7 +19,6 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import { pbState } from "./func/pbState.js";
 
 @Discord()
 @SlashGroup("pb")
@@ -110,13 +109,6 @@ class nightmarepb {
       );
     }
 
-    await pbRequestHelper(
-      boss,
-      time,
-      team,
-      screenshot.url,
-      interaction,
-      pbState
-    );
+    await pbRequestHelper(boss, time, team, screenshot.url, interaction);
   }
 }

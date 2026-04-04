@@ -1,8 +1,9 @@
-import type { SplitCache, SplitData } from "@typings/splitTypes.js";
-import { getPoints } from "@utils/pointSources";
-import { replyHandler } from "@utils/replyHandler";
-import { getString } from "@utils/stringRepo";
-
+import type { SplitRequest } from "@typings/requestTypes.js";
+import { pendingRequests } from "@commands/requests/state.js";
+import { getPoints, getSources } from "@utils/pointSources.js";
+import { buildPlayerPreview } from "@utils/requestPreview.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -12,9 +13,9 @@ import {
 } from "discord.js";
 
 const splitHelper = async (
-  value: number,
+  source: string,
+  members: GuildMember[],
   interaction: CommandInteraction,
-  state: SplitCache,
   screenshot: string
 ) => {
   if (!interaction.channel)
@@ -22,15 +23,23 @@ const splitHelper = async (
   if (!interaction.guild)
     return await replyHandler(getString("errors", "noGuild"), interaction);
 
-  const points = await getPoints(value, interaction.guild.id);
+  const points = (await getPoints(source, interaction.guild.id)) ?? 0;
+  const sources = await getSources(interaction.guild.id);
+  const sourceName = sources?.get(source)?.name ?? source;
+
+  const preview = await buildPlayerPreview(
+    interaction.guild.id,
+    members,
+    points
+  );
 
   const confirm = new ButtonBuilder()
-    .setCustomId("buttonAccept")
+    .setCustomId("requestAccept")
     .setLabel("Accept")
     .setStyle(ButtonStyle.Success);
 
   const deny = new ButtonBuilder()
-    .setCustomId("buttonDeny")
+    .setCustomId("requestDeny")
     .setLabel("Deny")
     .setStyle(ButtonStyle.Danger);
 
@@ -41,7 +50,12 @@ const splitHelper = async (
 
   const username = (interaction.member as GuildMember).displayName;
   await replyHandler(
-    getString("splits", "requestSubmitted", { username, points }),
+    getString("splits", "requestSubmitted", {
+      username,
+      points,
+      sourceName,
+      preview,
+    }),
     interaction
   );
 
@@ -50,15 +64,19 @@ const splitHelper = async (
     files: [screenshot],
   });
 
-  const split: SplitData = {
-    member: interaction.member as GuildMember,
+  const data: SplitRequest = {
+    type: "split",
+    members,
     channel: interaction.channel.id,
     message: message.id,
     points,
+    source,
+    sourceName,
+    screenshot,
     timestamp: Date.now(),
   };
 
-  state.set(interaction.id, split);
+  pendingRequests.set(interaction.id, data);
 };
 
 export default splitHelper;
