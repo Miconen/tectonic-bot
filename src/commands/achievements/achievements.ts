@@ -12,10 +12,10 @@ import requestHelper from "./func/requestHelper.js";
 @Discord()
 class Achievement {
   @Slash({
-    name: "request",
+    name: "achievement",
     description: "Submit an achievement request for admin approval",
   })
-  async request(
+  async achievement(
     @SlashOption({
       name: "achievement",
       description: "Achievement to request",
