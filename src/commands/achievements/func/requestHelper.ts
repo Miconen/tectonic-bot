@@ -1,8 +1,9 @@
-import type { SplitCache, SplitData } from "@typings/splitTypes.js";
-import { getPoints } from "@utils/pointSources";
-import { replyHandler } from "@utils/replyHandler";
-import { getString } from "@utils/stringRepo";
-
+import type {
+  AchievementCache,
+  AchievementRequestData,
+} from "@typings/achievementTypes.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -11,26 +12,24 @@ import {
   type GuildMember,
 } from "discord.js";
 
-const splitHelper = async (
-  value: number,
+const requestHelper = async (
+  achievement: string,
+  screenshot: string,
   interaction: CommandInteraction,
-  state: SplitCache,
-  screenshot: string
+  state: AchievementCache
 ) => {
   if (!interaction.channel)
     return await replyHandler(getString("errors", "noChannel"), interaction);
   if (!interaction.guild)
     return await replyHandler(getString("errors", "noGuild"), interaction);
 
-  const points = await getPoints(value, interaction.guild.id);
-
   const confirm = new ButtonBuilder()
-    .setCustomId("buttonAccept")
+    .setCustomId("achievementButtonAccept")
     .setLabel("Accept")
     .setStyle(ButtonStyle.Success);
 
   const deny = new ButtonBuilder()
-    .setCustomId("buttonDeny")
+    .setCustomId("achievementButtonDeny")
     .setLabel("Deny")
     .setStyle(ButtonStyle.Danger);
 
@@ -40,8 +39,9 @@ const splitHelper = async (
   );
 
   const username = (interaction.member as GuildMember).displayName;
+
   await replyHandler(
-    getString("splits", "requestSubmitted", { username, points }),
+    getString("achievements", "requestSubmitted", { username, achievement }),
     interaction
   );
 
@@ -50,15 +50,15 @@ const splitHelper = async (
     files: [screenshot],
   });
 
-  const split: SplitData = {
+  const data: AchievementRequestData = {
     member: interaction.member as GuildMember,
+    achievement,
     channel: interaction.channel.id,
     message: message.id,
-    points,
     timestamp: Date.now(),
   };
 
-  state.set(interaction.id, split);
+  state.set(interaction.id, data);
 };
 
-export default splitHelper;
+export default requestHelper;

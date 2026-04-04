@@ -3,146 +3,154 @@ import * as Guild from "@requests/guild";
 import * as General from "@requests/general";
 import * as Wom from "@requests/wom";
 import * as Teams from "@requests/teams";
+import * as CombatAchievement from "@requests/combatAchievement";
 import { HTTPError } from "discord.js";
 import type {
-	GenericError,
-	ApiResponse,
-	ValidationError,
+  GenericError,
+  ApiResponse,
+  ValidationError,
 } from "@typings/requests";
 import { getChildLogger } from "@logging/context";
 
 const API_URL = process.env.API_URL
-	? `https://${process.env.API_URL}/api/v1/`
-	: "http://localhost:8080/api/v1/";
+  ? `https://${process.env.API_URL}/api/v1/`
+  : "http://localhost:8080/api/v1/";
 const AUTH_KEY = process.env.AUTH_KEY ?? "";
 
 if (!AUTH_KEY) {
-	throw new Error("No AUTH_KEY found.");
+  throw new Error("No AUTH_KEY found.");
 }
 
 // API fetching and parsing utility
 export async function fetchData<T>(
-	endpoint: string,
-	options: RequestInit = {},
-	url: string = API_URL,
+  endpoint: string,
+  options: RequestInit = {},
+  url: string = API_URL
 ): Promise<ApiResponse<T>> {
-	const requestOptions: RequestInit = {
-		...options,
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: AUTH_KEY,
-			...options.headers,
-		},
-	};
+  const requestOptions: RequestInit = {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: AUTH_KEY,
+      ...options.headers,
+    },
+  };
 
-	const fullUrl = url + endpoint;
-	const method = requestOptions.method ?? "GET";
-	const logger = getChildLogger({});
+  const fullUrl = url + endpoint;
+  const method = requestOptions.method ?? "GET";
+  const logger = getChildLogger({});
 
-	logger.info(
-		{
-			endpoint: fullUrl,
-			method,
-			body: requestOptions.body,
-		},
-		"Preparing API request",
-	);
+  logger.info(
+    {
+      endpoint: fullUrl,
+      method,
+      body: requestOptions.body,
+    },
+    "Preparing API request"
+  );
 
-	try {
-		const response = await fetch(fullUrl, requestOptions);
-		const status = response.status;
+  try {
+    const response = await fetch(fullUrl, requestOptions);
+    const status = response.status;
 
-		// Handle 204 No Content responses without parsing the body
-		if (status === 204) {
-			const successResponse: ApiResponse<T> = {
-				error: false,
-				status,
-				data: {} as T,
-			};
+    // Handle 204 No Content responses without parsing the body
+    if (status === 204) {
+      const successResponse: ApiResponse<T> = {
+        error: false,
+        status,
+        data: {} as T,
+      };
 
-			logger.info(
-				{ endpoint: fullUrl, method, code: status },
-				"API request succeeded",
-			);
-			logger.debug({ response: successResponse }, "Request response");
-			return successResponse;
-		}
+      logger.info(
+        { endpoint: fullUrl, method, code: status },
+        "API request succeeded"
+      );
+      logger.debug({ response: successResponse }, "Request response");
+      return successResponse;
+    }
 
-		// Check Content-Type for non-204 responses
-		const contentType = response.headers.get("Content-Type");
-		if (!contentType?.includes("application/json")) {
-			const error: ApiResponse<T> = {
-				error: true,
-				status,
-				code: -1,
-				name: "Unsupported Content-Type",
-				message: `Unsupported Content-Type header "${contentType}" from endpoint "${fullUrl}"`,
-			};
+    // Check Content-Type for non-204 responses
+    const contentType = response.headers.get("Content-Type");
+    if (!contentType?.includes("application/json")) {
+      const error: ApiResponse<T> = {
+        error: true,
+        status,
+        code: -1,
+        name: "Unsupported Content-Type",
+        message: `Unsupported Content-Type header "${contentType}" from endpoint "${fullUrl}"`,
+      };
 
-			logger.error(error, "API request failed");
-			logger.debug({ response: error }, "Request response");
-			return error;
-		}
+      logger.error(error, "API request failed");
+      logger.debug({ response: error }, "Request response");
+      return error;
+    }
 
-		// Parse JSON response
-		let data: unknown;
-		try {
-			data = await response.json();
-		} catch (e) {
-			const error: ApiResponse<T> = {
-				error: true,
-				status,
-				code: -1,
-				name: "JSON Parse Error",
-				message:
-					e instanceof Error ? e.message : "Failed to parse JSON response",
-			};
+    // Parse JSON response
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch (e) {
+      const error: ApiResponse<T> = {
+        error: true,
+        status,
+        code: -1,
+        name: "JSON Parse Error",
+        message:
+          e instanceof Error ? e.message : "Failed to parse JSON response",
+      };
 
-			logger.error(error, "API request failed");
-			logger.debug({ response: error }, "Request response");
-			return error;
-		}
+      logger.error(error, "API request failed");
+      logger.debug({ response: error }, "Request response");
+      return error;
+    }
 
-		// Handle non-successful status codes
-		if (!response.ok) {
-			const errorBody = data as GenericError | ValidationError;
+    // Handle non-successful status codes
+    if (!response.ok) {
+      const errorBody = data as GenericError | ValidationError;
 
-			const error: ApiResponse<T> = {
-				error: true,
-				status,
-				...errorBody,
-			};
+      const error: ApiResponse<T> = {
+        error: true,
+        status,
+        ...errorBody,
+      };
 
-			logger.error(error, "API request failed");
-			logger.debug({ response: error }, "Request response");
-			return error;
-		}
+      logger.error(error, "API request failed");
+      logger.debug({ response: error }, "Request response");
+      return error;
+    }
 
-		// Success case
-		const successResponse: ApiResponse<T> = {
-			error: false,
-			status,
-			data: data as T,
-		};
+    // Success case
+    const successResponse: ApiResponse<T> = {
+      error: false,
+      status,
+      data: data as T,
+    };
 
-		logger.info({ code: status }, "API request succeeded");
-		logger.debug({ response: successResponse }, "Request response");
+    logger.info({ code: status }, "API request succeeded");
+    logger.debug({ response: successResponse }, "Request response");
 
-		return successResponse;
-	} catch (error) {
-		// Handle network or other fetch errors
-		const errorResponse: ApiResponse<T> = {
-			error: true,
-			status: error instanceof HTTPError ? error.status : 500,
-			code: -1,
-			name: "Network Error",
-			message: error instanceof Error ? error.message : "Unknown network error",
-		};
+    return successResponse;
+  } catch (error) {
+    // Handle network or other fetch errors
+    const errorResponse: ApiResponse<T> = {
+      error: true,
+      status: error instanceof HTTPError ? error.status : 500,
+      code: -1,
+      name: "Network Error",
+      message: error instanceof Error ? error.message : "Unknown network error",
+    };
 
-		logger.error(errorResponse, "API request failed");
-		logger.debug({ response: errorResponse }, "Request response");
-		return errorResponse;
-	}
+    logger.error(errorResponse, "API request failed");
+    logger.debug({ response: errorResponse }, "Request response");
+    return errorResponse;
+  }
 }
 
-export const Requests = { ...User, ...Guild, ...General, ...Wom, ...Teams };
+export const Requests = {
+  ...User,
+  ...Guild,
+  ...General,
+  ...Wom,
+  ...Teams,
+  ...CombatAchievement,
+};

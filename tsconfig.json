@@ -15,16 +15,36 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": "./src",
 		"paths": {
-			"@commands/*": ["commands/*"],
-			"@utils/*": ["utils/*"],
-			"@database/*": ["database/*"],
-			"@guards/*": ["guards/*"],
-			"@requests/*": ["requests/*"],
-			"@typings/*": ["typings/*"],
-			"@logging/*": ["logging/*"]
+			"@commands/*": [
+				"commands/*"
+			],
+			"@utils/*": [
+				"utils/*"
+			],
+			"@database/*": [
+				"database/*"
+			],
+			"@guards/*": [
+				"guards/*"
+			],
+			"@requests/*": [
+				"requests/*"
+			],
+			"@typings/*": [
+				"typings/*"
+			],
+			"@logging/*": [
+				"logging/*"
+			],
+			"@pickers/*": [
+				"pickers/*"
+			]
 		}
 	},
-	"exclude": ["build", "node_modules"],
+	"exclude": [
+		"build",
+		"node_modules"
+	],
 	"tsc-alias": {
 		"resolveFullPaths": true
 	}

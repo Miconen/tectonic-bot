@@ -5,7 +5,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import IsAdmin from "@guards/IsAdmin.js";
-import { bossTimePicker } from "@utils/pickers";
+import { bossTimePicker } from "@pickers/bosses";
 import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
 import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 import { timeDeleteHelper } from "./func/timeDeleteHelper";

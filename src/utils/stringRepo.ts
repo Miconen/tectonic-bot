@@ -96,12 +96,14 @@ const strings: StringRepository = {
     notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
     userNotFound: (args) => "❌ User not found for achievement operation.",
     requestSubmitted: (args) =>
-      `#Achievement Request\nAchievement request submitted for **${args.achievement}**.\nPlease wait for admin approval.`,
+      `# Achievement Request\n**${args.username}** has submitted a request for **${args.achievement}**.\nPlease wait for admin approval.`,
+    denied: (args) =>
+      `❌ Achievement request for **${args.achievement}** by **${args.username}** was denied.`,
   },
 
   splits: {
     requestSubmitted: (args) =>
-      `# Split Request\n**${args.username}** has submitted a request for ${args.points} points.\nPlease wait for admin approval and make sure you have posted a screenshot of your drop as proof.`,
+      `# Split Request\n**${args.username}** has submitted a request for ${args.points} points.\nPlease wait for admin approval.`,
     approved: (args) =>
       `✔ Split request approved for **${args.username}** - ${args.points} points awarded.`,
     denied: (args) => `❌ **${args.username}** point request was denied.`,
@@ -199,6 +201,15 @@ const strings: StringRepository = {
     invalidTeamSize: (args) => `${args.error}`,
     soloOnlyBoss: "Selected boss can't include more than one player.",
     invalidFiveManNightmare: "Invalid amount of players for 5-man nightmare.",
+  },
+
+  pb: {
+    requestSubmitted: (args) =>
+      `# PB Request\n**${args.username}** submitted a time for **${args.boss}**\nTime: \`${args.time}\`\nPlayers: ${args.players}\n\nPlease wait for admin approval.`,
+    approved: (args) => `✔ PB request for **${args.boss}** approved.`,
+    denied: (args) => `❌ PB request for **${args.boss}** was denied.`,
+    notFaster: (args) =>
+      `❌ Your time of \`${args.time}\` is not faster than the current PB of \`${args.currentTime}\`.`,
   },
 
   teams: {
@@ -369,6 +380,22 @@ const strings: StringRepository = {
     externalError: "External server error.",
     couldntRemoveUser: "Couldn't remove user",
     couldntRemoveGuild: "Couldn't remove guild",
+  },
+
+  ca: {
+    requestSubmitted: (args) =>
+      `# Combat Achievement Request\n**${args.caName}**\nRequested by: ${args.requester}\nPlayers: ${args.players}\n\n**Already completed:** ${args.alreadyCompleted}\n**New completers:** ${args.newCompleters}`,
+    approved: (args) => `# Combat Achievement **${args.caName}** approved.`,
+    denied: (args) =>
+      `❌ Combat Achievement request for **${args.caName}** was denied.`,
+    allAlreadyCompleted:
+      "❌ All players have already completed this combat achievement.",
+    caNotFound: (args) => `❌ Combat Achievement **${args.caName}** not found.`,
+    noGuild: "This command must be used in a server.",
+    granted: (args) =>
+      `✔ Granted combat achievement **${args.caName}** to **${args.username}**.`,
+    removed: (args) =>
+      `✔ Removed combat achievement **${args.caName}** from **${args.username}**.`,
   },
 };
 
