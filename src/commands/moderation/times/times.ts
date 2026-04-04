@@ -11,6 +11,7 @@ import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 import { timeDeleteHelper } from "./func/timeDeleteHelper";
 import { Requests } from "@requests/main";
 import { IsValidBoss } from "@guards/IsValidBoss";
+import initializeHelper from "@commands/moderation/times/func/initializeHelper";
 
 @Discord()
 @SlashGroup({
@@ -112,5 +113,14 @@ class Times {
   ) {
     await interaction.deferReply();
     await removeUserFromTimeHelper(user, boss, interaction);
+  }
+
+  @Slash({
+    name: "initialize-pb-channel",
+    description: "Initialize a channel for pb embeds",
+  })
+  @Guard(IsAdmin)
+  async initialize(interaction: CommandInteraction) {
+    await initializeHelper(interaction);
   }
 }
