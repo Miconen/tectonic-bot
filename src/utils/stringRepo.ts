@@ -203,6 +203,15 @@ const strings: StringRepository = {
     invalidFiveManNightmare: "Invalid amount of players for 5-man nightmare.",
   },
 
+  pb: {
+    requestSubmitted: (args) =>
+      `# PB Request\n**${args.username}** submitted a time for **${args.boss}**\nTime: \`${args.time}\`\nPlayers: ${args.players}\n\nPlease wait for admin approval.`,
+    approved: (args) => `✔ PB request for **${args.boss}** approved.`,
+    denied: (args) => `❌ PB request for **${args.boss}** was denied.`,
+    notFaster: (args) =>
+      `❌ Your time of \`${args.time}\` is not faster than the current PB of \`${args.currentTime}\`.`,
+  },
+
   teams: {
     addedToBoss: (args) =>
       `Succesfully added ${args.user} to team for \`${args.boss}\` clan PB.`,

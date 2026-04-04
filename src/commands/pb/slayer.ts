@@ -1,57 +1,62 @@
 import IsActivated from "@guards/IsActivated.js";
-import IsAdmin from "@guards/IsAdmin.js";
 import IsValidTime from "@guards/IsValidTime.js";
-import { replyHandler } from "@utils/replyHandler.js";
 import {
-	ApplicationCommandOptionType,
-	type CommandInteraction,
-	type GuildMember,
+  ApplicationCommandOptionType,
+  type Attachment,
+  type CommandInteraction,
 } from "discord.js";
 import {
-	Discord,
-	Guard,
-	Slash,
-	SlashChoice,
-	SlashGroup,
-	SlashOption,
+  Discord,
+  Guard,
+  Slash,
+  SlashChoice,
+  SlashGroup,
+  SlashOption,
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
-import submitHandler from "./func/submitHandler.js";
+import pbRequestHelper from "./func/pbRequestHelper.js";
+import { pbState } from "./func/pbState.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsAdmin, IsValidTime("time"), IsActivated())
+@Guard(IsValidTime("time"), IsActivated())
 class slayerpb {
-	@Slash({ name: "slayer", description: "Request your new pb to be added" })
-	async slayer(
-		@SlashChoice(...bossCategories["Slayer Boss"])
-		@SlashOption({
-			name: "boss",
-			description: "Boss to submit time for",
-			required: true,
-			type: ApplicationCommandOptionType.String,
-		})
-		boss: string,
-		@SlashOption({
-			name: "time",
-			description: "Slayer pb time",
-			required: true,
-			type: ApplicationCommandOptionType.String,
-		})
-		time: string,
-		@SlashOption({
-			name: "player",
-			description: "Player discord @name",
-			required: true,
-			type: ApplicationCommandOptionType.User,
-		})
-		player: GuildMember,
-		interaction: CommandInteraction,
-	) {
-		const team = [player.user.id];
+  @Slash({ name: "slayer", description: "Request your new pb to be added" })
+  async slayer(
+    @SlashChoice(...bossCategories["Slayer Boss"])
+    @SlashOption({
+      name: "boss",
+      description: "Boss to submit time for",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    boss: string,
+    @SlashOption({
+      name: "time",
+      description: "Slayer pb time",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    time: string,
+    @SlashOption({
+      name: "screenshot",
+      description: "Screenshot proof of the time",
+      required: true,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    screenshot: Attachment,
+    interaction: CommandInteraction
+  ) {
+    const team = [interaction.user.id];
 
-		await interaction.deferReply();
-		const response = await submitHandler(boss, time, team, interaction);
-		await replyHandler(response, interaction);
-	}
+    await interaction.deferReply();
+    await pbRequestHelper(
+      boss,
+      time,
+      team,
+      screenshot.url,
+      interaction,
+      pbState
+    );
+  }
 }

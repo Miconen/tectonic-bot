@@ -20,10 +20,13 @@ import { pbState } from "./func/pbState.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class tzhaarpb {
-  @Slash({ name: "tzhaar", description: "Request your new pb to be added" })
-  async tzhaar(
-    @SlashChoice(...bossCategories.TzHaar)
+class miscellaneouspb {
+  @Slash({
+    name: "miscellaneous",
+    description: "Request your new pb to be added",
+  })
+  async miscellaneous(
+    @SlashChoice(...bossCategories.Miscellaneous)
     @SlashOption({
       name: "boss",
       description: "Boss to submit time for",
@@ -33,7 +36,7 @@ class tzhaarpb {
     boss: string,
     @SlashOption({
       name: "time",
-      description: "TzHaar pb time",
+      description: "Miscellaneous boss pb time",
       required: true,
       type: ApplicationCommandOptionType.String,
     })
