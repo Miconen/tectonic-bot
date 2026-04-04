@@ -15,7 +15,6 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import { pbState } from "./func/pbState.js";
 
 @Discord()
 @SlashGroup("pb")
@@ -53,13 +52,6 @@ class sepulchrepb {
     const team = [interaction.user.id];
 
     await interaction.deferReply();
-    await pbRequestHelper(
-      floor,
-      time,
-      team,
-      screenshot.url,
-      interaction,
-      pbState
-    );
+    await pbRequestHelper(floor, time, team, screenshot.url, interaction);
   }
 }

@@ -21,11 +21,27 @@ interface StringRepository {
 const strings: StringRepository = {
   ranks: {
     levelUpMessage: (args) =>
-      `**${args.username}** ranked up to ${args.icon} ${capitalizeFirstLetter(
+      `⬆ **${args.username}** ranked up to ${args.icon} ${capitalizeFirstLetter(
         args.rankName
       )}!`,
     pointsGranted: (args) =>
-      `✔ **${args.username}** was granted ${args.pointsGiven} points by **${args.grantedBy}** and now has a total of ${args.totalPoints} points.`,
+      `✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+        args.pointsGiven
+      } points (${args.oldPoints} ${args.icon} → ${args.newPoints} ${
+        args.icon
+      })`,
+    pointsGrantedRankUp: (args) =>
+      `✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+        args.pointsGiven
+      } points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
+        args.newIcon
+      }) Ranked up to ${args.newIcon} ${args.rankName}`,
+    pointsGrantedRankDown: (args) =>
+      `✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+        args.pointsGiven
+      } points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
+        args.newIcon
+      }) Ranked down to ${args.newIcon} ${args.rankName}`,
     roleAdded: (args) =>
       `Added role **${args.roleName}** to **${args.username}**.`,
     roleRemoved: (args) => `Removed all rank roles from **${args.username}**.`,
@@ -85,28 +101,31 @@ const strings: StringRepository = {
   },
 
   achievements: {
-    request: (args) =>
-      `# Achievement Request\n\nUser: ${args.username}\nAchievement: ${args.achievement}`,
+    requestSubmitted: (args) =>
+      `# Achievement Request\n-# ${args.achievement}\n\n**${args.username}** has submitted an achievement request.`,
+    approved: (args) => `# Achievement Approved\n-# ${args.achievement}\n`,
+    denied: (args) =>
+      `# Achievement Denied\n-# ${args.achievement}\n\n❌ **${args.username}**'s achievement request was denied.`,
     granted: (args) =>
       `✔ Granted achievement **${args.achievement}** to **${args.username}**.`,
+    request: (args) =>
+      `# Achievement Request\n\nUser: ${args.username}\nAchievement: ${args.achievement}`,
     removed: (args) =>
       `✔ Removed achievement **${args.achievement}** from **${args.username}**.`,
     alreadyHas: (args) =>
       `❌ **${args.username}** already has achievement **${args.achievement}**.`,
     notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
     userNotFound: (args) => "❌ User not found for achievement operation.",
-    requestSubmitted: (args) =>
-      `# Achievement Request\n**${args.username}** has submitted a request for **${args.achievement}**.\nPlease wait for admin approval.`,
-    denied: (args) =>
-      `❌ Achievement request for **${args.achievement}** by **${args.username}** was denied.`,
   },
 
   splits: {
     requestSubmitted: (args) =>
-      `# Split Request\n**${args.username}** has submitted a request for ${args.points} points.\nPlease wait for admin approval.`,
+      `# Split Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.username}** has submitted a split request.\n${args.preview}`,
     approved: (args) =>
-      `✔ Split request approved for **${args.username}** - ${args.points} points awarded.`,
-    denied: (args) => `❌ **${args.username}** point request was denied.`,
+      `# Split Approved\n-# ${args.sourceName} | ${args.points} points\n`,
+    denied: (args) =>
+      `# Split Denied\n-# ${args.sourceName} | ${args.points} points\n\n❌ **${args.username}**'s split request was denied.`,
+
     notFound: "❌ Split request not found or expired.",
     expiredRequest:
       "This split request has expired. Please try again with a fresh submission.",
@@ -186,7 +205,8 @@ const strings: StringRepository = {
     bossNotFound: (args) => `Boss **${args.bossName}** not found.`,
     timeNotFound: "No time records found.",
     teamEntry: (args) => `Team: ${args.teammates}`,
-    newPb: (args) => `# New clan PB\n\`${args.time} (${args.ticks} ticks)\`\n`,
+    newPb: (args) =>
+      `# PB: ${args.bossTitle}\n\`${args.time} (${args.ticks} ticks)\`\n-# ${args.sourceName} | ${args.points} points\n`,
     timeSubmittedNotPb: "Time submitted, not a new pb :)",
     failedParsingTicks: "Failed parsing ticks from time",
     failedAddingTime: "Failed adding time",
@@ -205,9 +225,11 @@ const strings: StringRepository = {
 
   pb: {
     requestSubmitted: (args) =>
-      `# PB Request\n**${args.username}** submitted a time for **${args.boss}**\nTime: \`${args.time}\`\nPlayers: ${args.players}\n\nPlease wait for admin approval.`,
-    approved: (args) => `✔ PB request for **${args.boss}** approved.`,
-    denied: (args) => `❌ PB request for **${args.boss}** was denied.`,
+      `# PB Request: ${args.bossTitle}\n\`${args.time}\`\n-# ${args.sourceName} | ${args.points} points\n\n${args.preview}`,
+    approved: (args) =>
+      `# PB Approved\n-# ${args.sourceName} | ${args.points} points\n`,
+    denied: (args) =>
+      `# PB Denied: ${args.bossTitle}\n-# ${args.sourceName} | ${args.points} points\n`,
     notFaster: (args) =>
       `❌ Your time of \`${args.time}\` is not faster than the current PB of \`${args.currentTime}\`.`,
   },
@@ -384,14 +406,13 @@ const strings: StringRepository = {
 
   ca: {
     requestSubmitted: (args) =>
-      `# Combat Achievement Request\n**${args.caName}**\nRequested by: ${args.requester}\nPlayers: ${args.players}\n\n**Already completed:** ${args.alreadyCompleted}\n**New completers:** ${args.newCompleters}`,
-    approved: (args) => `# Combat Achievement **${args.caName}** approved.`,
+      `# Combat Achievement Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.requester}** has submitted a CA request.\n**Achievement:** ${args.caName}\n**Already completed:** ${args.alreadyCompleted}\n**New completers:** ${args.newCompleters}\n\n${args.preview}`,
+    approved: (args) =>
+      `# Combat Achievement Approved\n-# ${args.sourceName} | ${args.points} points\n`,
     denied: (args) =>
-      `❌ Combat Achievement request for **${args.caName}** was denied.`,
+      `# Combat Achievement Denied\n-# ${args.sourceName} | ${args.points} points\n\n❌ CA request for **${args.caName}** was denied.`,
     allAlreadyCompleted:
       "❌ All players have already completed this combat achievement.",
-    caNotFound: (args) => `❌ Combat Achievement **${args.caName}** not found.`,
-    noGuild: "This command must be used in a server.",
     granted: (args) =>
       `✔ Granted combat achievement **${args.caName}** to **${args.username}**.`,
     removed: (args) =>

@@ -1,7 +1,5 @@
 import type { GuardFunction } from "discordx";
 import type { CommandInteraction } from "discord.js";
-import { Requests } from "@requests/main";
-import { TTLCache } from "@utils/ttlCache";
 import { getGuild } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";

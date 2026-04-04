@@ -10,7 +10,6 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import getBoss from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import { pbState } from "./func/pbState.js";
 
 @Discord()
 @SlashGroup("pb")
@@ -49,8 +48,7 @@ class royaltitanspb {
       time,
       team,
       screenshot.url,
-      interaction,
-      pbState
+      interaction
     );
   }
 }

@@ -10,7 +10,6 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { getBossCox } from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import { pbState } from "./func/pbState.js";
 
 @Discord()
 @SlashGroup("pb")
@@ -100,8 +99,7 @@ class coxpb {
       time,
       team,
       screenshot.url,
-      interaction,
-      pbState
+      interaction
     );
   }
 }
