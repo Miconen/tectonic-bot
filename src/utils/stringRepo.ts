@@ -382,6 +382,11 @@ const strings: StringRepository = {
     caNotFound: (args) => `❌ Combat Achievement **${args.caName}** not found.`,
     noGuild: "This command must be used in a server.",
   },
+
+  bingo: {
+    setupComplete: (args) => `# 🏆 Bingo Setup Complete\n**${args.name}**`,
+    notTeamEvent: "❌ This competition has no teams. Use a team competition.",
+  },
 };
 
 /**
