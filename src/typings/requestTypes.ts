@@ -13,6 +13,9 @@ export type BaseRequest = {
   message: string;
   timestamp: number;
   screenshot: string;
+
+  modMessage?: string;
+  modChannel?: string;
 };
 
 export type SplitRequest = BaseRequest &
