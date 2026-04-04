@@ -1,19 +1,13 @@
 import type { PbRequest } from "@typings/requestTypes.js";
-import { pendingRequests } from "@commands/requests/state.js";
+import { postRequest } from "@commands/requests/postRequest.js";
 import { Requests } from "@requests/main.js";
 import { getPoints, getSources } from "@utils/pointSources.js";
 import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import TimeConverter from "./TimeConverter.js";
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  type CommandInteraction,
-  type GuildMember,
-} from "discord.js";
 import { Bosses } from "./getBosses.js";
+import type { CommandInteraction, GuildMember } from "discord.js";
 
 const pbRequestHelper = async (
   boss: string,
@@ -53,6 +47,9 @@ const pbRequestHelper = async (
   const sources = await getSources(interaction.guild.id);
   const sourceName = sources?.get("clan_pb")?.name ?? "Clan PB";
 
+  const bossData = Bosses.get(boss);
+  const bossTitle = `${bossData?.category}: ${bossData?.display_name}`;
+
   const fetchedMembers = await interaction.guild.members.fetch({ user: team });
   const membersArray = [...fetchedMembers.values()];
 
@@ -62,39 +59,13 @@ const pbRequestHelper = async (
     points
   );
 
-  const confirm = new ButtonBuilder()
-    .setCustomId("requestAccept")
-    .setLabel("Accept")
-    .setStyle(ButtonStyle.Success);
-
-  const deny = new ButtonBuilder()
-    .setCustomId("requestDeny")
-    .setLabel("Deny")
-    .setStyle(ButtonStyle.Danger);
-
-  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-    confirm,
-    deny
-  );
-
-  const bossData = Bosses.get(boss);
-  const bossTitle = `${bossData?.category}: ${bossData?.display_name}`;
-
-  await replyHandler(
-    getString("pb", "requestSubmitted", {
-      username: (interaction.member as GuildMember).displayName,
-      bossTitle,
-      time: `${TimeConverter.ticksToTime(ticks)} (${ticks} ticks)`,
-      sourceName,
-      points,
-      preview,
-    }),
-    interaction
-  );
-
-  const message = await interaction.editReply({
-    components: [row],
-    files: [screenshot],
+  const content = getString("pb", "requestSubmitted", {
+    username: (interaction.member as GuildMember).displayName,
+    bossTitle,
+    time: `${TimeConverter.ticksToTime(ticks)} (${ticks} ticks)`,
+    sourceName,
+    points,
+    preview,
   });
 
   const data: PbRequest = {
@@ -106,13 +77,13 @@ const pbRequestHelper = async (
     points,
     source: "clan_pb",
     sourceName,
-    channel: interaction.channel.id,
-    message: message.id,
     screenshot,
     timestamp: Date.now(),
+    channel: "",
+    message: "",
   };
 
-  pendingRequests.set(interaction.id, data);
+  await postRequest(content, data, interaction);
 };
 
 export default pbRequestHelper;

@@ -93,6 +93,7 @@ export type Guild = {
   guild_id: string;
   multiplier: number;
   pb_channel_id: string | undefined;
+  mod_channel_id: string | undefined;
 };
 
 export type UserById = {
@@ -164,6 +165,7 @@ export type CategoryUpdate = {
 
 export type GuildUpdate = {
   pb_channel?: string;
+  mod_channel?: string;
   multiplier?: number;
   category_messages?: CategoryUpdate[];
 };

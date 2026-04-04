@@ -193,6 +193,8 @@ const strings: StringRepository = {
       `Succesfully reverted current clan PB for \`${args.boss}\`.`,
     timeClear: (args) =>
       `Succesfully cleared current clan PB for \`${args.boss}\`.`,
+    modChannelSet: (args) =>
+      `✔ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
   },
 
   times: {

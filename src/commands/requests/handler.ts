@@ -4,7 +4,7 @@ import { getString } from "@utils/stringRepo.js";
 import { formatTimeAgo } from "@utils/timeFormatter.js";
 import {
   ApplicationCommandOptionType,
-  type ButtonInteraction,
+  ButtonInteraction,
   type AutocompleteInteraction,
   type CommandInteraction,
   type TextChannel,
@@ -21,10 +21,11 @@ function autocompleter(interaction: AutocompleteInteraction) {
   interaction.respond(options.slice(0, 25));
 }
 
-async function deleteOriginalMessage(
+async function editUserMessage(
   interaction: ButtonInteraction | CommandInteraction,
   channelId: string,
-  messageId: string
+  messageId: string,
+  content: string
 ) {
   try {
     const channel = (await interaction.client.channels.fetch(
@@ -32,8 +33,35 @@ async function deleteOriginalMessage(
     )) as TextChannel;
     if (!channel) return;
     const message = await channel.messages.fetch(messageId);
-    await message.delete();
+    await message.edit({ content, components: [] });
   } catch {}
+}
+
+async function deleteModMessage(
+  interaction: ButtonInteraction | CommandInteraction,
+  modChannel?: string,
+  modMessage?: string
+) {
+  if (!modMessage || !modChannel) return;
+  try {
+    if (
+      interaction instanceof ButtonInteraction &&
+      interaction.message.id === modMessage
+    ) {
+      await interaction.message.delete();
+    } else {
+      const channel = (await interaction.client.channels.fetch(
+        modChannel
+      )) as TextChannel;
+      if (!channel) return;
+      const msg = await channel.messages.fetch(modMessage);
+      await msg.delete();
+    }
+  } catch {}
+}
+
+function messageLink(guildId: string, channelId: string, messageId: string) {
+  return `https://discord.com/channels/${guildId}/${channelId}/${messageId}`;
 }
 
 async function handleAccept(
@@ -50,20 +78,30 @@ async function handleAccept(
   }
 
   if (!interaction.deferred && !interaction.replied) {
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
   }
 
-  await deleteOriginalMessage(interaction, data.channel, data.message);
+  // Delete mod message if exists
+  await deleteModMessage(interaction, data.modChannel, data.modMessage);
 
+  // Run strategy
   const strategy = getStrategy(data);
   const response = await strategy.accept(interaction, data);
   const content = Array.isArray(response) ? response.join("\n") : response;
 
+  // Edit user-facing message with result (screenshot already attached)
+  await editUserMessage(interaction, data.channel, data.message, content);
+
   pendingRequests.delete(requestId);
 
+  // Ephemeral link to result
+  const link = messageLink(
+    interaction.guildId ?? "",
+    data.channel,
+    data.message
+  );
   await interaction.editReply({
-    content,
-    ...(data.screenshot ? { files: [data.screenshot] } : {}),
+    content: `✔ Request approved. [Jump to message](${link})`,
   });
 }
 
@@ -80,44 +118,45 @@ async function handleDeny(
     );
   }
 
-  await deleteOriginalMessage(interaction, data.channel, data.message);
+  if (!interaction.deferred && !interaction.replied) {
+    await interaction.deferReply({ ephemeral: true });
+  }
 
+  // Delete mod message if exists
+  await deleteModMessage(interaction, data.modChannel, data.modMessage);
+
+  // Edit user-facing message with deny
   const strategy = getStrategy(data);
   const content = strategy.denyMessage(data);
+  await editUserMessage(interaction, data.channel, data.message, content);
 
   pendingRequests.delete(requestId);
 
-  return await replyHandler(content, interaction);
+  // Ephemeral link
+  const link = messageLink(
+    interaction.guildId ?? "",
+    data.channel,
+    data.message
+  );
+  await interaction.editReply({
+    content: `❌ Request denied. [Jump to message](${link})`,
+  });
 }
 
 @Discord()
 class RequestHandler {
   @Guard(IsAdmin)
-  @ButtonComponent({ id: "requestAccept" })
+  @ButtonComponent({ id: /^requestAccept-/ })
   async buttonAccept(interaction: ButtonInteraction) {
-    const id = interaction.message.interactionMetadata?.id;
-    if (!id) {
-      return await replyHandler(
-        getString("errors", "internalError"),
-        interaction,
-        { ephemeral: true }
-      );
-    }
-    return handleAccept(interaction, id);
+    const requestId = interaction.customId.replace("requestAccept-", "");
+    return handleAccept(interaction, requestId);
   }
 
   @Guard(IsAdmin)
-  @ButtonComponent({ id: "requestDeny" })
+  @ButtonComponent({ id: /^requestDeny-/ })
   async buttonDeny(interaction: ButtonInteraction) {
-    const id = interaction.message.interactionMetadata?.id;
-    if (!id) {
-      return await replyHandler(
-        getString("errors", "internalError"),
-        interaction,
-        { ephemeral: true }
-      );
-    }
-    return handleDeny(interaction, id);
+    const requestId = interaction.customId.replace("requestDeny-", "");
+    return handleDeny(interaction, requestId);
   }
 
   @Slash({ name: "accept", description: "Accept a pending request by id" })

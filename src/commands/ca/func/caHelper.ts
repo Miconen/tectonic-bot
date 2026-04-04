@@ -1,18 +1,12 @@
 import type { CaRequest } from "@typings/requestTypes.js";
-import { pendingRequests } from "@commands/requests/state.js";
+import { postRequest } from "@commands/requests/postRequest.js";
 import { Requests } from "@requests/main.js";
 import { getGuildCAs } from "@utils/combatAchievement";
+import { getSources } from "@utils/pointSources.js";
 import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  type CommandInteraction,
-  type GuildMember,
-} from "discord.js";
-import { getSources } from "@utils/pointSources";
+import type { CommandInteraction, GuildMember } from "discord.js";
 
 const caHelper = async (
   caName: string,
@@ -48,11 +42,9 @@ const caHelper = async (
       newCompleters.push(member.id);
       continue;
     }
-
     const hasCA = userData.combat_achievements?.some(
       (ca) => ca.name === caName
     );
-
     if (hasCA) {
       alreadyCompleted.push(member.id);
     } else {
@@ -67,34 +59,17 @@ const caHelper = async (
     );
   }
 
-  // Resolve point info from CA entry
   const cas = await getGuildCAs(interaction.guild.id);
   const caEntry = cas?.find((ca) => ca.name === caName);
-  const points = caEntry?.points ?? 0;
-
   const sources = await getSources(interaction.guild.id);
   const pointSource = caEntry?.point_source ?? "";
   const sourceName = sources?.get(pointSource)?.name ?? pointSource;
+  const points = caEntry?.points ?? 0;
 
   const preview = await buildPlayerPreview(
     interaction.guild.id,
     members,
     points
-  );
-
-  const confirm = new ButtonBuilder()
-    .setCustomId("requestAccept")
-    .setLabel("Accept")
-    .setStyle(ButtonStyle.Success);
-
-  const deny = new ButtonBuilder()
-    .setCustomId("requestDeny")
-    .setLabel("Deny")
-    .setStyle(ButtonStyle.Danger);
-
-  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-    confirm,
-    deny
   );
 
   const alreadyMentions =
@@ -103,22 +78,14 @@ const caHelper = async (
       : "None";
   const newMentions = newCompleters.map((id) => `<@${id}>`).join(", ");
 
-  await replyHandler(
-    getString("ca", "requestSubmitted", {
-      caName,
-      requester: (interaction.member as GuildMember).displayName,
-      sourceName,
-      points,
-      alreadyCompleted: alreadyMentions,
-      newCompleters: newMentions,
-      preview,
-    }),
-    interaction
-  );
-
-  const message = await interaction.editReply({
-    components: [row],
-    files: [screenshot],
+  const content = getString("ca", "requestSubmitted", {
+    caName,
+    requester: (interaction.member as GuildMember).displayName,
+    sourceName,
+    points,
+    alreadyCompleted: alreadyMentions,
+    newCompleters: newMentions,
+    preview,
   });
 
   const data: CaRequest = {
@@ -129,15 +96,15 @@ const caHelper = async (
     alreadyCompleted,
     newCompleters,
     points,
-    source: caEntry?.point_source ?? "Unknown",
+    source: pointSource,
     sourceName,
-    channel: interaction.channel.id,
-    message: message.id,
     screenshot,
     timestamp: Date.now(),
+    channel: "",
+    message: "",
   };
 
-  pendingRequests.set(interaction.id, data);
+  await postRequest(content, data, interaction);
 };
 
 export default caHelper;

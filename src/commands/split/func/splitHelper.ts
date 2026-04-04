@@ -1,16 +1,10 @@
 import type { SplitRequest } from "@typings/requestTypes.js";
-import { pendingRequests } from "@commands/requests/state.js";
+import { postRequest } from "@commands/requests/postRequest.js";
 import { getPoints, getSources } from "@utils/pointSources.js";
 import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  type CommandInteraction,
-  type GuildMember,
-} from "discord.js";
+import type { CommandInteraction, GuildMember } from "discord.js";
 
 const splitHelper = async (
   source: string,
@@ -33,50 +27,27 @@ const splitHelper = async (
     points
   );
 
-  const confirm = new ButtonBuilder()
-    .setCustomId("requestAccept")
-    .setLabel("Accept")
-    .setStyle(ButtonStyle.Success);
-
-  const deny = new ButtonBuilder()
-    .setCustomId("requestDeny")
-    .setLabel("Deny")
-    .setStyle(ButtonStyle.Danger);
-
-  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-    confirm,
-    deny
-  );
-
   const username = (interaction.member as GuildMember).displayName;
-  await replyHandler(
-    getString("splits", "requestSubmitted", {
-      username,
-      points,
-      sourceName,
-      preview,
-    }),
-    interaction
-  );
-
-  const message = await interaction.editReply({
-    components: [row],
-    files: [screenshot],
+  const content = getString("splits", "requestSubmitted", {
+    username,
+    points,
+    sourceName,
+    preview,
   });
 
   const data: SplitRequest = {
     type: "split",
     members,
-    channel: interaction.channel.id,
-    message: message.id,
     points,
     source,
     sourceName,
     screenshot,
     timestamp: Date.now(),
+    channel: "",
+    message: "",
   };
 
-  pendingRequests.set(interaction.id, data);
+  await postRequest(content, data, interaction);
 };
 
 export default splitHelper;

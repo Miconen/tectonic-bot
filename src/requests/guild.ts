@@ -56,11 +56,11 @@ export async function updateGuild(guild_id: string, query: GuildUpdate) {
     body: JSON.stringify({
       multiplier: query.multiplier,
       pb_channel_id: query.pb_channel,
+      mod_channel_id: query.mod_channel,
       category_messages: query.category_messages,
     }),
   };
   const status = await fetchData(url, options);
-
   return status;
 }
 
