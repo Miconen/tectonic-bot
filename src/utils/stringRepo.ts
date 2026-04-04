@@ -397,6 +397,11 @@ const strings: StringRepository = {
     removed: (args) =>
       `✔ Removed combat achievement **${args.caName}** from **${args.username}**.`,
   },
+
+  bingo: {
+    setupComplete: (args) => `# 🏆 Bingo Setup Complete\n**${args.name}**`,
+    notTeamEvent: "❌ This competition has no teams. Use a team competition.",
+  },
 };
 
 /**
