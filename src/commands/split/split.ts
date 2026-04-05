@@ -35,10 +35,10 @@ class split {
     @SlashOption({
       name: "player2",
       description: "Teammate",
-      required: false,
+      required: true,
       type: ApplicationCommandOptionType.User,
     })
-    player2: GuildMember | null,
+    player2: GuildMember,
     @SlashOption({
       name: "player3",
       description: "Teammate",
