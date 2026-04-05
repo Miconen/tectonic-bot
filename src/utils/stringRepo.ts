@@ -120,7 +120,7 @@ const strings: StringRepository = {
 
   splits: {
     requestSubmitted: (args) =>
-      `# Split Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.username}** has submitted a split request.\n${args.preview}`,
+      `# Split Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.username}** has submitted a split request.\n${args.partners}\n\n${args.preview}`,
     approved: (args) =>
       `# Split Approved\n-# ${args.sourceName} | ${args.points} points\n`,
     denied: (args) =>

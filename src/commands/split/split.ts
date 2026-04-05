@@ -6,10 +6,12 @@ import {
   type CommandInteraction,
   type GuildMember,
 } from "discord.js";
-import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
 import splitHelper from "./func/splitHelper.js";
+import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
+@Guard(IsActivated)
 class split {
   @Slash({ name: "split", description: "Receive points for splitting" })
   async split(

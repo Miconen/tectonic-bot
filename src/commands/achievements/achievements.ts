@@ -5,11 +5,13 @@ import {
   type Attachment,
   type CommandInteraction,
 } from "discord.js";
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { achievementAddPicker } from "@pickers/achievements";
 import requestHelper from "./func/requestHelper.js";
+import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
+@Guard(IsActivated)
 class Achievement {
   @Slash({
     name: "achievement",
