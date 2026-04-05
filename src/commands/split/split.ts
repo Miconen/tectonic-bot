@@ -11,7 +11,7 @@ import splitHelper from "./func/splitHelper.js";
 import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
-@Guard(IsActivated)
+@Guard(IsActivated())
 class split {
   @Slash({ name: "split", description: "Receive points for splitting" })
   async split(
@@ -35,10 +35,10 @@ class split {
     @SlashOption({
       name: "player2",
       description: "Teammate",
-      required: false,
+      required: true,
       type: ApplicationCommandOptionType.User,
     })
-    player2: GuildMember | null,
+    player2: GuildMember,
     @SlashOption({
       name: "player3",
       description: "Teammate",
