@@ -21,18 +21,27 @@ const splitHelper = async (
   const sources = await getSources(interaction.guild.id);
   const sourceName = sources?.get(source)?.name ?? source;
 
+  const submitter = members[0];
+  const partners = members.slice(1);
+
   const preview = await buildPlayerPreview(
     interaction.guild.id,
-    members,
+    [submitter],
     points
   );
 
-  const username = (interaction.member as GuildMember).displayName;
+  const partnerMentions =
+    partners.length > 0
+      ? `**Split with:** ${partners.map((m) => `<@${m.id}>`).join(", ")}`
+      : "";
+
+  const username = submitter.displayName;
   const content = getString("splits", "requestSubmitted", {
     username,
     points,
     sourceName,
     preview,
+    partners: partnerMentions,
   });
 
   const data: SplitRequest = {

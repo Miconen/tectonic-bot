@@ -3,20 +3,16 @@ import type IPointService from "@utils/pointUtils/IPointService";
 import { getString } from "@utils/stringRepo";
 import type { RequestStrategy } from "./strategies";
 import { container } from "tsyringe";
-import { Collection, type GuildMember } from "discord.js";
 
 export const splitStrategy: RequestStrategy<SplitRequest> = {
   async accept(interaction, data) {
     const pointService = container.resolve<IPointService>("PointService");
 
-    const membersCollection = new Collection<string, GuildMember>();
-    for (const m of data.members) {
-      membersCollection.set(m.id, m);
-    }
-
+    // Only the submitter gets points
+    const submitter = data.members[0];
     const result = await pointService.givePoints(
       data.points,
-      membersCollection,
+      submitter,
       interaction
     );
     const pointsResult = Array.isArray(result) ? result.join("\n") : result;

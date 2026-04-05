@@ -7,10 +7,12 @@ import {
   type CommandInteraction,
   type GuildMember,
 } from "discord.js";
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import caHelper from "./func/caHelper.js";
+import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
+@Guard(IsActivated)
 class CombatAchievement {
   @Slash({
     name: "ca",
