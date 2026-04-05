@@ -12,7 +12,7 @@ import caHelper from "./func/caHelper.js";
 import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
-@Guard(IsActivated)
+@Guard(IsActivated())
 class CombatAchievement {
   @Slash({
     name: "ca",

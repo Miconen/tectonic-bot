@@ -11,7 +11,7 @@ import splitHelper from "./func/splitHelper.js";
 import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
-@Guard(IsActivated)
+@Guard(IsActivated())
 class split {
   @Slash({ name: "split", description: "Receive points for splitting" })
   async split(

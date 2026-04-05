@@ -11,7 +11,7 @@ import requestHelper from "./func/requestHelper.js";
 import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
-@Guard(IsActivated)
+@Guard(IsActivated())
 class Achievement {
   @Slash({
     name: "achievement",
