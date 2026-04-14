@@ -1,53 +1,55 @@
 import updateEmbed from "@commands/pb/func/updateEmbed";
 import { Requests } from "@requests/main";
-import type { TeamParam } from "@typings/requests";
+import type { TeamParam } from "@typings/api/team";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 export async function removeUserFromTimeHelper(
-	user: GuildMember,
-	boss: string,
-	interaction: CommandInteraction,
+  user: GuildMember,
+  boss: string,
+  interaction: CommandInteraction
 ) {
-	if (!interaction.guild) {
-		return await replyHandler(getString("errors", "noGuild"), interaction, {
-			ephemeral: true,
-		});
-	}
+  if (!interaction.guild) {
+    return await replyHandler(getString("errors", "noGuild"), interaction, {
+      ephemeral: true,
+    });
+  }
 
-	const params: TeamParam = { type: "boss", boss };
-	const res = await Requests.removeFromTeam(interaction.guild.id, user.id, params);
-	if (res.error && res.status === 404) {
-		return await replyHandler(res.message, interaction, {
-			ephemeral: true,
-		});
-	}
+  const params: TeamParam = { type: "boss", boss };
+  const res = await Requests.removeFromTeam(
+    interaction.guild.id,
+    user.id,
+    params
+  );
+  if (res.error && res.status === 404) {
+    return await replyHandler(res.message, interaction, {
+      ephemeral: true,
+    });
+  }
 
-	if (res.error) {
-		return await replyHandler(getString("api", "internalError"), interaction, {
-			ephemeral: true,
-		});
-	}
+  if (res.error) {
+    return await replyHandler(getString("api", "internalError"), interaction, {
+      ephemeral: true,
+    });
+  }
 
-	invalidateGuildCache(interaction.guild.id);
+  invalidateGuildCache(interaction.guild.id);
 
-	await replyHandler(
-		getString("teams", "removedFromBoss", {
-			user: user.displayName,
-			boss,
-		}),
-		interaction,
-		{ ephemeral: true },
-	);
+  await replyHandler(
+    getString("teams", "removedFromBoss", {
+      user: user.displayName,
+      boss,
+    }),
+    interaction,
+    { ephemeral: true }
+  );
 
-	const success = await updateEmbed(boss, interaction);
-	if (!success) {
-		await replyHandler(
-			getString("times", "failedUpdatingEmbed"),
-			interaction,
-			{ ephemeral: true },
-		);
-	}
+  const success = await updateEmbed(boss, interaction);
+  if (!success) {
+    await replyHandler(getString("times", "failedUpdatingEmbed"), interaction, {
+      ephemeral: true,
+    });
+  }
 }

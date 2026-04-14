@@ -1,9 +1,11 @@
-import type { CombatAchievementEntry, PointsResponse } from "@typings/requests";
+import type { CombatAchievementEntry } from "@typings/api/achievement";
+import type { PointsResponse } from "@typings/api/points";
 import { fetchData } from "./main";
 
 export async function getGuildCombatAchievements(guild_id: string) {
-  const url = `guilds/${guild_id}/combat-achievements`;
-  return await fetchData<CombatAchievementEntry[]>(url);
+  return await fetchData<CombatAchievementEntry[]>(
+    `guilds/${guild_id}/combat-achievements`
+  );
 }
 
 export async function completeCombatAchievement(
@@ -11,14 +13,12 @@ export async function completeCombatAchievement(
   ca_name: string,
   user_ids: string[]
 ) {
-  const url = `guilds/${guild_id}/combat-achievements/${encodeURIComponent(
-    ca_name
-  )}/complete`;
-  const options = {
-    method: "POST",
-    body: JSON.stringify({ user_ids }),
-  };
-  return await fetchData<PointsResponse[]>(url, options);
+  return await fetchData<PointsResponse[]>(
+    `guilds/${guild_id}/combat-achievements/${encodeURIComponent(
+      ca_name
+    )}/complete`,
+    { method: "POST", body: JSON.stringify({ user_ids }) }
+  );
 }
 
 export async function giveUserCombatAchievement(
@@ -26,11 +26,12 @@ export async function giveUserCombatAchievement(
   user_id: string,
   ca_name: string
 ) {
-  const url = `guilds/${guild_id}/users/${user_id}/combat-achievements/${encodeURIComponent(
-    ca_name
-  )}`;
-  const options = { method: "POST" };
-  return await fetchData(url, options);
+  return await fetchData(
+    `guilds/${guild_id}/users/${user_id}/combat-achievements/${encodeURIComponent(
+      ca_name
+    )}`,
+    { method: "POST" }
+  );
 }
 
 export async function removeUserCombatAchievement(
@@ -38,9 +39,10 @@ export async function removeUserCombatAchievement(
   user_id: string,
   ca_name: string
 ) {
-  const url = `guilds/${guild_id}/users/${user_id}/combat-achievements/${encodeURIComponent(
-    ca_name
-  )}`;
-  const options = { method: "DELETE" };
-  return await fetchData(url, options);
+  return await fetchData(
+    `guilds/${guild_id}/users/${user_id}/combat-achievements/${encodeURIComponent(
+      ca_name
+    )}`,
+    { method: "DELETE" }
+  );
 }

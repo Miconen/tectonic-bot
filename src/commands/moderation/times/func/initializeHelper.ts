@@ -4,7 +4,7 @@ import buildCategoryEmbed, {
 } from "@commands/pb/func/embedHelpers";
 import removeOldEmbeds from "@commands/pb/func/removeOldEmbeds";
 import { Requests } from "@requests/main.js";
-import type { CategoryUpdate } from "@typings/requests.js";
+import type { CategoryUpdate } from "@typings/api/guild";
 import { formatGuildTimesForEmbeds } from "@utils/guilds.js";
 import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, TextChannel } from "discord.js";
@@ -64,8 +64,10 @@ async function initializeHelper(interaction: CommandInteraction) {
 
   await interaction.editReply({ content: "Storing data..." });
   const update = await Requests.updateGuild(interaction.guild.id, {
-    pb_channel: interaction.channelId,
-    category_messages: msgs,
+    pb_update: {
+      channel_id: interaction.channelId,
+      category_messages: msgs,
+    },
   });
 
   await interaction.deleteReply();

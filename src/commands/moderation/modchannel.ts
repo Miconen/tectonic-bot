@@ -33,7 +33,7 @@ class ModChannel {
       return await replyHandler(getString("errors", "noGuild"), interaction);
 
     const res = await Requests.updateGuild(interaction.guild.id, {
-      mod_channel: channel.id,
+      mod_channel_id: channel.id,
     });
 
     if (res.error) {

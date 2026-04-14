@@ -1,5 +1,5 @@
 import { withAutocompleteLogging } from "@logging/guard";
-import type { Achievement } from "@typings/requests";
+import type { Achievement } from "@typings/api/achievement";
 import { Achievements } from "@utils/achievements";
 import { safeRespond, fetchUser } from "@utils/pickers";
 import type { AutocompleteInteraction } from "discord.js";
