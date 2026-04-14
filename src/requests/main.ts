@@ -65,6 +65,7 @@ export async function fetchData<T>(
     const contentType = response.headers.get("Content-Type");
     const isJson =
       contentType?.includes("application/json") ||
+      contentType?.includes("application/openapi+json") ||
       contentType?.includes("application/problem+json");
 
     if (!isJson) {
