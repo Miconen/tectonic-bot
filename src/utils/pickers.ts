@@ -1,5 +1,5 @@
 import { Requests } from "@requests/main";
-import type { DetailedUser } from "@typings/requests";
+import type { DetailedUser } from "@typings/api/user";
 import type { AutocompleteInteraction } from "discord.js";
 import { TTLCache } from "@utils/ttlCache";
 import { getLogger } from "@logging/context";

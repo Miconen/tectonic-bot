@@ -1,6 +1,6 @@
 import { withInitLogging } from "@logging/context";
 import { Requests } from "@requests/main";
-import type { Boss } from "@typings/requests";
+import type { Boss } from "@typings/api/guild";
 import { TTLCache } from "@utils/ttlCache";
 import type { SlashChoiceType } from "discordx";
 

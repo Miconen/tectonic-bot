@@ -1,5 +1,5 @@
 import updateEmbed from "@commands/pb/func/updateEmbed";
-import type { ApiResponse } from "@typings/requests";
+import type { ApiResponse } from "@typings/api/errors";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";

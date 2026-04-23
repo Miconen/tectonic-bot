@@ -1,5 +1,5 @@
 import { Requests } from "@requests/main";
-import type { AchievementParam } from "@typings/requests";
+import type { AchievementParam } from "@typings/api/achievement";
 import type { AchievementRequest } from "@typings/requestTypes";
 import { invalidateUserCache } from "@utils/pickers";
 import { getString } from "@utils/stringRepo";

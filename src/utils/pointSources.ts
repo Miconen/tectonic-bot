@@ -1,55 +1,55 @@
 import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
-import type { GuildPointSource } from "@typings/requests";
+import type { GuildPointSource } from "@typings/api/points";
 import { TTLCache } from "@utils/ttlCache";
 
 export const PointSources = new TTLCache<Map<string, GuildPointSource>>(null);
 export const Multipliers = new TTLCache<number>(null);
 
 export async function getPoints(source: string | number, guild_id: string) {
-	const logger = getLogger();
-	if (!Multipliers.has(guild_id)) {
-		const res = await Requests.getGuild(guild_id);
-		if (res.error) return 0;
+  const logger = getLogger();
+  if (!Multipliers.has(guild_id)) {
+    const res = await Requests.getGuild(guild_id);
+    if (res.error) return 0;
 
-		Multipliers.set(guild_id, res.data.multiplier);
-	} else {
-		logger.debug("Multipliers cache hit");
-	}
+    Multipliers.set(guild_id, res.data.multiplier);
+  } else {
+    logger.debug("Multipliers cache hit");
+  }
 
-	// Discriminate number out of the source type leaving it as a string
-	if (typeof source === "number") {
-		return source * (Multipliers.get(guild_id) ?? 1);
-	}
+  // Discriminate number out of the source type leaving it as a string
+  if (typeof source === "number") {
+    return source * (Multipliers.get(guild_id) ?? 1);
+  }
 
-	await populateSources(guild_id);
+  await populateSources(guild_id);
 
-	const points = PointSources.get(guild_id)?.get(source)?.points ?? 0;
-	const multi = Multipliers.get(guild_id) ?? 1;
+  const points = PointSources.get(guild_id)?.get(source)?.points ?? 0;
+  const multi = Multipliers.get(guild_id) ?? 1;
 
-	return points * multi;
+  return points * multi;
 }
 
 export async function getSources(guild_id: string) {
-	await populateSources(guild_id);
-	return PointSources.get(guild_id);
+  await populateSources(guild_id);
+  return PointSources.get(guild_id);
 }
 
 async function populateSources(guild_id: string) {
-	const logger = getLogger();
-	const guild = new Map<string, GuildPointSource>();
+  const logger = getLogger();
+  const guild = new Map<string, GuildPointSource>();
 
-	if (PointSources.has(guild_id)) {
-		logger.debug("PointSources cache hit");
-		return;
-	}
+  if (PointSources.has(guild_id)) {
+    logger.debug("PointSources cache hit");
+    return;
+  }
 
-	const res = await Requests.getGuildPointSources(guild_id);
-	if (res.error) return guild;
+  const res = await Requests.getGuildPointSources(guild_id);
+  if (res.error) return guild;
 
-	for (const ps of res.data) {
-		guild.set(ps.source, ps);
-	}
+  for (const ps of res.data) {
+    guild.set(ps.source, ps);
+  }
 
-	PointSources.set(guild_id, guild);
+  PointSources.set(guild_id, guild);
 }
