@@ -1,12 +1,13 @@
-import type { PbRequest } from "@typings/requestTypes.js";
-import { postRequest } from "@commands/requests/postRequest.js";
-import { Requests } from "@requests/main.js";
-import { getPoints, getSources } from "@utils/pointSources.js";
-import { buildPlayerPreview } from "@utils/requestPreview.js";
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
-import TimeConverter from "./TimeConverter.js";
-import { Bosses } from "./getBosses.js";
+import type { PbRequest } from "@typings/requestTypes";
+import { postRequest } from "@commands/requests/postRequest";
+import { Requests } from "@requests/main";
+import { getPoints, getSources } from "@utils/pointSources";
+import { buildPlayerPreview } from "@utils/requestPreview";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
+import TimeConverter from "./TimeConverter";
+import { Bosses } from "./getBosses";
+import { formatValueLabel } from "./valueFormat";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 const pbRequestHelper = async (
@@ -67,6 +68,7 @@ const pbRequestHelper = async (
       if (isWorse) {
         return await replyHandler(
           getString("pb", "notFaster", {
+            valueLabel: formatValueLabel(valueType).toLowerCase(),
             time: displayNew,
             currentTime: displayCurrent,
           }),
@@ -91,6 +93,7 @@ const pbRequestHelper = async (
     points
   );
 
+  const valueLabel = formatValueLabel(valueType);
   const displayValue =
     valueType === "time"
       ? `${TimeConverter.ticksToTime(value)} (${value} ticks)`
@@ -99,7 +102,8 @@ const pbRequestHelper = async (
   const content = getString("pb", "requestSubmitted", {
     username: (interaction.member as GuildMember).displayName,
     bossTitle,
-    time: displayValue,
+    valueLabel,
+    displayValue,
     sourceName,
     points,
     preview,

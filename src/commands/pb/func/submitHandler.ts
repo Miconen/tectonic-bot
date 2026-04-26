@@ -1,13 +1,14 @@
 import type { CommandInteraction } from "discord.js";
-import { Requests } from "@requests/main.js";
+import { Requests } from "@requests/main";
 
-import TimeConverter from "./TimeConverter.js";
-import updateEmbed from "./updateEmbed.js";
-import { getString } from "@utils/stringRepo.js";
-import { getPoints, getSources } from "@utils/pointSources.js";
-import giveHelper from "@commands/moderation/func/giveHelper.js";
-import { getLogger } from "@logging/context.js";
-import { Bosses } from "./getBosses.js";
+import TimeConverter from "./TimeConverter";
+import updateEmbed from "./updateEmbed";
+import { getString } from "@utils/stringRepo";
+import { getPoints, getSources } from "@utils/pointSources";
+import giveHelper from "@commands/moderation/func/giveHelper";
+import { getLogger } from "@logging/context";
+import { Bosses } from "./getBosses";
+import { formatValueLabel } from "./valueFormat";
 
 async function submitHandler(
   boss: string,
@@ -89,15 +90,16 @@ async function submitHandler(
   pointsResponses.push(await giveHelper(members, "clan_pb", interaction));
 
   // Construct response
+  const valueLabel = formatValueLabel(valueType);
   const displayValue =
     valueType === "time"
-      ? TimeConverter.ticksToTime(res.data.value)
+      ? `${TimeConverter.ticksToTime(res.data.value)} (${res.data.value} ticks)`
       : `${res.data.value}`;
   const response: string[] = [
     getString("times", "newPb", {
       bossTitle,
-      time: displayValue,
-      ticks: res.data.value,
+      valueLabel,
+      displayValue,
       sourceName,
       points,
     }),
