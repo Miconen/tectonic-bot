@@ -52,14 +52,21 @@ const pointsHelper = async (
   const user = res.data;
   const points = user.points;
 
-  // Rank info and icons
+  // Use API-provided tier if available, fall back to hardcoded RankService
+  const currentRankIcon =
+    user.tier?.icon ?? rankService.getIcon(rankService.getRankByPoints(points));
+  const currentRank = user.tier?.name ?? rankService.getRankByPoints(points);
+
+  // Compute next rank info
   const nextRankUntil = rankService.pointsToNextRank(points);
   const nextRank = rankService.getRankByPoints(points + nextRankUntil);
   const nextRankIcon = rankService.getIcon(nextRank);
-  const currentRank = rankService.getRankByPoints(points);
-  const currentRankIcon = rankService.getIcon(currentRank);
 
   const lines: string[] = [];
+
+  // Show rank position if available from API
+  const rankPrefix = user.rank ? `#${user.rank} ` : "";
+
   lines.push(
     getString("profile", "header", {
       rankIcon: currentRankIcon,
@@ -82,6 +89,12 @@ const pointsHelper = async (
       })
     );
   }
+
+  // Show leaderboard position
+  if (user.rank) {
+    lines.push(`> Leaderboard position: **${rankPrefix}**`);
+  }
+
   if (user.rsns.length) {
     lines.push(getString("profile", "accountsHeader"));
     for (const account of user.rsns) {
@@ -90,15 +103,19 @@ const pointsHelper = async (
   } else {
     lines.push(`\`${getString("accounts", "noLinkedAccounts")}\``);
   }
-  if (user.times.length) {
+  if (user.records.length) {
     lines.push(getString("profile", "pbsHeader"));
-    for (const pb of user.times) {
+    for (const record of user.records) {
+      const displayValue =
+        record.value_type === "time"
+          ? TimeConverter.ticksToTime(record.value)
+          : `${record.value}`;
       lines.push(
         getString("profile", "pbEntry", {
-          category: pb.category,
-          displayName: pb.display_name,
-          time: TimeConverter.ticksToTime(pb.time),
-          ticks: pb.time,
+          category: record.category,
+          displayName: record.display_name,
+          time: displayValue,
+          ticks: record.value,
         })
       );
     }
@@ -113,7 +130,7 @@ const pointsHelper = async (
       const isWinner = !event.solo && event.position_cutoff === 1;
 
       // Right side part of result string which shows the users placement
-      let chunk = formatPlacement(event.placement, isWinner);
+      const chunk = formatPlacement(event.placement, isWinner);
 
       lines.push(
         getString("profile", "eventEntry", {

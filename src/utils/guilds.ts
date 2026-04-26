@@ -4,7 +4,8 @@ import { notEmpty } from "./notEmpty";
 export type EmbedBossData = {
   name: string;
   display_name: string;
-  pb_time_ticks: number | null;
+  pb_value: number | null;
+  value_type: string;
   teammate_user_ids: string[];
 };
 
@@ -47,14 +48,20 @@ export function formatGuildBossesForEmbeds(
       const boss = data.bosses.find((b) => b.name === gb.boss);
       if (!boss) return null;
 
-      const pb = data.pbs?.find((t) => t.run_id === gb.pb_id);
-      const teammates = data.teammates?.filter((tm) => tm.run_id === gb.pb_id);
+      // Find the #1 record for this boss (position === 1)
+      const record = data.records?.find(
+        (r) => r.boss_name === gb.boss && r.position === 1
+      );
+      const teammates = record
+        ? data.teammates?.filter((tm) => tm.record_id === record.record_id)
+        : undefined;
 
       // Extract ONLY what embeds need
       return {
         display_name: boss.display_name,
         name: boss.name,
-        pb_time_ticks: pb?.time ?? null,
+        pb_value: record?.value ?? null,
+        value_type: boss.value_type ?? "time",
         teammate_user_ids: teammates?.map((t) => t.user_id) ?? [],
       };
     })

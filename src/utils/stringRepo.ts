@@ -239,12 +239,12 @@ const strings: StringRepository = {
   teams: {
     addedToBoss: (args) =>
       `Succesfully added ${args.user} to team for \`${args.boss}\` clan PB.`,
-    addedToRunId: (args) =>
-      `Succesfully added ${args.user} to team for run \`#${args.run_id}\`.`,
+    addedToRecordId: (args) =>
+      `Succesfully added ${args.user} to team for record \`#${args.record_id}\`.`,
     removedFromBoss: (args) =>
       `Successfully removed ${args.user} from team for \`${args.boss}\` clan PB.`,
-    removedFromRunId: (args) =>
-      `Successfully removed ${args.user} from team for run \`#${args.run_id}\`.`,
+    removedFromRecordId: (args) =>
+      `Successfully removed ${args.user} from team for record \`#${args.record_id}\`.`,
   },
 
   help: {

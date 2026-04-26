@@ -2,7 +2,7 @@ import type { TeamParam } from "@typings/api/team";
 import { fetchData } from "./main";
 
 function teamParamHandler(query: TeamParam) {
-  if (query.type === "run_id") return `id/${query.run_id}`;
+  if (query.type === "record_id") return `id/${query.record_id}`;
   return `boss/${query.boss}`;
 }
 

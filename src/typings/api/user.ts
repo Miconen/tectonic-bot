@@ -1,5 +1,5 @@
 import type { Achievement, CombatAchievement } from "./achievement";
-import type { DetailedTime } from "./time";
+import type { DetailedRecord } from "./time";
 
 export type RSN = {
   rsn: string;
@@ -22,6 +22,14 @@ export type GuildEvent = {
   solo: boolean;
 };
 
+export type UserTier = {
+  name: string;
+  icon: string | null;
+  role_id: string | null;
+  min_points: number;
+  display_order: number;
+};
+
 export type User = SimpleUser & {
   rsns: RSN[];
   events: GuildEvent[];
@@ -29,7 +37,11 @@ export type User = SimpleUser & {
   combat_achievements: CombatAchievement[];
 };
 
-export type DetailedUser = User & { times: DetailedTime[] };
+export type DetailedUser = User & {
+  records: DetailedRecord[];
+  rank: number;
+  tier: UserTier | null;
+};
 
 // Lookup param types
 

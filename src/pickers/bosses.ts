@@ -24,25 +24,28 @@ export const bossTimePicker = withAutocompleteLogging(
       return;
     }
 
-    if (!guild.pbs) {
+    if (!guild.records) {
       await safeRespond(interaction, []);
       return;
     }
 
-    // Get all boss options first
-    const allOptions = guild.pbs.flatMap((t) => {
-      const boss = guild.bosses.find((b) => b.name === t.boss_name);
-      return boss
-        ? [
-            {
-              name: `${boss.category} | ${
-                boss.display_name
-              } - ${TimeConverter.ticksToTime(t.time)} (${t.time} ticks)`,
-              value: t.boss_name,
-            },
-          ]
-        : [];
-    });
+    // Get all boss options from #1 position records
+    const allOptions = guild.records
+      .filter((r) => r.position === 1)
+      .flatMap((r) => {
+        const boss = guild.bosses.find((b) => b.name === r.boss_name);
+        if (!boss) return [];
+        const displayValue =
+          boss.value_type === "time"
+            ? `${TimeConverter.ticksToTime(r.value)} (${r.value} ticks)`
+            : `${r.value}`;
+        return [
+          {
+            name: `${boss.category} | ${boss.display_name} - ${displayValue}`,
+            value: r.boss_name,
+          },
+        ];
+      });
 
     // Filter options based on search input
     const searchLower = search.toLowerCase();

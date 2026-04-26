@@ -9,6 +9,7 @@ import * as Wom from "@requests/wom";
 import * as Teams from "@requests/teams";
 import * as Achievement from "@requests/achievement";
 import * as CombatAchievement from "@requests/combatAchievement";
+import * as GuildRank from "@requests/guildRank";
 import { HTTPError } from "discord.js";
 import type {
   TectonicError,
@@ -62,6 +63,12 @@ export async function fetchData<T>(
       },
     });
 
+    // 204 No Content — success with no body
+    if (response.status === 204) {
+      logger.info({ status: 204 }, "API success (no content)");
+      return { error: false, status: 204, data: undefined as unknown as T };
+    }
+
     const contentType = response.headers.get("Content-Type");
     const isJson =
       contentType?.includes("application/json") ||
@@ -105,4 +112,5 @@ export const Requests = {
   ...Teams,
   ...Achievement,
   ...CombatAchievement,
+  ...GuildRank,
 };
