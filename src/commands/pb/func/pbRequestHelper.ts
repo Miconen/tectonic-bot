@@ -1,13 +1,13 @@
-import type { PbRequest } from "@typings/requestTypes";
-import { postRequest } from "@commands/requests/postRequest";
-import { Requests } from "@requests/main";
-import { getPoints, getSources } from "@utils/pointSources";
-import { buildPlayerPreview } from "@utils/requestPreview";
-import { replyHandler } from "@utils/replyHandler";
-import { getString } from "@utils/stringRepo";
-import TimeConverter from "./TimeConverter";
-import { Bosses } from "./getBosses";
-import { formatValueLabel } from "./valueFormat";
+import type { PbRequest } from "@typings/requestTypes.js";
+import { postRequest } from "@commands/requests/postRequest.js";
+import { Requests } from "@requests/main.js";
+import { getPoints, getSources } from "@utils/pointSources.js";
+import { buildPlayerPreview } from "@utils/requestPreview.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
+import TimeConverter from "./TimeConverter.js";
+import { Bosses } from "./getBosses.js";
+import { formatValueLabel } from "./valueFormat.js";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 const pbRequestHelper = async (
@@ -50,22 +50,29 @@ const pbRequestHelper = async (
 
   const guildTimes = await Requests.getGuildTimes(interaction.guild.id);
   if (!guildTimes.error && guildTimes.data?.records) {
-    const currentPb = guildTimes.data.records.find(
-      (r) => r.boss_name === boss && r.position === 1
-    );
-    if (currentPb) {
-      const isWorse = higherIsBetter
-        ? value <= currentPb.value
-        : value >= currentPb.value;
+    const positionCount = guildTimes.data.position_count ?? 3;
 
-      const displayCurrent =
-        valueType === "time"
-          ? TimeConverter.ticksToTime(currentPb.value)
-          : `${currentPb.value}`;
-      const displayNew =
-        valueType === "time" ? TimeConverter.ticksToTime(value) : `${value}`;
+    // Find all records for this boss, sorted by position
+    const bossRecords = guildTimes.data.records
+      .filter((r) => r.boss_name === boss)
+      .sort((a, b) => a.position - b.position);
+
+    // If the boss already has max positions filled, compare against the last one
+    if (bossRecords.length >= positionCount) {
+      const lastRecord = bossRecords[bossRecords.length - 1];
+
+      const isWorse = higherIsBetter
+        ? value <= lastRecord.value
+        : value >= lastRecord.value;
 
       if (isWorse) {
+        const displayCurrent =
+          valueType === "time"
+            ? TimeConverter.ticksToTime(lastRecord.value)
+            : `${lastRecord.value}`;
+        const displayNew =
+          valueType === "time" ? TimeConverter.ticksToTime(value) : `${value}`;
+
         return await replyHandler(
           getString("pb", "notFaster", {
             valueLabel: formatValueLabel(valueType).toLowerCase(),
@@ -76,6 +83,7 @@ const pbRequestHelper = async (
         );
       }
     }
+    // If fewer records than position_count, the submission will always qualify
   }
 
   const points = (await getPoints("clan_pb", interaction.guild.id)) ?? 0;
