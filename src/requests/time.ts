@@ -18,15 +18,3 @@ export async function removeTimeById(guild_id: string, record_id: string) {
     method: "DELETE",
   });
 }
-
-export async function revertGuildBossPb(guild_id: string, boss: string) {
-  return await fetchData(`guilds/${guild_id}/records/${boss}/revert`, {
-    method: "DELETE",
-  });
-}
-
-export async function clearGuildBossPb(guild_id: string, boss: string) {
-  return await fetchData(`guilds/${guild_id}/records/${boss}/clear`, {
-    method: "DELETE",
-  });
-}

@@ -1,14 +1,14 @@
 import type { CommandInteraction } from "discord.js";
-import { Requests } from "@requests/main";
+import { Requests } from "@requests/main.js";
 
-import TimeConverter from "./TimeConverter";
-import updateEmbed from "./updateEmbed";
-import { getString } from "@utils/stringRepo";
-import { getPoints, getSources } from "@utils/pointSources";
-import giveHelper from "@commands/moderation/func/giveHelper";
-import { getLogger } from "@logging/context";
-import { Bosses } from "./getBosses";
-import { formatValueLabel } from "./valueFormat";
+import TimeConverter from "./TimeConverter.js";
+import updateEmbed from "./updateEmbed.js";
+import { getString } from "@utils/stringRepo.js";
+import { getPoints, getSources } from "@utils/pointSources.js";
+import giveHelper from "@commands/moderation/func/giveHelper.js";
+import { getLogger } from "@logging/context.js";
+import { Bosses } from "./getBosses.js";
+import { formatValueLabel } from "./valueFormat.js";
 
 async function submitHandler(
   boss: string,
@@ -55,20 +55,14 @@ async function submitHandler(
     return response;
   }
 
+  const position = res.data.position;
+
   // Check if the record didn't make the top positions
-  if (res.data.position === null || res.data.position === undefined) {
+  if (position === null || position === undefined) {
     return getString("times", "timeSubmittedNotPb");
   }
 
-  // Pb updated
-  const success = await updateEmbed(boss, interaction);
-  if (!success) {
-    await interaction.followUp({
-      content: getString("times", "failedUpdatingEmbed"),
-      ephemeral: true,
-    });
-  }
-  logger.info(res.data, "New clan best record");
+  logger.info(res.data, `New clan record at position #${position}`);
 
   // Resolve boss metadata for header
   const bossTitle = `${bossData?.category}: ${bossData?.display_name}`;
@@ -78,25 +72,16 @@ async function submitHandler(
   const sources = await getSources(guildId);
   const sourceName = sources?.get("clan_pb")?.name ?? "Clan PB";
 
-  // Fetch and map user ids to GuildMember types
-  const members = await interaction.guild.members.fetch({ user: team });
-  const pointsResponses: string[] = [];
-
-  if (!members) {
-    pointsResponses.push(getString("times", "errorFetchingUsersForPoints"));
-  }
-
-  // Give points
-  pointsResponses.push(await giveHelper(members, "clan_pb", interaction));
-
-  // Construct response
+  // Format display
   const valueLabel = formatValueLabel(valueType);
   const displayValue =
     valueType === "time"
       ? `${TimeConverter.ticksToTime(res.data.value)} (${res.data.value} ticks)`
       : `${res.data.value}`;
+
   const response: string[] = [
     getString("times", "newPb", {
+      position,
       bossTitle,
       valueLabel,
       displayValue,
@@ -104,7 +89,27 @@ async function submitHandler(
       points,
     }),
   ];
-  response.push(pointsResponses.join("\n"));
+
+  // Only #1 gets points and embed update
+  if (position === 1) {
+    const success = await updateEmbed(boss, interaction);
+    if (!success) {
+      await interaction.followUp({
+        content: getString("times", "failedUpdatingEmbed"),
+        ephemeral: true,
+      });
+    }
+
+    const members = await interaction.guild.members.fetch({ user: team });
+    const pointsResponses: string[] = [];
+
+    if (!members) {
+      pointsResponses.push(getString("times", "errorFetchingUsersForPoints"));
+    }
+
+    pointsResponses.push(await giveHelper(members, "clan_pb", interaction));
+    response.push(pointsResponses.join("\n"));
+  }
 
   return response.join("\n");
 }

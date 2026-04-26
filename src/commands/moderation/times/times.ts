@@ -6,11 +6,10 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import IsAdmin from "@guards/IsAdmin.js";
 import { bossTimePicker } from "@pickers/bosses";
+import { recordPicker } from "@pickers/records";
 import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
 import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
-import { timeDeleteHelper } from "./func/timeDeleteHelper";
-import { Requests } from "@requests/main";
-import { IsValidBoss } from "@guards/IsValidBoss";
+import { recordRemoveHelper } from "./func/recordRemoveHelper";
 import initializeHelper from "@commands/moderation/times/func/initializeHelper";
 
 @Discord()
@@ -22,48 +21,20 @@ import initializeHelper from "@commands/moderation/times/func/initializeHelper";
 @SlashGroup("times", "moderation")
 @Guard(IsAdmin)
 class Times {
-  @Slash({ name: "revert", description: "Revert a time to an older one" })
-  @Guard(IsValidBoss)
-  async revert(
+  @Slash({ name: "remove", description: "Remove a specific record" })
+  async remove(
     @SlashOption({
-      name: "boss",
-      description: "Boss name to revert pb of",
+      name: "record",
+      description: "Record to remove",
       required: true,
       type: ApplicationCommandOptionType.String,
-      autocomplete: bossTimePicker,
+      autocomplete: recordPicker,
     })
-    boss: string,
+    recordId: string,
     interaction: CommandInteraction
   ) {
     await interaction.deferReply();
-    await timeDeleteHelper(
-      boss,
-      interaction,
-      Requests.revertGuildBossPb,
-      "timeRevert"
-    );
-  }
-
-  @Slash({ name: "clear", description: "Clear a time from a boss" })
-  @Guard(IsValidBoss)
-  async clear(
-    @SlashOption({
-      name: "boss",
-      description: "Boss name to remove pb from",
-      required: true,
-      type: ApplicationCommandOptionType.String,
-      autocomplete: bossTimePicker,
-    })
-    boss: string,
-    interaction: CommandInteraction
-  ) {
-    await interaction.deferReply();
-    await timeDeleteHelper(
-      boss,
-      interaction,
-      Requests.clearGuildBossPb,
-      "timeClear"
-    );
+    await recordRemoveHelper(recordId, interaction);
   }
 
   @Slash({ name: "adduser", description: "Manually add a user to a time" })

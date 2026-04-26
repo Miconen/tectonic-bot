@@ -189,10 +189,8 @@ const strings: StringRepository = {
       `Updated server point multiplier to ${args.multiplier}.`,
     guildInitialized: "Guild initialized successfully.",
     guildAlreadyExists: "Guild is already initialized.",
-    timeRevert: (args) =>
-      `Succesfully reverted current clan PB for \`${args.boss}\`.`,
-    timeClear: (args) =>
-      `Succesfully cleared current clan PB for \`${args.boss}\`.`,
+    recordRemoved: (args) =>
+      `Successfully removed record \`#${args.recordId}\`.`,
     modChannelSet: (args) =>
       `✔ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
   },
@@ -208,7 +206,7 @@ const strings: StringRepository = {
     timeNotFound: "No time records found.",
     teamEntry: (args) => `Team: ${args.teammates}`,
     newPb: (args) =>
-      `# PB: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n`,
+      `# New #${args.position}: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n`,
     timeSubmittedNotPb: "Time submitted, not a new pb :)",
     failedParsingTicks: "Failed parsing ticks from time",
     failedAddingTime: "Failed adding time",
@@ -233,7 +231,7 @@ const strings: StringRepository = {
     denied: (args) =>
       `# PB Denied: ${args.bossTitle}\n-# ${args.sourceName} | ${args.points} points\n`,
     notFaster: (args) =>
-      `❌ Your ${args.valueLabel} of \`${args.time}\` is not better than the current PB of \`${args.currentTime}\`.`,
+      `❌ Your ${args.valueLabel} of \`${args.time}\` would not make the top positions. Current cutoff: \`${args.currentTime}\`.`,
   },
 
   teams: {
