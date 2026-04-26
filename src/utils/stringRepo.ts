@@ -208,7 +208,7 @@ const strings: StringRepository = {
     timeNotFound: "No time records found.",
     teamEntry: (args) => `Team: ${args.teammates}`,
     newPb: (args) =>
-      `# PB: ${args.bossTitle}\n\`${args.time} (${args.ticks} ticks)\`\n-# ${args.sourceName} | ${args.points} points\n`,
+      `# PB: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n`,
     timeSubmittedNotPb: "Time submitted, not a new pb :)",
     failedParsingTicks: "Failed parsing ticks from time",
     failedAddingTime: "Failed adding time",
@@ -227,24 +227,24 @@ const strings: StringRepository = {
 
   pb: {
     requestSubmitted: (args) =>
-      `# PB Request: ${args.bossTitle}\n\`${args.time}\`\n-# ${args.sourceName} | ${args.points} points\n\n${args.preview}`,
+      `# PB Request: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n\n${args.preview}`,
     approved: (args) =>
       `# PB Approved\n-# ${args.sourceName} | ${args.points} points\n`,
     denied: (args) =>
       `# PB Denied: ${args.bossTitle}\n-# ${args.sourceName} | ${args.points} points\n`,
     notFaster: (args) =>
-      `❌ Your time of \`${args.time}\` is not faster than the current PB of \`${args.currentTime}\`.`,
+      `❌ Your ${args.valueLabel} of \`${args.time}\` is not better than the current PB of \`${args.currentTime}\`.`,
   },
 
   teams: {
     addedToBoss: (args) =>
       `Succesfully added ${args.user} to team for \`${args.boss}\` clan PB.`,
-    addedToRunId: (args) =>
-      `Succesfully added ${args.user} to team for run \`#${args.run_id}\`.`,
+    addedToRecordId: (args) =>
+      `Succesfully added ${args.user} to team for record \`#${args.record_id}\`.`,
     removedFromBoss: (args) =>
       `Successfully removed ${args.user} from team for \`${args.boss}\` clan PB.`,
-    removedFromRunId: (args) =>
-      `Successfully removed ${args.user} from team for run \`#${args.run_id}\`.`,
+    removedFromRecordId: (args) =>
+      `Successfully removed ${args.user} from team for record \`#${args.record_id}\`.`,
   },
 
   help: {

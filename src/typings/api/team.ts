@@ -1,6 +1,6 @@
-export type TeamByRunId = {
-  type: "run_id";
-  run_id: number;
+export type TeamByRecordId = {
+  type: "record_id";
+  record_id: number;
 };
 
 export type TeamByBoss = {
@@ -8,4 +8,4 @@ export type TeamByBoss = {
   boss: string;
 };
 
-export type TeamParam = TeamByRunId | TeamByBoss;
+export type TeamParam = TeamByRecordId | TeamByBoss;

@@ -7,7 +7,7 @@ import {
   type Guild,
 } from "discord.js";
 import TimeConverter from "./TimeConverter";
-import { Team } from "@typings/api/time";
+import type { RecordTeam } from "@typings/api/time";
 
 // Amount of padding to give to guarantee maximum width on Discord embeds
 const PADDING = 110;
@@ -31,9 +31,12 @@ export function buildBossField(
   boss: EmbedBossData,
   members: Collection<string, GuildMember>
 ) {
-  let time = "`No time yet`";
-  if (boss.pb_time_ticks) {
-    time = `\`${TimeConverter.ticksToTime(boss.pb_time_ticks)}\``;
+  let time = "`No record yet`";
+  if (boss.pb_value) {
+    time =
+      boss.value_type === "time"
+        ? `\`${TimeConverter.ticksToTime(boss.pb_value)}\``
+        : `\`${boss.pb_value}\``;
   }
 
   const team =
@@ -77,7 +80,7 @@ export async function getMembersFromUserIds(guild: Guild, user_ids: string[]) {
 
 export async function getMembersFromTeams(
   guild: Guild,
-  teams: Team[] | undefined
+  teams: RecordTeam[] | undefined
 ) {
   if (!teams) {
     return new Collection<string, GuildMember>();

@@ -6,7 +6,7 @@ import type { ApiResponse } from "@typings/api/errors";
 import type { EventWinParam } from "@typings/api/event";
 import type { GuildUpdate } from "@typings/api/guild";
 import type { PointsParam } from "@typings/api/points";
-import type { NewTime } from "@typings/api/time";
+import type { NewRecord } from "@typings/api/time";
 import type { UserParam, UsersParam } from "@typings/api/user";
 
 const guild = "123456789123456789";
@@ -28,9 +28,9 @@ const guild_update: GuildUpdate = {
   mod_channel_id: "123",
 };
 
-const new_time: NewTime = {
+const new_record: NewRecord = {
   user_ids: [user],
-  time: 3000,
+  value: 3000,
   boss_name: "vardorvis",
 };
 
@@ -167,8 +167,8 @@ describe("API Tests", function () {
       );
 
       testEndpoint(
-        "should successfully add a new time",
-        () => Requests.newTime(guild, new_time),
+        "should successfully add a new record",
+        () => Requests.newTime(guild, new_record),
         [200, 201]
       );
 

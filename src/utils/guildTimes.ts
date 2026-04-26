@@ -24,8 +24,8 @@ async function populateGuild(guild_id: string) {
     return;
   }
 
-  if (!res.data.pbs) {
-    logger.warn("No guild times found");
+  if (!res.data.records) {
+    logger.warn("No guild records found");
     return;
   }
 
