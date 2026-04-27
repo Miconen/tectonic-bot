@@ -8,11 +8,19 @@ import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { teamPicker } from "@pickers/teams";
 import { winnerHelper } from "./func/winnerHelper";
 import { winnerTeamHelper } from "./func/winnerTeamHelper";
+import { Requests } from "@requests/main.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 
 @Discord()
-@SlashGroup("event")
+@SlashGroup({
+  description: "Create guild events",
+  name: "create",
+  root: "event",
+})
+@SlashGroup("create", "event")
 @Guard(IsAdmin)
-class Winners {
+class EventCreate {
   @Slash({ name: "team", description: "Reward team event winners" })
   async team(
     @SlashOption({
@@ -72,5 +80,69 @@ class Winners {
     interaction: CommandInteraction
   ) {
     return winnerHelper(interaction, competitionId, top);
+  }
+
+  @Slash({
+    name: "legacy",
+    description: "Register a legacy event with Discord user IDs",
+  })
+  async legacy(
+    @SlashOption({
+      name: "name",
+      description: "Event name (e.g. 'Summer Bingo 2023')",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    name: string,
+    @SlashOption({
+      name: "winners",
+      description: "Comma-separated Discord user IDs of the winners",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    winners: string,
+    interaction: CommandInteraction
+  ) {
+    if (!interaction.guild)
+      return await replyHandler(getString("errors", "noGuild"), interaction);
+
+    await interaction.deferReply({ ephemeral: true });
+
+    const userIds = winners
+      .split(",")
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0);
+
+    if (userIds.length === 0) {
+      return await replyHandler("No valid user IDs provided.", interaction, {
+        ephemeral: true,
+      });
+    }
+
+    const res = await Requests.registerLegacyEvent(
+      interaction.guild.id,
+      name,
+      userIds
+    );
+
+    if (res.error) {
+      return await replyHandler(
+        getString("errors", "apiError", {
+          activity: "registering legacy event",
+          error: res.message,
+        }),
+        interaction,
+        { ephemeral: true }
+      );
+    }
+
+    const mentions = userIds.map((id) => `<@${id}>`).join(", ");
+    return await replyHandler(
+      `Legacy event **${name}** registered with ${userIds.length} winner${
+        userIds.length > 1 ? "s" : ""
+      }: ${mentions}`,
+      interaction,
+      { ephemeral: true }
+    );
   }
 }

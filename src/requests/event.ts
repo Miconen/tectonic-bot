@@ -44,3 +44,14 @@ export async function deleteEvent(guild_id: string, event_id: string) {
     method: "DELETE",
   });
 }
+
+export async function registerLegacyEvent(
+  guild_id: string,
+  name: string,
+  user_ids: string[]
+) {
+  return await fetchData(`guilds/${guild_id}/events/legacy`, {
+    method: "POST",
+    body: JSON.stringify({ name, user_ids }),
+  });
+}
