@@ -64,36 +64,70 @@ const pointsHelper = async (
 
   const lines: string[] = [];
 
-  // Show rank position if available from API
-  const rankPrefix = user.rank ? `#${user.rank} ` : "";
+  const rankPrefix = user.rank ? `#${user.rank}` : "?";
+
+  // Calculate valid events for the count
+  const validEvents = user.events.filter(
+    (e) => e.position_cutoff >= e.placement
+  );
+
+  const guildTimesRes = await Requests.getGuildTimes(guildId);
+  const guildRecords =
+    !guildTimesRes.error && guildTimesRes.data?.records
+      ? guildTimesRes.data.records
+      : [];
+  const guildTeammates =
+    !guildTimesRes.error && guildTimesRes.data?.teammates
+      ? guildTimesRes.data.teammates
+      : [];
+
+  // Find all record_ids the user was part of
+  const userRecordIds = new Set(
+    guildTeammates
+      .filter((t) => t.user_id === target.id)
+      .map((t) => t.record_id)
+  );
+
+  // Filter guild records to only those the user is in
+  const userGuildRecords = guildRecords.filter((r) =>
+    userRecordIds.has(r.record_id)
+  );
+
+  // Deduplicate by boss_name: keep the one with the best (lowest) position
+  const bestRecordsByBoss = new Map<string, (typeof userGuildRecords)[0]>();
+  for (const r of userGuildRecords) {
+    const existing = bestRecordsByBoss.get(r.boss_name);
+    if (!existing || r.position < existing.position) {
+      bestRecordsByBoss.set(r.boss_name, r);
+    }
+  }
+
+  const recordsToDisplay = user.records
+    .filter((r) =>
+      Array.from(bestRecordsByBoss.values()).some(
+        (b) => b.record_id === r.record_id
+      )
+    )
+    .map((r) => {
+      const clanRecord = bestRecordsByBoss.get(r.boss_name);
+      return {
+        ...r,
+        position: clanRecord?.position ?? "?",
+      };
+    });
 
   lines.push(
     getString("profile", "header", {
       rankIcon: currentRankIcon,
       username: target.displayName,
-    }),
-    getString("ranks", "rankInfoWithNext", {
-      currentIcon: currentRankIcon,
-      username: target.displayName,
+      rankPrefix,
       points,
-      nextIcon: nextRankIcon,
-      pointsToNext: nextRankUntil,
+      pbCount: recordsToDisplay.length,
+      eventCount: validEvents.length,
+      nextRankIcon,
+      pointsToNext: nextRankUntil > 0 ? nextRankUntil.toString() : "0",
     })
   );
-  if (currentRank === "wrath") {
-    lines.push(
-      getString("ranks", "rankInfo", {
-        icon: currentRankIcon,
-        username: target.displayName,
-        points,
-      })
-    );
-  }
-
-  // Show leaderboard position
-  if (user.rank) {
-    lines.push(`> Leaderboard position: **${rankPrefix}**`);
-  }
 
   if (user.rsns.length) {
     lines.push(getString("profile", "accountsHeader"));
@@ -103,9 +137,10 @@ const pointsHelper = async (
   } else {
     lines.push(`\`${getString("accounts", "noLinkedAccounts")}\``);
   }
-  if (user.records.length) {
+
+  if (recordsToDisplay.length) {
     lines.push(getString("profile", "pbsHeader"));
-    for (const record of user.records) {
+    for (const record of recordsToDisplay) {
       const displayValue =
         record.value_type === "time"
           ? TimeConverter.ticksToTime(record.value)
@@ -114,23 +149,22 @@ const pointsHelper = async (
         getString("profile", "pbEntry", {
           category: record.category,
           displayName: record.display_name,
-          time: displayValue,
-          ticks: record.value,
+          position: record.position,
+          displayValue,
         })
       );
     }
   }
-  // TODO: Also check if user has any events where placed below position_cutoff
-  if (user.events.length) {
+
+  if (validEvents.length) {
     lines.push(getString("profile", "eventsHeader"));
-    for (const event of user.events) {
-      // Skip events that are below the position cutoff
-      if (event.position_cutoff < event.placement) continue;
+    for (const event of validEvents) {
+      const isLegacy = event.wom_id.startsWith("legacy_");
+      const isWinner =
+        (!event.solo && event.position_cutoff === 1) ||
+        (isLegacy && event.placement === 1);
 
-      const isWinner = !event.solo && event.position_cutoff === 1;
-
-      // Right side part of result string which shows the users placement
-      const chunk = formatPlacement(event.placement, isWinner);
+      let chunk = formatPlacement(event.placement, isWinner);
 
       lines.push(
         getString("profile", "eventEntry", {

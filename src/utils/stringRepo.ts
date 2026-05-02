@@ -137,21 +137,26 @@ const strings: StringRepository = {
   },
 
   profile: {
-    header: (args) => `# ${args.rankIcon} **${args.username}**`,
-    currentPoints: (args) => `Current points: ${args.points}${args.rankIcon}`,
-    pointsToNext: (args) =>
-      `Points to next level: ${args.pointsToNext}${args.nextRankIcon}`,
-    accountsHeader: "# Accounts",
-    pbsHeader: "# Clan PBs",
-    eventsHeader: "# Event placements",
-    achievementsHeader: "# Achievements",
+    header: (args) => {
+      const parts = [`Rank: ${args.rankPrefix}`, `Points: ${args.points}`];
+      if (args.pbCount > 0) parts.push(`PBs: ${args.pbCount}`);
+      if (args.eventCount > 0) parts.push(`Events: ${args.eventCount}`);
+      return `# ${args.rankIcon} ${args.username}\n-# ${parts.join(" | ")}\n${
+        args.nextRankIcon
+      } Points to next level: ${args.pointsToNext}`;
+    },
+    accountsHeader: "## Accounts",
+    pbsHeader: "## Clan PBs",
+    eventsHeader: "## Event Placements",
+    achievementsHeader: "## Achievements",
     pbEntry: (args) =>
-      `\`${args.category} | ${args.displayName}\` - \`${args.time} (${args.ticks} ticks)\``,
-    eventPlacementChunk: (args) =>
-      `${args.emoji} ${args.placement}${args.suffix} Place`,
-    eventWinnerChunk: "🏆 Winner",
+      `**#${args.position}** in **${args.category}** \`${args.displayName}\` - \`${args.displayValue}\``,
+    eventPlacementChunk: (args) => `**#${args.placement}**`,
+    eventWinnerChunk: "**Winner**",
     eventEntry: (args) =>
-      `[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>) - ${args.chunk}`,
+      args.womId.startsWith("legacy_")
+        ? `${args.chunk} in **${args.eventName}**`
+        : `${args.chunk} in **[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>)**`,
     accountEntry: (args) => `\`${args.rsn}\``,
     achievementEntry: (args) => `${args.icon} - **${args.name}**`,
     noAccounts: "No linked accounts found.",
