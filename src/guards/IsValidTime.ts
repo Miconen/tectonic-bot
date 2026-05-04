@@ -1,3 +1,4 @@
+import { getChildLogger } from "@logging/context";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
@@ -160,26 +161,29 @@ function IsValidTime(option: string) {
     const member = interaction.member as GuildMember;
     const timeString = interaction.options.get(option)?.value;
     const timeStringType = interaction.options.get(option)?.type;
+    const logger = getChildLogger({
+      guard: "Time validity check",
+      name: member.displayName,
+      username: member.user.username,
+    });
 
-    console.log(
-      `Checking time validity for: ${member.displayName} (${member.user.username}#${member.user.discriminator})`
-    );
+    logger.debug("Checking time validity");
 
     if (typeof timeString !== "string") {
-      console.log(
-        `↳ Invalid parameter type, expected a string, found: ${timeStringType}`
+      logger.info(
+        { timeStringType },
+        "Invalid parameter type, expected a string"
       );
       return;
     }
 
     const time = parseTime(timeString);
     if ("errors" in time) {
-      console.log("↳ Invalid time");
-      console.error(`↳ ${time.errors}`);
-
+      logger.info({ errors: time.errors }, "Invalid time");
       return await replyHandler(time.errors.join("\n"), interaction);
     }
-    console.log("↳ Passed");
+
+    logger.debug("Checking time validity: Passed");
     await next();
   };
 

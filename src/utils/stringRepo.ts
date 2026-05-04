@@ -1,3 +1,4 @@
+import { getLogger } from "@logging/context";
 import capitalizeFirstLetter from "./capitalizeFirstLetter";
 
 /**
@@ -443,15 +444,16 @@ export function getString(
   // biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
   args?: Record<string, any>
 ): string {
+  const logger = getLogger();
   const c = strings[category];
   if (!c) {
-    console.warn(`String not found: ${category}.${key}`);
+    logger.warn({ string: `${category}.${key}` }, "String not found");
     return `[${category}.${key}]`;
   }
 
   const k = c[key];
   if (!k) {
-    console.warn(`String not found: ${category}.${key}`);
+    logger.warn({ string: `${category}.${key}` }, "String not found");
     return `[${category}.${key}]`;
   }
 
@@ -463,7 +465,10 @@ export function getString(
   if (typeof template === "string") {
     return template;
   }
-  console.warn(`Missing arguments for string template: ${category}.${key}`);
+  logger.warn(
+    { stringTemplate: `${category}.${key}` },
+    "Missing arguments for string template"
+  );
   return `[${category}.${key}:missing-args]`;
 }
 
