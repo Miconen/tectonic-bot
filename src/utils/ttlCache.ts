@@ -34,9 +34,8 @@ export class TTLCache<T> {
 
   delete(key: string): boolean {
     const timer = this.timers.get(key);
-    if (!timer) return this.cache.delete(key);
     clearTimeout(timer);
-    return this.timers.delete(key);
+    return this.invalidate(key);
   }
 
   [Symbol.iterator](): IterableIterator<[string, T]> {
@@ -48,7 +47,7 @@ export class TTLCache<T> {
   }
 
   private invalidate(key: string) {
-    this.cache.delete(key);
     this.timers.delete(key);
+    return this.cache.delete(key);
   }
 }
