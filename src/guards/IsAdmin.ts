@@ -14,7 +14,7 @@ function hasPermissions(userPermissions: PermissionsBitField) {
 }
 
 export const IsAdmin: GuardFunction<
-  ButtonInteraction<"cached"> | CommandInteraction<"cached">
+  ButtonInteraction | CommandInteraction
 > = async (interaction, _, next) => {
   const member = interaction.member as GuildMember;
   const permissions = member.permissions as PermissionsBitField;
