@@ -1,4 +1,4 @@
-import type { CommandInteraction } from "discord.js";
+import type { ButtonInteraction, CommandInteraction } from "discord.js";
 import { Requests } from "@requests/main.js";
 
 import TimeConverter from "./TimeConverter.js";
@@ -14,7 +14,7 @@ async function submitHandler(
   boss: string,
   input: string,
   team: string[],
-  interaction: CommandInteraction<"cached">
+  interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">
 ) {
   const guildId = interaction.guild.id;
   const logger = getLogger();

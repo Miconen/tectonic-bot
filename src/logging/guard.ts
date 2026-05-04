@@ -13,8 +13,8 @@ type Leave = ArgsOf<"guildMemberRemove">;
 type InteractionType =
   | CommandInteraction<"cached">
   | ButtonInteraction<"cached">
-  | AutocompleteInteraction<"cached">
-  | ChatInputCommandInteraction<"cached">;
+  | ChatInputCommandInteraction<"cached">
+  | AutocompleteInteraction;
 
 // Type guard to check if the parameter is an interaction
 function isInteraction(
@@ -122,7 +122,7 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 
 // Autocomplete logging guard
 export const AutocompleteLoggingGuard: GuardFunction<
-  AutocompleteInteraction<"cached">
+  AutocompleteInteraction
 > = async (
   interaction,
   _, //Client
@@ -175,11 +175,15 @@ export const withAutocompleteLogging = <T extends unknown[]>(
   additionalContext: Record<string, unknown> = {}
 ) => {
   return async (
-    interaction: AutocompleteInteraction<"cached">,
+    interaction: AutocompleteInteraction,
     ...args: T
   ): Promise<void> => {
     const correlationId = interaction.id;
     const startTime = Date.now();
+
+    if (!interaction.inCachedGuild()) {
+      return await interaction.respond([]);
+    }
 
     const commandName = interaction.commandName;
     const focusedOption = interaction.options.getFocused(true);

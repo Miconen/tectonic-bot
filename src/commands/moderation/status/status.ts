@@ -37,7 +37,7 @@ class Activation {
       type: ApplicationCommandOptionType.String,
     })
     rsn: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return activationHelper(user, rsn, interaction);
   }
@@ -56,7 +56,7 @@ class Activation {
       type: ApplicationCommandOptionType.User,
     })
     user: GuildMember,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return deactivationHelper(user, interaction);
   }

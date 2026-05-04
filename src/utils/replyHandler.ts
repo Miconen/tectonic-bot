@@ -6,7 +6,7 @@ import { CommandInteraction, TextChannel } from "discord.js";
  */
 export async function replyHandler(
   message: string,
-  interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">,
+  interaction: CommandInteraction | ButtonInteraction,
   options?: { ephemeral?: boolean }
 ) {
   const CHARACTER_LIMIT = 2000;
@@ -28,7 +28,7 @@ export async function replyHandler(
 
 async function replyer(
   message: string,
-  interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">,
+  interaction: CommandInteraction | ButtonInteraction,
   split?: boolean,
   options?: { ephemeral?: boolean }
 ) {

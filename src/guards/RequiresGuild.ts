@@ -3,7 +3,7 @@ import { getString } from "@utils/stringRepo";
 import type { CommandInteraction } from "discord.js";
 import type { GuardFunction } from "discordx";
 
-const RequiresGuild: GuardFunction<CommandInteraction<"cached">> = async (
+const RequiresGuild: GuardFunction<CommandInteraction> = async (
   interaction,
   _,
   next

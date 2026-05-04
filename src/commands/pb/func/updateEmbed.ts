@@ -1,7 +1,11 @@
 import { Requests } from "@requests/main.js";
 import { formatGuildTimesForEmbeds } from "@utils/guilds.js";
 import { getString } from "@utils/stringRepo.js";
-import type { CommandInteraction, TextChannel } from "discord.js";
+import type {
+  ButtonInteraction,
+  CommandInteraction,
+  TextChannel,
+} from "discord.js";
 import buildCategoryEmbed, {
   buildBossFields,
   findCategoryByBoss,
@@ -11,7 +15,7 @@ import { replyHandler } from "@utils/replyHandler.js";
 
 async function updateEmbed(
   boss: string,
-  interaction: CommandInteraction<"cached">
+  interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">
 ) {
   const res = await Requests.getGuildTimes(interaction.guild.id);
 
