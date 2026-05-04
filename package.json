@@ -20,7 +20,6 @@
     "discord.js": "^14.22.1",
     "discordx": "^11.12.5",
     "dotenv": "^16.0.1",
-    "node-cron": "^3.0.2",
     "pino": "^9.6.0",
     "reflect-metadata": "^0.1.13"
   },
