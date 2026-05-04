@@ -78,7 +78,6 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
         error: "Expected numeric value for seconds.",
       })
     );
-    console.log(seconds);
   }
 
   // Check if minutes fall within the valid range
