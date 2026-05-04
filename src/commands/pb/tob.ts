@@ -14,7 +14,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class tobpb {
+class TobPb {
   @Slash({ name: "tob", description: "Request your new pb to be added" })
   async tob(
     @SlashOption({

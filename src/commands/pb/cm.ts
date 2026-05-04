@@ -14,7 +14,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class cmpb {
+class CmPb {
   @Slash({ name: "cm", description: "Request your new pb to be added" })
   async cm(
     @SlashOption({

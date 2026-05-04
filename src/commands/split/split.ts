@@ -12,7 +12,7 @@ import IsActivated from "@guards/IsActivated.js";
 
 @Discord()
 @Guard(IsActivated())
-class split {
+class Split {
   @Slash({ name: "split", description: "Receive points for splitting" })
   async split(
     @SlashChoice({ name: "2-100m", value: "split_low" })

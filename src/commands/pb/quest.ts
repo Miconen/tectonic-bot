@@ -19,7 +19,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class quest {
+class Quest {
   @Slash({ name: "quest", description: "Request your new pb to be added" })
   async quest(
     @SlashChoice(...bossCategories["Quest Bosses"])

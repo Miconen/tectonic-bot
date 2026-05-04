@@ -19,7 +19,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class miscellaneouspb {
+class MiscellaneousPb {
   @Slash({
     name: "miscellaneous",
     description: "Request your new pb to be added",

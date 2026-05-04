@@ -6,4 +6,4 @@ import { Discord, SlashGroup } from "discordx";
   description: "Commands for handling and requesting boss times",
 })
 @SlashGroup("pb")
-class pb {}
+class Pb {}

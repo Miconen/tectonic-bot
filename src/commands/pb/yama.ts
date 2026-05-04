@@ -14,7 +14,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class yamapb {
+class YamaPb {
   @Slash({ name: "yama", description: "Request your new pb to be added" })
   async yama(
     @SlashOption({

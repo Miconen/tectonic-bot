@@ -19,7 +19,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class sepulchrepb {
+class SepulchrePb {
   @Slash({
     name: "sepulchre",
     description: "Request your new pb to be added",

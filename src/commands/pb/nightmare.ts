@@ -23,7 +23,7 @@ import pbRequestHelper from "./func/pbRequestHelper.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsValidTime("time"), IsActivated())
-class nightmarepb {
+class NightmarePb {
   @Slash({
     name: "nightmare",
     description: "Request your new pb to be added",

@@ -21,7 +21,7 @@ import { replyHandler } from "@utils/replyHandler.js";
 @Discord()
 @SlashGroup("pb")
 @Guard(IsActivated())
-class varlamorepb {
+class VarlamorePb {
   @Slash({ name: "varlamore", description: "Request your new pb to be added" })
   async varlamore(
     @SlashChoice(...bossCategories.Varlamore)
