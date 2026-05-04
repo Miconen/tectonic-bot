@@ -40,10 +40,3 @@ export type RecordTeam = {
   user_id: string;
   guild_id: string;
 };
-
-// Legacy aliases for backward compatibility during migration
-export type NewTime = NewRecord;
-export type TimeResponse = RecordResponse;
-export type DetailedTime = DetailedRecord;
-export type Time = GuildRecord;
-export type Team = RecordTeam;
