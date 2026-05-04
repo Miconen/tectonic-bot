@@ -11,9 +11,10 @@ import {
 } from "@pickers/achievements";
 import { giveAchievementHelper } from "@commands/achievements/func/giveAchievement";
 import { removeAchievementHelper } from "@commands/achievements/func/removeAchievement";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 @SlashGroup({
   description: "Manage user achievements",
   name: "achievements",
@@ -42,7 +43,7 @@ class Achievements {
       autocomplete: achievementAddPicker,
     })
     achievement: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await giveAchievementHelper(user, interaction, achievement);
   }
@@ -68,7 +69,7 @@ class Achievements {
       autocomplete: achievementRemovePicker,
     })
     achievement: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await removeAchievementHelper(user, interaction, achievement);
   }

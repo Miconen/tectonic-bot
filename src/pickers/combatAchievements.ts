@@ -6,12 +6,7 @@ import type { AutocompleteInteraction } from "discord.js";
 
 export const combatAchievementPicker = withAutocompleteLogging(
   "combatAchievementPicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const cas = await getGuildCAs(interaction.guild.id);
     if (!cas) {
       await safeRespond(interaction, []);
@@ -42,7 +37,7 @@ export const combatAchievementPicker = withAutocompleteLogging(
 );
 export const caGrantPicker = withAutocompleteLogging(
   "caGrantPicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const picker = (completed: string[], ca: CombatAchievementEntry) =>
       !completed.includes(ca.name);
     caPicker(interaction, picker);
@@ -51,7 +46,7 @@ export const caGrantPicker = withAutocompleteLogging(
 
 export const caRemovePicker = withAutocompleteLogging(
   "caRemovePicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const picker = (completed: string[], ca: CombatAchievementEntry) =>
       completed.includes(ca.name);
     caPicker(interaction, picker);
@@ -59,14 +54,9 @@ export const caRemovePicker = withAutocompleteLogging(
 );
 
 async function caPicker(
-  interaction: AutocompleteInteraction,
+  interaction: AutocompleteInteraction<"cached">,
   picker: (completed: string[], ca: CombatAchievementEntry) => boolean
 ): Promise<void> {
-  if (!interaction.guild?.id) {
-    await safeRespond(interaction, []);
-    return;
-  }
-
   const id = interaction.options.get("username")?.value ?? interaction.user.id;
   if (!id || typeof id !== "string") {
     await safeRespond(interaction, []);

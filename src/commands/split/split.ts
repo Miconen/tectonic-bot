@@ -1,5 +1,3 @@
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import {
   ApplicationCommandOptionType,
   type Attachment,
@@ -9,9 +7,10 @@ import {
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
 import splitHelper from "./func/splitHelper.js";
 import IsActivated from "@guards/IsActivated.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
-@Guard(IsActivated())
+@Guard(RequiresGuild, IsActivated())
 class Split {
   @Slash({ name: "split", description: "Receive points for splitting" })
   async split(
@@ -81,11 +80,8 @@ class Split {
       type: ApplicationCommandOptionType.User,
     })
     player8: GuildMember | null,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const invoker = interaction.member as GuildMember;
     const members = [
       invoker,

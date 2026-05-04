@@ -9,9 +9,10 @@ import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import { formatDisplayName } from "@utils/formatDisplayName.js";
 import { guildRankPicker } from "pickers/guildRanks";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 @SlashGroup({
   description: "Manage guild rank tiers",
   name: "ranks",
@@ -23,10 +24,7 @@ class ModerationRanks {
     name: "list",
     description: "List all rank tiers for this guild",
   })
-  async list(interaction: CommandInteraction) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
+  async list(interaction: CommandInteraction<"cached">) {
     await interaction.deferReply({ ephemeral: true });
 
     const res = await Requests.getGuildRanks(interaction.guild.id);
@@ -104,11 +102,8 @@ class ModerationRanks {
       type: ApplicationCommandOptionType.Role,
     })
     role: { id: string } | undefined,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const res = await Requests.createGuildRank(interaction.guild.id, {
       name,
       min_points: minPoints,
@@ -174,11 +169,8 @@ class ModerationRanks {
       type: ApplicationCommandOptionType.Role,
     })
     role: { id: string } | undefined,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const body: Record<string, unknown> = {};
     if (minPoints !== undefined) body.min_points = minPoints;
     if (displayOrder !== undefined) body.display_order = displayOrder;
@@ -217,11 +209,8 @@ class ModerationRanks {
       autocomplete: guildRankPicker,
     })
     name: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const res = await Requests.deleteGuildRank(interaction.guild.id, name);
 
     if (res.error) {

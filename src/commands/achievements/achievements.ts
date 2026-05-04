@@ -1,5 +1,3 @@
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import {
   ApplicationCommandOptionType,
   type Attachment,
@@ -9,9 +7,10 @@ import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { achievementAddPicker } from "@pickers/achievements";
 import requestHelper from "./func/requestHelper.js";
 import IsActivated from "@guards/IsActivated.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
-@Guard(IsActivated())
+@Guard(IsActivated(), RequiresGuild)
 class Achievement {
   @Slash({
     name: "achievement",
@@ -33,11 +32,8 @@ class Achievement {
       type: ApplicationCommandOptionType.Attachment,
     })
     screenshot: Attachment,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     await requestHelper(achievement, screenshot.url, interaction);
   }
 }

@@ -4,12 +4,7 @@ import type { AutocompleteInteraction } from "discord.js";
 
 export const teamPicker = withAutocompleteLogging(
   "teamPicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const competitionId = interaction.options.get("competition")?.value;
     if (!competitionId || typeof competitionId !== "number") {
       await safeRespond(interaction, []);

@@ -6,7 +6,7 @@ import type { GuardFunction } from "discordx";
 import { getLogger } from "@logging/context";
 
 function IsActivated(target = "player") {
-  const guard: GuardFunction<ChatInputCommandInteraction> = async (
+  const guard: GuardFunction<ChatInputCommandInteraction<"cached">> = async (
     interaction,
     _,
     next
@@ -45,11 +45,6 @@ function IsActivated(target = "player") {
       );
     }
     logger.debug("Players list populated");
-
-    if (!interaction.guild?.id) {
-      logger.warn("Error getting guild ID");
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-    }
 
     const playersUserIds = players.map((member) => member.id);
     const playersUserNames = players.map((member) => member.displayName);

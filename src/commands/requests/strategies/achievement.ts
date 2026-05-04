@@ -7,8 +7,6 @@ import type { RequestStrategy } from "./strategies";
 
 export const achievementStrategy: RequestStrategy<AchievementRequest> = {
   async accept(interaction, data) {
-    if (!interaction.guild) return getString("errors", "noGuild");
-
     const params: AchievementParam = {
       achievement: data.achievement,
       guild_id: interaction.guild.id,

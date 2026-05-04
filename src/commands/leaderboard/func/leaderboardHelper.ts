@@ -1,22 +1,19 @@
-import { type CommandInteraction, EmbedBuilder } from "discord.js";
 import { Pagination } from "@discordx/pagination";
-import type IRankService from "@utils/rankUtils/IRankService";
 import { Requests } from "@requests/main.js";
+import type IRankService from "@utils/rankUtils/IRankService";
+import { type CommandInteraction, EmbedBuilder } from "discord.js";
 
-import { container } from "tsyringe";
-import { replyHandler } from "@utils/replyHandler";
 import type { GuildRankResponse } from "@typings/api/guildRank";
+import { replyHandler } from "@utils/replyHandler";
+import { container } from "tsyringe";
 
 interface LeaderboardUser {
   name: string;
   value: string;
 }
 
-const leaderboardHelper = async (interaction: CommandInteraction) => {
+async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
   const rankService = container.resolve<IRankService>("RankService");
-
-  if (!interaction.guild) return;
-  await interaction.deferReply();
 
   const lb = await Requests.getLeaderboard(interaction.guild.id);
   if (lb.error)
@@ -89,7 +86,7 @@ const leaderboardHelper = async (interaction: CommandInteraction) => {
   }
 
   await new Pagination(interaction, [...pages]).send();
-};
+}
 
 /** Find the tier icon for a given points value from the API guild ranks. */
 function getTierIcon(

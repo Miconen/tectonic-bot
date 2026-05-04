@@ -15,13 +15,8 @@ const pbRequestHelper = async (
   input: string,
   team: string[],
   screenshot: string,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) => {
-  if (!interaction.channel)
-    return await replyHandler(getString("errors", "noChannel"), interaction);
-  if (!interaction.guild)
-    return await replyHandler(getString("errors", "noGuild"), interaction);
-
   // Resolve boss metadata to determine value type
   const bossData = Bosses.get(boss);
   const valueType = bossData?.value_type ?? "time";

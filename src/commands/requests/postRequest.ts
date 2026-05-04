@@ -13,9 +13,9 @@ import type { PendingRequest } from "@typings/requestTypes.js";
 export async function postRequest(
   content: string,
   data: PendingRequest,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ): Promise<void> {
-  if (!interaction.channel || !interaction.guild) return;
+  if (!interaction.channel) return;
 
   const logger = getLogger();
   const requestId = interaction.id;

@@ -2,21 +2,15 @@ import type { SplitRequest } from "@typings/requestTypes.js";
 import { postRequest } from "@commands/requests/postRequest.js";
 import { getPoints, getSources } from "@utils/pointSources.js";
 import { buildPlayerPreview } from "@utils/requestPreview.js";
-import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 const splitHelper = async (
   source: string,
   members: GuildMember[],
-  interaction: CommandInteraction,
+  interaction: CommandInteraction<"cached">,
   screenshot: string
 ) => {
-  if (!interaction.channel)
-    return await replyHandler(getString("errors", "noChannel"), interaction);
-  if (!interaction.guild)
-    return await replyHandler(getString("errors", "noGuild"), interaction);
-
   const points = (await getPoints(source, interaction.guild.id)) ?? 0;
   const sources = await getSources(interaction.guild.id);
   const sourceName = sources?.get(source)?.name ?? source;

@@ -1,3 +1,4 @@
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
@@ -5,10 +6,11 @@ import {
   type CommandInteraction,
   type GuildMember,
 } from "discord.js";
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import profileHelper from "./func/profileHelper.js";
 
 @Discord()
+@Guard(RequiresGuild)
 class Profile {
   @Slash({
     name: "profile",
@@ -30,7 +32,7 @@ class Profile {
       type: ApplicationCommandOptionType.String,
     })
     rsn: string | null,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     if (user && rsn) {
       return await replyHandler(

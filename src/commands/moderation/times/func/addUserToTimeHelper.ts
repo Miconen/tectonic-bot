@@ -9,14 +9,8 @@ import type { CommandInteraction, GuildMember } from "discord.js";
 export async function addUserToTimeHelper(
   user: GuildMember,
   boss: string,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) {
-  if (!interaction.guild) {
-    return await replyHandler(getString("errors", "noGuild"), interaction, {
-      ephemeral: true,
-    });
-  }
-
   const params: TeamParam = { type: "boss", boss };
   const res = await Requests.addToTeam(interaction.guild.id, user.id, params);
   if (res.error && res.status === 409) {

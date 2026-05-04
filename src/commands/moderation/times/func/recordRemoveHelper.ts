@@ -1,4 +1,3 @@
-import updateEmbed from "@commands/pb/func/updateEmbed";
 import { Requests } from "@requests/main";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
@@ -7,14 +6,8 @@ import type { CommandInteraction } from "discord.js";
 
 export async function recordRemoveHelper(
   recordIdStr: string,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) {
-  if (!interaction.guild) {
-    return await replyHandler(getString("errors", "noGuild"), interaction, {
-      ephemeral: true,
-    });
-  }
-
   const res = await Requests.removeTimeById(interaction.guild.id, recordIdStr);
 
   if (res.error) {

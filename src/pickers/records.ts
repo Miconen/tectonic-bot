@@ -10,12 +10,7 @@ import type { AutocompleteInteraction } from "discord.js";
  */
 export const recordPicker = withAutocompleteLogging(
   "recordPicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const guild = await getGuild(interaction.guild.id);
     if (!guild || !guild.records) {
       await safeRespond(interaction, []);

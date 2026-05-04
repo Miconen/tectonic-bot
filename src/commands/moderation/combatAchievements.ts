@@ -9,9 +9,10 @@ import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import { caGrantPicker, caRemovePicker } from "pickers/combatAchievements";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 @SlashGroup({
   description: "Manage user combat achievements",
   name: "ca",
@@ -40,11 +41,8 @@ class ModerationCombatAchievements {
       autocomplete: caGrantPicker,
     })
     achievement: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const res = await Requests.giveUserCombatAchievement(
       interaction.guild.id,
       user.id,
@@ -91,11 +89,8 @@ class ModerationCombatAchievements {
       autocomplete: caRemovePicker,
     })
     achievement: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const res = await Requests.removeUserCombatAchievement(
       interaction.guild.id,
       user.id,

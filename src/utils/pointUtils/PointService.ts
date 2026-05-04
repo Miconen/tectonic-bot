@@ -26,10 +26,8 @@ export class PointService implements IPointService {
   async givePoints(
     value: string | number,
     target: GuildMember | Collection<string, GuildMember>,
-    interaction: CommandInteraction | ButtonInteraction
+    interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">
   ) {
-    if (!interaction.guild) return getString("errors", "noGuild");
-
     const points =
       typeof value === "number"
         ? ({ type: "custom" as const, amount: value } as CustomPoints)
@@ -62,7 +60,7 @@ export class PointService implements IPointService {
   private async buildResponses(
     data: PointsResponse[],
     members: Collection<string, GuildMember>,
-    interaction: BaseInteraction
+    interaction: BaseInteraction<"cached">
   ): Promise<string[]> {
     const response: string[] = [];
 
@@ -86,7 +84,7 @@ export class PointService implements IPointService {
   private async buildPointsLine(
     entry: PointsResponse,
     member: GuildMember,
-    interaction: BaseInteraction
+    interaction: BaseInteraction<"cached">
   ): Promise<string> {
     const oldPoints = entry.points - entry.given_points;
     const newPoints = entry.points;

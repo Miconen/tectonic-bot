@@ -10,10 +10,11 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { getBossToa } from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
 class ToaPb {
   @Slash({ name: "toa", description: "Request your new pb to be added" })
   async toa(
@@ -87,7 +88,7 @@ class ToaPb {
       type: ApplicationCommandOptionType.User,
     })
     player8: GuildMember | null,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [
       interaction.user.id,

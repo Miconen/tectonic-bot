@@ -14,11 +14,8 @@ async function submitHandler(
   boss: string,
   input: string,
   team: string[],
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) {
-  if (!interaction.guild) {
-    return getString("errors", "noGuild");
-  }
   const guildId = interaction.guild.id;
   const logger = getLogger();
 

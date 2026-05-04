@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventUpdateHelper } from "./func/eventUpdateHelper";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({
@@ -14,7 +15,7 @@ import { eventUpdateHelper } from "./func/eventUpdateHelper";
   root: "event",
 })
 @SlashGroup("settings", "event")
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 class EventSettings {
   @Slash({ name: "rename", description: "Rename a guild event" })
   async rename(
@@ -33,7 +34,7 @@ class EventSettings {
       type: ApplicationCommandOptionType.String,
     })
     name: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return eventUpdateHelper(event, { name }, interaction);
   }
@@ -57,7 +58,7 @@ class EventSettings {
       maxValue: 3,
     })
     position_cutoff: number,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return eventUpdateHelper(event, { position_cutoff }, interaction);
   }
@@ -82,7 +83,7 @@ class EventSettings {
       type: ApplicationCommandOptionType.Boolean,
     })
     solo: boolean,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return eventUpdateHelper(event, { solo }, interaction);
   }

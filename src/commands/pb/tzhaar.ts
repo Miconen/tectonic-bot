@@ -15,10 +15,11 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
 class TzhaarPb {
   @Slash({ name: "tzhaar", description: "Request your new pb to be added" })
   async tzhaar(
@@ -44,7 +45,7 @@ class TzhaarPb {
       type: ApplicationCommandOptionType.Attachment,
     })
     screenshot: Attachment,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [interaction.user.id];
 

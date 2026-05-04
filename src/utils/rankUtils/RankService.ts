@@ -87,7 +87,7 @@ export class RankService implements IRankService {
   }
 
   async rankUpHandler(
-    interaction: BaseInteraction,
+    interaction: BaseInteraction<"cached">,
     target: GuildMember,
     oldPoints: number,
     newPoints: number
@@ -133,11 +133,10 @@ export class RankService implements IRankService {
   }
 
   async addRole(
-    interaction: BaseInteraction,
+    interaction: BaseInteraction<"cached">,
     target: GuildMember,
     roleName: string
   ) {
-    if (!interaction.guild) return;
     const role = this.getRole(interaction.guild, roleName);
     if (role === undefined) return;
     this.logger.info(

@@ -1,6 +1,4 @@
 import { combatAchievementPicker } from "@pickers/combatAchievements";
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import {
   ApplicationCommandOptionType,
   type Attachment,
@@ -10,9 +8,10 @@ import {
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import caHelper from "./func/caHelper.js";
 import IsActivated from "@guards/IsActivated.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
-@Guard(IsActivated())
+@Guard(IsActivated(), RequiresGuild)
 class CombatAchievement {
   @Slash({
     name: "ca",
@@ -76,11 +75,8 @@ class CombatAchievement {
       type: ApplicationCommandOptionType.User,
     })
     player7: GuildMember | undefined,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const invoker = interaction.member as GuildMember;
     const members = [
       invoker,

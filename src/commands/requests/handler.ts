@@ -12,6 +12,7 @@ import {
 import { ButtonComponent, Discord, Guard, Slash, SlashOption } from "discordx";
 import { pendingRequests } from "./state.js";
 import { getStrategy } from "./strategies/strategies.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 function autocompleter(interaction: AutocompleteInteraction) {
   const options = Array.from(pendingRequests.entries()).map(([id, data]) => ({
@@ -22,7 +23,7 @@ function autocompleter(interaction: AutocompleteInteraction) {
 }
 
 async function editUserMessage(
-  interaction: ButtonInteraction | CommandInteraction,
+  interaction: ButtonInteraction<"cached"> | CommandInteraction<"cached">,
   channelId: string,
   messageId: string,
   content: string
@@ -38,7 +39,7 @@ async function editUserMessage(
 }
 
 async function deleteModMessage(
-  interaction: ButtonInteraction | CommandInteraction,
+  interaction: ButtonInteraction<"cached"> | CommandInteraction<"cached">,
   modChannel?: string,
   modMessage?: string
 ) {
@@ -65,7 +66,7 @@ function messageLink(guildId: string, channelId: string, messageId: string) {
 }
 
 async function handleAccept(
-  interaction: ButtonInteraction | CommandInteraction,
+  interaction: ButtonInteraction<"cached"> | CommandInteraction<"cached">,
   requestId: string
 ) {
   const data = pendingRequests.get(requestId);
@@ -106,7 +107,7 @@ async function handleAccept(
 }
 
 async function handleDeny(
-  interaction: ButtonInteraction | CommandInteraction,
+  interaction: ButtonInteraction<"cached"> | CommandInteraction<"cached">,
   requestId: string
 ) {
   const data = pendingRequests.get(requestId);
@@ -144,17 +145,18 @@ async function handleDeny(
 }
 
 @Discord()
+@Guard(RequiresGuild)
 class RequestHandler {
   @Guard(IsAdmin)
   @ButtonComponent({ id: /^requestAccept-/ })
-  async buttonAccept(interaction: ButtonInteraction) {
+  async buttonAccept(interaction: ButtonInteraction<"cached">) {
     const requestId = interaction.customId.replace("requestAccept-", "");
     return handleAccept(interaction, requestId);
   }
 
   @Guard(IsAdmin)
   @ButtonComponent({ id: /^requestDeny-/ })
-  async buttonDeny(interaction: ButtonInteraction) {
+  async buttonDeny(interaction: ButtonInteraction<"cached">) {
     const requestId = interaction.customId.replace("requestDeny-", "");
     return handleDeny(interaction, requestId);
   }
@@ -170,7 +172,7 @@ class RequestHandler {
       autocomplete: autocompleter,
     })
     id: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return handleAccept(interaction, id);
   }
@@ -186,7 +188,7 @@ class RequestHandler {
       autocomplete: autocompleter,
     })
     id: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return handleDeny(interaction, id);
   }

@@ -6,12 +6,7 @@ import type { AutocompleteInteraction } from "discord.js";
 
 export const guildRankPicker = withAutocompleteLogging(
   "guildRankPicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const res = await Requests.getGuildRanks(interaction.guild.id);
     if (res.error || !res.data) {
       await safeRespond(interaction, []);

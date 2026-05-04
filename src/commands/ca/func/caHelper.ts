@@ -11,14 +11,9 @@ import type { CommandInteraction, GuildMember } from "discord.js";
 const caHelper = async (
   caName: string,
   members: GuildMember[],
-  interaction: CommandInteraction,
+  interaction: CommandInteraction<"cached">,
   screenshot: string
 ) => {
-  if (!interaction.channel)
-    return await replyHandler(getString("errors", "noChannel"), interaction);
-  if (!interaction.guild)
-    return await replyHandler(getString("errors", "noGuild"), interaction);
-
   const userIds = members.map((m) => m.id);
 
   const usersRes = await Requests.getUsers(interaction.guild.id, {

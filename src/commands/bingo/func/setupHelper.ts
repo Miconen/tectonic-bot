@@ -27,14 +27,9 @@ export async function setupHelper(
   competitionId: number,
   textChannels: number,
   voiceChannels: number,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) {
   const logger = getLogger();
-
-  if (!interaction.guild) {
-    return await replyHandler(getString("errors", "noGuild"), interaction);
-  }
-
   const guild = interaction.guild;
 
   // 1. Fetch competition from WOM

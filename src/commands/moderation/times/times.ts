@@ -11,6 +11,7 @@ import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
 import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 import { recordRemoveHelper } from "./func/recordRemoveHelper";
 import initializeHelper from "@commands/moderation/times/func/initializeHelper";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({
@@ -19,7 +20,7 @@ import initializeHelper from "@commands/moderation/times/func/initializeHelper";
   root: "moderation",
 })
 @SlashGroup("times", "moderation")
-@Guard(IsAdmin)
+@Guard(RequiresGuild, IsAdmin)
 class Times {
   @Slash({ name: "remove", description: "Remove a specific record" })
   async remove(
@@ -31,7 +32,7 @@ class Times {
       autocomplete: recordPicker,
     })
     recordId: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     await recordRemoveHelper(recordId, interaction);
@@ -54,7 +55,7 @@ class Times {
       autocomplete: bossTimePicker,
     })
     boss: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     await addUserToTimeHelper(user, boss, interaction);
@@ -80,7 +81,7 @@ class Times {
       autocomplete: bossTimePicker,
     })
     boss: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     await removeUserFromTimeHelper(user, boss, interaction);
@@ -91,7 +92,7 @@ class Times {
     description: "Initialize a channel for pb embeds",
   })
   @Guard(IsAdmin)
-  async initialize(interaction: CommandInteraction) {
+  async initialize(interaction: CommandInteraction<"cached">) {
     await initializeHelper(interaction);
   }
 }

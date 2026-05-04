@@ -9,15 +9,10 @@ import buildCategoryEmbed, {
 } from "./embedHelpers.js";
 import { replyHandler } from "@utils/replyHandler.js";
 
-async function updateEmbed(boss: string, interaction: CommandInteraction) {
-  if (!interaction.guild) {
-    await interaction.reply({
-      content: getString("errors", "noGuild"),
-      ephemeral: true,
-    });
-    return false;
-  }
-
+async function updateEmbed(
+  boss: string,
+  interaction: CommandInteraction<"cached">
+) {
   const res = await Requests.getGuildTimes(interaction.guild.id);
 
   if (res.error) {

@@ -7,14 +7,9 @@ import type { CommandInteraction, GuildMember } from "discord.js";
 
 export const removeAchievementHelper = async (
   user: GuildMember,
-  interaction: CommandInteraction,
+  interaction: CommandInteraction<"cached">,
   achievement: string
 ) => {
-  if (!interaction.guild)
-    return await replyHandler(getString("errors", "noGuild"), interaction, {
-      ephemeral: true,
-    });
-
   const params: AchievementParam = {
     achievement,
     guild_id: interaction.guild.id,

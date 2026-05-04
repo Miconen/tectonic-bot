@@ -152,7 +152,7 @@ function parseTime(timeString: string): ParseTimeResult | ParseTimeErrorObject {
 }
 
 function IsValidTime(option: string) {
-  const guard: GuardFunction<ChatInputCommandInteraction> = async (
+  const guard: GuardFunction<ChatInputCommandInteraction<"cached">> = async (
     interaction,
     _,
     next

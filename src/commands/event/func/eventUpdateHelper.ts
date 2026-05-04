@@ -8,15 +8,8 @@ import type { CommandInteraction } from "discord.js";
 export async function eventUpdateHelper(
   event: string,
   params: EventUpdateParam,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) {
-  if (!interaction.guild) {
-    await replyHandler(getString("errors", "noGuild"), interaction, {
-      ephemeral: true,
-    });
-    return;
-  }
-
   if (!params.position_cutoff && !params.name && params.solo === undefined) {
     await replyHandler(getString("errors", "noEvents"), interaction, {
       ephemeral: true,
