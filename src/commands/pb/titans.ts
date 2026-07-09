@@ -10,11 +10,12 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import getBoss from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
-class royaltitanspb {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class RoyalTitansPb {
   @Slash({ name: "titans", description: "Request your new pb to be added" })
   async titans(
     @SlashOption({
@@ -38,7 +39,7 @@ class royaltitanspb {
       type: ApplicationCommandOptionType.User,
     })
     player2: GuildMember,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [interaction.user.id, player2.user.id].filter(notEmpty);
 

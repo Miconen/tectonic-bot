@@ -5,7 +5,7 @@ import { caStrategy } from "./ca";
 import { pbStrategy } from "./pb";
 import { splitStrategy } from "./split";
 
-type Interaction = ButtonInteraction | CommandInteraction;
+type Interaction = ButtonInteraction<"cached"> | CommandInteraction<"cached">;
 
 export interface RequestStrategy<T extends BaseRequest> {
   accept(interaction: Interaction, data: T): Promise<string | string[]>;

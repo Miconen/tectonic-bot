@@ -8,23 +8,9 @@ import { getString } from "@utils/stringRepo";
 
 async function womHelper(
   competitionId: number,
-  interaction: CommandInteraction,
+  interaction: CommandInteraction<"cached">,
   cutoff: number
 ) {
-  if (!interaction.guild) {
-    await replyHandler(getString("errors", "noGuild"), interaction, {
-      ephemeral: true,
-    });
-    return;
-  }
-
-  if (!interaction.member) {
-    await replyHandler(getString("errors", "noMember"), interaction, {
-      ephemeral: true,
-    });
-    return;
-  }
-
   interaction.deferReply();
   const member = interaction.member as GuildMember;
 

@@ -1,5 +1,5 @@
 import IsActivated from "@guards/IsActivated.js";
-import IsValidTime from "@guards/IsValidTime.js";
+import { replyHandler } from "@utils/replyHandler.js";
 import {
   ApplicationCommandOptionType,
   type Attachment,
@@ -16,12 +16,13 @@ import {
 import bossCategories from "./func/getBosses.js";
 import { Bosses } from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import { replyHandler } from "@utils/replyHandler.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
+import IsValidTime from "@guards/IsValidTime.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsActivated())
-class varlamorepb {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class VarlamorePb {
   @Slash({ name: "varlamore", description: "Request your new pb to be added" })
   async varlamore(
     @SlashChoice(...bossCategories.Varlamore)
@@ -46,7 +47,7 @@ class varlamorepb {
       type: ApplicationCommandOptionType.Attachment,
     })
     screenshot: Attachment,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [interaction.user.id];
     const bossData = Bosses.get(boss);

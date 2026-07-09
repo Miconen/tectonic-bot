@@ -10,11 +10,12 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { getBossCox } from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
-class coxpb {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class CoxPb {
   @Slash({ name: "cox", description: "Request your new pb to be added" })
   async cox(
     @SlashOption({
@@ -80,7 +81,7 @@ class coxpb {
       type: ApplicationCommandOptionType.User,
     })
     player8: GuildMember | null,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [
       interaction.user.id,

@@ -5,10 +5,12 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { setupHelper } from "./func/setupHelper";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({ description: "Guild bingo information", name: "bingo" })
 @SlashGroup("bingo")
+@Guard(RequiresGuild)
 class Bingo {
   @Slash({
     name: "setup",
@@ -41,7 +43,7 @@ class Bingo {
       maxValue: 3,
     })
     voiceChannels: number | undefined,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     return setupHelper(

@@ -9,14 +9,7 @@ import { formatGuildTimesForEmbeds } from "@utils/guilds.js";
 import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, TextChannel } from "discord.js";
 
-async function initializeHelper(interaction: CommandInteraction) {
-  if (!interaction.guild) {
-    await interaction.reply({
-      content: getString("errors", "noGuild"),
-      ephemeral: true,
-    });
-    return;
-  }
+async function initializeHelper(interaction: CommandInteraction<"cached">) {
   await interaction.deferReply({ ephemeral: true });
   await interaction.editReply({
     content: getString("times", "fetchingGuildData"),

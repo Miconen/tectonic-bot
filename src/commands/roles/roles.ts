@@ -24,7 +24,7 @@
 // 			type: ApplicationCommandOptionType.Number,
 // 		})
 // 		wid: number,
-// 		interaction: CommandInteraction,
+// 		interaction: CommandInteraction<'cached'>,
 // 	) {
 // 		await womTeamHelper(wid, interaction);
 // 	}

@@ -11,6 +11,7 @@ import { winnerTeamHelper } from "./func/winnerTeamHelper";
 import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({
@@ -19,7 +20,7 @@ import { getString } from "@utils/stringRepo.js";
   root: "event",
 })
 @SlashGroup("create", "event")
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 class EventCreate {
   @Slash({ name: "team", description: "Reward team event winners" })
   async team(
@@ -54,7 +55,7 @@ class EventCreate {
     team1: string,
     team2: string | undefined,
     team3: string | undefined,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team_names = [team1, team2, team3].filter(notEmpty);
     return winnerTeamHelper(interaction, competitionId, team_names);
@@ -77,7 +78,7 @@ class EventCreate {
     })
     competitionId: number,
     top: number | undefined,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return winnerHelper(interaction, competitionId, top);
   }
@@ -101,11 +102,8 @@ class EventCreate {
       type: ApplicationCommandOptionType.String,
     })
     winners: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     await interaction.deferReply({ ephemeral: true });
 
     const userIds = winners

@@ -15,11 +15,12 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
-class slayerpb {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class SlayerPb {
   @Slash({ name: "slayer", description: "Request your new pb to be added" })
   async slayer(
     @SlashChoice(...bossCategories["Slayer Boss"])
@@ -44,7 +45,7 @@ class slayerpb {
       type: ApplicationCommandOptionType.Attachment,
     })
     screenshot: Attachment,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [interaction.user.id];
 

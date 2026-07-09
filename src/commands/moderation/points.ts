@@ -8,9 +8,10 @@ import { pointSourcePicker } from "@pickers/pointSources";
 import { getString } from "@utils/stringRepo.js";
 import womHelper from "./func/womHelper.js";
 import { replyHandler } from "@utils/replyHandler.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 @SlashGroup({
   description: "Manage user points",
   name: "points",
@@ -34,7 +35,7 @@ class Points {
       type: ApplicationCommandOptionType.Number,
     })
     addedPoints: number,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     const res = await giveHelper(target, addedPoints, interaction);
@@ -61,7 +62,7 @@ class Points {
       autocomplete: pointSourcePicker,
     })
     source: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     const res = await giveHelper(target, source, interaction);
@@ -80,7 +81,7 @@ class Points {
       type: ApplicationCommandOptionType.Number,
     })
     multiplier: number,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await interaction.deferReply();
     return multiplierHelper(multiplier, interaction);
@@ -103,11 +104,8 @@ class Points {
       autocomplete: pointSourcePicker,
     })
     source: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await interaction.reply(getString("errors", "noGuild"));
-
     await interaction.deferReply();
     await interaction.guild.members.fetch();
 
@@ -134,11 +132,8 @@ class Points {
       type: ApplicationCommandOptionType.Number,
     })
     addedPoints: number,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await interaction.reply(getString("errors", "noGuild"));
-
     await interaction.deferReply();
     await interaction.guild.members.fetch();
 
@@ -162,7 +157,7 @@ class Points {
     })
     competitionId: number,
     cutoff: number,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     await womHelper(competitionId, interaction, cutoff);
   }

@@ -4,24 +4,10 @@ import { getString } from "@utils/stringRepo";
 import type { CommandInteraction } from "discord.js";
 
 export async function winnerHelper(
-  interaction: CommandInteraction,
+  interaction: CommandInteraction<"cached">,
   competitionId: number,
   top = 3
 ) {
-  if (!interaction.guild) {
-    await replyHandler(getString("errors", "noGuild"), interaction, {
-      ephemeral: true,
-    });
-    return;
-  }
-
-  if (!interaction.member) {
-    await replyHandler(getString("errors", "noMember"), interaction, {
-      ephemeral: true,
-    });
-    return;
-  }
-
   const res = await Requests.eventWinners(interaction.guild.id, {
     type: "individual",
     competition: competitionId,

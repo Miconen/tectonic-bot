@@ -9,10 +9,11 @@ import IsAdmin from "@guards/IsAdmin.js";
 import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup("moderation")
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 class ModChannel {
   @Slash({
     name: "modchannel",
@@ -27,11 +28,8 @@ class ModChannel {
       channelTypes: [ChannelType.GuildText],
     })
     channel: TextChannel,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const res = await Requests.updateGuild(interaction.guild.id, {
       mod_channel_id: channel.id,
     });
@@ -49,6 +47,43 @@ class ModChannel {
 
     return await replyHandler(
       getString("moderation", "modChannelSet", { channel: `<#${channel.id}>` }),
+      interaction,
+      { ephemeral: true }
+    );
+  }
+
+  @Slash({
+    name: "logchannel",
+    description: "Set the logging channel",
+  })
+  async logchannel(
+    @SlashOption({
+      name: "channel",
+      description: "Channel for logging",
+      required: true,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText],
+    })
+    channel: TextChannel,
+    interaction: CommandInteraction<"cached">
+  ) {
+    const res = await Requests.updateGuild(interaction.guild.id, {
+      log_channel_id: channel.id,
+    });
+
+    if (res.error) {
+      return await replyHandler(
+        getString("errors", "apiError", {
+          activity: "setting logging channel",
+          error: res.message,
+        }),
+        interaction,
+        { ephemeral: true }
+      );
+    }
+
+    return await replyHandler(
+      getString("moderation", "logChannelSet", { channel: `<#${channel.id}>` }),
       interaction,
       { ephemeral: true }
     );

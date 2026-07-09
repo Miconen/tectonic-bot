@@ -5,12 +5,7 @@ import type { AutocompleteInteraction } from "discord.js";
 
 export const pointSourcePicker = withAutocompleteLogging(
   "pointSourcePicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const sources = await getSources(interaction.guild.id);
     if (!sources) return;
 

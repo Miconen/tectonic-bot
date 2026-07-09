@@ -15,11 +15,12 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
-class dt2pb {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class Dt2Pb {
   @Slash({
     name: "dt2",
     description: "Request your new pb to be added",
@@ -47,7 +48,7 @@ class dt2pb {
       type: ApplicationCommandOptionType.Attachment,
     })
     screenshot: Attachment,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [interaction.user.id];
 

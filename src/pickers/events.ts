@@ -5,12 +5,7 @@ import type { AutocompleteInteraction } from "discord.js";
 
 export const eventPicker = withAutocompleteLogging(
   "eventPicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const events = await getEvents(interaction.guild.id);
     if (!events) {
       await safeRespond(interaction, []);

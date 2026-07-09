@@ -3,13 +3,15 @@ import {
   ApplicationCommandOptionType,
   type CommandInteraction,
 } from "discord.js";
-import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventInfoHelper } from "./func/eventInfoHelper";
 import { eventRemoveHelper } from "./func/eventRemover";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({ description: "Guild event information", name: "event" })
 @SlashGroup("event")
+@Guard(RequiresGuild)
 class EventInfo {
   @Slash({ name: "info", description: "Get information about a past event" })
   async info(
@@ -21,7 +23,7 @@ class EventInfo {
       autocomplete: eventPicker,
     })
     event: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return eventInfoHelper(event, interaction);
   }
@@ -36,7 +38,7 @@ class EventInfo {
       autocomplete: eventPicker,
     })
     event: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     return eventRemoveHelper(event, interaction);
   }

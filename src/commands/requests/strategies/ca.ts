@@ -8,8 +8,6 @@ import { formatDisplayName } from "@utils/formatDisplayName";
 
 export const caStrategy: RequestStrategy<CaRequest> = {
   async accept(interaction, data) {
-    if (!interaction.guild) return getString("errors", "noGuild");
-
     const rankService = container.resolve<IRankService>("RankService");
 
     const res = await Requests.completeCombatAchievement(

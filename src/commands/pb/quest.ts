@@ -15,11 +15,12 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
-class quest {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class Quest {
   @Slash({ name: "quest", description: "Request your new pb to be added" })
   async quest(
     @SlashChoice(...bossCategories["Quest Bosses"])
@@ -44,7 +45,7 @@ class quest {
       type: ApplicationCommandOptionType.Attachment,
     })
     screenshot: Attachment,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [interaction.user.id];
 

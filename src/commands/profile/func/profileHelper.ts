@@ -11,9 +11,8 @@ import { formatPlacement } from "@utils/formatEventPlacement";
 const pointsHelper = async (
   member: GuildMember | null,
   rsn: string | null,
-  interaction: CommandInteraction
+  interaction: CommandInteraction<"cached">
 ) => {
-  if (!interaction.guild) return getString("errors", "noGuild");
   const guildId = interaction.guild.id;
 
   const rankService = container.resolve<IRankService>("RankService");

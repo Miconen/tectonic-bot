@@ -3,11 +3,7 @@ import { replyHandler } from "@utils/replyHandler";
 import { formatDisplayName } from "@utils/formatDisplayName";
 import type { CommandInteraction } from "discord.js";
 
-const ranksHelp = async (interaction: CommandInteraction) => {
-  if (!interaction.guild) {
-    return await replyHandler("Must be used in a guild.", interaction);
-  }
-
+const ranksHelp = async (interaction: CommandInteraction<"cached">) => {
   const res = await Requests.getGuildRanks(interaction.guild.id);
 
   if (res.error || !res.data || res.data.length === 0) {

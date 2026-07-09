@@ -6,12 +6,7 @@ import type { AutocompleteInteraction } from "discord.js";
 
 export const bossTimePicker = withAutocompleteLogging(
   "bossTimePicker",
-  async (interaction: AutocompleteInteraction): Promise<void> => {
-    if (!interaction.guild?.id) {
-      await safeRespond(interaction, []);
-      return;
-    }
-
+  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
     const search = interaction.options.get("boss")?.value;
     if (search === undefined || typeof search !== "string") {
       await safeRespond(interaction, []);

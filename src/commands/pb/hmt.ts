@@ -10,11 +10,12 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import getBoss from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
-@Guard(IsValidTime("time"), IsActivated())
-class hmtpb {
+@Guard(RequiresGuild, IsValidTime("time"), IsActivated())
+class HmtPb {
   @Slash({ name: "hmt", description: "Request your new pb to be added" })
   async hmt(
     @SlashOption({
@@ -59,7 +60,7 @@ class hmtpb {
       type: ApplicationCommandOptionType.User,
     })
     player5: GuildMember | null,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
     const team = [
       interaction.user.id,

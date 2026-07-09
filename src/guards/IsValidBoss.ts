@@ -10,7 +10,7 @@ async function getValidBossNames(guild_id: string): Promise<string[]> {
   return guild?.bosses.map((b) => b.name);
 }
 
-export const IsValidBoss: GuardFunction<CommandInteraction> = async (
+export const IsValidBoss: GuardFunction<CommandInteraction<"cached">> = async (
   interaction,
   _client,
   next

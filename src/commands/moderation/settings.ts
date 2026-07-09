@@ -7,9 +7,10 @@ import IsAdmin from "@guards/IsAdmin.js";
 import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
+import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
-@Guard(IsAdmin)
+@Guard(IsAdmin, RequiresGuild)
 @SlashGroup({
   description: "Manage guild settings",
   name: "settings",
@@ -32,11 +33,8 @@ class ModerationSettings {
       maxValue: 10,
     })
     count: number,
-    interaction: CommandInteraction
+    interaction: CommandInteraction<"cached">
   ) {
-    if (!interaction.guild)
-      return await replyHandler(getString("errors", "noGuild"), interaction);
-
     const res = await Requests.updateGuild(interaction.guild.id, {
       position_count: count,
     });

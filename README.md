@@ -3,7 +3,7 @@
 ## Branches
 
 - **main**: Deployed version of the bot (Autodeploy)
-- **develop**: Special development branch that gets deleted after merging (Autodeploy) 
+- **develop**: Special development branch that gets deleted after merging (Autodeploy)
 - **feature/{name}**: Feature branches that do not get autodeployed
 
 **[All planned features and ideas can be found here.](https://github.com/Miconen/tectonic-bot/projects/1)**
@@ -12,15 +12,15 @@
 
 1. [Introduction](#introduction)
 2. [Usage](#usage)
-    1. [Points](#points)
-    2. [Commands](#commands)
-    3. [Moderation Commands](#modcommands)
-    4. [Handling users](#newusers)
+   1. [Points](#points)
+   2. [Commands](#commands)
+   3. [Moderation Commands](#modcommands)
+   4. [Handling users](#newusers)
 3. [Installation](#installation)
-    1. [Initial setup](#installation__initialsetup)
-    2. [Project folder](#installation__projectfolder)
-    3. [Docker & MySql](#installation__docker&mysql)
-    4. [Installation issues](#installation__issues)
+   1. [Initial setup](#installation__initialsetup)
+   2. [Project folder](#installation__projectfolder)
+   3. [Docker & MySql](#installation__docker&mysql)
+   4. [Installation issues](#installation__issues)
 
 ## Introduction<a name="introduction"></a>
 
@@ -44,18 +44,18 @@ Ranks info command:
 
 Currently, we give points out like so.
 
--   Splits
-    -   Low value: 10
-    -   Medium value: 20
-    -   High value: 30
--   Events
-    -   Participation: 5
-    -   Hosting: 10
--   Learners
-    -   Half: 5
-    -   Full: 10
--   Forum
-    -   Bumping: 5
+- Splits
+  - Low value: 10
+  - Medium value: 20
+  - High value: 30
+- Events
+  - Participation: 5
+  - Hosting: 10
+- Learners
+  - Half: 5
+  - Full: 10
+- Forum
+  - Bumping: 5
 
 ### User Commands<a name="commands"></a>
 
@@ -217,10 +217,10 @@ Checking if a particular user is activated or not can be done with /checkstatus 
 
 ### Requirements:<a name="installation__requirements"></a>
 
--   [Node.js Version >= 16.6.0](https://nodejs.org/en/)
--   [TypeScript Version >= 4.4.4](https://www.npmjs.com/package/typescript)
--   [Discord Bot](https://discord.com/developers/applications)
--   [Docker](https://www.docker.com/)
+- [Node.js Version >= 20.0.0](https://nodejs.org/en/)
+- [TypeScript Version >= 5.9.0](https://www.npmjs.com/package/typescript)
+- [Discord Bot](https://discord.com/developers/applications)
+- [Docker](https://www.docker.com/)
 
 ### Beginner friendly guide
 

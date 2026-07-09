@@ -4,18 +4,18 @@ import type { CommandInteraction } from "discord.js";
 import type { GuardFunction } from "discordx";
 import { checkHealth } from "health/healthcheck";
 
-export const IsHealthy: GuardFunction<CommandInteraction> = async (
-	interaction,
-	_,
-	next,
+export const IsHealthy: GuardFunction<CommandInteraction<"cached">> = async (
+  interaction,
+  _,
+  next
 ) => {
-	const healthy = await checkHealth();
+  const healthy = await checkHealth();
 
-	if (!healthy) {
-		return await replyHandler(getString("errors", "apiHealth"), interaction, {
-			ephemeral: true,
-		});
-	}
+  if (!healthy) {
+    return await replyHandler(getString("errors", "apiHealth"), interaction, {
+      ephemeral: true,
+    });
+  }
 
-	return await next();
+  return await next();
 };
