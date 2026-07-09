@@ -5,6 +5,7 @@ export type Guild = {
   multiplier: number;
   pb_channel_id: string | undefined;
   mod_channel_id: string | undefined;
+  log_channel_id: string | undefined;
   position_count: number;
 };
 
