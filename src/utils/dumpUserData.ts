@@ -11,7 +11,8 @@ export async function dumpUserData(
   client: Client,
   guildId: string,
   userId: string,
-  user: DetailedUser
+  user: DetailedUser,
+  reason: string
 ): Promise<void> {
   const guildRes = await Requests.getGuild(guildId);
   if (guildRes.error) {
@@ -38,7 +39,7 @@ export async function dumpUserData(
   });
 
   await channel.send({
-    content: `Dumping data for departing member <@${userId}> (\`${userId}\`) before removal.`,
+    content: `Dumping data of member before removal.  <@${userId}> (\`${userId}\`) Reason: ${reason}`,
     files: [file],
   });
 }

@@ -20,7 +20,13 @@ class RemoveOnLeave {
 
     if (!res.error && res.data) {
       try {
-        await dumpUserData(member.client, guildId, userId, res.data);
+        await dumpUserData(
+          member.client,
+          guildId,
+          userId,
+          res.data,
+          "Leaving Server"
+        );
       } catch (e) {
         logger.warn(
           { err: e, userId, guildId },
