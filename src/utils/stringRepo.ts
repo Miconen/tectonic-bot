@@ -199,6 +199,8 @@ const strings: StringRepository = {
       `Successfully removed record \`#${args.recordId}\`.`,
     modChannelSet: (args) =>
       `✔ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
+    logChannelSet: (args) =>
+      `✔ Logging channel set to ${args.channel}. Log messages will be sent there.`,
   },
 
   times: {

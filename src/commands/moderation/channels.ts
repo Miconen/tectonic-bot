@@ -51,4 +51,41 @@ class ModChannel {
       { ephemeral: true }
     );
   }
+
+  @Slash({
+    name: "logchannel",
+    description: "Set the logging channel",
+  })
+  async logchannel(
+    @SlashOption({
+      name: "channel",
+      description: "Channel for logging",
+      required: true,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText],
+    })
+    channel: TextChannel,
+    interaction: CommandInteraction<"cached">
+  ) {
+    const res = await Requests.updateGuild(interaction.guild.id, {
+      log_channel_id: channel.id,
+    });
+
+    if (res.error) {
+      return await replyHandler(
+        getString("errors", "apiError", {
+          activity: "setting logging channel",
+          error: res.message,
+        }),
+        interaction,
+        { ephemeral: true }
+      );
+    }
+
+    return await replyHandler(
+      getString("moderation", "logChannelSet", { channel: `<#${channel.id}>` }),
+      interaction,
+      { ephemeral: true }
+    );
+  }
 }

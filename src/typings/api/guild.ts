@@ -21,6 +21,7 @@ export type PbUpdate = {
 export type GuildUpdate = {
   multiplier?: number;
   mod_channel_id?: string;
+  log_channel_id?: string;
   pb_update?: PbUpdate;
   position_count?: number;
 };
