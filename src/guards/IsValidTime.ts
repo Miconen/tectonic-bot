@@ -169,9 +169,11 @@ function IsValidTime(option: string) {
     logger.debug("Checking time validity");
 
     if (typeof timeString !== "string") {
-      logger.info(
+      logger.error(
         { timeStringType },
-        "Invalid parameter type, expected a string"
+        getString("validation", "expectedStringParameter", {
+          type: typeof timeString,
+        })
       );
       return;
     }
