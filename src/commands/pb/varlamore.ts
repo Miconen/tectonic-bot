@@ -34,7 +34,7 @@ class VarlamorePb {
     })
     boss: string,
     @SlashOption({
-      name: "value",
+      name: "time",
       description: "Time (e.g. 1:23.45) or depth value (e.g. 450)",
       required: true,
       type: ApplicationCommandOptionType.String,
