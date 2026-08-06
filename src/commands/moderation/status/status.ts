@@ -1,12 +1,12 @@
-import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
+import IsAdmin from "@guards/IsAdmin.js";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import activationHelper from "./func/activationHelper.js";
 import deactivationHelper from "./func/deactivationHelper.js";
-import IsAdmin from "@guards/IsAdmin.js";
 
 @Discord()
 @Guard(IsAdmin)

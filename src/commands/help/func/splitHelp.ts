@@ -1,8 +1,8 @@
 import type { CommandInteraction } from "discord.js";
 
-import { getString } from "@utils/stringRepo";
-import { replyHandler } from "@utils/replyHandler";
 import { getPoints } from "@utils/pointSources";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
 
 const splitHelp = async (interaction: CommandInteraction<"cached">) => {
 	await replyHandler(

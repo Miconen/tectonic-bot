@@ -1,15 +1,16 @@
+import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild";
+import { Requests } from "@requests/main.js";
+import { formatDisplayName } from "@utils/formatDisplayName.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "@guards/IsAdmin.js";
-import { Requests } from "@requests/main.js";
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
-import { formatDisplayName } from "@utils/formatDisplayName.js";
 import { guildRankPicker } from "pickers/guildRanks";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)
@@ -25,7 +26,7 @@ class ModerationRanks {
 		description: "List all rank tiers for this guild",
 	})
 	async list(interaction: CommandInteraction<"cached">) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		const res = await Requests.getGuildRanks(interaction.guild.id);
 		if (res.error) {
@@ -35,14 +36,14 @@ class ModerationRanks {
 					error: res.message,
 				}),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 
 		const ranks = res.data;
 		if (!ranks || ranks.length === 0) {
 			return await replyHandler("No rank tiers configured.", interaction, {
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 
@@ -58,7 +59,7 @@ class ModerationRanks {
 		}
 
 		return await replyHandler(lines.join("\n"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 

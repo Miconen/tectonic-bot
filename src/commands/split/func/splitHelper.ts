@@ -1,5 +1,5 @@
-import type { SplitRequest } from "@typings/requestTypes.js";
 import { postRequest } from "@commands/requests/postRequest.js";
+import type { SplitRequest } from "@typings/requestTypes.js";
 import { getPoints, getSources } from "@utils/pointSources.js";
 import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { getString } from "@utils/stringRepo.js";

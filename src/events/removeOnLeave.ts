@@ -1,7 +1,7 @@
-import { Discord, On, type ArgsOf } from "discordx";
-import { Requests } from "@requests/main";
 import { getLogger } from "@logging/context";
+import { Requests } from "@requests/main";
 import { dumpUserData } from "@utils/dumpUserData";
+import { type ArgsOf, Discord, On } from "discordx";
 
 @Discord()
 class RemoveOnLeave {

@@ -1,18 +1,19 @@
 import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import { formatTimeAgo } from "@utils/timeFormatter.js";
 import {
 	ApplicationCommandOptionType,
-	ButtonInteraction,
 	type AutocompleteInteraction,
+	ButtonInteraction,
 	type CommandInteraction,
 	type TextChannel,
+	MessageFlags,
 } from "discord.js";
 import { ButtonComponent, Discord, Guard, Slash, SlashOption } from "discordx";
 import { pendingRequests } from "./state.js";
 import { getStrategy } from "./strategies/strategies.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 function autocompleter(interaction: AutocompleteInteraction) {
 	const options = Array.from(pendingRequests.entries()).map(([id, data]) => ({
@@ -74,12 +75,12 @@ async function handleAccept(
 		return await replyHandler(
 			getString("errors", "internalError"),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 
 	if (!interaction.deferred && !interaction.replied) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 	}
 
 	// Delete mod message if exists
@@ -102,7 +103,7 @@ async function handleAccept(
 		data.message,
 	);
 	await interaction.editReply({
-		content: `✔ Request approved. [Jump to message](${link})`,
+		content: `√ Request approved. [Jump to message](${link})`,
 	});
 }
 
@@ -115,12 +116,12 @@ async function handleDeny(
 		return await replyHandler(
 			getString("errors", "internalError"),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 
 	if (!interaction.deferred && !interaction.replied) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 	}
 
 	// Delete mod message if exists

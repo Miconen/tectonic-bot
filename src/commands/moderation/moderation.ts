@@ -1,8 +1,8 @@
+import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import type { CommandInteraction } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup } from "discordx";
-import IsAdmin from "@guards/IsAdmin.js";
 import startHelper from "./func/startHelper.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)

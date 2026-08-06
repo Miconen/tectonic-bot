@@ -1,3 +1,5 @@
+import IsActivated from "@guards/IsActivated.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import {
 	ApplicationCommandOptionType,
 	type Attachment,
@@ -6,8 +8,6 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
 import splitHelper from "./func/splitHelper.js";
-import IsActivated from "@guards/IsActivated.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @Guard(RequiresGuild, IsActivated())

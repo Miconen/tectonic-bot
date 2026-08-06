@@ -3,6 +3,7 @@ import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
@@ -41,7 +42,7 @@ class Profile {
 					param2: "rsn",
 				}),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 

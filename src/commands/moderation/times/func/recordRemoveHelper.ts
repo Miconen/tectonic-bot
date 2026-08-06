@@ -2,7 +2,7 @@ import { Requests } from "@requests/main";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction } from "discord.js";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 
 export async function recordRemoveHelper(
 	recordIdStr: string,
@@ -17,13 +17,13 @@ export async function recordRemoveHelper(
 				error: res.message,
 			}),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 
 	invalidateGuildCache(interaction.guild.id);
 
 	await replyHandler(`Record \`#${recordIdStr}\` removed.`, interaction, {
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }

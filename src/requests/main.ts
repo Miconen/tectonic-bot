@@ -1,22 +1,22 @@
-import * as User from "@requests/user";
-import * as Guild from "@requests/guild";
-import * as Time from "@requests/time";
-import * as Event from "@requests/event";
-import * as Points from "@requests/points";
-import * as Leaderboard from "@requests/leaderboard";
-import * as Misc from "@requests/misc";
-import * as Wom from "@requests/wom";
-import * as Teams from "@requests/teams";
+import { getChildLogger } from "@logging/context";
 import * as Achievement from "@requests/achievement";
 import * as CombatAchievement from "@requests/combatAchievement";
+import * as Event from "@requests/event";
+import * as Guild from "@requests/guild";
 import * as GuildRank from "@requests/guildRank";
-import { HTTPError } from "discord.js";
+import * as Leaderboard from "@requests/leaderboard";
+import * as Misc from "@requests/misc";
+import * as Points from "@requests/points";
+import * as Teams from "@requests/teams";
+import * as Time from "@requests/time";
+import * as User from "@requests/user";
+import * as Wom from "@requests/wom";
 import type {
-	TectonicError,
-	RFC7807Error,
 	ApiResponse,
+	RFC7807Error,
+	TectonicError,
 } from "@typings/api/errors";
-import { getChildLogger } from "@logging/context";
+import { HTTPError } from "discord.js";
 
 const API_URL = process.env.API_URL
 	? `https://${process.env.API_URL}/api/v1/`

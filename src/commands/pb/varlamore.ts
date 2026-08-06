@@ -1,4 +1,6 @@
 import IsActivated from "@guards/IsActivated.js";
+import IsValidTime from "@guards/IsValidTime.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import {
 	ApplicationCommandOptionType,
@@ -16,8 +18,6 @@ import {
 import bossCategories from "./func/getBosses.js";
 import { Bosses } from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
-import IsValidTime from "@guards/IsValidTime.js";
 
 @Discord()
 @SlashGroup("pb")

@@ -1,4 +1,5 @@
 import IsAdmin from "@guards/IsAdmin";
+import RequiresGuild from "@guards/RequiresGuild";
 import { eventPicker } from "@pickers/events";
 import {
 	ApplicationCommandOptionType,
@@ -6,7 +7,6 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventUpdateHelper } from "./func/eventUpdateHelper";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({

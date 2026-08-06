@@ -1,3 +1,5 @@
+import IsActivated from "@guards/IsActivated.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { combatAchievementPicker } from "@pickers/combatAchievements";
 import {
 	ApplicationCommandOptionType,
@@ -7,8 +9,6 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import caHelper from "./func/caHelper.js";
-import IsActivated from "@guards/IsActivated.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @Guard(IsActivated(), RequiresGuild)

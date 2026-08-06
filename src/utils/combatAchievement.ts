@@ -1,7 +1,7 @@
+import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
 import type { CombatAchievementEntry } from "@typings/api/achievement";
 import { TTLCache } from "@utils/ttlCache";
-import { getLogger } from "@logging/context";
 
 const caCache = new TTLCache<CombatAchievementEntry[]>();
 

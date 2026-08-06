@@ -1,8 +1,8 @@
-import type { GuildMember } from "discord.js";
-import { Requests } from "@requests/main.js";
-import { container } from "tsyringe";
-import type IRankService from "@utils/rankUtils/IRankService.js";
 import { getLogger } from "@logging/context.js";
+import { Requests } from "@requests/main.js";
+import type IRankService from "@utils/rankUtils/IRankService.js";
+import type { GuildMember } from "discord.js";
+import { container } from "tsyringe";
 import { formatDisplayName } from "./formatDisplayName";
 
 export async function buildPlayerPreview(

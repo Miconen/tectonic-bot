@@ -1,8 +1,8 @@
 import type { SplitRequest } from "@typings/requestTypes";
 import type IPointService from "@utils/pointUtils/IPointService";
 import { getString } from "@utils/stringRepo";
-import type { RequestStrategy } from "./strategies";
 import { container } from "tsyringe";
+import type { RequestStrategy } from "./strategies";
 
 export const splitStrategy: RequestStrategy<SplitRequest> = {
 	async accept(interaction, data) {

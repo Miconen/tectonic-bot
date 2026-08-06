@@ -1,17 +1,17 @@
-import {
-	ApplicationCommandOptionType,
-	type GuildMember,
-	type CommandInteraction,
-} from "discord.js";
-import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
+import initializeHelper from "@commands/moderation/times/func/initializeHelper";
 import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild";
 import { bossTimePicker } from "@pickers/bosses";
 import { recordPicker } from "@pickers/records";
+import {
+	ApplicationCommandOptionType,
+	type CommandInteraction,
+	type GuildMember,
+} from "discord.js";
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
-import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 import { recordRemoveHelper } from "./func/recordRemoveHelper";
-import initializeHelper from "@commands/moderation/times/func/initializeHelper";
-import RequiresGuild from "@guards/RequiresGuild";
+import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
 
 @Discord()
 @SlashGroup({

@@ -1,15 +1,16 @@
+import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild";
+import { Requests } from "@requests/main.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	ChannelType,
+	MessageFlags,
 	type CommandInteraction,
 	type TextChannel,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "@guards/IsAdmin.js";
-import { Requests } from "@requests/main.js";
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup("moderation")
@@ -41,14 +42,14 @@ class ModChannel {
 					error: res.message,
 				}),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 
 		return await replyHandler(
 			getString("moderation", "modChannelSet", { channel: `<#${channel.id}>` }),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 
@@ -78,14 +79,14 @@ class ModChannel {
 					error: res.message,
 				}),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 
 		return await replyHandler(
 			getString("moderation", "logChannelSet", { channel: `<#${channel.id}>` }),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 }

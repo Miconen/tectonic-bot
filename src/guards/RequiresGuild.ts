@@ -10,9 +10,7 @@ const RequiresGuild: GuardFunction<CommandInteraction> = async (
 ) => {
 	if (interaction.inCachedGuild()) return await next();
 
-	return await replyHandler(getString("errors", "noGuild"), interaction, {
-		ephemeral: true,
-	});
+	return await replyHandler(getString("errors", "noGuild"), interaction, {});
 };
 
 export default RequiresGuild;

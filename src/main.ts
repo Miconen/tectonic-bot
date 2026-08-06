@@ -7,11 +7,11 @@ import { Client } from "discordx";
 import "dotenv/config";
 import { IsHealthy } from "@guards/IsHealthy.js";
 import { LoggingGuard } from "@logging/guard.js";
+import { rootLogger } from "@logging/logger.js";
+import { startStatusRotation } from "@utils/status.js";
 import { container } from "tsyringe";
 import { PointService } from "./utils/pointUtils/PointService.js";
 import { RankService } from "./utils/rankUtils/RankService.js";
-import { rootLogger } from "@logging/logger.js";
-import { startStatusRotation } from "@utils/status.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 (BigInt.prototype as any).toJSON = function () {

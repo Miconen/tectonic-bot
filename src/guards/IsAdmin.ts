@@ -1,11 +1,12 @@
 import { getChildLogger } from "@logging/context";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type {
-	ButtonInteraction,
-	CommandInteraction,
-	GuildMember,
-	PermissionsBitField,
+import {
+	MessageFlags,
+	type ButtonInteraction,
+	type CommandInteraction,
+	type GuildMember,
+	type PermissionsBitField,
 } from "discord.js";
 import type { GuardFunction } from "discordx";
 
@@ -32,7 +33,7 @@ export const IsAdmin: GuardFunction<
 	} else {
 		logger.debug("Checking permissions: Denied");
 		await replyHandler(getString("permissions", "adminRequired"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 };

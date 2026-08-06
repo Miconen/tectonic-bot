@@ -1,7 +1,7 @@
 import { Requests } from "@requests/main";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction } from "discord.js";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 
 export async function winnerTeamHelper(
 	interaction: CommandInteraction<"cached">,
@@ -29,6 +29,6 @@ export async function winnerTeamHelper(
 	// return replyHandler(response.join("\n"), interaction);
 
 	return replyHandler(getString("success", "success"), interaction, {
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }

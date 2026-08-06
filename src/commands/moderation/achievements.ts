@@ -1,17 +1,17 @@
+import { giveAchievementHelper } from "@commands/achievements/func/giveAchievement";
+import { removeAchievementHelper } from "@commands/achievements/func/removeAchievement";
+import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild";
+import {
+	achievementAddPicker,
+	achievementRemovePicker,
+} from "@pickers/achievements";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "@guards/IsAdmin.js";
-import {
-	achievementAddPicker,
-	achievementRemovePicker,
-} from "@pickers/achievements";
-import { giveAchievementHelper } from "@commands/achievements/func/giveAchievement";
-import { removeAchievementHelper } from "@commands/achievements/func/removeAchievement";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)

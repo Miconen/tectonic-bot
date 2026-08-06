@@ -7,10 +7,14 @@ import { Requests } from "@requests/main.js";
 import type { CategoryUpdate } from "@typings/api/guild";
 import { formatGuildTimesForEmbeds } from "@utils/guilds.js";
 import { getString } from "@utils/stringRepo.js";
-import type { CommandInteraction, TextChannel } from "discord.js";
+import {
+	MessageFlags,
+	type CommandInteraction,
+	type TextChannel,
+} from "discord.js";
 
 async function initializeHelper(interaction: CommandInteraction<"cached">) {
-	await interaction.deferReply({ ephemeral: true });
+	await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 	await interaction.editReply({
 		content: getString("times", "fetchingGuildData"),
 	});
@@ -23,7 +27,7 @@ async function initializeHelper(interaction: CommandInteraction<"cached">) {
 				activity: "fetching guild times",
 				error: res.message,
 			}),
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -73,7 +77,7 @@ async function initializeHelper(interaction: CommandInteraction<"cached">) {
 
 	await interaction.followUp({
 		content: getString("times", "finished"),
-		ephemeral: true,
+		flags: MessageFlags.Ephemeral,
 	});
 }
 

@@ -3,7 +3,7 @@ import type { EventUpdateParam } from "@typings/api/event";
 import { getEvent, updateEventCache } from "@utils/events";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction } from "discord.js";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 
 export async function eventUpdateHelper(
 	event: string,
@@ -12,7 +12,7 @@ export async function eventUpdateHelper(
 ) {
 	if (!params.position_cutoff && !params.name && params.solo === undefined) {
 		await replyHandler(getString("errors", "noEvents"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -20,7 +20,7 @@ export async function eventUpdateHelper(
 	const response = await updateEvent(interaction.guild.id, event, params);
 	if (!response || response.error) {
 		await replyHandler(getString("errors", "noEvents"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -28,7 +28,7 @@ export async function eventUpdateHelper(
 	const ev = await getEvent(interaction.guild.id, event);
 	if (!ev) {
 		await replyHandler(getString("errors", "noEvents"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -81,5 +81,7 @@ export async function eventUpdateHelper(
 
 	await updateEventCache(interaction.guild.id, event, params);
 
-	return replyHandler(reply.join("\n"), interaction, { ephemeral: true });
+	return replyHandler(reply.join("\n"), interaction, {
+		flags: MessageFlags.Ephemeral,
+	});
 }

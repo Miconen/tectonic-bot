@@ -1,6 +1,6 @@
 import { Requests } from "@requests/main";
-import { replyHandler } from "@utils/replyHandler";
 import { formatDisplayName } from "@utils/formatDisplayName";
+import { replyHandler } from "@utils/replyHandler";
 import type { CommandInteraction } from "discord.js";
 
 const ranksHelp = async (interaction: CommandInteraction<"cached">) => {

@@ -1,5 +1,5 @@
 import { withAutocompleteLogging } from "@logging/guard";
-import { safeRespond, fetchTeams } from "@utils/pickers";
+import { fetchTeams, safeRespond } from "@utils/pickers";
 import type { AutocompleteInteraction } from "discord.js";
 
 export const teamPicker = withAutocompleteLogging(

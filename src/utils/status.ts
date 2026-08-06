@@ -1,4 +1,4 @@
-import { type Client, ActivityType } from "discord.js";
+import { ActivityType, type Client } from "discord.js";
 
 export function startStatusRotation(bot: Client) {
 	const activities: {

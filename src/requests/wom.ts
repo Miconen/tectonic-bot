@@ -1,5 +1,5 @@
-import type { CompetitionDetails } from "@wise-old-man/utils";
 import type { CompetitionResponse } from "@typings/api/event";
+import type { CompetitionDetails } from "@wise-old-man/utils";
 import { fetchData } from "./main";
 import { rewrapResponse } from "./utils";
 

@@ -1,3 +1,4 @@
+import RequiresGuild from "@guards/RequiresGuild";
 import { eventPicker } from "@pickers/events";
 import {
 	ApplicationCommandOptionType,
@@ -6,7 +7,6 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventInfoHelper } from "./func/eventInfoHelper";
 import { eventRemoveHelper } from "./func/eventRemover";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({ description: "Guild event information", name: "event" })

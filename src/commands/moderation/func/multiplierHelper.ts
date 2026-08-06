@@ -1,8 +1,8 @@
-import type { CommandInteraction } from "discord.js";
 import { Requests } from "@requests/main.js";
-import { getString } from "@utils/stringRepo";
-import { replyHandler } from "@utils/replyHandler";
 import { Multipliers } from "@utils/pointSources";
+import { replyHandler } from "@utils/replyHandler";
+import { getString } from "@utils/stringRepo";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 
 const multiplierHelper = async (
 	multiplier: number,
@@ -14,7 +14,7 @@ const multiplierHelper = async (
 
 	if (res.error) {
 		await replyHandler(getString("errors", "internalError"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}

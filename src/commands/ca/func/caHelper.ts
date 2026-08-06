@@ -1,10 +1,10 @@
-import type { CaRequest } from "@typings/requestTypes.js";
 import { postRequest } from "@commands/requests/postRequest.js";
 import { Requests } from "@requests/main.js";
+import type { CaRequest } from "@typings/requestTypes.js";
 import { getGuildCAs } from "@utils/combatAchievement";
 import { getSources } from "@utils/pointSources.js";
-import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { replyHandler } from "@utils/replyHandler.js";
+import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, GuildMember } from "discord.js";
 

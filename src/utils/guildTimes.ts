@@ -1,7 +1,7 @@
-import { Requests } from "@requests/main";
-import { TTLCache } from "./ttlCache";
 import { getLogger } from "@logging/context";
+import { Requests } from "@requests/main";
 import type { DetailedGuild } from "@typings/api/guild";
+import { TTLCache } from "./ttlCache";
 
 const GuildCache = new TTLCache<DetailedGuild>();
 

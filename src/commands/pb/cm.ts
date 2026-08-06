@@ -1,5 +1,6 @@
 import IsActivated from "@guards/IsActivated.js";
 import IsValidTime from "@guards/IsValidTime.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { notEmpty } from "@utils/notEmpty.js";
 import {
 	ApplicationCommandOptionType,
@@ -10,7 +11,6 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { getBossCox } from "./func/getBoss.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")

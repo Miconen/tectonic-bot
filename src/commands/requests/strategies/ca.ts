@@ -1,10 +1,10 @@
 import { Requests } from "@requests/main";
-import { getString } from "@utils/stringRepo";
-import type { RequestStrategy } from "./strategies";
 import type { CaRequest } from "@typings/requestTypes";
-import type IRankService from "@utils/rankUtils/IRankService";
-import { container } from "tsyringe";
 import { formatDisplayName } from "@utils/formatDisplayName";
+import type IRankService from "@utils/rankUtils/IRankService";
+import { getString } from "@utils/stringRepo";
+import { container } from "tsyringe";
+import type { RequestStrategy } from "./strategies";
 
 export const caStrategy: RequestStrategy<CaRequest> = {
 	async accept(interaction, data) {

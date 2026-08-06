@@ -1,5 +1,9 @@
-import type { CommandInteraction, GuildMember } from "discord.js";
 import { replyHandler } from "@utils/replyHandler.js";
+import {
+	MessageFlags,
+	type CommandInteraction,
+	type GuildMember,
+} from "discord.js";
 import { container } from "tsyringe";
 
 import { Requests } from "@requests/main";
@@ -25,7 +29,7 @@ async function womHelper(
 	// Process RSN data
 	if (competition.error) {
 		await replyHandler(getString("errors", "competitionError"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -38,7 +42,7 @@ async function womHelper(
 			getString("competitions", "noEligibleParticipants"),
 			interaction,
 			{
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			},
 		);
 		return;
