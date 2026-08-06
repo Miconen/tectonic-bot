@@ -45,6 +45,7 @@ class Profile {
 			);
 		}
 
+		await interaction.deferReply();
 		const response = await profileHelper(user, rsn, interaction);
 		await interaction.reply(response);
 	}
