@@ -5,25 +5,25 @@ import { getString } from "@utils/stringRepo";
 import type { CommandInteraction } from "discord.js";
 
 export async function recordRemoveHelper(
-  recordIdStr: string,
-  interaction: CommandInteraction<"cached">
+	recordIdStr: string,
+	interaction: CommandInteraction<"cached">,
 ) {
-  const res = await Requests.removeTimeById(interaction.guild.id, recordIdStr);
+	const res = await Requests.removeTimeById(interaction.guild.id, recordIdStr);
 
-  if (res.error) {
-    return await replyHandler(
-      getString("errors", "apiError", {
-        activity: "removing record",
-        error: res.message,
-      }),
-      interaction,
-      { ephemeral: true }
-    );
-  }
+	if (res.error) {
+		return await replyHandler(
+			getString("errors", "apiError", {
+				activity: "removing record",
+				error: res.message,
+			}),
+			interaction,
+			{ ephemeral: true },
+		);
+	}
 
-  invalidateGuildCache(interaction.guild.id);
+	invalidateGuildCache(interaction.guild.id);
 
-  await replyHandler(`Record \`#${recordIdStr}\` removed.`, interaction, {
-    ephemeral: true,
-  });
+	await replyHandler(`Record \`#${recordIdStr}\` removed.`, interaction, {
+		ephemeral: true,
+	});
 }

@@ -6,51 +6,51 @@ import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 const splitHelper = async (
-  source: string,
-  members: GuildMember[],
-  interaction: CommandInteraction<"cached">,
-  screenshot: string
+	source: string,
+	members: GuildMember[],
+	interaction: CommandInteraction<"cached">,
+	screenshot: string,
 ) => {
-  const points = (await getPoints(source, interaction.guild.id)) ?? 0;
-  const sources = await getSources(interaction.guild.id);
-  const sourceName = sources?.get(source)?.name ?? source;
+	const points = (await getPoints(source, interaction.guild.id)) ?? 0;
+	const sources = await getSources(interaction.guild.id);
+	const sourceName = sources?.get(source)?.name ?? source;
 
-  const submitter = members[0];
-  const partners = members.slice(1);
+	const submitter = members[0];
+	const partners = members.slice(1);
 
-  const preview = await buildPlayerPreview(
-    interaction.guild.id,
-    [submitter],
-    points
-  );
+	const preview = await buildPlayerPreview(
+		interaction.guild.id,
+		[submitter],
+		points,
+	);
 
-  const partnerMentions =
-    partners.length > 0
-      ? `**Split with:** ${partners.map((m) => `<@${m.id}>`).join(", ")}`
-      : "";
+	const partnerMentions =
+		partners.length > 0
+			? `**Split with:** ${partners.map((m) => `<@${m.id}>`).join(", ")}`
+			: "";
 
-  const username = submitter.displayName;
-  const content = getString("splits", "requestSubmitted", {
-    username,
-    points,
-    sourceName,
-    preview,
-    partners: partnerMentions,
-  });
+	const username = submitter.displayName;
+	const content = getString("splits", "requestSubmitted", {
+		username,
+		points,
+		sourceName,
+		preview,
+		partners: partnerMentions,
+	});
 
-  const data: SplitRequest = {
-    type: "split",
-    members,
-    points,
-    source,
-    sourceName,
-    screenshot,
-    timestamp: Date.now(),
-    channel: "",
-    message: "",
-  };
+	const data: SplitRequest = {
+		type: "split",
+		members,
+		points,
+		source,
+		sourceName,
+		screenshot,
+		timestamp: Date.now(),
+		channel: "",
+		message: "",
+	};
 
-  await postRequest(content, data, interaction);
+	await postRequest(content, data, interaction);
 };
 
 export default splitHelper;

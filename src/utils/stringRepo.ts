@@ -11,426 +11,426 @@ type StringTemplate = string | ((args: Record<string, any>) => string);
  * Interface for the string repository
  */
 interface StringRepository {
-  [category: string]: {
-    [key: string]: StringTemplate;
-  };
+	[category: string]: {
+		[key: string]: StringTemplate;
+	};
 }
 
 /**
  * Main string repository containing all application strings
  */
 const strings: StringRepository = {
-  ranks: {
-    levelUpMessage: (args) =>
-      `⬆ **${args.username}** ranked up to ${args.icon} ${capitalizeFirstLetter(
-        args.rankName
-      )}!`,
-    pointsGranted: (args) =>
-      `✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
-        args.pointsGiven
-      } points (${args.oldPoints} ${args.icon} → ${args.newPoints} ${
-        args.icon
-      })`,
-    pointsGrantedRankUp: (args) =>
-      `✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
-        args.pointsGiven
-      } points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
-        args.newIcon
-      }) Ranked up to ${args.newIcon} ${args.rankName}`,
-    pointsGrantedRankDown: (args) =>
-      `✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
-        args.pointsGiven
-      } points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
-        args.newIcon
-      }) Ranked down to ${args.newIcon} ${args.rankName}`,
-    roleAdded: (args) =>
-      `Added role **${args.roleName}** to **${args.username}**.`,
-    roleRemoved: (args) => `Removed all rank roles from **${args.username}**.`,
-    rankInfo: (args) =>
-      `${args.icon} **${args.username}** has: ${args.points} points`,
-    rankInfoWithNext: (args) =>
-      `${args.currentIcon} **${args.username}** has: ${args.points} points\n${args.nextIcon} Points to next level: ${args.pointsToNext}`,
-    maxRankReached: (args) =>
-      `**${args.username}** has reached the maximum rank!`,
-  },
+	ranks: {
+		levelUpMessage: (args) =>
+			`⬆ **${args.username}** ranked up to ${args.icon} ${capitalizeFirstLetter(
+				args.rankName,
+			)}!`,
+		pointsGranted: (args) =>
+			`✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+				args.pointsGiven
+			} points (${args.oldPoints} ${args.icon} → ${args.newPoints} ${
+				args.icon
+			})`,
+		pointsGrantedRankUp: (args) =>
+			`✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+				args.pointsGiven
+			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
+				args.newIcon
+			}) Ranked up to ${args.newIcon} ${args.rankName}`,
+		pointsGrantedRankDown: (args) =>
+			`✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+				args.pointsGiven
+			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
+				args.newIcon
+			}) Ranked down to ${args.newIcon} ${args.rankName}`,
+		roleAdded: (args) =>
+			`Added role **${args.roleName}** to **${args.username}**.`,
+		roleRemoved: (args) => `Removed all rank roles from **${args.username}**.`,
+		rankInfo: (args) =>
+			`${args.icon} **${args.username}** has: ${args.points} points`,
+		rankInfoWithNext: (args) =>
+			`${args.currentIcon} **${args.username}** has: ${args.points} points\n${args.nextIcon} Points to next level: ${args.pointsToNext}`,
+		maxRankReached: (args) =>
+			`**${args.username}** has reached the maximum rank!`,
+	},
 
-  competitions: {
-    header: (args) => `## ${args.title}`,
-    participantCount: (args) => `Participants: ${args.count}`,
-    eligibleCount: (args) => `Eligible for points: ${args.eligibleCount}`,
-    pointsHeader: "\n## Points",
-    eventEnded: (args) =>
-      `Event **${args.eventName}** has ended. Processing results...`,
-    eventProcessed: (args) =>
-      `Event results processed. ${args.participantCount} participants awarded points.`,
-    noEligibleParticipants: "No eligible participants found for this event.",
-    eventNotFound: (args) => `Event with ID ${args.eventId} not found.`,
-    teamResultsProcessed: (args) =>
-      `Team event processed. ${args.teamCount} teams awarded points.`,
-    notTeamEvent: "This event is not team based.",
-    eventUpdatedHeader: "# Event Updated",
-    eventUpdatedField: (args) => `**Updated event ${args.field}**`,
-    eventUpdatedFieldFrom: (args) => `From: ${args.value}`,
-    eventUpdatedFieldTo: (args) => `To: ${args.value}`,
-    eventUpdateNoParams: "No parameters provided for event update",
-    eventDeleted: (args) => `**Deleted event ${args.field}**`,
-  },
+	competitions: {
+		header: (args) => `## ${args.title}`,
+		participantCount: (args) => `Participants: ${args.count}`,
+		eligibleCount: (args) => `Eligible for points: ${args.eligibleCount}`,
+		pointsHeader: "\n## Points",
+		eventEnded: (args) =>
+			`Event **${args.eventName}** has ended. Processing results...`,
+		eventProcessed: (args) =>
+			`Event results processed. ${args.participantCount} participants awarded points.`,
+		noEligibleParticipants: "No eligible participants found for this event.",
+		eventNotFound: (args) => `Event with ID ${args.eventId} not found.`,
+		teamResultsProcessed: (args) =>
+			`Team event processed. ${args.teamCount} teams awarded points.`,
+		notTeamEvent: "This event is not team based.",
+		eventUpdatedHeader: "# Event Updated",
+		eventUpdatedField: (args) => `**Updated event ${args.field}**`,
+		eventUpdatedFieldFrom: (args) => `From: ${args.value}`,
+		eventUpdatedFieldTo: (args) => `To: ${args.value}`,
+		eventUpdateNoParams: "No parameters provided for event update",
+		eventDeleted: (args) => `**Deleted event ${args.field}**`,
+	},
 
-  accounts: {
-    unlinkedHeader: "\n## Unlinked accounts",
-    unlinkedAccount: (args) =>
-      `**${args.rsn}** +${args.pointsGiven} points, once Discord linked to RSN`,
-    unlinkInstructions:
-      "\n_Once you link your rsn to the bot you'll be eligible to gain event points_\n_Please tag leadership to help with linking your account with your rsn_",
-    notActivated: (args) => `❌ **${args.username}** is not an activated user.`,
-    activated: (args) =>
-      `✔ **${args.username}** has been activated and linked.`,
-    deactivated: (args) => `✔ **${args.username}** has been deactivated.`,
-    alreadyActivated: (args) => `❌ **${args.username}** is already activated.`,
-    rsnAdded: (args) => `✔ Added RSN **${args.rsn}** to **${args.username}**.`,
-    rsnRemoved: (args) =>
-      `✔ Removed RSN **${args.rsn}** from **${args.username}**.`,
-    rsnNotFound: (args) =>
-      `❌ RSN **${args.rsn}** not found for **${args.username}**.`,
-    rsnAlreadyExists: (args) =>
-      `❌ RSN **${args.rsn}** already exists for **${args.username}**.`,
-    rsnListHeader: (args) => `## ${args.username} RSNs`,
-    noLinkedAccounts:
-      "`Link your OSRS account to be eligible for event rank points`",
-    userActivatedByMember: (args) =>
-      `**${args.user}** has been activated and linked by **${args.member}**.`,
-  },
+	accounts: {
+		unlinkedHeader: "\n## Unlinked accounts",
+		unlinkedAccount: (args) =>
+			`**${args.rsn}** +${args.pointsGiven} points, once Discord linked to RSN`,
+		unlinkInstructions:
+			"\n_Once you link your rsn to the bot you'll be eligible to gain event points_\n_Please tag leadership to help with linking your account with your rsn_",
+		notActivated: (args) => `❌ **${args.username}** is not an activated user.`,
+		activated: (args) =>
+			`✔ **${args.username}** has been activated and linked.`,
+		deactivated: (args) => `✔ **${args.username}** has been deactivated.`,
+		alreadyActivated: (args) => `❌ **${args.username}** is already activated.`,
+		rsnAdded: (args) => `✔ Added RSN **${args.rsn}** to **${args.username}**.`,
+		rsnRemoved: (args) =>
+			`✔ Removed RSN **${args.rsn}** from **${args.username}**.`,
+		rsnNotFound: (args) =>
+			`❌ RSN **${args.rsn}** not found for **${args.username}**.`,
+		rsnAlreadyExists: (args) =>
+			`❌ RSN **${args.rsn}** already exists for **${args.username}**.`,
+		rsnListHeader: (args) => `## ${args.username} RSNs`,
+		noLinkedAccounts:
+			"`Link your OSRS account to be eligible for event rank points`",
+		userActivatedByMember: (args) =>
+			`**${args.user}** has been activated and linked by **${args.member}**.`,
+	},
 
-  achievements: {
-    requestSubmitted: (args) =>
-      `# Achievement Request\n-# ${args.achievement}\n\n**${args.username}** has submitted an achievement request.`,
-    approved: (args) => `# Achievement Approved\n-# ${args.achievement}\n`,
-    denied: (args) =>
-      `# Achievement Denied\n-# ${args.achievement}\n\n❌ **${args.username}**'s achievement request was denied.`,
-    granted: (args) =>
-      `✔ Granted achievement **${args.achievement}** to **${args.username}**.`,
-    request: (args) =>
-      `# Achievement Request\n\nUser: ${args.username}\nAchievement: ${args.achievement}`,
-    removed: (args) =>
-      `✔ Removed achievement **${args.achievement}** from **${args.username}**.`,
-    alreadyHas: (args) =>
-      `❌ **${args.username}** already has achievement **${args.achievement}**.`,
-    notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
-    userNotFound: (args) => "❌ User not found for achievement operation.",
-  },
+	achievements: {
+		requestSubmitted: (args) =>
+			`# Achievement Request\n-# ${args.achievement}\n\n**${args.username}** has submitted an achievement request.`,
+		approved: (args) => `# Achievement Approved\n-# ${args.achievement}\n`,
+		denied: (args) =>
+			`# Achievement Denied\n-# ${args.achievement}\n\n❌ **${args.username}**'s achievement request was denied.`,
+		granted: (args) =>
+			`✔ Granted achievement **${args.achievement}** to **${args.username}**.`,
+		request: (args) =>
+			`# Achievement Request\n\nUser: ${args.username}\nAchievement: ${args.achievement}`,
+		removed: (args) =>
+			`✔ Removed achievement **${args.achievement}** from **${args.username}**.`,
+		alreadyHas: (args) =>
+			`❌ **${args.username}** already has achievement **${args.achievement}**.`,
+		notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
+		userNotFound: (args) => "❌ User not found for achievement operation.",
+	},
 
-  splits: {
-    requestSubmitted: (args) =>
-      `# Split Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.username}** has submitted a split request.\n${args.partners}\n\n${args.preview}`,
-    approved: (args) =>
-      `# Split Approved\n-# ${args.sourceName} | ${args.points} points\n`,
-    denied: (args) =>
-      `# Split Denied\n-# ${args.sourceName} | ${args.points} points\n\n❌ **${args.username}**'s split request was denied.`,
+	splits: {
+		requestSubmitted: (args) =>
+			`# Split Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.username}** has submitted a split request.\n${args.partners}\n\n${args.preview}`,
+		approved: (args) =>
+			`# Split Approved\n-# ${args.sourceName} | ${args.points} points\n`,
+		denied: (args) =>
+			`# Split Denied\n-# ${args.sourceName} | ${args.points} points\n\n❌ **${args.username}**'s split request was denied.`,
 
-    notFound: "❌ Split request not found or expired.",
-    expiredRequest:
-      "This split request has expired. Please try again with a fresh submission.",
-    infoHeader: (args) => `# Split: ${args.username}`,
-    infoDetails: (args) =>
-      `Points: ${args.points} points\nCreated: ${args.timeAgo}\nMessage: ${args.messageUrl}`,
-    helpText: (args) =>
-      `Gain points for receiving a drop and splitting with your clan mates, screenshot of loot and teammates names required as proof.\nRequires user to be an activated user\nPoint rewards: ${args.lowPoints}, ${args.mediumPoints} & ${args.highPoints}`,
-  },
+		notFound: "❌ Split request not found or expired.",
+		expiredRequest:
+			"This split request has expired. Please try again with a fresh submission.",
+		infoHeader: (args) => `# Split: ${args.username}`,
+		infoDetails: (args) =>
+			`Points: ${args.points} points\nCreated: ${args.timeAgo}\nMessage: ${args.messageUrl}`,
+		helpText: (args) =>
+			`Gain points for receiving a drop and splitting with your clan mates, screenshot of loot and teammates names required as proof.\nRequires user to be an activated user\nPoint rewards: ${args.lowPoints}, ${args.mediumPoints} & ${args.highPoints}`,
+	},
 
-  profile: {
-    header: (args) => {
-      const parts = [`Rank: ${args.rankPrefix}`, `Points: ${args.points}`];
-      if (args.pbCount > 0) parts.push(`PBs: ${args.pbCount}`);
-      if (args.eventCount > 0) parts.push(`Events: ${args.eventCount}`);
-      return `# ${args.rankIcon} ${args.username}\n-# ${parts.join(" | ")}\n${
-        args.nextRankIcon
-      } Points to next level: ${args.pointsToNext}`;
-    },
-    accountsHeader: "## Accounts",
-    pbsHeader: "## Clan PBs",
-    eventsHeader: "## Event Placements",
-    achievementsHeader: "## Achievements",
-    pbEntry: (args) =>
-      `**#${args.position}** in **${args.category}** \`${args.displayName}\` - \`${args.displayValue}\``,
-    eventPlacementChunk: (args) => `**#${args.placement}**`,
-    eventWinnerChunk: "**Winner**",
-    eventEntry: (args) =>
-      args.womId.startsWith("legacy_")
-        ? `${args.chunk} in **${args.eventName}**`
-        : `${args.chunk} in **[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>)**`,
-    accountEntry: (args) => `\`${args.rsn}\``,
-    achievementEntry: (args) => `${args.icon} - **${args.name}**`,
-    noAccounts: "No linked accounts found.",
-    noPbs: "No personal bests recorded.",
-    noEvents: "No events found.",
-    criticalError: "❌ Error fetching user data.",
-  },
+	profile: {
+		header: (args) => {
+			const parts = [`Rank: ${args.rankPrefix}`, `Points: ${args.points}`];
+			if (args.pbCount > 0) parts.push(`PBs: ${args.pbCount}`);
+			if (args.eventCount > 0) parts.push(`Events: ${args.eventCount}`);
+			return `# ${args.rankIcon} ${args.username}\n-# ${parts.join(" | ")}\n${
+				args.nextRankIcon
+			} Points to next level: ${args.pointsToNext}`;
+		},
+		accountsHeader: "## Accounts",
+		pbsHeader: "## Clan PBs",
+		eventsHeader: "## Event Placements",
+		achievementsHeader: "## Achievements",
+		pbEntry: (args) =>
+			`**#${args.position}** in **${args.category}** \`${args.displayName}\` - \`${args.displayValue}\``,
+		eventPlacementChunk: (args) => `**#${args.placement}**`,
+		eventWinnerChunk: "**Winner**",
+		eventEntry: (args) =>
+			args.womId.startsWith("legacy_")
+				? `${args.chunk} in **${args.eventName}**`
+				: `${args.chunk} in **[${args.eventName}](<https://wiseoldman.net/competitions/${args.womId}>)**`,
+		accountEntry: (args) => `\`${args.rsn}\``,
+		achievementEntry: (args) => `${args.icon} - **${args.name}**`,
+		noAccounts: "No linked accounts found.",
+		noPbs: "No personal bests recorded.",
+		noEvents: "No events found.",
+		criticalError: "❌ Error fetching user data.",
+	},
 
-  events: {
-    wrongId: "Could not find event with specified ID.",
-  },
+	events: {
+		wrongId: "Could not find event with specified ID.",
+	},
 
-  leaderboard: {
-    title: "Tectonic Leaderboard",
-    entry: (args) => `#${args.rank} **${args.username}** (${args.rsns})`,
-    entryValue: (args) =>
-      `${args.rankIcon} ${args.points} points | Accounts: ${args.accountCount}`,
-    footer: (args) => `Page ${args.page} (${args.start}-${args.end})`,
-    noUsers: "No activated users for leaderboard",
-    errorOutputting: "Error outputting leaderboard",
-    loading: "Loading leaderboard...",
-  },
+	leaderboard: {
+		title: "Tectonic Leaderboard",
+		entry: (args) => `#${args.rank} **${args.username}** (${args.rsns})`,
+		entryValue: (args) =>
+			`${args.rankIcon} ${args.points} points | Accounts: ${args.accountCount}`,
+		footer: (args) => `Page ${args.page} (${args.start}-${args.end})`,
+		noUsers: "No activated users for leaderboard",
+		errorOutputting: "Error outputting leaderboard",
+		loading: "Loading leaderboard...",
+	},
 
-  learner: {
-    halfPoints: (args) =>
-      `Half learner points (${args.points}) awarded to **${args.username}**.`,
-    fullPoints: (args) =>
-      `Full learner points (${args.points}) awarded to **${args.username}**.`,
-  },
+	learner: {
+		halfPoints: (args) =>
+			`Half learner points (${args.points}) awarded to **${args.username}**.`,
+		fullPoints: (args) =>
+			`Full learner points (${args.points}) awarded to **${args.username}**.`,
+	},
 
-  moderation: {
-    pointsGiven: (args) =>
-      `Gave ${args.points} points to **${args.username}**.`,
-    multiplierSet: (args) =>
-      `Updated server point multiplier to ${args.multiplier}.`,
-    guildInitialized: "Guild initialized successfully.",
-    guildAlreadyExists: "Guild is already initialized.",
-    recordRemoved: (args) =>
-      `Successfully removed record \`#${args.recordId}\`.`,
-    modChannelSet: (args) =>
-      `✔ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
-    logChannelSet: (args) =>
-      `✔ Logging channel set to ${args.channel}. Log messages will be sent there.`,
-  },
+	moderation: {
+		pointsGiven: (args) =>
+			`Gave ${args.points} points to **${args.username}**.`,
+		multiplierSet: (args) =>
+			`Updated server point multiplier to ${args.multiplier}.`,
+		guildInitialized: "Guild initialized successfully.",
+		guildAlreadyExists: "Guild is already initialized.",
+		recordRemoved: (args) =>
+			`Successfully removed record \`#${args.recordId}\`.`,
+		modChannelSet: (args) =>
+			`✔ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
+		logChannelSet: (args) =>
+			`✔ Logging channel set to ${args.channel}. Log messages will be sent there.`,
+	},
 
-  times: {
-    newRecord: (args) =>
-      `🏆 New ${args.category} record! **${args.displayName}**: ${args.time}`,
-    timeImproved: (args) =>
-      `⚡ **${args.displayName}** time improved: ${args.oldTime} → ${args.newTime}`,
-    timeAdded: (args) =>
-      `✔ Time recorded for **${args.displayName}**: ${args.time}`,
-    bossNotFound: (args) => `Boss **${args.bossName}** not found.`,
-    timeNotFound: "No time records found.",
-    teamEntry: (args) => `Team: ${args.teammates}`,
-    newPb: (args) =>
-      `# New #${args.position}: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n`,
-    timeSubmittedNotPb: "Time submitted, not a new pb :)",
-    failedParsingTicks: "Failed parsing ticks from time",
-    failedAddingTime: "Failed adding time",
-    failedUpdatingEmbed:
-      "Failed to update the leaderboard embed. The time was saved but the display may be out of date.",
-    errorFetchingUsersForPoints: "Error fetching users to give points to",
-    fetchingGuildData: "Fetching guild data...",
-    removingOldEmbeds: "Removing old category embeds...",
-    creatingEmbeds: "Creating embeds...",
-    storingData: "Storing data...",
-    finished: "Finished updating embeds.",
-    invalidTeamSize: (args) => `${args.error}`,
-    soloOnlyBoss: "Selected boss can't include more than one player.",
-    invalidFiveManNightmare: "Invalid amount of players for 5-man nightmare.",
-  },
+	times: {
+		newRecord: (args) =>
+			`🏆 New ${args.category} record! **${args.displayName}**: ${args.time}`,
+		timeImproved: (args) =>
+			`⚡ **${args.displayName}** time improved: ${args.oldTime} → ${args.newTime}`,
+		timeAdded: (args) =>
+			`✔ Time recorded for **${args.displayName}**: ${args.time}`,
+		bossNotFound: (args) => `Boss **${args.bossName}** not found.`,
+		timeNotFound: "No time records found.",
+		teamEntry: (args) => `Team: ${args.teammates}`,
+		newPb: (args) =>
+			`# New #${args.position}: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n`,
+		timeSubmittedNotPb: "Time submitted, not a new pb :)",
+		failedParsingTicks: "Failed parsing ticks from time",
+		failedAddingTime: "Failed adding time",
+		failedUpdatingEmbed:
+			"Failed to update the leaderboard embed. The time was saved but the display may be out of date.",
+		errorFetchingUsersForPoints: "Error fetching users to give points to",
+		fetchingGuildData: "Fetching guild data...",
+		removingOldEmbeds: "Removing old category embeds...",
+		creatingEmbeds: "Creating embeds...",
+		storingData: "Storing data...",
+		finished: "Finished updating embeds.",
+		invalidTeamSize: (args) => `${args.error}`,
+		soloOnlyBoss: "Selected boss can't include more than one player.",
+		invalidFiveManNightmare: "Invalid amount of players for 5-man nightmare.",
+	},
 
-  pb: {
-    requestSubmitted: (args) =>
-      `# PB Request: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n\n${args.preview}`,
-    approved: (args) =>
-      `# PB Approved\n-# ${args.sourceName} | ${args.points} points\n`,
-    denied: (args) =>
-      `# PB Denied: ${args.bossTitle}\n-# ${args.sourceName} | ${args.points} points\n`,
-    notFaster: (args) =>
-      `❌ Your ${args.valueLabel} of \`${args.time}\` would not make the top positions. Current cutoff: \`${args.currentTime}\`.`,
-  },
+	pb: {
+		requestSubmitted: (args) =>
+			`# PB Request: ${args.bossTitle}\n\`${args.valueLabel}: ${args.displayValue}\`\n-# ${args.sourceName} | ${args.points} points\n\n${args.preview}`,
+		approved: (args) =>
+			`# PB Approved\n-# ${args.sourceName} | ${args.points} points\n`,
+		denied: (args) =>
+			`# PB Denied: ${args.bossTitle}\n-# ${args.sourceName} | ${args.points} points\n`,
+		notFaster: (args) =>
+			`❌ Your ${args.valueLabel} of \`${args.time}\` would not make the top positions. Current cutoff: \`${args.currentTime}\`.`,
+	},
 
-  teams: {
-    addedToBoss: (args) =>
-      `Succesfully added ${args.user} to team for \`${args.boss}\` clan PB.`,
-    addedToRecordId: (args) =>
-      `Succesfully added ${args.user} to team for record \`#${args.record_id}\`.`,
-    removedFromBoss: (args) =>
-      `Successfully removed ${args.user} from team for \`${args.boss}\` clan PB.`,
-    removedFromRecordId: (args) =>
-      `Successfully removed ${args.user} from team for record \`#${args.record_id}\`.`,
-  },
+	teams: {
+		addedToBoss: (args) =>
+			`Succesfully added ${args.user} to team for \`${args.boss}\` clan PB.`,
+		addedToRecordId: (args) =>
+			`Succesfully added ${args.user} to team for record \`#${args.record_id}\`.`,
+		removedFromBoss: (args) =>
+			`Successfully removed ${args.user} from team for \`${args.boss}\` clan PB.`,
+		removedFromRecordId: (args) =>
+			`Successfully removed ${args.user} from team for record \`#${args.record_id}\`.`,
+	},
 
-  help: {
-    commandsInfo:
-      "Information on how to use the bot along with its commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands",
-    pointsSourcesHeader: "**Point sources**:\n",
-    splitsHeader: "**Splits**:",
-    eventsHeader: "**Events**:",
-    learnersHeader: "**Learners**:",
-    forumHeader: "**Forum**:",
-    ranksHeader: "## Ranks:\n",
-    pointValue: (args) => `${args.name}: ${args.points}`,
-    rankEntry: (args) => `${args.icon} ${args.name} - ${args.points} points`,
-    splitLow: (args) => `Low value: ${args.points}`,
-    splitMedium: (args) => `Medium value: ${args.points}`,
-    splitHigh: (args) => `High value: ${args.points}`,
-    eventParticipation: (args) => `Participation: ${args.points}`,
-    eventHosting: (args) => `Hosting: ${args.points}`,
-    learnerHalf: (args) => `Half: ${args.points}`,
-    learnerFull: (args) => `Full: ${args.points}`,
-    forumBump: (args) => `Bumping: ${args.points}`,
-  },
+	help: {
+		commandsInfo:
+			"Information on how to use the bot along with its commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands",
+		pointsSourcesHeader: "**Point sources**:\n",
+		splitsHeader: "**Splits**:",
+		eventsHeader: "**Events**:",
+		learnersHeader: "**Learners**:",
+		forumHeader: "**Forum**:",
+		ranksHeader: "## Ranks:\n",
+		pointValue: (args) => `${args.name}: ${args.points}`,
+		rankEntry: (args) => `${args.icon} ${args.name} - ${args.points} points`,
+		splitLow: (args) => `Low value: ${args.points}`,
+		splitMedium: (args) => `Medium value: ${args.points}`,
+		splitHigh: (args) => `High value: ${args.points}`,
+		eventParticipation: (args) => `Participation: ${args.points}`,
+		eventHosting: (args) => `Hosting: ${args.points}`,
+		learnerHalf: (args) => `Half: ${args.points}`,
+		learnerFull: (args) => `Full: ${args.points}`,
+		forumBump: (args) => `Bumping: ${args.points}`,
+	},
 
-  validation: {
-    invalidRsn:
-      "Invalid RSN format. RSN must be 1-12 characters containing only letters, numbers, spaces, underscores, and hyphens.",
-    invalidPoints: (args) =>
-      `Invalid points amount. Must be between ${args.min} and ${args.max}.`,
-    invalidUser: "Invalid user. Please mention a valid Discord user.",
-    invalidTimeFormat: (args) => `Invalid time format. ${args.error}`,
-    invalidTimeRange: (args) => `Invalid time range. ${args.error}`,
-    invalidChoice: (args) =>
-      `Invalid choice. Valid options: ${args.options.join(", ")}`,
-    required: (args) => `${args.field} is required.`,
-    tooLong: (args) =>
-      `${args.field} is too long. Maximum ${args.max} characters.`,
-    tooShort: (args) =>
-      `${args.field} is too short. Minimum ${args.min} characters.`,
-    conflictingParams: (args) =>
-      `Cannot use both ${args.param1} and ${args.param2} at the same time.`,
-    userNotInGuild: "User is not a member of this server.",
-    expectedStringParameter: (args) =>
-      `Invalid parameter type, expected a string, found: ${args.type}`,
-  },
+	validation: {
+		invalidRsn:
+			"Invalid RSN format. RSN must be 1-12 characters containing only letters, numbers, spaces, underscores, and hyphens.",
+		invalidPoints: (args) =>
+			`Invalid points amount. Must be between ${args.min} and ${args.max}.`,
+		invalidUser: "Invalid user. Please mention a valid Discord user.",
+		invalidTimeFormat: (args) => `Invalid time format. ${args.error}`,
+		invalidTimeRange: (args) => `Invalid time range. ${args.error}`,
+		invalidChoice: (args) =>
+			`Invalid choice. Valid options: ${args.options.join(", ")}`,
+		required: (args) => `${args.field} is required.`,
+		tooLong: (args) =>
+			`${args.field} is too long. Maximum ${args.max} characters.`,
+		tooShort: (args) =>
+			`${args.field} is too short. Minimum ${args.min} characters.`,
+		conflictingParams: (args) =>
+			`Cannot use both ${args.param1} and ${args.param2} at the same time.`,
+		userNotInGuild: "User is not a member of this server.",
+		expectedStringParameter: (args) =>
+			`Invalid parameter type, expected a string, found: ${args.type}`,
+	},
 
-  permissions: {
-    adminRequired:
-      "You do not have the required permissions for this action. Administrator permissions required.",
-    moderatorRequired:
-      "You do not have the required permissions for this action. Moderator permissions required.",
-    activatedRequired:
-      "This command requires you to be an activated user. Please contact an administrator.",
-    insufficientPerms: (args) =>
-      `Insufficient permissions. Required: ${args.required}`,
-    commandDisabled: "This command is currently disabled.",
-    rateLimited: (args) =>
-      `Rate limit exceeded. Try again in ${args.seconds} seconds.`,
-  },
+	permissions: {
+		adminRequired:
+			"You do not have the required permissions for this action. Administrator permissions required.",
+		moderatorRequired:
+			"You do not have the required permissions for this action. Moderator permissions required.",
+		activatedRequired:
+			"This command requires you to be an activated user. Please contact an administrator.",
+		insufficientPerms: (args) =>
+			`Insufficient permissions. Required: ${args.required}`,
+		commandDisabled: "This command is currently disabled.",
+		rateLimited: (args) =>
+			`Rate limit exceeded. Try again in ${args.seconds} seconds.`,
+	},
 
-  errors: {
-    noGuild: "This command must be used in a server.",
-    noChannel: "This command must be used in a channel.",
-    noMember: "Could not retrieve member information.",
-    competitionError: "Failed to retrieve competition data.",
-    givingPoints: "Error giving points. Please try again.",
-    apiError: (args) => `Error ${args.activity}.\n\`${args.error}\``,
-    apiHealth:
-      "Cannot reach the application server. Please try again in 30 seconds.",
-    empty: (args) => `Error accessing empty ${args.target}.`,
-    internalError: "An internal error occurred. Please try again.",
-    networkError: "Network error. Please check your connection and try again.",
-    timeout: "Request timed out. Please try again.",
-    notFound: (args) => `${args.resource} not found.`,
-    alreadyExists: (args) => `${args.resource} already exists.`,
-    invalidFormat: (args) => `Invalid ${args.field} format.`,
-    unavailable: (args) =>
-      `${args.service} is currently unavailable. Please try again later.`,
-    maintenance:
-      "The bot is currently under maintenance. Please try again later.",
-    rateLimitExceeded: "Too many requests. Please slow down.",
-    commandFailed: (args) => `Command failed: ${args.reason}`,
-    databaseError: "Database error occurred. Please try again.",
-    parameterMissing: (args) => `Missing required parameter: ${args.parameter}`,
-    invalidOperation: "Invalid operation attempted.",
-    userNotFound: (args) => `User **${args.username}** not found.`,
-    rsnNotBound: (args) => `**${args.rsn}** is not bound to a known member.`,
-    fetchFailed: (args) => `Failed to fetch ${args.resource}.`,
-    updateFailed: (args) => `Failed to update ${args.resource}.`,
-    deleteFailed: (args) => `Failed to delete ${args.resource}.`,
-    createFailed: (args) => `Failed to create ${args.resource}.`,
-    womUnavailable: "Wise Old Man API is currently unavailable.",
-    womPlayerNotFound: (args) =>
-      `Player **${args.rsn}** not found on Wise Old Man.`,
-    channelNotFound: "Required channel not found.",
-    messageNotFound: "Message not found or has been deleted.",
-    expiredRequest: "This request has expired. Please submit a new one.",
-    unauthorized: "You are not authorized to perform this action.",
-    guildNotInitialized: "This server has not been initialized.",
-    retrievingPlayers: "Failed to fetch players from command",
-    errorGivingPoints: (args) => `Error giving points: ${args.message}`,
-    couldntGetUser: (args) => `Couldn't get user for ID: ${args.userId}`,
-    unexpectedError: (args) => `Unexpected error occurred...\n${args.message}`,
-    errorFetchingWom: "Error fetching user from Wise Old Man.",
-    fetchingPbEmbeds: "fetching data for pb embeds",
-    somethingWrongActivation: "Something went **really** wrong",
-    somethingUnexpected: "Something unexpected happened...",
-    zeroPoints: "Invalid points amount - cannot give 0 points",
-    rsnFail: (args) => `Failed to add RSN (**${args.rsn}**)`,
-    rsnExists: (args) => `RSN already exists on user ** ${args.username}**`,
-    rsnDoesntExist: (args) =>
-      `Couldn't find RSN (**${args.rsn}**) linked to **${args.username}**`,
-    notActivated: (args) => `The user (**${args.username}**) is not activated.`,
-    noEvents: "Couldn't find events belonging to this guild.",
-  },
+	errors: {
+		noGuild: "This command must be used in a server.",
+		noChannel: "This command must be used in a channel.",
+		noMember: "Could not retrieve member information.",
+		competitionError: "Failed to retrieve competition data.",
+		givingPoints: "Error giving points. Please try again.",
+		apiError: (args) => `Error ${args.activity}.\n\`${args.error}\``,
+		apiHealth:
+			"Cannot reach the application server. Please try again in 30 seconds.",
+		empty: (args) => `Error accessing empty ${args.target}.`,
+		internalError: "An internal error occurred. Please try again.",
+		networkError: "Network error. Please check your connection and try again.",
+		timeout: "Request timed out. Please try again.",
+		notFound: (args) => `${args.resource} not found.`,
+		alreadyExists: (args) => `${args.resource} already exists.`,
+		invalidFormat: (args) => `Invalid ${args.field} format.`,
+		unavailable: (args) =>
+			`${args.service} is currently unavailable. Please try again later.`,
+		maintenance:
+			"The bot is currently under maintenance. Please try again later.",
+		rateLimitExceeded: "Too many requests. Please slow down.",
+		commandFailed: (args) => `Command failed: ${args.reason}`,
+		databaseError: "Database error occurred. Please try again.",
+		parameterMissing: (args) => `Missing required parameter: ${args.parameter}`,
+		invalidOperation: "Invalid operation attempted.",
+		userNotFound: (args) => `User **${args.username}** not found.`,
+		rsnNotBound: (args) => `**${args.rsn}** is not bound to a known member.`,
+		fetchFailed: (args) => `Failed to fetch ${args.resource}.`,
+		updateFailed: (args) => `Failed to update ${args.resource}.`,
+		deleteFailed: (args) => `Failed to delete ${args.resource}.`,
+		createFailed: (args) => `Failed to create ${args.resource}.`,
+		womUnavailable: "Wise Old Man API is currently unavailable.",
+		womPlayerNotFound: (args) =>
+			`Player **${args.rsn}** not found on Wise Old Man.`,
+		channelNotFound: "Required channel not found.",
+		messageNotFound: "Message not found or has been deleted.",
+		expiredRequest: "This request has expired. Please submit a new one.",
+		unauthorized: "You are not authorized to perform this action.",
+		guildNotInitialized: "This server has not been initialized.",
+		retrievingPlayers: "Failed to fetch players from command",
+		errorGivingPoints: (args) => `Error giving points: ${args.message}`,
+		couldntGetUser: (args) => `Couldn't get user for ID: ${args.userId}`,
+		unexpectedError: (args) => `Unexpected error occurred...\n${args.message}`,
+		errorFetchingWom: "Error fetching user from Wise Old Man.",
+		fetchingPbEmbeds: "fetching data for pb embeds",
+		somethingWrongActivation: "Something went **really** wrong",
+		somethingUnexpected: "Something unexpected happened...",
+		zeroPoints: "Invalid points amount - cannot give 0 points",
+		rsnFail: (args) => `Failed to add RSN (**${args.rsn}**)`,
+		rsnExists: (args) => `RSN already exists on user ** ${args.username}**`,
+		rsnDoesntExist: (args) =>
+			`Couldn't find RSN (**${args.rsn}**) linked to **${args.username}**`,
+		notActivated: (args) => `The user (**${args.username}**) is not activated.`,
+		noEvents: "Couldn't find events belonging to this guild.",
+	},
 
-  success: {
-    operationComplete: "Operation completed successfully.",
-    dataUpdated: (args) => `${args.resource} updated successfully.`,
-    dataCreated: (args) => `${args.resource} created successfully.`,
-    dataDeleted: (args) => `${args.resource} deleted successfully.`,
-    settingsSaved: "Settings saved successfully.",
-    configurationUpdated: "Configuration updated successfully.",
-    cacheCleared: "Cache cleared successfully.",
-    backupCreated: "Backup created successfully.",
-    maintenanceComplete: "Maintenance completed successfully.",
-    eventPositionsGiven: "# Event positions given",
-    teamEventPositionsGiven: "# Team event positions given",
-    success: "Success",
-  },
+	success: {
+		operationComplete: "Operation completed successfully.",
+		dataUpdated: (args) => `${args.resource} updated successfully.`,
+		dataCreated: (args) => `${args.resource} created successfully.`,
+		dataDeleted: (args) => `${args.resource} deleted successfully.`,
+		settingsSaved: "Settings saved successfully.",
+		configurationUpdated: "Configuration updated successfully.",
+		cacheCleared: "Cache cleared successfully.",
+		backupCreated: "Backup created successfully.",
+		maintenanceComplete: "Maintenance completed successfully.",
+		eventPositionsGiven: "# Event positions given",
+		teamEventPositionsGiven: "# Team event positions given",
+		success: "Success",
+	},
 
-  status: {
-    online: "✅ Online",
-    offline: "❌ Offline",
-    maintenance: "🔧 Under Maintenance",
-    degraded: "⚠️ Degraded Performance",
-    checking: "🔄 Checking...",
-    healthy: "System is healthy.",
-    unhealthy: "System is experiencing issues.",
-    apiStatus: (args) => `API Status: ${args.status}`,
-    databaseStatus: (args) => `Database Status: ${args.status}`,
-    botStatus: (args) => `Bot Status: ${args.status}`,
-    uptime: (args) => `Uptime: ${args.uptime}`,
-    lastRestart: (args) => `Last Restart: ${args.time}`,
-  },
+	status: {
+		online: "✅ Online",
+		offline: "❌ Offline",
+		maintenance: "🔧 Under Maintenance",
+		degraded: "⚠️ Degraded Performance",
+		checking: "🔄 Checking...",
+		healthy: "System is healthy.",
+		unhealthy: "System is experiencing issues.",
+		apiStatus: (args) => `API Status: ${args.status}`,
+		databaseStatus: (args) => `Database Status: ${args.status}`,
+		botStatus: (args) => `Bot Status: ${args.status}`,
+		uptime: (args) => `Uptime: ${args.uptime}`,
+		lastRestart: (args) => `Last Restart: ${args.time}`,
+	},
 
-  autocomplete: {
-    invalidBossName: (args) =>
-      `Invalid boss name: \`${args.boss}\`\nPlease select a boss from the autocomplete suggestions.`,
-    noRsnsFound: (args) =>
-      `No RSNs found for user ${args.userId} after filtering`,
-  },
+	autocomplete: {
+		invalidBossName: (args) =>
+			`Invalid boss name: \`${args.boss}\`\nPlease select a boss from the autocomplete suggestions.`,
+		noRsnsFound: (args) =>
+			`No RSNs found for user ${args.userId} after filtering`,
+	},
 
-  api: {
-    internalAuthError: "Internal authorization error.",
-    tooManyRequests: "Too many requests, try again in a minute.",
-    internalError: "Internal server error.",
-    externalError: "External server error.",
-    couldntRemoveUser: "Couldn't remove user",
-    couldntRemoveGuild: "Couldn't remove guild",
-  },
+	api: {
+		internalAuthError: "Internal authorization error.",
+		tooManyRequests: "Too many requests, try again in a minute.",
+		internalError: "Internal server error.",
+		externalError: "External server error.",
+		couldntRemoveUser: "Couldn't remove user",
+		couldntRemoveGuild: "Couldn't remove guild",
+	},
 
-  ca: {
-    requestSubmitted: (args) =>
-      `# Combat Achievement Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.requester}** has submitted a CA request.\n**Achievement:** ${args.caName}\n**Already completed:** ${args.alreadyCompleted}\n**New completers:** ${args.newCompleters}\n\n${args.preview}`,
-    approved: (args) =>
-      `# Combat Achievement Approved\n-# ${args.sourceName} | ${args.points} points\n`,
-    denied: (args) =>
-      `# Combat Achievement Denied\n-# ${args.sourceName} | ${args.points} points\n\n❌ CA request for **${args.caName}** was denied.`,
-    allAlreadyCompleted:
-      "❌ All players have already completed this combat achievement.",
-    granted: (args) =>
-      `✔ Granted combat achievement **${args.caName}** to **${args.username}**.`,
-    removed: (args) =>
-      `✔ Removed combat achievement **${args.caName}** from **${args.username}**.`,
-  },
+	ca: {
+		requestSubmitted: (args) =>
+			`# Combat Achievement Request\n-# ${args.sourceName} | ${args.points} points\n\n**${args.requester}** has submitted a CA request.\n**Achievement:** ${args.caName}\n**Already completed:** ${args.alreadyCompleted}\n**New completers:** ${args.newCompleters}\n\n${args.preview}`,
+		approved: (args) =>
+			`# Combat Achievement Approved\n-# ${args.sourceName} | ${args.points} points\n`,
+		denied: (args) =>
+			`# Combat Achievement Denied\n-# ${args.sourceName} | ${args.points} points\n\n❌ CA request for **${args.caName}** was denied.`,
+		allAlreadyCompleted:
+			"❌ All players have already completed this combat achievement.",
+		granted: (args) =>
+			`✔ Granted combat achievement **${args.caName}** to **${args.username}**.`,
+		removed: (args) =>
+			`✔ Removed combat achievement **${args.caName}** from **${args.username}**.`,
+	},
 
-  bingo: {
-    setupComplete: (args) => `# 🏆 Bingo Setup Complete\n**${args.name}**`,
-    notTeamEvent: "❌ This competition has no teams. Use a team competition.",
-  },
+	bingo: {
+		setupComplete: (args) => `# 🏆 Bingo Setup Complete\n**${args.name}**`,
+		notTeamEvent: "❌ This competition has no teams. Use a team competition.",
+	},
 };
 
 /**
@@ -441,37 +441,37 @@ const strings: StringRepository = {
  * @returns The formatted string
  */
 export function getString(
-  category: string,
-  key: string,
-  // biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
-  args?: Record<string, any>
+	category: string,
+	key: string,
+	// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
+	args?: Record<string, any>,
 ): string {
-  const logger = getLogger();
-  const c = strings[category];
-  if (!c) {
-    logger.warn({ string: `${category}.${key}` }, "String not found");
-    return `[${category}.${key}]`;
-  }
+	const logger = getLogger();
+	const c = strings[category];
+	if (!c) {
+		logger.warn({ string: `${category}.${key}` }, "String not found");
+		return `[${category}.${key}]`;
+	}
 
-  const k = c[key];
-  if (!k) {
-    logger.warn({ string: `${category}.${key}` }, "String not found");
-    return `[${category}.${key}]`;
-  }
+	const k = c[key];
+	if (!k) {
+		logger.warn({ string: `${category}.${key}` }, "String not found");
+		return `[${category}.${key}]`;
+	}
 
-  const template = k;
+	const template = k;
 
-  if (typeof template === "function" && args) {
-    return template(args);
-  }
-  if (typeof template === "string") {
-    return template;
-  }
-  logger.warn(
-    { stringTemplate: `${category}.${key}` },
-    "Missing arguments for string template"
-  );
-  return `[${category}.${key}:missing-args]`;
+	if (typeof template === "function" && args) {
+		return template(args);
+	}
+	if (typeof template === "string") {
+		return template;
+	}
+	logger.warn(
+		{ stringTemplate: `${category}.${key}` },
+		"Missing arguments for string template",
+	);
+	return `[${category}.${key}:missing-args]`;
 }
 
 /**
@@ -481,17 +481,17 @@ export function getString(
  * @returns The joined strings
  */
 export function getMultipleStrings(
-  stringRequests: Array<{
-    category: string;
-    key: string;
-    // biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
-    args?: Record<string, any>;
-  }>,
-  separator = "\n"
+	stringRequests: Array<{
+		category: string;
+		key: string;
+		// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
+		args?: Record<string, any>;
+	}>,
+	separator = "\n",
 ): string {
-  return stringRequests
-    .map((request) => getString(request.category, request.key, request.args))
-    .join(separator);
+	return stringRequests
+		.map((request) => getString(request.category, request.key, request.args))
+		.join(separator);
 }
 
 export default { getString, getMultipleStrings };

@@ -4,27 +4,27 @@ import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 const requestHelper = async (
-  achievement: string,
-  screenshot: string,
-  interaction: CommandInteraction<"cached">
+	achievement: string,
+	screenshot: string,
+	interaction: CommandInteraction<"cached">,
 ) => {
-  const username = (interaction.member as GuildMember).displayName;
-  const content = getString("achievements", "requestSubmitted", {
-    username,
-    achievement,
-  });
+	const username = (interaction.member as GuildMember).displayName;
+	const content = getString("achievements", "requestSubmitted", {
+		username,
+		achievement,
+	});
 
-  const data: AchievementRequest = {
-    type: "achievement",
-    member: interaction.member as GuildMember,
-    achievement,
-    screenshot,
-    timestamp: Date.now(),
-    channel: "",
-    message: "",
-  };
+	const data: AchievementRequest = {
+		type: "achievement",
+		member: interaction.member as GuildMember,
+		achievement,
+		screenshot,
+		timestamp: Date.now(),
+		channel: "",
+		message: "",
+	};
 
-  await postRequest(content, data, interaction);
+	await postRequest(content, data, interaction);
 };
 
 export default requestHelper;

@@ -2,45 +2,45 @@ import type { Achievement, CombatAchievement } from "./achievement";
 import type { DetailedRecord } from "./time";
 
 export type RSN = {
-  rsn: string;
-  wom_id: string;
+	rsn: string;
+	wom_id: string;
 };
 
 export type SimpleUser = {
-  user_id: string;
-  guild_id: string;
-  points: number;
+	user_id: string;
+	guild_id: string;
+	points: number;
 };
 
 export type GuildEvent = {
-  name: string;
-  wom_id: string;
-  guild_id: string;
-  user_id: string;
-  placement: number;
-  position_cutoff: number;
-  solo: boolean;
+	name: string;
+	wom_id: string;
+	guild_id: string;
+	user_id: string;
+	placement: number;
+	position_cutoff: number;
+	solo: boolean;
 };
 
 export type UserTier = {
-  name: string;
-  icon: string | null;
-  role_id: string | null;
-  min_points: number;
-  display_order: number;
+	name: string;
+	icon: string | null;
+	role_id: string | null;
+	min_points: number;
+	display_order: number;
 };
 
 export type User = SimpleUser & {
-  rsns: RSN[];
-  events: GuildEvent[];
-  achievements: Achievement[];
-  combat_achievements: CombatAchievement[];
+	rsns: RSN[];
+	events: GuildEvent[];
+	achievements: Achievement[];
+	combat_achievements: CombatAchievement[];
 };
 
 export type DetailedUser = User & {
-  records: DetailedRecord[];
-  rank: number;
-  tier: UserTier | null;
+	records: DetailedRecord[];
+	rank: number;
+	tier: UserTier | null;
 };
 
 // Lookup param types

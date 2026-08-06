@@ -1,10 +1,10 @@
 import type { EmbedCategoryData, EmbedBossData } from "@utils/guilds";
 import {
-  EmbedBuilder,
-  Collection,
-  type GuildMember,
-  type APIEmbedField,
-  type Guild,
+	EmbedBuilder,
+	Collection,
+	type GuildMember,
+	type APIEmbedField,
+	type Guild,
 } from "discord.js";
 import TimeConverter from "./TimeConverter";
 import type { RecordTeam } from "@typings/api/time";
@@ -14,83 +14,83 @@ const PADDING = 110;
 
 // Adds invisible non space padding to expand embeds to a consistent size
 function padTo(to: number, s: string) {
-  if (s.length === to) return s;
-  return s + "‎ ".repeat(to - s.length);
+	if (s.length === to) return s;
+	return s + "‎ ".repeat(to - s.length);
 }
 
 export default function buildCategoryEmbed(
-  category: EmbedCategoryData
+	category: EmbedCategoryData,
 ): EmbedBuilder {
-  return new EmbedBuilder()
-    .setColor("#E00000")
-    .setTitle(category.name)
-    .setThumbnail(category.thumbnail);
+	return new EmbedBuilder()
+		.setColor("#E00000")
+		.setTitle(category.name)
+		.setThumbnail(category.thumbnail);
 }
 
 export function buildBossField(
-  boss: EmbedBossData,
-  members: Collection<string, GuildMember>
+	boss: EmbedBossData,
+	members: Collection<string, GuildMember>,
 ) {
-  let time = "`No record yet`";
-  if (boss.pb_value) {
-    time =
-      boss.value_type === "time"
-        ? `\`${TimeConverter.ticksToTime(boss.pb_value)}\``
-        : `\`${boss.pb_value}\``;
-  }
+	let time = "`No record yet`";
+	if (boss.pb_value) {
+		time =
+			boss.value_type === "time"
+				? `\`${TimeConverter.ticksToTime(boss.pb_value)}\``
+				: `\`${boss.pb_value}\``;
+	}
 
-  const team =
-    boss.teammate_user_ids
-      .map((player) => `**${members.get(player)?.displayName}**`)
-      .join(", ") ?? "";
+	const team =
+		boss.teammate_user_ids
+			.map((player) => `**${members.get(player)?.displayName}**`)
+			.join(", ") ?? "";
 
-  return {
-    name: boss.display_name,
-    value: [time, team].filter(Boolean).join(" - "),
-  };
+	return {
+		name: boss.display_name,
+		value: [time, team].filter(Boolean).join(" - "),
+	};
 }
 
 export function buildBossFields(
-  bosses: EmbedBossData[],
-  members: Collection<string, GuildMember>
+	bosses: EmbedBossData[],
+	members: Collection<string, GuildMember>,
 ) {
-  const fields: APIEmbedField[] = [];
+	const fields: APIEmbedField[] = [];
 
-  for (const boss of bosses) {
-    fields.push(buildBossField(boss, members));
-  }
+	for (const boss of bosses) {
+		fields.push(buildBossField(boss, members));
+	}
 
-  return fields;
+	return fields;
 }
 
 export function findCategoryByBoss(
-  categories: EmbedCategoryData[],
-  boss: string
+	categories: EmbedCategoryData[],
+	boss: string,
 ) {
-  return categories.find((c) => c.bosses.some((b) => b.name === boss));
+	return categories.find((c) => c.bosses.some((b) => b.name === boss));
 }
 
 export async function getMembersFromUserIds(guild: Guild, user_ids: string[]) {
-  // Get rid of duplicate user_ids
-  const players = [...new Set(user_ids)];
-  const members = await guild.members.fetch({ user: players });
+	// Get rid of duplicate user_ids
+	const players = [...new Set(user_ids)];
+	const members = await guild.members.fetch({ user: players });
 
-  return members;
+	return members;
 }
 
 export async function getMembersFromTeams(
-  guild: Guild,
-  teams: RecordTeam[] | undefined
+	guild: Guild,
+	teams: RecordTeam[] | undefined,
 ) {
-  if (!teams) {
-    return new Collection<string, GuildMember>();
-  }
+	if (!teams) {
+		return new Collection<string, GuildMember>();
+	}
 
-  const user_ids = teams.map((team) => team.user_id);
+	const user_ids = teams.map((team) => team.user_id);
 
-  // Get rid of duplicate user_ids
-  const players = [...new Set(user_ids)];
-  const members = await guild.members.fetch({ user: players });
+	// Get rid of duplicate user_ids
+	const players = [...new Set(user_ids)];
+	const members = await guild.members.fetch({ user: players });
 
-  return members;
+	return members;
 }

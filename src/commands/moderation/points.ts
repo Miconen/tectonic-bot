@@ -13,152 +13,152 @@ import RequiresGuild from "@guards/RequiresGuild.js";
 @Discord()
 @Guard(IsAdmin, RequiresGuild)
 @SlashGroup({
-  description: "Manage user points",
-  name: "points",
-  root: "moderation",
+	description: "Manage user points",
+	name: "points",
+	root: "moderation",
 })
 @SlashGroup("points", "moderation")
 class Points {
-  @Slash({ name: "give", description: "Give points to a user" })
-  async give(
-    @SlashOption({
-      name: "username",
-      description: "@User tag to give points to",
-      required: true,
-      type: ApplicationCommandOptionType.User,
-    })
-    target: GuildMember,
-    @SlashOption({
-      name: "amount",
-      description: "Amount of points to give",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    addedPoints: number,
-    interaction: CommandInteraction<"cached">
-  ) {
-    await interaction.deferReply();
-    const res = await giveHelper(target, addedPoints, interaction);
-    await replyHandler(res, interaction);
-  }
+	@Slash({ name: "give", description: "Give points to a user" })
+	async give(
+		@SlashOption({
+			name: "username",
+			description: "@User tag to give points to",
+			required: true,
+			type: ApplicationCommandOptionType.User,
+		})
+		target: GuildMember,
+		@SlashOption({
+			name: "amount",
+			description: "Amount of points to give",
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
+		addedPoints: number,
+		interaction: CommandInteraction<"cached">,
+	) {
+		await interaction.deferReply();
+		const res = await giveHelper(target, addedPoints, interaction);
+		await replyHandler(res, interaction);
+	}
 
-  @Slash({
-    name: "source",
-    description: "Give points to a user by a point source",
-  })
-  async source(
-    @SlashOption({
-      name: "username",
-      description: "@User tag to give points to",
-      required: true,
-      type: ApplicationCommandOptionType.User,
-    })
-    target: GuildMember,
-    @SlashOption({
-      name: "source",
-      description: "Point source to give",
-      required: true,
-      type: ApplicationCommandOptionType.String,
-      autocomplete: pointSourcePicker,
-    })
-    source: string,
-    interaction: CommandInteraction<"cached">
-  ) {
-    await interaction.deferReply();
-    const res = await giveHelper(target, source, interaction);
-    await replyHandler(res, interaction);
-  }
+	@Slash({
+		name: "source",
+		description: "Give points to a user by a point source",
+	})
+	async source(
+		@SlashOption({
+			name: "username",
+			description: "@User tag to give points to",
+			required: true,
+			type: ApplicationCommandOptionType.User,
+		})
+		target: GuildMember,
+		@SlashOption({
+			name: "source",
+			description: "Point source to give",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: pointSourcePicker,
+		})
+		source: string,
+		interaction: CommandInteraction<"cached">,
+	) {
+		await interaction.deferReply();
+		const res = await giveHelper(target, source, interaction);
+		await replyHandler(res, interaction);
+	}
 
-  @Slash({
-    name: "setmultiplier",
-    description: "Set a server wide point multiplier",
-  })
-  async setmultiplier(
-    @SlashOption({
-      name: "multiplier",
-      description: "Number that all points given will get multiplied by",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    multiplier: number,
-    interaction: CommandInteraction<"cached">
-  ) {
-    await interaction.deferReply();
-    return multiplierHelper(multiplier, interaction);
-  }
+	@Slash({
+		name: "setmultiplier",
+		description: "Set a server wide point multiplier",
+	})
+	async setmultiplier(
+		@SlashOption({
+			name: "multiplier",
+			description: "Number that all points given will get multiplied by",
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
+		multiplier: number,
+		interaction: CommandInteraction<"cached">,
+	) {
+		await interaction.deferReply();
+		return multiplierHelper(multiplier, interaction);
+	}
 
-  @Slash({ name: "role", description: "Event point for a whole role" })
-  async role(
-    @SlashOption({
-      name: "role",
-      description: "Role for which to award points",
-      required: true,
-      type: ApplicationCommandOptionType.Role,
-    })
-    role: Role,
-    @SlashOption({
-      name: "source",
-      description: "Point source to give",
-      required: true,
-      type: ApplicationCommandOptionType.String,
-      autocomplete: pointSourcePicker,
-    })
-    source: string,
-    interaction: CommandInteraction<"cached">
-  ) {
-    await interaction.deferReply();
-    await interaction.guild.members.fetch();
+	@Slash({ name: "role", description: "Event point for a whole role" })
+	async role(
+		@SlashOption({
+			name: "role",
+			description: "Role for which to award points",
+			required: true,
+			type: ApplicationCommandOptionType.Role,
+		})
+		role: Role,
+		@SlashOption({
+			name: "source",
+			description: "Point source to give",
+			required: true,
+			type: ApplicationCommandOptionType.String,
+			autocomplete: pointSourcePicker,
+		})
+		source: string,
+		interaction: CommandInteraction<"cached">,
+	) {
+		await interaction.deferReply();
+		await interaction.guild.members.fetch();
 
-    const res = await giveHelper(role.members, source, interaction);
-    await replyHandler(res, interaction);
-  }
+		const res = await giveHelper(role.members, source, interaction);
+		await replyHandler(res, interaction);
+	}
 
-  @Slash({
-    name: "rolebypoints",
-    description: "Event point for a whole role by point amount",
-  })
-  async rolebypoints(
-    @SlashOption({
-      name: "role",
-      description: "Role for which to award points",
-      required: true,
-      type: ApplicationCommandOptionType.Role,
-    })
-    role: Role,
-    @SlashOption({
-      name: "amount",
-      description: "Amount of points to give",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    addedPoints: number,
-    interaction: CommandInteraction<"cached">
-  ) {
-    await interaction.deferReply();
-    await interaction.guild.members.fetch();
+	@Slash({
+		name: "rolebypoints",
+		description: "Event point for a whole role by point amount",
+	})
+	async rolebypoints(
+		@SlashOption({
+			name: "role",
+			description: "Role for which to award points",
+			required: true,
+			type: ApplicationCommandOptionType.Role,
+		})
+		role: Role,
+		@SlashOption({
+			name: "amount",
+			description: "Amount of points to give",
+			required: true,
+			type: ApplicationCommandOptionType.Number,
+		})
+		addedPoints: number,
+		interaction: CommandInteraction<"cached">,
+	) {
+		await interaction.deferReply();
+		await interaction.guild.members.fetch();
 
-    const res = await giveHelper(role.members, addedPoints, interaction);
-    await replyHandler(res, interaction);
-  }
+		const res = await giveHelper(role.members, addedPoints, interaction);
+		await replyHandler(res, interaction);
+	}
 
-  @Slash({ name: "wom", description: "Wise old man automation" })
-  async wom(
-    @SlashOption({
-      name: "competition",
-      description: "ID of the WOM competition",
-      required: true,
-      type: ApplicationCommandOptionType.Integer,
-    })
-    @SlashOption({
-      name: "cutoff",
-      description: "Cutoff for xp/kills to gain points",
-      required: true,
-      type: ApplicationCommandOptionType.Integer,
-    })
-    competitionId: number,
-    cutoff: number,
-    interaction: CommandInteraction<"cached">
-  ) {
-    await womHelper(competitionId, interaction, cutoff);
-  }
+	@Slash({ name: "wom", description: "Wise old man automation" })
+	async wom(
+		@SlashOption({
+			name: "competition",
+			description: "ID of the WOM competition",
+			required: true,
+			type: ApplicationCommandOptionType.Integer,
+		})
+		@SlashOption({
+			name: "cutoff",
+			description: "Cutoff for xp/kills to gain points",
+			required: true,
+			type: ApplicationCommandOptionType.Integer,
+		})
+		competitionId: number,
+		cutoff: number,
+		interaction: CommandInteraction<"cached">,
+	) {
+		await womHelper(competitionId, interaction, cutoff);
+	}
 }
