@@ -7,9 +7,9 @@ import RequiresGuild from "@guards/RequiresGuild.js";
 @Discord()
 @Guard(RequiresGuild)
 class Leaderboard {
-  @Slash({ name: "leaderboard", description: "Check the top 50 leaderboard" })
-  @Guard(RateLimit(TIME_UNIT.seconds, 60))
-  leaderboard(interaction: CommandInteraction<"cached">) {
-    return leaderboardHelper(interaction);
-  }
+	@Slash({ name: "leaderboard", description: "Check the top 50 leaderboard" })
+	@Guard(RateLimit(TIME_UNIT.seconds, 60))
+	leaderboard(interaction: CommandInteraction<"cached">) {
+		return leaderboardHelper(interaction);
+	}
 }

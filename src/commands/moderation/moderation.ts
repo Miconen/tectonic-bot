@@ -9,11 +9,11 @@ import RequiresGuild from "@guards/RequiresGuild.js";
 @SlashGroup({ description: "Moderation related commands", name: "moderation" })
 @SlashGroup("moderation")
 class Moderation {
-  @Slash({
-    name: "start",
-    description: "Setup command for the whole guild",
-  })
-  async start(interaction: CommandInteraction<"cached">) {
-    return startHelper(interaction);
-  }
+	@Slash({
+		name: "start",
+		description: "Setup command for the whole guild",
+	})
+	async start(interaction: CommandInteraction<"cached">) {
+		return startHelper(interaction);
+	}
 }

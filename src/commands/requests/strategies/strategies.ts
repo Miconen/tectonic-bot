@@ -8,20 +8,20 @@ import { splitStrategy } from "./split";
 type Interaction = ButtonInteraction<"cached"> | CommandInteraction<"cached">;
 
 export interface RequestStrategy<T extends BaseRequest> {
-  accept(interaction: Interaction, data: T): Promise<string | string[]>;
-  denyMessage(data: T): string;
-  label(data: T): string;
+	accept(interaction: Interaction, data: T): Promise<string | string[]>;
+	denyMessage(data: T): string;
+	label(data: T): string;
 }
 
 const strategies: Record<string, RequestStrategy<PendingRequest>> = {
-  split: splitStrategy,
-  ca: caStrategy,
-  pb: pbStrategy,
-  achievement: achievementStrategy,
+	split: splitStrategy,
+	ca: caStrategy,
+	pb: pbStrategy,
+	achievement: achievementStrategy,
 };
 
 export function getStrategy<T extends PendingRequest>(
-  data: T
+	data: T,
 ): RequestStrategy<T> {
-  return strategies[data.type];
+	return strategies[data.type];
 }

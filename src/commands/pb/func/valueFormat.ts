@@ -5,5 +5,5 @@ import { formatDisplayName } from "@utils/formatDisplayName.js";
  * e.g. "time" -> "Time", "depth" -> "Depth"
  */
 export function formatValueLabel(valueType: string): string {
-  return formatDisplayName(valueType);
+	return formatDisplayName(valueType);
 }

@@ -4,24 +4,24 @@ import { safeRespond } from "@utils/pickers";
 import type { AutocompleteInteraction } from "discord.js";
 
 export const eventPicker = withAutocompleteLogging(
-  "eventPicker",
-  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
-    const events = await getEvents(interaction.guild.id);
-    if (!events) {
-      await safeRespond(interaction, []);
-      return;
-    }
+	"eventPicker",
+	async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
+		const events = await getEvents(interaction.guild.id);
+		if (!events) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-    const query =
-      interaction.options.getFocused(true).value.toLowerCase().trim() ?? "";
+		const query =
+			interaction.options.getFocused(true).value.toLowerCase().trim() ?? "";
 
-    const options = events
-      .filter((e) => e.name.toLowerCase().includes(query))
-      .map((e) => ({
-        name: e.name,
-        value: e.wom_id,
-      }));
+		const options = events
+			.filter((e) => e.name.toLowerCase().includes(query))
+			.map((e) => ({
+				name: e.name,
+				value: e.wom_id,
+			}));
 
-    await safeRespond(interaction, options);
-  }
+		await safeRespond(interaction, options);
+	},
 );

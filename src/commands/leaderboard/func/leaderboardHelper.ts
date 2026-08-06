@@ -8,104 +8,104 @@ import { replyHandler } from "@utils/replyHandler";
 import { container } from "tsyringe";
 
 interface LeaderboardUser {
-  name: string;
-  value: string;
+	name: string;
+	value: string;
 }
 
 async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
-  const rankService = container.resolve<IRankService>("RankService");
+	const rankService = container.resolve<IRankService>("RankService");
 
-  const lb = await Requests.getLeaderboard(interaction.guild.id);
-  if (lb.error)
-    return replyHandler("Error outputting leaderboard", interaction);
-  const users = lb.data;
-  if (!users || users.length === 0)
-    return replyHandler("No activated users for leaderboard", interaction);
+	const lb = await Requests.getLeaderboard(interaction.guild.id);
+	if (lb.error)
+		return replyHandler("Error outputting leaderboard", interaction);
+	const users = lb.data;
+	if (!users || users.length === 0)
+		return replyHandler("No activated users for leaderboard", interaction);
 
-  // Fetch guild rank tiers for icon lookup
-  let guildRanks: GuildRankResponse[] = [];
-  const ranksRes = await Requests.getGuildRanks(interaction.guild.id);
-  if (!ranksRes.error && ranksRes.data) {
-    guildRanks = ranksRes.data;
-  }
+	// Fetch guild rank tiers for icon lookup
+	let guildRanks: GuildRankResponse[] = [];
+	const ranksRes = await Requests.getGuildRanks(interaction.guild.id);
+	if (!ranksRes.error && ranksRes.data) {
+		guildRanks = ranksRes.data;
+	}
 
-  const userIds = users.map((user) => user.user_id);
-  const usersData = await interaction.guild.members.fetch({ user: userIds });
-  if (!usersData) return;
+	const userIds = users.map((user) => user.user_id);
+	const usersData = await interaction.guild.members.fetch({ user: userIds });
+	if (!usersData) return;
 
-  const leaderboard: LeaderboardUser[] = [];
-  let serverRank = 0;
-  for (const user of users) {
-    const userData = usersData.get(user.user_id);
-    if (!userData) continue;
+	const leaderboard: LeaderboardUser[] = [];
+	let serverRank = 0;
+	for (const user of users) {
+		const userData = usersData.get(user.user_id);
+		if (!userData) continue;
 
-    // Use API guild ranks if available, fall back to hardcoded RankService
-    const tierIcon =
-      getTierIcon(user.points, guildRanks) ??
-      rankService.getIcon(rankService.getRankByPoints(user.points));
-    serverRank++;
+		// Use API guild ranks if available, fall back to hardcoded RankService
+		const tierIcon =
+			getTierIcon(user.points, guildRanks) ??
+			rankService.getIcon(rankService.getRankByPoints(user.points));
+		serverRank++;
 
-    leaderboard.push({
-      name: `#${serverRank} **${
-        userData.nickname ?? userData.displayName
-      }** (${user.rsns.map((rsn) => rsn.rsn).join(" | ")})`,
-      value: `${tierIcon} ${user.points} points | Accounts: ${user.rsns.length}`,
-    });
-  }
+		leaderboard.push({
+			name: `#${serverRank} **${
+				userData.nickname ?? userData.displayName
+			}** (${user.rsns.map((rsn) => rsn.rsn).join(" | ")})`,
+			value: `${tierIcon} ${user.points} points | Accounts: ${user.rsns.length}`,
+		});
+	}
 
-  const botIconUrl = interaction.client.user?.avatarURL() ?? "";
+	const botIconUrl = interaction.client.user?.avatarURL() ?? "";
 
-  const embedMaker = (): EmbedBuilder => {
-    return new EmbedBuilder()
-      .setTitle("Tectonic Leaderboard")
-      .setAuthor({
-        name: "Tectonic Bot",
-        url: "https://github.com/Miconen/tectonic-bot",
-        iconURL: botIconUrl,
-      })
-      .setColor("#0099ff")
-      .setTimestamp();
-  };
+	const embedMaker = (): EmbedBuilder => {
+		return new EmbedBuilder()
+			.setTitle("Tectonic Leaderboard")
+			.setAuthor({
+				name: "Tectonic Bot",
+				url: "https://github.com/Miconen/tectonic-bot",
+				iconURL: botIconUrl,
+			})
+			.setColor("#0099ff")
+			.setTimestamp();
+	};
 
-  const pages = [];
-  function pageMaker(i: number) {
-    const fields = leaderboard.slice(i, i + 10);
+	const pages = [];
+	function pageMaker(i: number) {
+		const fields = leaderboard.slice(i, i + 10);
 
-    return {
-      embeds: [
-        embedMaker()
-          .setFooter({
-            text: `Page ${i / 10 + 1} (${i + 1}-${i + 10})`,
-          })
-          .addFields(...fields),
-      ],
-    };
-  }
-  for (let i = 0; i <= leaderboard.length; i++) {
-    if (i % 10 === 0) pages.push(pageMaker(i));
-  }
+		return {
+			embeds: [
+				embedMaker()
+					.setFooter({
+						text: `Page ${i / 10 + 1} (${i + 1}-${i + 10})`,
+					})
+					.addFields(...fields),
+			],
+		};
+	}
+	for (let i = 0; i <= leaderboard.length; i++) {
+		if (i % 10 === 0) pages.push(pageMaker(i));
+	}
 
-  await new Pagination(interaction, [...pages]).send();
+	await new Pagination(interaction, [...pages]).send();
 }
 
 /** Find the tier icon for a given points value from the API guild ranks. */
 function getTierIcon(
-  points: number,
-  ranks: GuildRankResponse[]
+	points: number,
+	ranks: GuildRankResponse[],
 ): string | null {
-  if (ranks.length === 0) return null;
+	if (ranks.length === 0) return null;
 
-  // Find the highest threshold the user meets
-  let best: GuildRankResponse | null = null;
-  for (const rank of ranks) {
-    if (points >= rank.min_points) {
-      if (!best || rank.min_points > best.min_points) {
-        best = rank;
-      }
-    }
-  }
+	// Find the highest threshold the user meets
+	let best: GuildRankResponse | null = null;
+	for (const rank of ranks) {
+		if (points >= rank.min_points) {
+			if (!best || rank.min_points > best.min_points) {
+				best = rank;
+			}
+		}
+	}
 
-  return best?.icon ?? null;
+	return best?.icon ?? null;
 }
 
 export default leaderboardHelper;

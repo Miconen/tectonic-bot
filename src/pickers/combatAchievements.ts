@@ -5,86 +5,86 @@ import { fetchUser, safeRespond } from "@utils/pickers";
 import type { AutocompleteInteraction } from "discord.js";
 
 export const combatAchievementPicker = withAutocompleteLogging(
-  "combatAchievementPicker",
-  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
-    const cas = await getGuildCAs(interaction.guild.id);
-    if (!cas) {
-      await safeRespond(interaction, []);
-      return;
-    }
+	"combatAchievementPicker",
+	async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
+		const cas = await getGuildCAs(interaction.guild.id);
+		if (!cas) {
+			await safeRespond(interaction, []);
+			return;
+		}
 
-    const user = await fetchUser(interaction.guild.id, interaction.user.id);
-    const completedNames = new Set(
-      user?.combat_achievements?.map((ca) => ca.name) ?? []
-    );
+		const user = await fetchUser(interaction.guild.id, interaction.user.id);
+		const completedNames = new Set(
+			user?.combat_achievements?.map((ca) => ca.name) ?? [],
+		);
 
-    const query = interaction.options
-      .getFocused(true)
-      .value.toLowerCase()
-      .trim();
+		const query = interaction.options
+			.getFocused(true)
+			.value.toLowerCase()
+			.trim();
 
-    const filtered = cas
-      .filter((ca) => !completedNames.has(ca.name))
-      .filter((ca) => !query || ca.name.toLowerCase().includes(query));
+		const filtered = cas
+			.filter((ca) => !completedNames.has(ca.name))
+			.filter((ca) => !query || ca.name.toLowerCase().includes(query));
 
-    const options = filtered.map((ca) => ({
-      name: `${ca.name} | ${ca.points} points`,
-      value: ca.name,
-    }));
+		const options = filtered.map((ca) => ({
+			name: `${ca.name} | ${ca.points} points`,
+			value: ca.name,
+		}));
 
-    await safeRespond(interaction, options);
-  }
+		await safeRespond(interaction, options);
+	},
 );
 export const caGrantPicker = withAutocompleteLogging(
-  "caGrantPicker",
-  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
-    const picker = (completed: string[], ca: CombatAchievementEntry) =>
-      !completed.includes(ca.name);
-    caPicker(interaction, picker);
-  }
+	"caGrantPicker",
+	async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
+		const picker = (completed: string[], ca: CombatAchievementEntry) =>
+			!completed.includes(ca.name);
+		caPicker(interaction, picker);
+	},
 );
 
 export const caRemovePicker = withAutocompleteLogging(
-  "caRemovePicker",
-  async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
-    const picker = (completed: string[], ca: CombatAchievementEntry) =>
-      completed.includes(ca.name);
-    caPicker(interaction, picker);
-  }
+	"caRemovePicker",
+	async (interaction: AutocompleteInteraction<"cached">): Promise<void> => {
+		const picker = (completed: string[], ca: CombatAchievementEntry) =>
+			completed.includes(ca.name);
+		caPicker(interaction, picker);
+	},
 );
 
 async function caPicker(
-  interaction: AutocompleteInteraction<"cached">,
-  picker: (completed: string[], ca: CombatAchievementEntry) => boolean
+	interaction: AutocompleteInteraction<"cached">,
+	picker: (completed: string[], ca: CombatAchievementEntry) => boolean,
 ): Promise<void> {
-  const id = interaction.options.get("username")?.value ?? interaction.user.id;
-  if (!id || typeof id !== "string") {
-    await safeRespond(interaction, []);
-    return;
-  }
+	const id = interaction.options.get("username")?.value ?? interaction.user.id;
+	if (!id || typeof id !== "string") {
+		await safeRespond(interaction, []);
+		return;
+	}
 
-  const [user, cas] = await Promise.all([
-    fetchUser(interaction.guild.id, id),
-    getGuildCAs(interaction.guild.id),
-  ]);
+	const [user, cas] = await Promise.all([
+		fetchUser(interaction.guild.id, id),
+		getGuildCAs(interaction.guild.id),
+	]);
 
-  if (!cas) {
-    await safeRespond(interaction, []);
-    return;
-  }
+	if (!cas) {
+		await safeRespond(interaction, []);
+		return;
+	}
 
-  const completedNames = user?.combat_achievements?.map((ca) => ca.name) ?? [];
+	const completedNames = user?.combat_achievements?.map((ca) => ca.name) ?? [];
 
-  const query = interaction.options.getFocused(true).value.toLowerCase().trim();
+	const query = interaction.options.getFocused(true).value.toLowerCase().trim();
 
-  const filtered = cas
-    .filter((ca) => picker(completedNames, ca))
-    .filter((ca) => !query || ca.name.toLowerCase().includes(query));
+	const filtered = cas
+		.filter((ca) => picker(completedNames, ca))
+		.filter((ca) => !query || ca.name.toLowerCase().includes(query));
 
-  const options = filtered.map((ca) => ({
-    name: `${ca.name} | ${ca.points} points`,
-    value: ca.name,
-  }));
+	const options = filtered.map((ca) => ({
+		name: `${ca.name} | ${ca.points} points`,
+		value: ca.name,
+	}));
 
-  await safeRespond(interaction, options);
+	await safeRespond(interaction, options);
 }

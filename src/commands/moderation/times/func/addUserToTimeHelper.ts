@@ -7,39 +7,39 @@ import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 export async function addUserToTimeHelper(
-  user: GuildMember,
-  boss: string,
-  interaction: CommandInteraction<"cached">
+	user: GuildMember,
+	boss: string,
+	interaction: CommandInteraction<"cached">,
 ) {
-  const params: TeamParam = { type: "boss", boss };
-  const res = await Requests.addToTeam(interaction.guild.id, user.id, params);
-  if (res.error && res.status === 409) {
-    return await replyHandler(res.message, interaction, {
-      ephemeral: true,
-    });
-  }
+	const params: TeamParam = { type: "boss", boss };
+	const res = await Requests.addToTeam(interaction.guild.id, user.id, params);
+	if (res.error && res.status === 409) {
+		return await replyHandler(res.message, interaction, {
+			ephemeral: true,
+		});
+	}
 
-  if (res.error) {
-    return await replyHandler(getString("api", "internalError"), interaction, {
-      ephemeral: true,
-    });
-  }
+	if (res.error) {
+		return await replyHandler(getString("api", "internalError"), interaction, {
+			ephemeral: true,
+		});
+	}
 
-  invalidateGuildCache(interaction.guild.id);
+	invalidateGuildCache(interaction.guild.id);
 
-  await replyHandler(
-    getString("teams", "addedToBoss", {
-      user: user.displayName,
-      boss,
-    }),
-    interaction,
-    { ephemeral: true }
-  );
+	await replyHandler(
+		getString("teams", "addedToBoss", {
+			user: user.displayName,
+			boss,
+		}),
+		interaction,
+		{ ephemeral: true },
+	);
 
-  const success = await updateEmbed(boss, interaction);
-  if (!success) {
-    await replyHandler(getString("times", "failedUpdatingEmbed"), interaction, {
-      ephemeral: true,
-    });
-  }
+	const success = await updateEmbed(boss, interaction);
+	if (!success) {
+		await replyHandler(getString("times", "failedUpdatingEmbed"), interaction, {
+			ephemeral: true,
+		});
+	}
 }
