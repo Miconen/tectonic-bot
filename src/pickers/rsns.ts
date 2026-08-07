@@ -1,6 +1,6 @@
 import { getLogger } from "@logging/context";
 import { withAutocompleteLogging } from "@logging/guard";
-import { safeRespond, fetchUser } from "@utils/pickers";
+import { fetchUser, safeRespond } from "@utils/pickers";
 import type { AutocompleteInteraction } from "discord.js";
 
 export const rsnPicker = withAutocompleteLogging(

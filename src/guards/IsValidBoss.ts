@@ -1,8 +1,8 @@
-import type { GuardFunction } from "discordx";
-import type { CommandInteraction } from "discord.js";
 import { getGuild } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
+import { MessageFlags, type CommandInteraction } from "discord.js";
+import type { GuardFunction } from "discordx";
 
 async function getValidBossNames(guild_id: string): Promise<string[]> {
 	const guild = await getGuild(guild_id);
@@ -36,7 +36,7 @@ export const IsValidBoss: GuardFunction<CommandInteraction<"cached">> = async (
 		await replyHandler(
 			getString("autocomplete", "invalidBossName", { boss: bossOption }),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 		return; // Don't call next() — blocks the command
 	}

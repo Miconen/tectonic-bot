@@ -1,6 +1,6 @@
-import { AttachmentBuilder, type Client, type TextChannel } from "discord.js";
 import { Requests } from "@requests/main.js";
 import type { DetailedUser } from "@typings/api/user.js";
+import { AttachmentBuilder, type Client, type TextChannel } from "discord.js";
 
 /**
  * Dumps a user's data as a JSON file to the first available channel,

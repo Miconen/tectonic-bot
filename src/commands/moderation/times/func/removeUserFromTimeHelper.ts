@@ -4,7 +4,11 @@ import type { TeamParam } from "@typings/api/team";
 import { invalidateGuildCache } from "@utils/guildTimes";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction, GuildMember } from "discord.js";
+import {
+	MessageFlags,
+	type CommandInteraction,
+	type GuildMember,
+} from "discord.js";
 
 export async function removeUserFromTimeHelper(
 	user: GuildMember,
@@ -19,13 +23,13 @@ export async function removeUserFromTimeHelper(
 	);
 	if (res.error && res.status === 404) {
 		return await replyHandler(res.message, interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 
 	if (res.error) {
 		return await replyHandler(getString("api", "internalError"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 
@@ -37,13 +41,13 @@ export async function removeUserFromTimeHelper(
 			boss,
 		}),
 		interaction,
-		{ ephemeral: true },
+		{ flags: MessageFlags.Ephemeral },
 	);
 
 	const success = await updateEmbed(boss, interaction);
 	if (!success) {
 		await replyHandler(getString("times", "failedUpdatingEmbed"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 }

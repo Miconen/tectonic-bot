@@ -1,8 +1,8 @@
-import { Discord, Guard, Slash } from "discordx";
-import type { CommandInteraction } from "discord.js";
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
-import leaderboardHelper from "./func/leaderboardHelper.js";
 import RequiresGuild from "@guards/RequiresGuild.js";
+import type { CommandInteraction } from "discord.js";
+import { Discord, Guard, Slash } from "discordx";
+import leaderboardHelper from "./func/leaderboardHelper.js";
 
 @Discord()
 @Guard(RequiresGuild)

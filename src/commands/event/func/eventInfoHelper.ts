@@ -2,7 +2,7 @@ import { Requests } from "@requests/main";
 import { getEvents } from "@utils/events";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import type { CommandInteraction } from "discord.js";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 
 export async function eventInfoHelper(
 	event: string,
@@ -11,7 +11,7 @@ export async function eventInfoHelper(
 	const guild_events = await getEvents(interaction.guild.id);
 	if (!guild_events) {
 		await replyHandler(getString("errors", "noEvents"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -19,7 +19,7 @@ export async function eventInfoHelper(
 	const e = guild_events.find((ev) => ev.wom_id === event);
 	if (!e) {
 		await replyHandler(getString("events", "wrongId"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}
@@ -30,7 +30,7 @@ export async function eventInfoHelper(
 	);
 	if (res.error || !res.data) {
 		await replyHandler(getString("errors", "internalError"), interaction, {
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return;
 	}

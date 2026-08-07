@@ -1,15 +1,15 @@
+import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild";
+import { Requests } from "@requests/main.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "@guards/IsAdmin.js";
-import { Requests } from "@requests/main.js";
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import { caGrantPicker, caRemovePicker } from "pickers/combatAchievements";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)

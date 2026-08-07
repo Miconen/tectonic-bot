@@ -1,17 +1,18 @@
 import { Requests } from "@requests/main.js";
 import { formatGuildTimesForEmbeds } from "@utils/guilds.js";
+import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
-import type {
-	ButtonInteraction,
-	CommandInteraction,
-	TextChannel,
+import {
+	MessageFlags,
+	type ButtonInteraction,
+	type CommandInteraction,
+	type TextChannel,
 } from "discord.js";
 import buildCategoryEmbed, {
 	buildBossFields,
 	findCategoryByBoss,
 	getMembersFromTeams,
 } from "./embedHelpers.js";
-import { replyHandler } from "@utils/replyHandler.js";
 
 async function updateEmbed(
 	boss: string,
@@ -26,7 +27,7 @@ async function updateEmbed(
 				activity: "fetching data for pb embeds",
 				error: res.message,
 			}),
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		return false;
 	}
@@ -60,7 +61,7 @@ async function updateEmbed(
 		await replyHandler(
 			getString("errors", "somethingUnexpected"),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 		return false;
 	}

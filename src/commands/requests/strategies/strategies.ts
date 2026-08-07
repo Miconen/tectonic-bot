@@ -1,5 +1,5 @@
-import type { ButtonInteraction, CommandInteraction } from "discord.js";
 import type { BaseRequest, PendingRequest } from "@typings/requestTypes.js";
+import type { ButtonInteraction, CommandInteraction } from "discord.js";
 import { achievementStrategy } from "./achievement";
 import { caStrategy } from "./ca";
 import { pbStrategy } from "./pb";

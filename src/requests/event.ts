@@ -1,8 +1,8 @@
 import type {
 	EventDetails,
-	EventWinParam,
-	EventUpdateParam,
 	EventParticipation,
+	EventUpdateParam,
+	EventWinParam,
 } from "@typings/api/event";
 import { fetchData } from "./main";
 

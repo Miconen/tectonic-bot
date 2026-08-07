@@ -1,13 +1,17 @@
-import type { ButtonInteraction, CommandInteraction } from "discord.js";
 import { Requests } from "@requests/main.js";
+import {
+	MessageFlags,
+	type ButtonInteraction,
+	type CommandInteraction,
+} from "discord.js";
 
-import TimeConverter from "./TimeConverter.js";
-import updateEmbed from "./updateEmbed.js";
-import { getString } from "@utils/stringRepo.js";
-import { getPoints, getSources } from "@utils/pointSources.js";
 import giveHelper from "@commands/moderation/func/giveHelper.js";
 import { getLogger } from "@logging/context.js";
+import { getPoints, getSources } from "@utils/pointSources.js";
+import { getString } from "@utils/stringRepo.js";
+import TimeConverter from "./TimeConverter.js";
 import { Bosses } from "./getBosses.js";
+import updateEmbed from "./updateEmbed.js";
 import { formatValueLabel } from "./valueFormat.js";
 
 async function submitHandler(
@@ -93,7 +97,7 @@ async function submitHandler(
 		if (!success) {
 			await interaction.followUp({
 				content: getString("times", "failedUpdatingEmbed"),
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 

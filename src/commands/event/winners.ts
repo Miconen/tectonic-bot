@@ -1,17 +1,18 @@
 import IsAdmin from "@guards/IsAdmin";
+import RequiresGuild from "@guards/RequiresGuild";
+import { teamPicker } from "@pickers/teams";
+import { Requests } from "@requests/main.js";
 import { notEmpty } from "@utils/notEmpty";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import { teamPicker } from "@pickers/teams";
 import { winnerHelper } from "./func/winnerHelper";
 import { winnerTeamHelper } from "./func/winnerTeamHelper";
-import { Requests } from "@requests/main.js";
-import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({
@@ -104,7 +105,7 @@ class EventCreate {
 		winners: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		const userIds = winners
 			.split(",")
@@ -113,7 +114,7 @@ class EventCreate {
 
 		if (userIds.length === 0) {
 			return await replyHandler("No valid user IDs provided.", interaction, {
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 
@@ -130,7 +131,7 @@ class EventCreate {
 					error: res.message,
 				}),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 
@@ -140,7 +141,7 @@ class EventCreate {
 				userIds.length > 1 ? "s" : ""
 			}: ${mentions}`,
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 }

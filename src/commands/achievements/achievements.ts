@@ -1,13 +1,13 @@
+import IsActivated from "@guards/IsActivated.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
+import { achievementAddPicker } from "@pickers/achievements";
 import {
 	ApplicationCommandOptionType,
 	type Attachment,
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
-import { achievementAddPicker } from "@pickers/achievements";
 import requestHelper from "./func/requestHelper.js";
-import IsActivated from "@guards/IsActivated.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @Guard(IsActivated(), RequiresGuild)

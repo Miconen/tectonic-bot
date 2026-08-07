@@ -1,12 +1,12 @@
-import type { CommandInteraction, GuildMember } from "discord.js";
-import type IRankService from "@utils/rankUtils/IRankService";
 import { Requests } from "@requests/main.js";
+import type IRankService from "@utils/rankUtils/IRankService";
+import type { CommandInteraction, GuildMember } from "discord.js";
 
-import { container } from "tsyringe";
+import { getLogger } from "@logging/context";
+import { dumpUserData } from "@utils/dumpUserData";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import { dumpUserData } from "@utils/dumpUserData";
-import { getLogger } from "@logging/context";
+import { container } from "tsyringe";
 
 const deactivationHelper = async (
 	user: GuildMember,

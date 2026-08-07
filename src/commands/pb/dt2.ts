@@ -1,5 +1,6 @@
 import IsActivated from "@guards/IsActivated.js";
 import IsValidTime from "@guards/IsValidTime.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import {
 	ApplicationCommandOptionType,
 	type Attachment,
@@ -15,7 +16,6 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")

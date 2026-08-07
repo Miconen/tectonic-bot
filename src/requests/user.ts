@@ -1,5 +1,5 @@
-import type { DetailedUser, UserParam, UsersParam } from "@typings/api/user";
 import type { PointsParam, PointsResponse } from "@typings/api/points";
+import type { DetailedUser, UserParam, UsersParam } from "@typings/api/user";
 import { fetchData } from "./main";
 import { rewrapResponse } from "./utils";
 

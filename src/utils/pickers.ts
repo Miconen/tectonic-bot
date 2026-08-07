@@ -1,8 +1,8 @@
+import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
 import type { DetailedUser } from "@typings/api/user";
-import type { AutocompleteInteraction } from "discord.js";
 import { TTLCache } from "@utils/ttlCache";
-import { getLogger } from "@logging/context";
+import type { AutocompleteInteraction } from "discord.js";
 
 const userCache = new TTLCache<DetailedUser>();
 const teamCache = new TTLCache<string[]>();

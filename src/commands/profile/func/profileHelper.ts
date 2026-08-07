@@ -1,12 +1,12 @@
-import type { CommandInteraction, GuildMember } from "discord.js";
-import type IRankService from "@utils/rankUtils/IRankService";
 import { Requests } from "@requests/main.js";
 import type { UserParam } from "@typings/api/user";
+import type IRankService from "@utils/rankUtils/IRankService";
+import type { CommandInteraction, GuildMember } from "discord.js";
 
-import { container } from "tsyringe";
 import TimeConverter from "@commands/pb/func/TimeConverter";
-import { getString } from "@utils/stringRepo";
 import { formatPlacement } from "@utils/formatEventPlacement";
+import { getString } from "@utils/stringRepo";
+import { container } from "tsyringe";
 
 const pointsHelper = async (
 	member: GuildMember | null,
@@ -163,7 +163,7 @@ const pointsHelper = async (
 				(!event.solo && event.position_cutoff === 1) ||
 				(isLegacy && event.placement === 1);
 
-			let chunk = formatPlacement(event.placement, isWinner);
+			const chunk = formatPlacement(event.placement, isWinner);
 
 			lines.push(
 				getString("profile", "eventEntry", {

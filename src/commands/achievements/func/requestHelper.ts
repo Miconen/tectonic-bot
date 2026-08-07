@@ -1,5 +1,5 @@
-import type { AchievementRequest } from "@typings/requestTypes.js";
 import { postRequest } from "@commands/requests/postRequest.js";
+import type { AchievementRequest } from "@typings/requestTypes.js";
 import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, GuildMember } from "discord.js";
 

@@ -1,4 +1,11 @@
 import { Requests } from "@requests/main.js";
+import type {
+	CustomPoints,
+	PointsParam,
+	PointsResponse,
+	PresetPoints,
+} from "@typings/api/points.js";
+import { formatDisplayName } from "@utils/formatDisplayName.js";
 import { getString } from "@utils/stringRepo.js";
 import type {
 	BaseInteraction,
@@ -10,13 +17,6 @@ import { Collection } from "discord.js";
 import { inject, injectable, singleton } from "tsyringe";
 import type IRankService from "../rankUtils/IRankService.js";
 import type IPointService from "./IPointService.js";
-import { formatDisplayName } from "@utils/formatDisplayName.js";
-import type {
-	CustomPoints,
-	PresetPoints,
-	PointsParam,
-	PointsResponse,
-} from "@typings/api/points.js";
 
 @singleton()
 @injectable()

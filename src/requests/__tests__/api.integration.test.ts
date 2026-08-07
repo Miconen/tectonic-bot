@@ -1,5 +1,3 @@
-import { expect } from "chai";
-import { describe, it } from "mocha";
 import { Requests } from "@requests/main";
 import type { AchievementParam } from "@typings/api/achievement";
 import type { ApiResponse } from "@typings/api/errors";
@@ -8,6 +6,8 @@ import type { GuildUpdate } from "@typings/api/guild";
 import type { PointsParam } from "@typings/api/points";
 import type { NewRecord } from "@typings/api/time";
 import type { UserParam, UsersParam } from "@typings/api/user";
+import { expect } from "chai";
+import { describe, it } from "mocha";
 
 const guild = "123456789123456789";
 const user = "123456789123456789";

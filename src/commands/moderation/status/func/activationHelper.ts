@@ -1,9 +1,13 @@
-import type { CommandInteraction, GuildMember } from "discord.js";
+import { Requests } from "@requests/main";
 import type IRankService from "@utils/rankUtils/IRankService";
 import { replyHandler } from "@utils/replyHandler.js";
-import { container } from "tsyringe";
-import { Requests } from "@requests/main";
 import { getString } from "@utils/stringRepo";
+import {
+	MessageFlags,
+	type CommandInteraction,
+	type GuildMember,
+} from "discord.js";
+import { container } from "tsyringe";
 
 const activationHelper = async (
 	user: GuildMember,
@@ -25,13 +29,13 @@ const activationHelper = async (
 			return await replyHandler(
 				getString("errors", "guildNotInitialized"),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 		return await replyHandler(
 			getString("errors", "errorFetchingWom"),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 
@@ -39,7 +43,7 @@ const activationHelper = async (
 		return await replyHandler(
 			getString("accounts", "alreadyActivated", { username: user.displayName }),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 
@@ -47,7 +51,7 @@ const activationHelper = async (
 		return await replyHandler(
 			getString("errors", "internalError"),
 			interaction,
-			{ ephemeral: true },
+			{ flags: MessageFlags.Ephemeral },
 		);
 	}
 

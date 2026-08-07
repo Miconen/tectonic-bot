@@ -1,14 +1,14 @@
-import type { Role, CommandInteraction, GuildMember } from "discord.js";
+import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
+import { pointSourcePicker } from "@pickers/pointSources";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
+import type { CommandInteraction, GuildMember, Role } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import IsAdmin from "@guards/IsAdmin.js";
 import giveHelper from "./func/giveHelper.js";
 import multiplierHelper from "./func/multiplierHelper.js";
-import { pointSourcePicker } from "@pickers/pointSources";
-import { getString } from "@utils/stringRepo.js";
 import womHelper from "./func/womHelper.js";
-import { replyHandler } from "@utils/replyHandler.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)

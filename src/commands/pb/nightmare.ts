@@ -1,10 +1,12 @@
 import IsActivated from "@guards/IsActivated.js";
 import IsValidTime from "@guards/IsValidTime.js";
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { notEmpty } from "@utils/notEmpty.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type Attachment,
 	type CommandInteraction,
 	type GuildMember,
@@ -19,7 +21,6 @@ import {
 } from "discordx";
 import bossCategories from "./func/getBosses.js";
 import pbRequestHelper from "./func/pbRequestHelper.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup("pb")
@@ -97,7 +98,7 @@ class NightmarePb {
 				getString("times", "soloOnlyBoss"),
 				interaction,
 				{
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				},
 			);
 		}
@@ -106,7 +107,7 @@ class NightmarePb {
 			return await replyHandler(
 				getString("times", "invalidFiveManNightmare"),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 

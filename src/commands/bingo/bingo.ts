@@ -1,11 +1,11 @@
 import IsAdmin from "@guards/IsAdmin.js";
+import RequiresGuild from "@guards/RequiresGuild";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { setupHelper } from "./func/setupHelper";
-import RequiresGuild from "@guards/RequiresGuild";
 
 @Discord()
 @SlashGroup({ description: "Guild bingo information", name: "bingo" })

@@ -1,6 +1,6 @@
-import { pendingRequests } from "./state.js";
-import { Requests } from "@requests/main.js";
 import { getLogger } from "@logging/context.js";
+import { Requests } from "@requests/main.js";
+import type { PendingRequest } from "@typings/requestTypes.js";
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -8,7 +8,7 @@ import {
 	type CommandInteraction,
 	type TextChannel,
 } from "discord.js";
-import type { PendingRequest } from "@typings/requestTypes.js";
+import { pendingRequests } from "./state.js";
 
 export async function postRequest(
 	content: string,

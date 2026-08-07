@@ -1,9 +1,9 @@
 import {
 	type AutocompleteInteraction,
 	type ButtonInteraction,
+	ChatInputCommandInteraction,
 	CommandInteraction,
 	GuildMember,
-	ChatInputCommandInteraction,
 } from "discord.js";
 import type { ArgsOf, GuardFunction } from "discordx";
 import { withContext } from "./context";

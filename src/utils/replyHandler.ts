@@ -1,13 +1,16 @@
-import type { ButtonInteraction } from "discord.js";
+import type {
+	ButtonInteraction,
+	InteractionReplyOptions,
+	MessageCreateOptions,
+} from "discord.js";
 import { CommandInteraction, TextChannel } from "discord.js";
 
-/**
- * Handles the reply to a Discord interaction, deferring or replying based on context, as you cannot reply to deferred commands.
- */
+type ReplyOptions = Pick<InteractionReplyOptions, "flags">;
+
 export async function replyHandler(
 	message: string,
 	interaction: CommandInteraction | ButtonInteraction,
-	options?: { ephemeral?: boolean },
+	options?: ReplyOptions,
 ) {
 	const CHARACTER_LIMIT = 2000;
 
@@ -30,19 +33,24 @@ async function replyer(
 	message: string,
 	interaction: CommandInteraction | ButtonInteraction,
 	split?: boolean,
-	options?: { ephemeral?: boolean },
+	options?: ReplyOptions,
 ) {
-	const reply = { content: message, ...options };
-
+	// Long split → public channel messages (no ephemeral)
 	if (interaction.channel instanceof TextChannel && split) {
-		return await interaction.channel.send(reply);
+		const payload: MessageCreateOptions = { content: message };
+		return await interaction.channel.send(payload);
 	}
+
+	const payload: InteractionReplyOptions = {
+		content: message,
+		...options,
+	};
 
 	if (interaction instanceof CommandInteraction && interaction.deferred) {
-		return await interaction.followUp(reply);
+		return await interaction.followUp(payload);
 	}
 
-	return await interaction.reply(reply);
+	return await interaction.reply(payload);
 }
 
 function splitMessage(message: string, CHARACTER_LIMIT: number) {

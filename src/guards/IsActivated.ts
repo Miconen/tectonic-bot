@@ -1,9 +1,13 @@
+import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import { type ChatInputCommandInteraction, GuildMember } from "discord.js";
+import {
+	type ChatInputCommandInteraction,
+	GuildMember,
+	MessageFlags,
+} from "discord.js";
 import type { GuardFunction } from "discordx";
-import { getLogger } from "@logging/context";
 
 function IsActivated(target = "player") {
 	const guard: GuardFunction<ChatInputCommandInteraction<"cached">> = async (
@@ -58,13 +62,13 @@ function IsActivated(target = "player") {
 			return await replyHandler(
 				getString("errors", "fetchFailed", { resource: "users" }),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		if (!res.data.length)
 			return await replyHandler(
 				getString("errors", "fetchFailed", { resource: "users" }),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 
 		const existingUsers = res.data;
@@ -86,7 +90,7 @@ function IsActivated(target = "player") {
 			return await replyHandler(
 				getString("errors", "commandFailed", { reason: warning }),
 				interaction,
-				{ ephemeral: true },
+				{ flags: MessageFlags.Ephemeral },
 			);
 		}
 

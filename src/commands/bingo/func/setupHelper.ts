@@ -1,15 +1,15 @@
+import { getLogger } from "@logging/context.js";
 import { Requests } from "@requests/main.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
-import { getLogger } from "@logging/context.js";
 import {
+	type CategoryChannel,
 	ChannelType,
-	OverwriteType,
-	PermissionFlagsBits,
 	type CommandInteraction,
 	type Guild,
+	OverwriteType,
+	PermissionFlagsBits,
 	type Role,
-	type CategoryChannel,
 } from "discord.js";
 
 type TeamSetupResult = {

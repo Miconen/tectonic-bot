@@ -1,13 +1,13 @@
-import type { EmbedCategoryData, EmbedBossData } from "@utils/guilds";
+import type { RecordTeam } from "@typings/api/time";
+import type { EmbedBossData, EmbedCategoryData } from "@utils/guilds";
 import {
-	EmbedBuilder,
-	Collection,
-	type GuildMember,
 	type APIEmbedField,
+	Collection,
+	EmbedBuilder,
 	type Guild,
+	type GuildMember,
 } from "discord.js";
 import TimeConverter from "./TimeConverter";
-import type { RecordTeam } from "@typings/api/time";
 
 // Amount of padding to give to guarantee maximum width on Discord embeds
 const PADDING = 110;

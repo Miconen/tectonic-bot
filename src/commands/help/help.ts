@@ -1,3 +1,4 @@
+import RequiresGuild from "@guards/RequiresGuild.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction } from "discord.js";
@@ -5,7 +6,6 @@ import { Discord, Guard, Slash, SlashGroup } from "discordx";
 import pointsHelp from "./func/pointsHelp.js";
 import ranksHelp from "./func/ranksHelp.js";
 import splitHelp from "./func/splitHelp.js";
-import RequiresGuild from "@guards/RequiresGuild.js";
 
 @Discord()
 @SlashGroup({ name: "help", description: "Commands to help you use commands" })
