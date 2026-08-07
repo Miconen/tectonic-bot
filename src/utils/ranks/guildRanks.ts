@@ -1,4 +1,4 @@
-import { TTLCache } from "./ttlCache";
+import { TTLCache } from "@utils/ttlCache";
 import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main";
 import type { GuildRankResponse } from "@typings/api/guildRank";
@@ -7,7 +7,7 @@ const GuildRanks = new TTLCache<GuildRankResponse[]>();
 
 export async function getRanks(guild_id: string) {
 	await populateRanks(guild_id);
-	return GuildRanks.get(guild_id);
+	return GuildRanks.get(guild_id) ?? [];
 }
 
 async function populateRanks(guild_id: string) {
@@ -20,12 +20,7 @@ async function populateRanks(guild_id: string) {
 
 	const res = await Requests.getGuildRanks(guild_id);
 	if (res.error) {
-		logger.error({ err: res.error }, "Error fetching guild times");
-		return;
-	}
-
-	if (!res.data.length) {
-		logger.warn("No guild ranks found");
+		logger.error({ err: res.error }, "Error fetching guild ranks");
 		return;
 	}
 
