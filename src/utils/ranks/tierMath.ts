@@ -51,39 +51,3 @@ export function pointsForTier(
 	);
 	return found ? found.min_points : null;
 }
-
-/**
- * Tier immediately below the one you're in (by min_points).
- * If you're between tiers, "previous" = current tier's predecessor
- * relative to tierForPoints(points).
- * null if no current tier or current is the lowest.
- */
-export function previousTier(
-	points: number,
-	ranks: GuildRankResponse[],
-): GuildRankResponse | null {
-	const current = tierForPoints(points, ranks);
-	if (!current) return null;
-
-	const sorted = sortedByPoints(ranks);
-	const idx = sorted.findIndex((r) => r.name === current.name);
-	if (idx <= 0) return null;
-	return sorted[idx - 1] ?? null;
-}
-
-/**
- * How many points above the previous tier's threshold you are.
- * Useful for “progress within band” / demotion distance.
- * null if no previous tier.
- *
- * Example: tiers 0, 100, 200; points 150 → previous is 100 → 50
- * (points - previous.min_points)
- */
-export function pointsToPrevious(
-	points: number,
-	ranks: GuildRankResponse[],
-): number | null {
-	const prev = previousTier(points, ranks);
-	if (!prev) return null;
-	return points - prev.min_points;
-}
