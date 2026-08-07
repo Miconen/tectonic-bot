@@ -58,6 +58,9 @@ export const ApiErrorCode = {
 	GuildRankNotFound: 1034,
 	GuildRankExists: 1035,
 
+	WomUserNotFound: 1036,
+	WomCompetitionNotFound: 1037,
+
 	ApiUnavailable: 2000,
 	ApiDead: 2001,
 	WomUnavailable: 2002,
