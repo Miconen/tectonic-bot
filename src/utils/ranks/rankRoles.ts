@@ -1,7 +1,7 @@
-// rankRoles.ts
 import type { GuildMember } from "discord.js";
 import type { GuildRankResponse } from "@typings/api/guildRank";
 import { getLogger } from "@logging/context";
+import { tierForPoints } from "@utils/ranks/tierMath";
 
 /** All Discord role IDs configured on guild ranks */
 export function rankRoleIds(ranks: GuildRankResponse[]): string[] {
@@ -42,10 +42,6 @@ export async function syncRankRolesIfChanged(
 	ranks: GuildRankResponse[],
 	oldPoints: number,
 	newPoints: number,
-	tierForPoints: (
-		p: number,
-		r: GuildRankResponse[],
-	) => GuildRankResponse | null,
 ): Promise<GuildRankResponse | null> {
 	const oldTier = tierForPoints(oldPoints, ranks);
 	const newTier = tierForPoints(newPoints, ranks);
