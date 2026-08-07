@@ -37,6 +37,7 @@ class RSN {
 		rsn: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return addRsnHelper(user, rsn, interaction);
 	}
 
@@ -61,6 +62,7 @@ class RSN {
 		rsn: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return removeRsnHelper(user, rsn, interaction);
 	}
 }

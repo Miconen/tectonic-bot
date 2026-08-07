@@ -26,19 +26,19 @@ const strings: StringRepository = {
 				args.rankName,
 			)}!`,
 		pointsGranted: (args) =>
-			`✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+			`√ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
 				args.pointsGiven
 			} points (${args.oldPoints} ${args.icon} → ${args.newPoints} ${
 				args.icon
 			})`,
 		pointsGrantedRankUp: (args) =>
-			`✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+			`√ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
 				args.pointsGiven
 			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
 				args.newIcon
 			}) Ranked up to ${args.newIcon} ${args.rankName}`,
 		pointsGrantedRankDown: (args) =>
-			`✔ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
+			`√ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
 				args.pointsGiven
 			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
 				args.newIcon
@@ -84,12 +84,12 @@ const strings: StringRepository = {
 			"\n_Once you link your rsn to the bot you'll be eligible to gain event points_\n_Please tag leadership to help with linking your account with your rsn_",
 		notActivated: (args) => `❌ **${args.username}** is not an activated user.`,
 		activated: (args) =>
-			`✔ **${args.username}** has been activated and linked.`,
-		deactivated: (args) => `✔ **${args.username}** has been deactivated.`,
+			`√ **${args.username}** has been activated and linked.`,
+		deactivated: (args) => `√ **${args.username}** has been deactivated.`,
 		alreadyActivated: (args) => `❌ **${args.username}** is already activated.`,
-		rsnAdded: (args) => `✔ Added RSN **${args.rsn}** to **${args.username}**.`,
+		rsnAdded: (args) => `√ Added RSN **${args.rsn}** to **${args.username}**.`,
 		rsnRemoved: (args) =>
-			`✔ Removed RSN **${args.rsn}** from **${args.username}**.`,
+			`√ Removed RSN **${args.rsn}** from **${args.username}**.`,
 		rsnNotFound: (args) =>
 			`❌ RSN **${args.rsn}** not found for **${args.username}**.`,
 		rsnAlreadyExists: (args) =>
@@ -108,11 +108,11 @@ const strings: StringRepository = {
 		denied: (args) =>
 			`# Achievement Denied\n-# ${args.achievement}\n\n❌ **${args.username}**'s achievement request was denied.`,
 		granted: (args) =>
-			`✔ Granted achievement **${args.achievement}** to **${args.username}**.`,
+			`√ Granted achievement **${args.achievement}** to **${args.username}**.`,
 		request: (args) =>
 			`# Achievement Request\n\nUser: ${args.username}\nAchievement: ${args.achievement}`,
 		removed: (args) =>
-			`✔ Removed achievement **${args.achievement}** from **${args.username}**.`,
+			`√ Removed achievement **${args.achievement}** from **${args.username}**.`,
 		alreadyHas: (args) =>
 			`❌ **${args.username}** already has achievement **${args.achievement}**.`,
 		notFound: (args) => `❌ Achievement **${args.achievement}** not found.`,
@@ -198,9 +198,9 @@ const strings: StringRepository = {
 		recordRemoved: (args) =>
 			`Successfully removed record \`#${args.recordId}\`.`,
 		modChannelSet: (args) =>
-			`✔ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
+			`√ Moderation channel set to ${args.channel}. Approval requests will be sent there.`,
 		logChannelSet: (args) =>
-			`✔ Logging channel set to ${args.channel}. Log messages will be sent there.`,
+			`√ Logging channel set to ${args.channel}. Log messages will be sent there.`,
 	},
 
 	times: {
@@ -209,7 +209,7 @@ const strings: StringRepository = {
 		timeImproved: (args) =>
 			`⚡ **${args.displayName}** time improved: ${args.oldTime} → ${args.newTime}`,
 		timeAdded: (args) =>
-			`✔ Time recorded for **${args.displayName}**: ${args.time}`,
+			`√ Time recorded for **${args.displayName}**: ${args.time}`,
 		bossNotFound: (args) => `Boss **${args.bossName}** not found.`,
 		timeNotFound: "No time records found.",
 		teamEntry: (args) => `Team: ${args.teammates}`,
@@ -312,58 +312,142 @@ const strings: StringRepository = {
 
 	errors: {
 		noGuild: "This command must be used in a server.",
-		noChannel: "This command must be used in a channel.",
-		noMember: "Could not retrieve member information.",
 		competitionError: "Failed to retrieve competition data.",
 		givingPoints: "Error giving points. Please try again.",
 		apiError: (args) => `Error ${args.activity}.\n\`${args.error}\``,
 		apiHealth:
 			"Cannot reach the application server. Please try again in 30 seconds.",
-		empty: (args) => `Error accessing empty ${args.target}.`,
 		internalError: "An internal error occurred. Please try again.",
-		networkError: "Network error. Please check your connection and try again.",
-		timeout: "Request timed out. Please try again.",
-		notFound: (args) => `${args.resource} not found.`,
-		alreadyExists: (args) => `${args.resource} already exists.`,
-		invalidFormat: (args) => `Invalid ${args.field} format.`,
-		unavailable: (args) =>
-			`${args.service} is currently unavailable. Please try again later.`,
-		maintenance:
-			"The bot is currently under maintenance. Please try again later.",
 		rateLimitExceeded: "Too many requests. Please slow down.",
 		commandFailed: (args) => `Command failed: ${args.reason}`,
-		databaseError: "Database error occurred. Please try again.",
-		parameterMissing: (args) => `Missing required parameter: ${args.parameter}`,
-		invalidOperation: "Invalid operation attempted.",
-		userNotFound: (args) => `User **${args.username}** not found.`,
 		rsnNotBound: (args) => `**${args.rsn}** is not bound to a known member.`,
 		fetchFailed: (args) => `Failed to fetch ${args.resource}.`,
-		updateFailed: (args) => `Failed to update ${args.resource}.`,
-		deleteFailed: (args) => `Failed to delete ${args.resource}.`,
-		createFailed: (args) => `Failed to create ${args.resource}.`,
 		womUnavailable: "Wise Old Man API is currently unavailable.",
 		womPlayerNotFound: (args) =>
 			`Player **${args.rsn}** not found on Wise Old Man.`,
-		channelNotFound: "Required channel not found.",
-		messageNotFound: "Message not found or has been deleted.",
-		expiredRequest: "This request has expired. Please submit a new one.",
-		unauthorized: "You are not authorized to perform this action.",
 		guildNotInitialized: "This server has not been initialized.",
 		retrievingPlayers: "Failed to fetch players from command",
 		errorGivingPoints: (args) => `Error giving points: ${args.message}`,
 		couldntGetUser: (args) => `Couldn't get user for ID: ${args.userId}`,
-		unexpectedError: (args) => `Unexpected error occurred...\n${args.message}`,
 		errorFetchingWom: "Error fetching user from Wise Old Man.",
-		fetchingPbEmbeds: "fetching data for pb embeds",
-		somethingWrongActivation: "Something went **really** wrong",
 		somethingUnexpected: "Something unexpected happened...",
-		zeroPoints: "Invalid points amount - cannot give 0 points",
 		rsnFail: (args) => `Failed to add RSN (**${args.rsn}**)`,
 		rsnExists: (args) => `RSN already exists on user ** ${args.username}**`,
 		rsnDoesntExist: (args) =>
 			`Couldn't find RSN (**${args.rsn}**) linked to **${args.username}**`,
 		notActivated: (args) => `The user (**${args.username}**) is not activated.`,
 		noEvents: "Couldn't find events belonging to this guild.",
+	},
+
+	apiErrors: {
+		WrongParams: "The request parameters were invalid.",
+		WrongBody: "The request body was invalid.",
+		ValidationFailed: "The request failed validation.",
+		InvalidToken: "The bot could not authenticate with the API.",
+		ApiRateLimited:
+			"The API is receiving too many requests. Please try again shortly.",
+		ApiUnavailable: "The API is currently unavailable. Please try again later.",
+		ApiDead: "The API encountered an unexpected error. Please try again later.",
+		WomUnavailable:
+			"Wise Old Man is currently unavailable. Please try again later.",
+		WomRateLimited:
+			"Wise Old Man is receiving too many requests. Please try again later.",
+		Untreated: "An unexpected API error occurred. Please try again later.",
+	},
+
+	guildErrors: {
+		GuildNotFound: "This server has not been initialized.",
+		GuildExists: "This server has already been initialized.",
+
+		GuildBossNotFound: (args) =>
+			`Boss **${args.boss}** is not configured for this server.`,
+		GuildBossExists: (args) =>
+			`Boss **${args.boss}** is already configured for this server.`,
+
+		GuildCategoryNotFound: (args) =>
+			`Category **${args.category}** is not configured for this server.`,
+		GuildCategoryExists: (args) =>
+			`Category **${args.category}** is already configured for this server.`,
+
+		PointSourceNotFound: (args) =>
+			`Point source **${args.pointSource}** was not found.`,
+		PointSourceExists: (args) =>
+			`Point source **${args.pointSource}** already exists.`,
+	},
+
+	accountErrors: {
+		UserNotFound: (args) =>
+			`User **${args.username}** is not activated in this server.`,
+		UserExists: (args) =>
+			`User **${args.username}** is already activated in this server.`,
+
+		RsnNotFound: (args) =>
+			`RSN **${args.rsn}** is not linked to **${args.username}**.`,
+		RsnExists: (args) => `RSN **${args.rsn}** is already linked to a user.`,
+
+		WomIdNotFound: (args) =>
+			`WOM ID **${args.womId}** is not linked to a user.`,
+		WomIdExists: (args) =>
+			`WOM ID **${args.womId}** is already linked to a user.`,
+
+		WomUserNotFound: (args) =>
+			`Player **${args.rsn}** was not found or is not tracked on Wise Old Man.`,
+	},
+
+	recordErrors: {
+		BossNotFound: (args) => `Boss **${args.boss}** was not found.`,
+		BossExists: (args) => `Boss **${args.boss}** already exists.`,
+
+		CategoryNotFound: (args) => `Category **${args.category}** was not found.`,
+		CategoryExists: (args) => `Category **${args.category}** already exists.`,
+
+		TimeNotFound: (args) => `No PB was found for **${args.boss}**.`,
+		TimeExists: (args) => `That PB already exists for **${args.boss}**.`,
+
+		RecordNotFound: (args) => `Record **${args.record}** was not found.`,
+		RecordExists: "That record already exists.",
+
+		TeamNotFound: (args) =>
+			`**${args.username}** is not part of this record's team.`,
+		TeamExists: (args) =>
+			`**${args.username}** is already part of this record's team.`,
+	},
+
+	eventErrors: {
+		EventNotFound: (args) => `Event **${args.event}** was not found.`,
+		EventExists: (args) => `Event **${args.event}** is already registered.`,
+
+		ParticipationNotFound: (args) =>
+			`**${args.username}** is not registered in this event.`,
+		ParticipationExists: (args) =>
+			`**${args.username}** is already registered in this event.`,
+
+		WomCompetitionNotFound: (args) =>
+			`Competition **${args.competition}** was not found on Wise Old Man.`,
+	},
+
+	achievementErrors: {
+		AchievementNotFound: (args) =>
+			`Achievement **${args.achievement}** was not found.`,
+		AchievementExists: (args) =>
+			`Achievement **${args.achievement}** already exists.`,
+
+		UserAchievementNotFound: (args) =>
+			`**${args.username}** does not have achievement **${args.achievement}**.`,
+		UserAchievementExists: (args) =>
+			`**${args.username}** already has achievement **${args.achievement}**.`,
+	},
+
+	combatAchievementErrors: {
+		CombatAchievementNotFound: (args) =>
+			`Combat achievement **${args.achievement}** was not found.`,
+		CombatAchievementExists: (args) =>
+			`Combat achievement **${args.achievement}** already exists.`,
+	},
+
+	rankErrors: {
+		GuildRankNotFound: (args) => `Rank **${args.rank}** was not found.`,
+		GuildRankExists: (args) => `Rank **${args.rank}** already exists.`,
 	},
 
 	success: {
@@ -385,7 +469,7 @@ const strings: StringRepository = {
 		online: "✅ Online",
 		offline: "❌ Offline",
 		maintenance: "🔧 Under Maintenance",
-		degraded: "⚠️ Degraded Performance",
+		degraded: "! Degraded Performance",
 		checking: "🔄 Checking...",
 		healthy: "System is healthy.",
 		unhealthy: "System is experiencing issues.",
@@ -422,15 +506,19 @@ const strings: StringRepository = {
 		allAlreadyCompleted:
 			"❌ All players have already completed this combat achievement.",
 		granted: (args) =>
-			`✔ Granted combat achievement **${args.caName}** to **${args.username}**.`,
+			`√ Granted combat achievement **${args.caName}** to **${args.username}**.`,
 		removed: (args) =>
-			`✔ Removed combat achievement **${args.caName}** from **${args.username}**.`,
+			`√ Removed combat achievement **${args.caName}** from **${args.username}**.`,
 	},
 
 	bingo: {
 		setupComplete: (args) => `# 🏆 Bingo Setup Complete\n**${args.name}**`,
 		notTeamEvent: "❌ This competition has no teams. Use a team competition.",
 	},
+};
+
+type GetStringOptions = {
+	fallthrough?: boolean;
 };
 
 /**
@@ -440,33 +528,52 @@ const strings: StringRepository = {
  * @param args - Optional arguments to format the string
  * @returns The formatted string
  */
+
+// Normal lookup always returns a string
 export function getString(
 	category: string,
 	key: string,
 	// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
 	args?: Record<string, any>,
-): string {
+): string;
+
+// Fallthrough lookup may return undefined
+export function getString(
+	category: string,
+	key: string,
+	// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
+	args: Record<string, any> | undefined,
+	options: { fallthrough: true },
+): string | undefined;
+
+// Implementation signature
+export function getString(
+	category: string,
+	key: string,
+	// biome-ignore lint/suspicious/noExplicitAny: I don't know any other way to get this to work
+	args?: Record<string, any>,
+	options: GetStringOptions = {},
+): string | undefined {
 	const logger = getLogger();
-	const c = strings[category];
-	if (!c) {
+	const template = strings[category]?.[key];
+
+	if (!template) {
+		if (options?.fallthrough) return undefined;
+
 		logger.warn({ string: `${category}.${key}` }, "String not found");
 		return `[${category}.${key}]`;
 	}
 
-	const k = c[key];
-	if (!k) {
-		logger.warn({ string: `${category}.${key}` }, "String not found");
-		return `[${category}.${key}]`;
-	}
-
-	const template = k;
-
-	if (typeof template === "function" && args) {
-		return template(args);
-	}
 	if (typeof template === "string") {
 		return template;
 	}
+
+	if (args) {
+		return template(args);
+	}
+
+	if (options?.fallthrough) return undefined;
+
 	logger.warn(
 		{ stringTemplate: `${category}.${key}` },
 		"Missing arguments for string template",

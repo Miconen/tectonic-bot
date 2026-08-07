@@ -15,21 +15,15 @@ export function getApiErrorMessage(
 	const key = apiErrorNames[error.code];
 	if (!key) return error.message;
 
-	if (context.category) {
-		const contextual = getString(context.category, key, context.args);
+	const contextual = context.category
+		? getString(context.category, key, context.args, { fallthrough: true })
+		: undefined;
 
-		// Avoid returning stringRepo's missing-key placeholder
-		if (!contextual.startsWith("[")) {
-			return contextual;
-		}
-	}
+	if (contextual) return contextual;
 
-	const standard = getString("apiErrors", key);
+	const standard = getString("apiErrors", key, undefined, {
+		fallthrough: true,
+	});
 
-	// Avoid returning stringRepo's missing-key placeholder
-	if (!standard.startsWith("[")) {
-		return standard;
-	}
-
-	return error.message;
+	return standard ?? error.message;
 }
