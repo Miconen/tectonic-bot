@@ -14,7 +14,7 @@ async function populateGuild(guild_id: string) {
 	const logger = getLogger();
 
 	if (GuildCache.has(guild_id)) {
-		logger.debug("TimeCache hit");
+		logger.debug("GuildCache hit");
 		return;
 	}
 
