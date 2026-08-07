@@ -3,6 +3,7 @@ export const ApiErrorCode = {
 	WrongBody: 1,
 	ValidationFailed: 2,
 	InvalidToken: 3,
+	ApiRateLimited: 4,
 
 	GuildNotFound: 1000,
 	GuildExists: 1001,
@@ -64,6 +65,7 @@ export const ApiErrorCode = {
 	ApiUnavailable: 2000,
 	ApiDead: 2001,
 	WomUnavailable: 2002,
+	WomRateLimited: 2003,
 
 	Untreated: 10000,
 } as const;
