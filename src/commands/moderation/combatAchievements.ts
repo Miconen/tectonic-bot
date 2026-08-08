@@ -53,6 +53,7 @@ class ModerationCombatAchievements {
 		if (res.error) {
 			return await replyApiError(res, interaction, {
 				category: "combatAchievementErrors",
+				args: { achievement },
 			});
 		}
 

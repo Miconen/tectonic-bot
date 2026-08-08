@@ -6,6 +6,7 @@ import { type CommandInteraction, EmbedBuilder } from "discord.js";
 import type { GuildRankResponse } from "@typings/api/guildRank";
 import { replyHandler } from "@utils/replyHandler";
 import { container } from "tsyringe";
+import { replyApiError } from "@utils/replyApiError";
 
 interface LeaderboardUser {
 	name: string;
@@ -16,8 +17,12 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 	const rankService = container.resolve<IRankService>("RankService");
 
 	const lb = await Requests.getLeaderboard(interaction.guild.id);
-	if (lb.error)
-		return replyHandler("Error outputting leaderboard", interaction);
+	if (lb.error) {
+		return await replyApiError(lb, interaction, {
+			category: "userErrors",
+			args: { event: name },
+		});
+	}
 	const users = lb.data;
 	if (!users || users.length === 0)
 		return replyHandler("No activated users for leaderboard", interaction);

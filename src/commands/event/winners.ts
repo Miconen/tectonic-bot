@@ -126,7 +126,10 @@ class EventCreate {
 		);
 
 		if (res.error) {
-			return await replyApiError(res, interaction, { category: "eventErrors" });
+			return await replyApiError(res, interaction, {
+				category: "eventErrors",
+				args: { event: name },
+			});
 		}
 
 		const mentions = userIds.map((id) => `<@${id}>`).join(", ");
