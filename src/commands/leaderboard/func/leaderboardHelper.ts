@@ -19,8 +19,7 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 	const lb = await Requests.getLeaderboard(interaction.guild.id);
 	if (lb.error) {
 		return await replyApiError(lb, interaction, {
-			category: "userErrors",
-			args: { event: name },
+			category: "accountErrors",
 		});
 	}
 	const users = lb.data;
@@ -28,11 +27,15 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 		return replyHandler("No activated users for leaderboard", interaction);
 
 	// Fetch guild rank tiers for icon lookup
-	let guildRanks: GuildRankResponse[] = [];
 	const ranksRes = await Requests.getGuildRanks(interaction.guild.id);
-	if (!ranksRes.error && ranksRes.data) {
-		guildRanks = ranksRes.data;
+
+	if (ranksRes.error) {
+		return await replyApiError(ranksRes, interaction, {
+			category: "rankErrors",
+		});
 	}
+
+	const guildRanks = ranksRes.data;
 
 	const userIds = users.map((user) => user.user_id);
 	const usersData = await interaction.guild.members.fetch({ user: userIds });

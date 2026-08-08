@@ -21,7 +21,10 @@ async function updateEmbed(
 ) {
 	const res = await Requests.getGuildTimes(interaction.guild.id);
 	if (res.error) {
-		return await replyApiError(res, interaction);
+		await replyApiError(res, interaction, {
+			category: "recordErrors",
+		});
+		return false;
 	}
 
 	const category = findCategoryByBoss(
