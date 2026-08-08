@@ -75,14 +75,15 @@ const pointsHelper = async (
 	);
 
 	const guildTimesRes = await Requests.getGuildTimes(guildId);
-	const guildRecords =
-		!guildTimesRes.error && guildTimesRes.data?.records
-			? guildTimesRes.data.records
-			: [];
-	const guildTeammates =
-		!guildTimesRes.error && guildTimesRes.data?.teammates
-			? guildTimesRes.data.teammates
-			: [];
+
+	if (guildTimesRes.error) {
+		return getApiErrorMessage(guildTimesRes, {
+			category: "recordErrors",
+		});
+	}
+
+	const guildRecords = guildTimesRes.data.records ?? [];
+	const guildTeammates = guildTimesRes.data.teammates ?? [];
 
 	// Find all record_ids the user was part of
 	const userRecordIds = new Set(

@@ -9,6 +9,7 @@ import type { CommandInteraction, GuildMember } from "discord.js";
 import TimeConverter from "./TimeConverter.js";
 import { Bosses } from "./getBosses.js";
 import { formatValueLabel } from "./valueFormat.js";
+import { replyApiError } from "@utils/replyApiError.js";
 
 const pbRequestHelper = async (
 	boss: string,
@@ -44,7 +45,14 @@ const pbRequestHelper = async (
 	}
 
 	const guildTimes = await Requests.getGuildTimes(interaction.guild.id);
-	if (!guildTimes.error && guildTimes.data?.records) {
+
+	if (guildTimes.error) {
+		return await replyApiError(guildTimes, interaction, {
+			category: "recordErrors",
+		});
+	}
+
+	if (guildTimes.data.records) {
 		const positionCount = guildTimes.data.position_count ?? 3;
 
 		// Find all records for this boss, sorted by position

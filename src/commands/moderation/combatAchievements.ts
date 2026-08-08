@@ -96,13 +96,10 @@ class ModerationCombatAchievements {
 		);
 
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "removing combat achievement",
-					error: res.message,
-				}),
-				interaction,
-			);
+			return await replyApiError(res, interaction, {
+				category: "combatAchievementErrors",
+				args: { achievement },
+			});
 		}
 
 		return await replyHandler(
