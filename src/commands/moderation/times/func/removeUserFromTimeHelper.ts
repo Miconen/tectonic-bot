@@ -39,10 +39,5 @@ export async function removeUserFromTimeHelper(
 		{ flags: MessageFlags.Ephemeral },
 	);
 
-	const success = await updateEmbed(boss, interaction);
-	if (!success) {
-		await replyHandler(getString("times", "failedUpdatingEmbed"), interaction, {
-			flags: MessageFlags.Ephemeral,
-		});
-	}
+	await updateEmbed(boss, interaction);
 }

@@ -92,13 +92,7 @@ async function submitHandler(
 
 	// Only #1 gets points and embed update
 	if (position === 1) {
-		const success = await updateEmbed(boss, interaction);
-		if (!success) {
-			await interaction.followUp({
-				content: getString("times", "failedUpdatingEmbed"),
-				flags: MessageFlags.Ephemeral,
-			});
-		}
+		await updateEmbed(boss, interaction);
 
 		const members = await interaction.guild.members.fetch({ user: team });
 		const pointsResponses: string[] = [];

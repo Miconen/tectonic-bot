@@ -31,7 +31,12 @@ async function updateEmbed(
 		formatGuildTimesForEmbeds(res.data),
 		boss,
 	);
-	if (!category?.message_id || !res.data.pb_channel_id) return false;
+	if (!category?.message_id || !res.data.pb_channel_id) {
+		await replyHandler(getString("times", "failedUpdatingEmbed"), interaction, {
+			flags: MessageFlags.Ephemeral,
+		});
+		return false;
+	}
 
 	try {
 		const channel = (await interaction.client.channels.fetch(
