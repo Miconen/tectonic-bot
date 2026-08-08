@@ -42,10 +42,28 @@ async function updateEmbed(
 		const channel = (await interaction.client.channels.fetch(
 			res.data.pb_channel_id,
 		)) as TextChannel;
-		if (!channel) return false;
+		if (!channel) {
+			await replyHandler(
+				getString("times", "failedUpdatingEmbed"),
+				interaction,
+				{
+					flags: MessageFlags.Ephemeral,
+				},
+			);
+			return false;
+		}
 
 		const message = await channel.messages.fetch(category.message_id);
-		if (!message) return false;
+		if (!message) {
+			await replyHandler(
+				getString("times", "failedUpdatingEmbed"),
+				interaction,
+				{
+					flags: MessageFlags.Ephemeral,
+				},
+			);
+			return false;
+		}
 
 		const members = await getMembersFromTeams(
 			interaction.guild,
