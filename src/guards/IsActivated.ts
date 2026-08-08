@@ -1,5 +1,6 @@
 import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import {
@@ -58,12 +59,10 @@ function IsActivated(target = "player") {
 			type: "user_id",
 			user_id: playersUserIds,
 		});
-		if (res.error)
-			return await replyHandler(
-				getString("errors", "fetchFailed", { resource: "users" }),
-				interaction,
-				{ flags: MessageFlags.Ephemeral },
-			);
+
+		if (res.error) {
+			return replyApiError(res, interaction, { category: "accountErrors" });
+		}
 		if (!res.data.length)
 			return await replyHandler(
 				getString("errors", "fetchFailed", { resource: "users" }),

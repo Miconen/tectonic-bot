@@ -1,6 +1,7 @@
 import { Requests } from "@requests/main";
 import type { AchievementParam } from "@typings/api/achievement";
 import { invalidateUserCache } from "@utils/pickers";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, GuildMember } from "discord.js";
@@ -18,20 +19,14 @@ export const removeAchievementHelper = async (
 	};
 	const res = await Requests.removeAchievement(params);
 
-	// Specified achievement not found
-	if (res.status === 404) {
-		return await replyHandler(
-			getString("achievements", "notFound", { achievement }),
-			interaction,
-		);
-	}
-
-	// Other error
 	if (res.error) {
-		return await replyHandler(
-			getString("errors", "internalError"),
-			interaction,
-		);
+		return await replyApiError(res, interaction, {
+			category: "achievementErrors",
+			args: {
+				achievement,
+				username: user.displayName,
+			},
+		});
 	}
 
 	invalidateUserCache(interaction.guild.id, user.id);

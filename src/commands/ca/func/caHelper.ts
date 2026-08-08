@@ -3,6 +3,7 @@ import { Requests } from "@requests/main.js";
 import type { CaRequest } from "@typings/requestTypes.js";
 import { getGuildCAs } from "@utils/combatAchievement";
 import { getSources } from "@utils/pointSources.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
 import { buildPlayerPreview } from "@utils/requestPreview.js";
 import { getString } from "@utils/stringRepo.js";
@@ -16,23 +17,22 @@ const caHelper = async (
 ) => {
 	const userIds = members.map((m) => m.id);
 
-	const usersRes = await Requests.getUsers(interaction.guild.id, {
+	const res = await Requests.getUsers(interaction.guild.id, {
 		type: "user_id",
 		user_id: userIds,
 	});
 
-	if (usersRes.error) {
-		return await replyHandler(
-			getString("errors", "fetchFailed", { resource: "users" }),
-			interaction,
-		);
+	if (res.error) {
+		return await replyApiError(res, interaction, {
+			category: "accountErrors",
+		});
 	}
 
 	const alreadyCompleted: string[] = [];
 	const newCompleters: string[] = [];
 
 	for (const member of members) {
-		const userData = usersRes.data.find((u) => u.user_id === member.id);
+		const userData = res.data.find((u) => u.user_id === member.id);
 		if (!userData) {
 			newCompleters.push(member.id);
 			continue;

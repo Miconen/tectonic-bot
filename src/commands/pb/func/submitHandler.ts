@@ -52,7 +52,7 @@ async function submitHandler(
 		boss_name: boss,
 	});
 	if (res.error) {
-		return getApiErrorMessage(res, { category: "Errors" });
+		return getApiErrorMessage(res, { category: "recordErrors" });
 	}
 
 	const position = res.data.position;

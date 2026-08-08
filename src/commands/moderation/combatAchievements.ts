@@ -1,6 +1,7 @@
 import IsAdmin from "@guards/IsAdmin.js";
 import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
@@ -50,13 +51,9 @@ class ModerationCombatAchievements {
 		);
 
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "granting combat achievement",
-					error: res.message,
-				}),
-				interaction,
-			);
+			return await replyApiError(res, interaction, {
+				category: "combatAchievementErrors",
+			});
 		}
 
 		return await replyHandler(

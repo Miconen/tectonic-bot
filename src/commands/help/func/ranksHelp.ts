@@ -1,16 +1,18 @@
 import { Requests } from "@requests/main";
 import { formatDisplayName } from "@utils/formatDisplayName";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import type { CommandInteraction } from "discord.js";
 
 const ranksHelp = async (interaction: CommandInteraction<"cached">) => {
 	const res = await Requests.getGuildRanks(interaction.guild.id);
 
-	if (res.error || !res.data || res.data.length === 0) {
-		return await replyHandler(
-			"No rank tiers configured for this guild.",
-			interaction,
-		);
+	if (res.error) {
+		return replyApiError(res, interaction);
+	}
+
+	if (!res.data.length) {
+		return replyHandler("No rank tiers configured.", interaction);
 	}
 
 	const response = ["## Ranks:\n"];

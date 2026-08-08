@@ -1,12 +1,11 @@
 import { getLogger } from "@logging/context.js";
 import { Requests } from "@requests/main.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
-	type CategoryChannel,
 	ChannelType,
 	type CommandInteraction,
-	type Guild,
 	OverwriteType,
 	PermissionFlagsBits,
 	type Role,
@@ -35,10 +34,12 @@ export async function setupHelper(
 	// 1. Fetch competition from WOM
 	const compRes = await Requests.getCompetition(competitionId);
 	if (compRes.error) {
-		return await replyHandler(
-			getString("errors", "competitionError"),
-			interaction,
-		);
+		return await replyApiError(compRes, interaction, {
+			category: "eventErrors",
+			args: {
+				competition: competitionId,
+			},
+		});
 	}
 
 	const competition = compRes.data;
@@ -187,7 +188,7 @@ export async function setupHelper(
 		];
 
 		if (result.matched.length > 0) {
-			lines.push(`✔ Matched: ${result.matched.join(", ")}`);
+			lines.push(`√ Matched: ${result.matched.join(", ")}`);
 		}
 
 		if (result.unmatched.length > 0) {

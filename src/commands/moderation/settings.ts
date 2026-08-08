@@ -1,8 +1,8 @@
 import IsAdmin from "@guards/IsAdmin.js";
 import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
@@ -38,15 +38,8 @@ class ModerationSettings {
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			position_count: count,
 		});
-
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "updating position count",
-					error: res.message,
-				}),
-				interaction,
-			);
+			return await replyApiError(res, interaction);
 		}
 
 		return await replyHandler(

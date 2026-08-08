@@ -2,8 +2,8 @@ import IsAdmin from "@guards/IsAdmin.js";
 import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
 import { formatDisplayName } from "@utils/formatDisplayName.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	MessageFlags,
@@ -30,14 +30,9 @@ class ModerationRanks {
 
 		const res = await Requests.getGuildRanks(interaction.guild.id);
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "fetching guild ranks",
-					error: res.message,
-				}),
-				interaction,
-				{ flags: MessageFlags.Ephemeral },
-			);
+			return await replyApiError(res, interaction, {
+				category: "rankErrors",
+			});
 		}
 
 		const ranks = res.data;
@@ -112,15 +107,13 @@ class ModerationRanks {
 			icon: icon ?? undefined,
 			role_id: role?.id ?? undefined,
 		});
-
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "creating rank",
-					error: res.message,
-				}),
-				interaction,
-			);
+			return await replyApiError(res, interaction, {
+				category: "rankErrors",
+				args: {
+					rank: name,
+				},
+			});
 		}
 
 		return await replyHandler(
@@ -183,15 +176,13 @@ class ModerationRanks {
 			name,
 			body,
 		);
-
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "updating rank",
-					error: res.message,
-				}),
-				interaction,
-			);
+			return await replyApiError(res, interaction, {
+				category: "rankErrors",
+				args: {
+					rank: name,
+				},
+			});
 		}
 
 		return await replyHandler(`Rank **${name}** updated.`, interaction);
@@ -213,15 +204,13 @@ class ModerationRanks {
 		interaction: CommandInteraction<"cached">,
 	) {
 		const res = await Requests.deleteGuildRank(interaction.guild.id, name);
-
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "deleting rank",
-					error: res.message,
-				}),
-				interaction,
-			);
+			return await replyApiError(res, interaction, {
+				category: "rankErrors",
+				args: {
+					rank: name,
+				},
+			});
 		}
 
 		return await replyHandler(`Rank **${name}** deleted.`, interaction);
