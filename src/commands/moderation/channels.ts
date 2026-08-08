@@ -1,6 +1,7 @@
 import IsAdmin from "@guards/IsAdmin.js";
 import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
 import {
@@ -36,14 +37,7 @@ class ModChannel {
 		});
 
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "setting moderation channel",
-					error: res.message,
-				}),
-				interaction,
-				{ flags: MessageFlags.Ephemeral },
-			);
+			return await replyApiError(res, interaction, { category: "guildErrors" });
 		}
 
 		return await replyHandler(
@@ -73,14 +67,7 @@ class ModChannel {
 		});
 
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "setting logging channel",
-					error: res.message,
-				}),
-				interaction,
-				{ flags: MessageFlags.Ephemeral },
-			);
+			return await replyApiError(res, interaction, { category: "guildErrors" });
 		}
 
 		return await replyHandler(

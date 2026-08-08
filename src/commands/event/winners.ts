@@ -13,6 +13,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { winnerHelper } from "./func/winnerHelper";
 import { winnerTeamHelper } from "./func/winnerTeamHelper";
+import { replyApiError } from "@utils/replyApiError";
 
 @Discord()
 @SlashGroup({
@@ -125,14 +126,7 @@ class EventCreate {
 		);
 
 		if (res.error) {
-			return await replyHandler(
-				getString("errors", "apiError", {
-					activity: "registering legacy event",
-					error: res.message,
-				}),
-				interaction,
-				{ flags: MessageFlags.Ephemeral },
-			);
+			return await replyApiError(res, interaction, { category: "eventErrors" });
 		}
 
 		const mentions = userIds.map((id) => `<@${id}>`).join(", ");

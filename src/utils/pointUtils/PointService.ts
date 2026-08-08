@@ -17,6 +17,7 @@ import { Collection } from "discord.js";
 import { inject, injectable, singleton } from "tsyringe";
 import type IRankService from "../rankUtils/IRankService.js";
 import type IPointService from "./IPointService.js";
+import { getApiErrorMessage } from "@utils/errors/api/resolver.js";
 
 @singleton()
 @injectable()
@@ -47,11 +48,8 @@ export class PointService implements IPointService {
 			interaction.guild.id,
 			param,
 		);
-
 		if (res.error) {
-			return getString("errors", "errorGivingPoints", {
-				message: res.message,
-			});
+			return getApiErrorMessage(res, { category: "guildErrors" });
 		}
 
 		return this.buildResponses(res.data, members, interaction);

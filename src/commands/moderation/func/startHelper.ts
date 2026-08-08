@@ -1,4 +1,5 @@
 import { Requests } from "@requests/main";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction } from "discord.js";
@@ -6,7 +7,9 @@ import type { CommandInteraction } from "discord.js";
 const startHelper = async (interaction: CommandInteraction<"cached">) => {
 	// Handle giving of points, returns a string to be sent as a message.
 	const res = await Requests.createGuild(interaction.guild.id);
-	if (res.error) return await interaction.reply(res.message);
+	if (res.error) {
+		return await replyApiError(res, interaction);
+	}
 
 	await replyHandler(getString("moderation", "guildInitialized"), interaction);
 };

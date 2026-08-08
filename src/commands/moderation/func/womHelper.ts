@@ -9,6 +9,7 @@ import { container } from "tsyringe";
 import { Requests } from "@requests/main";
 import type IRankService from "@utils/rankUtils/IRankService";
 import { getString } from "@utils/stringRepo";
+import { replyApiError } from "@utils/replyApiError";
 
 async function womHelper(
 	competitionId: number,
@@ -26,12 +27,13 @@ async function womHelper(
 		cutoff,
 	);
 
-	// Process RSN data
 	if (competition.error) {
-		await replyHandler(getString("errors", "competitionError"), interaction, {
-			flags: MessageFlags.Ephemeral,
+		return await replyApiError(competition, interaction, {
+			category: "eventErrors",
+			args: {
+				competition: competitionId,
+			},
 		});
-		return;
 	}
 
 	if (

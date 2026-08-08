@@ -13,23 +13,15 @@ import buildCategoryEmbed, {
 	findCategoryByBoss,
 	getMembersFromTeams,
 } from "./embedHelpers.js";
+import { replyApiError } from "@utils/replyApiError.js";
 
 async function updateEmbed(
 	boss: string,
 	interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">,
 ) {
 	const res = await Requests.getGuildTimes(interaction.guild.id);
-
 	if (res.error) {
-		await interaction.deleteReply();
-		await interaction.followUp({
-			content: getString("errors", "apiError", {
-				activity: "fetching data for pb embeds",
-				error: res.message,
-			}),
-			flags: MessageFlags.Ephemeral,
-		});
-		return false;
+		return await replyApiError(res, interaction);
 	}
 
 	const category = findCategoryByBoss(

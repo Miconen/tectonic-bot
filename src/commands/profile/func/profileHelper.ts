@@ -7,6 +7,7 @@ import TimeConverter from "@commands/pb/func/TimeConverter";
 import { formatPlacement } from "@utils/formatEventPlacement";
 import { getString } from "@utils/stringRepo";
 import { container } from "tsyringe";
+import { getApiErrorMessage } from "@utils/errors/api/resolver";
 
 const pointsHelper = async (
 	member: GuildMember | null,
@@ -44,7 +45,10 @@ const pointsHelper = async (
 	}
 
 	const res = await Requests.getUser(guildId, query);
-	if (res.error || !res.data) return errorMsg;
+	if (res.error) {
+		return getApiErrorMessage(res, { category: "accountErrors" });
+	}
+	if (!res.data) return errorMsg;
 
 	target = await interaction.guild.members.fetch(res.data.user_id);
 

@@ -63,12 +63,8 @@ async function initializeHelper(interaction: CommandInteraction<"cached">) {
 		},
 	});
 
-	await interaction.deleteReply();
-	if (update.error) {
-		await interaction.followUp({
-			content: getString("errors", "internalError"),
-		});
-		return;
+	if (res.error) {
+		return replyApiError(res, interaction, { category: "guildErrors" });
 	}
 
 	await interaction.followUp({
