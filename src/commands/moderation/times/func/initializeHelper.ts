@@ -63,8 +63,8 @@ async function initializeHelper(interaction: CommandInteraction<"cached">) {
 		},
 	});
 
-	if (res.error) {
-		return replyApiError(res, interaction, { category: "guildErrors" });
+	if (update.error) {
+		return replyApiError(update, interaction, { category: "guildErrors" });
 	}
 
 	await interaction.followUp({
