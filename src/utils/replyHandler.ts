@@ -1,5 +1,6 @@
 import type {
 	ButtonInteraction,
+	InteractionEditReplyOptions,
 	InteractionReplyOptions,
 	MessageCreateOptions,
 } from "discord.js";
@@ -35,10 +36,17 @@ async function replyer(
 	split?: boolean,
 	options?: ReplyOptions,
 ) {
-	// Long split → public channel messages (no ephemeral)
 	if (interaction.channel instanceof TextChannel && split) {
 		const payload: MessageCreateOptions = { content: message };
-		return await interaction.channel.send(payload);
+		return interaction.channel.send(payload);
+	}
+
+	if (interaction.deferred && !interaction.replied) {
+		const payload: InteractionEditReplyOptions = {
+			content: message,
+		};
+
+		return interaction.editReply(payload);
 	}
 
 	const payload: InteractionReplyOptions = {
@@ -46,11 +54,11 @@ async function replyer(
 		...options,
 	};
 
-	if (interaction instanceof CommandInteraction && interaction.deferred) {
-		return await interaction.followUp(payload);
+	if (interaction.replied) {
+		return interaction.followUp(payload);
 	}
 
-	return await interaction.reply(payload);
+	return interaction.reply(payload);
 }
 
 function splitMessage(message: string, CHARACTER_LIMIT: number) {

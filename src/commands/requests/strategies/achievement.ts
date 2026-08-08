@@ -4,6 +4,7 @@ import type { AchievementRequest } from "@typings/requestTypes";
 import { invalidateUserCache } from "@utils/pickers";
 import { getString } from "@utils/stringRepo";
 import type { RequestStrategy } from "./strategies";
+import { getApiErrorMessage } from "@utils/errors/api/resolver";
 
 export const achievementStrategy: RequestStrategy<AchievementRequest> = {
 	async accept(interaction, data) {
@@ -16,14 +17,15 @@ export const achievementStrategy: RequestStrategy<AchievementRequest> = {
 
 		const res = await Requests.giveAchievement(params);
 
-		if (res.status === 409) {
-			return getString("achievements", "alreadyHas", {
-				username: data.member.displayName,
-				achievement: data.achievement,
+		if (res.error) {
+			return getApiErrorMessage(res, {
+				category: "achievementErrors",
+				args: {
+					username: data.member.displayName,
+					achievement: data.achievement,
+				},
 			});
 		}
-
-		if (res.error) return getString("errors", "internalError");
 
 		invalidateUserCache(interaction.guild.id, data.member.id);
 

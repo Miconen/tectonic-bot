@@ -398,6 +398,9 @@ const strings: StringRepository = {
 		BossNotFound: (args) => `Boss **${args.boss}** was not found.`,
 		BossExists: (args) => `Boss **${args.boss}** already exists.`,
 
+		GuildBossNotFound: (args) =>
+			`Boss **${args.boss}** is not configured for this server.`,
+
 		CategoryNotFound: (args) => `Category **${args.category}** was not found.`,
 		CategoryExists: (args) => `Category **${args.category}** already exists.`,
 
@@ -406,6 +409,8 @@ const strings: StringRepository = {
 
 		RecordNotFound: (args) => `Record **${args.record}** was not found.`,
 		RecordExists: "That record already exists.",
+
+		UserNotFound: "One or more team members are not activated in this server.",
 
 		TeamNotFound: (args) =>
 			`**${args.username}** is not part of this record's team.`,

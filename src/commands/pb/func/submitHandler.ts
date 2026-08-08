@@ -13,6 +13,7 @@ import TimeConverter from "./TimeConverter.js";
 import { Bosses } from "./getBosses.js";
 import updateEmbed from "./updateEmbed.js";
 import { formatValueLabel } from "./valueFormat.js";
+import { getApiErrorMessage } from "@utils/errors/api/resolver.js";
 
 async function submitHandler(
 	boss: string,
@@ -51,9 +52,7 @@ async function submitHandler(
 		boss_name: boss,
 	});
 	if (res.error) {
-		const response = getString("times", "failedAddingTime");
-		logger.error({ err: res.message }, response);
-		return response;
+		return getApiErrorMessage(res, { category: "Errors" });
 	}
 
 	const position = res.data.position;

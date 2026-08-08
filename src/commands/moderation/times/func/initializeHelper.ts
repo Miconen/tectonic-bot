@@ -6,6 +6,7 @@ import removeOldEmbeds from "@commands/pb/func/removeOldEmbeds";
 import { Requests } from "@requests/main.js";
 import type { CategoryUpdate } from "@typings/api/guild";
 import { formatGuildTimesForEmbeds } from "@utils/guilds.js";
+import { replyApiError } from "@utils/replyApiError";
 import { getString } from "@utils/stringRepo.js";
 import {
 	MessageFlags,
@@ -20,16 +21,11 @@ async function initializeHelper(interaction: CommandInteraction<"cached">) {
 	});
 
 	const res = await Requests.getGuildTimes(interaction.guild.id);
+
 	if (res.error) {
-		await interaction.deleteReply();
-		await interaction.followUp({
-			content: getString("errors", "apiError", {
-				activity: "fetching guild times",
-				error: res.message,
-			}),
-			flags: MessageFlags.Ephemeral,
+		return replyApiError(res, interaction, {
+			category: "recordErrors",
 		});
-		return;
 	}
 
 	await interaction.editReply({

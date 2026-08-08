@@ -2,6 +2,7 @@ import updateEmbed from "@commands/pb/func/updateEmbed";
 import { Requests } from "@requests/main";
 import type { TeamParam } from "@typings/api/team";
 import { invalidateGuildCache } from "@utils/guildTimes";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import {
@@ -17,16 +18,8 @@ export async function addUserToTimeHelper(
 ) {
 	const params: TeamParam = { type: "boss", boss };
 	const res = await Requests.addToTeam(interaction.guild.id, user.id, params);
-	if (res.error && res.status === 409) {
-		return await replyHandler(res.message, interaction, {
-			flags: MessageFlags.Ephemeral,
-		});
-	}
-
 	if (res.error) {
-		return await replyHandler(getString("api", "internalError"), interaction, {
-			flags: MessageFlags.Ephemeral,
-		});
+		return await replyApiError(res, interaction, { category: "recordErrors" });
 	}
 
 	invalidateGuildCache(interaction.guild.id);

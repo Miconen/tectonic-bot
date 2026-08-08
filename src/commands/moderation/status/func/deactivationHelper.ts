@@ -7,6 +7,7 @@ import { dumpUserData } from "@utils/dumpUserData";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import { container } from "tsyringe";
+import { replyApiError } from "@utils/replyApiError";
 
 const deactivationHelper = async (
 	user: GuildMember,
@@ -44,22 +45,13 @@ const deactivationHelper = async (
 		user_id: user.user.id,
 	});
 
-	if (result.status === 404) {
-		return await replyHandler(
-			getString("errors", "notActivated", {
-				username: user.displayName,
-			}),
-			interaction,
-		);
-	}
-
 	if (result.error) {
-		return await replyHandler(
-			getString("errors", "internalError", {
+		return await replyApiError(result, interaction, {
+			category: "accountErrors",
+			args: {
 				username: user.displayName,
-			}),
-			interaction,
-		);
+			},
+		});
 	}
 
 	// Remove all rank roles
