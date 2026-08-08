@@ -1,6 +1,7 @@
 import { updateEvent } from "@requests/event";
 import type { EventUpdateParam } from "@typings/api/event";
 import { getEvent, updateEventCache } from "@utils/events";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import { MessageFlags, type CommandInteraction } from "discord.js";
@@ -17,12 +18,11 @@ export async function eventUpdateHelper(
 		return;
 	}
 
-	const response = await updateEvent(interaction.guild.id, event, params);
-	if (!response || response.error) {
-		await replyHandler(getString("errors", "noEvents"), interaction, {
-			flags: MessageFlags.Ephemeral,
+	const res = await updateEvent(interaction.guild.id, event, params);
+	if (res.error) {
+		return await replyApiError(res, interaction, {
+			category: "eventErrors",
 		});
-		return;
 	}
 
 	const ev = await getEvent(interaction.guild.id, event);

@@ -1,4 +1,5 @@
 import { Requests } from "@requests/main";
+import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import { MessageFlags, type CommandInteraction } from "discord.js";
@@ -15,7 +16,9 @@ export async function winnerTeamHelper(
 	});
 
 	if (res.error) {
-		return replyHandler(res.message, interaction);
+		return await replyApiError(res, interaction, {
+			category: "eventErrors",
+		});
 	}
 
 	// const winners = res.data;

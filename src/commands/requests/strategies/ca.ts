@@ -5,6 +5,7 @@ import type IRankService from "@utils/rankUtils/IRankService";
 import { getString } from "@utils/stringRepo";
 import { container } from "tsyringe";
 import type { RequestStrategy } from "./strategies";
+import { getApiErrorMessage } from "@utils/errors/api/resolver";
 
 export const caStrategy: RequestStrategy<CaRequest> = {
 	async accept(interaction, data) {
@@ -16,7 +17,9 @@ export const caStrategy: RequestStrategy<CaRequest> = {
 			data.members.map((m) => m.id),
 		);
 
-		if (res.error) return getString("errors", "givingPoints");
+		if (res.error) {
+			return getApiErrorMessage(res, { category: "combatAchievementErrors" });
+		}
 
 		const response: string[] = [
 			getString("ca", "approved", {

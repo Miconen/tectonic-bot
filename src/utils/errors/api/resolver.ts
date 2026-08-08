@@ -1,3 +1,4 @@
+import { getContext } from "@logging/context";
 import type { ErrorResponse } from "@typings/api/errors";
 import { apiErrorNames } from "@utils/errors/api/lookup";
 import { getString } from "@utils/stringRepo";
@@ -12,6 +13,11 @@ export function getApiErrorMessage(
 	error: ErrorResponse,
 	context: ErrorContext = {},
 ): string {
+	const store = getContext();
+	return `${constructMessage(error, context)}\n-# Error ID: ${store?.correlationId}`;
+}
+
+function constructMessage(error: ErrorResponse, context: ErrorContext): string {
 	const key = apiErrorNames[error.code];
 	if (!key) return error.message;
 
