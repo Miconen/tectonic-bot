@@ -12,7 +12,6 @@ const activationHelper = async (
 	interaction: CommandInteraction<"cached">,
 ) => {
 	const rankService = container.resolve<IRankService>("RankService");
-	await interaction.deferReply();
 
 	const res = await Requests.createUser(
 		interaction.guild.id,

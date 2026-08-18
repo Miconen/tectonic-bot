@@ -15,7 +15,6 @@ const deactivationHelper = async (
 ) => {
 	const logger = getLogger();
 	const rankService = container.resolve<IRankService>("RankService");
-	await interaction.deferReply();
 
 	// Fetch BEFORE removal (removeUser purges the user's records/times)
 	const res = await Requests.getUser(interaction.guild.id, {

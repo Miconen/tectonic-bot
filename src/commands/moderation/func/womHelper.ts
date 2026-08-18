@@ -16,7 +16,6 @@ async function womHelper(
 	interaction: CommandInteraction<"cached">,
 	cutoff: number,
 ) {
-	interaction.deferReply();
 	const member = interaction.member as GuildMember;
 
 	// Services and data fetching

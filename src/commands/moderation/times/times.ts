@@ -5,6 +5,7 @@ import { bossTimePicker } from "@pickers/bosses";
 import { recordPicker } from "@pickers/records";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
@@ -93,6 +94,7 @@ class Times {
 	})
 	@Guard(IsAdmin)
 	async initialize(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		await initializeHelper(interaction);
 	}
 }
