@@ -1,20 +1,19 @@
 import { Requests } from "@requests/main.js";
-import type IRankService from "@utils/rankUtils/IRankService";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 import { getLogger } from "@logging/context";
 import { dumpUserData } from "@utils/dumpUserData";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
-import { container } from "tsyringe";
 import { replyApiError } from "@utils/replyApiError";
+import { syncRankRoles } from "@utils/ranks/rankRoles";
+import { getRanks } from "@utils/ranks/guildRanks";
 
 const deactivationHelper = async (
 	user: GuildMember,
 	interaction: CommandInteraction<"cached">,
 ) => {
 	const logger = getLogger();
-	const rankService = container.resolve<IRankService>("RankService");
 
 	// Fetch BEFORE removal (removeUser purges the user's records/times)
 	const res = await Requests.getUser(interaction.guild.id, {
@@ -54,7 +53,9 @@ const deactivationHelper = async (
 	}
 
 	// Remove all rank roles
-	await rankService.removeOldRoles(user);
+	const ranks = await getRanks(interaction.guild.id);
+	await syncRankRoles(user, ranks, null);
+
 	return await replyHandler(
 		getString("accounts", "deactivated", { username: user.displayName }),
 		interaction,

@@ -1,23 +1,19 @@
 import { Requests } from "@requests/main.js";
 import type { UserParam } from "@typings/api/user";
-import type IRankService from "@utils/rankUtils/IRankService";
 import type { CommandInteraction, GuildMember } from "discord.js";
 
 import TimeConverter from "@commands/pb/func/TimeConverter";
 import { formatPlacement } from "@utils/formatEventPlacement";
 import { getString } from "@utils/stringRepo";
-import { container } from "tsyringe";
 import { getApiErrorMessage } from "@utils/errors/api/resolver";
+import { getRanks } from "@utils/ranks/guildRanks";
+import { nextTier, pointsToNext, tierForPoints } from "@utils/ranks/tierMath";
 
 const pointsHelper = async (
 	member: GuildMember | null,
 	rsn: string | null,
 	interaction: CommandInteraction<"cached">,
 ) => {
-	const guildId = interaction.guild.id;
-
-	const rankService = container.resolve<IRankService>("RankService");
-
 	let target = member;
 	let query: UserParam | undefined;
 	let errorMsg = getString("profile", "criticalError");
@@ -44,7 +40,7 @@ const pointsHelper = async (
 		return errorMsg;
 	}
 
-	const res = await Requests.getUser(guildId, query);
+	const res = await Requests.getUser(interaction.guild.id, query);
 	if (res.error) {
 		return getApiErrorMessage(res, { category: "accountErrors" });
 	}
@@ -55,15 +51,11 @@ const pointsHelper = async (
 	const user = res.data;
 	const points = user.points;
 
-	// Use API-provided tier if available, fall back to hardcoded RankService
-	const currentRankIcon =
-		user.tier?.icon ?? rankService.getIcon(rankService.getRankByPoints(points));
-	const currentRank = user.tier?.name ?? rankService.getRankByPoints(points);
-
-	// Compute next rank info
-	const nextRankUntil = rankService.pointsToNextRank(points);
-	const nextRank = rankService.getRankByPoints(points + nextRankUntil);
-	const nextRankIcon = rankService.getIcon(nextRank);
+	// Get ranks
+	const ranks = await getRanks(interaction.guild.id);
+	const rank = tierForPoints(user.points, ranks);
+	const nextRank = nextTier(user.points, ranks);
+	const nextRankUntil = pointsToNext(user.points, ranks);
 
 	const lines: string[] = [];
 
@@ -74,7 +66,7 @@ const pointsHelper = async (
 		(e) => e.position_cutoff >= e.placement,
 	);
 
-	const guildTimesRes = await Requests.getGuildTimes(guildId);
+	const guildTimesRes = await Requests.getGuildTimes(interaction.guild.id);
 
 	if (guildTimesRes.error) {
 		return getApiErrorMessage(guildTimesRes, {
@@ -122,14 +114,14 @@ const pointsHelper = async (
 
 	lines.push(
 		getString("profile", "header", {
-			rankIcon: currentRankIcon,
+			rankIcon: rank?.icon ?? "",
 			username: target.displayName,
 			rankPrefix,
 			points,
 			pbCount: recordsToDisplay.length,
 			eventCount: validEvents.length,
-			nextRankIcon,
-			pointsToNext: nextRankUntil > 0 ? nextRankUntil.toString() : "0",
+			nextRankIcon: nextRank?.icon ?? "",
+			pointsToNext: nextRankUntil?.toString() ?? "0",
 		}),
 	);
 

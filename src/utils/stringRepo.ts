@@ -31,18 +31,8 @@ const strings: StringRepository = {
 			} points (${args.oldPoints} ${args.icon} → ${args.newPoints} ${
 				args.icon
 			})`,
-		pointsGrantedRankUp: (args) =>
-			`√ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
-				args.pointsGiven
-			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
-				args.newIcon
-			}) Ranked up to ${args.newIcon} ${args.rankName}`,
-		pointsGrantedRankDown: (args) =>
-			`√ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
-				args.pointsGiven
-			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
-				args.newIcon
-			}) Ranked down to ${args.newIcon} ${args.rankName}`,
+		rankUp: (args) => `Ranked up to ${args.newIcon} ${args.rankName}`,
+		rankDown: (args) => `Ranked down to ${args.newIcon} ${args.rankName}`,
 		roleAdded: (args) =>
 			`Added role **${args.roleName}** to **${args.username}**.`,
 		roleRemoved: (args) => `Removed all rank roles from **${args.username}**.`,

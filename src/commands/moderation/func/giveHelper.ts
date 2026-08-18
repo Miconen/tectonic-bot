@@ -1,4 +1,4 @@
-import type IPointService from "@utils/pointUtils/IPointService";
+import { awardPoints } from "@utils/points/awardPoints";
 import type {
 	ButtonInteraction,
 	Collection,
@@ -6,17 +6,13 @@ import type {
 	GuildMember,
 } from "discord.js";
 
-import { container } from "tsyringe";
-
 const giveHelper = async (
 	target: GuildMember | Collection<string, GuildMember>,
 	value: number | string,
 	interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">,
 ) => {
-	const pointService = container.resolve<IPointService>("PointService");
-
 	// Handle giving of points, returns a string to be sent as a message.
-	const res = await pointService.givePoints(value, target, interaction);
+	const res = await awardPoints(value, target, interaction);
 
 	if (!res.success) return res.error;
 

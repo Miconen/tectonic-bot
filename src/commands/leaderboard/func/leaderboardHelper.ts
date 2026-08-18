@@ -1,12 +1,11 @@
 import { Pagination } from "@discordx/pagination";
 import { Requests } from "@requests/main.js";
-import type IRankService from "@utils/rankUtils/IRankService";
 import { type CommandInteraction, EmbedBuilder } from "discord.js";
 
-import type { GuildRankResponse } from "@typings/api/guildRank";
 import { replyHandler } from "@utils/replyHandler";
-import { container } from "tsyringe";
 import { replyApiError } from "@utils/replyApiError";
+import { getRanks } from "@utils/ranks/guildRanks";
+import { tierForPoints } from "@utils/ranks/tierMath";
 
 interface LeaderboardUser {
 	name: string;
@@ -14,8 +13,6 @@ interface LeaderboardUser {
 }
 
 async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
-	const rankService = container.resolve<IRankService>("RankService");
-
 	const lb = await Requests.getLeaderboard(interaction.guild.id);
 	if (lb.error) {
 		return await replyApiError(lb, interaction, {
@@ -35,8 +32,6 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 		});
 	}
 
-	const guildRanks = ranksRes.data;
-
 	const userIds = users.map((user) => user.user_id);
 	const usersData = await interaction.guild.members.fetch({ user: userIds });
 	if (!usersData) return;
@@ -47,17 +42,15 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 		const userData = usersData.get(user.user_id);
 		if (!userData) continue;
 
-		// Use API guild ranks if available, fall back to hardcoded RankService
-		const tierIcon =
-			getTierIcon(user.points, guildRanks) ??
-			rankService.getIcon(rankService.getRankByPoints(user.points));
+		const ranks = await getRanks(interaction.guild.id);
+		const rank = await tierForPoints(user.points, ranks);
 		serverRank++;
 
 		leaderboard.push({
 			name: `#${serverRank} **${
 				userData.nickname ?? userData.displayName
 			}** (${user.rsns.map((rsn) => rsn.rsn).join(" | ")})`,
-			value: `${tierIcon} ${user.points} points | Accounts: ${user.rsns.length}`,
+			value: `${rank?.icon ?? ""} ${user.points} points | Accounts: ${user.rsns.length}`,
 		});
 	}
 
@@ -94,26 +87,6 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 	}
 
 	await new Pagination(interaction, [...pages]).send();
-}
-
-/** Find the tier icon for a given points value from the API guild ranks. */
-function getTierIcon(
-	points: number,
-	ranks: GuildRankResponse[],
-): string | null {
-	if (ranks.length === 0) return null;
-
-	// Find the highest threshold the user meets
-	let best: GuildRankResponse | null = null;
-	for (const rank of ranks) {
-		if (points >= rank.min_points) {
-			if (!best || rank.min_points > best.min_points) {
-				best = rank;
-			}
-		}
-	}
-
-	return best?.icon ?? null;
 }
 
 export default leaderboardHelper;

@@ -1,18 +1,14 @@
-import { getLogger } from "@logging/context.js";
 import { Requests } from "@requests/main.js";
-import type IRankService from "@utils/rankUtils/IRankService.js";
 import type { GuildMember } from "discord.js";
-import { container } from "tsyringe";
 import { formatDisplayName } from "./formatDisplayName";
+import { getRanks } from "./ranks/guildRanks";
+import { getRankTransition } from "./ranks/rankRoles";
 
 export async function buildPlayerPreview(
 	guildId: string,
 	members: GuildMember[],
 	points: number,
 ): Promise<string> {
-	const logger = getLogger();
-	const rankService = container.resolve<IRankService>("RankService");
-
 	const userIds = members.map((m) => m.id);
 	const res = await Requests.getUsers(guildId, {
 		type: "user_id",
@@ -21,6 +17,7 @@ export async function buildPlayerPreview(
 
 	const lines: string[] = ["**If approved:**"];
 
+	const ranks = await getRanks(guildId);
 	for (const member of members) {
 		const userData = !res.error
 			? res.data.find((u) => u.user_id === member.id)
@@ -33,17 +30,13 @@ export async function buildPlayerPreview(
 
 		const oldPoints = userData.points;
 		const newPoints = oldPoints + points;
-		const oldRank = rankService.getRankByPoints(oldPoints);
-		const newRank = rankService.getRankByPoints(newPoints);
-		const oldIcon = rankService.getIcon(oldRank);
-		const newIcon = rankService.getIcon(newRank);
 
-		const rankChanged = oldRank !== newRank;
+		const transition = getRankTransition(ranks, oldPoints, newPoints);
 
-		let line = `<@${member.id}> (${oldPoints} ${oldIcon} → ${newPoints} ${newIcon})`;
-		if (rankChanged) {
+		let line = `<@${member.id}> (${oldPoints} ${transition.oldTier?.icon ?? ""} → ${newPoints} ${transition.newTier?.icon ?? ""})`;
+		if (transition.rankChanged) {
 			const direction = points >= 0 ? "Ranks up" : "Ranks down";
-			line += ` ${direction} to ${newIcon} ${formatDisplayName(newRank)}`;
+			line += ` ${direction} to ${transition.newTier?.icon ?? ""} ${formatDisplayName(transition.newTier?.name ?? "Unranked")}`;
 		}
 		lines.push(line);
 	}
