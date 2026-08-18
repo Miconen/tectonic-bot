@@ -9,7 +9,8 @@ import leaderboardHelper from "./func/leaderboardHelper.js";
 class Leaderboard {
 	@Slash({ name: "leaderboard", description: "Check the top 50 leaderboard" })
 	@Guard(RateLimit(TIME_UNIT.seconds, 60))
-	leaderboard(interaction: CommandInteraction<"cached">) {
+	async leaderboard(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply();
 		return leaderboardHelper(interaction);
 	}
 }

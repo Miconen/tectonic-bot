@@ -2,6 +2,7 @@ import RequiresGuild from "@guards/RequiresGuild";
 import { eventPicker } from "@pickers/events";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type CommandInteraction,
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
@@ -25,6 +26,7 @@ class EventInfo {
 		event: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return eventInfoHelper(event, interaction);
 	}
 
@@ -40,6 +42,7 @@ class EventInfo {
 		event: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		return eventRemoveHelper(event, interaction);
 	}
 }

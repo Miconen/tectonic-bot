@@ -95,6 +95,7 @@ class CombatAchievement {
 			return true;
 		});
 
+		await interaction.deferReply();
 		await caHelper(achievement, uniqueMembers, interaction, screenshot.url);
 	}
 }

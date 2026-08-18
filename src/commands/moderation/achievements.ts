@@ -8,6 +8,7 @@ import {
 } from "@pickers/achievements";
 import {
 	ApplicationCommandOptionType,
+	MessageFlags,
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
@@ -45,6 +46,7 @@ class Achievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		await giveAchievementHelper(user, interaction, achievement);
 	}
 
@@ -71,6 +73,7 @@ class Achievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		await removeAchievementHelper(user, interaction, achievement);
 	}
 }

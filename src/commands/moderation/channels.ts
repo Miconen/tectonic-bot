@@ -32,6 +32,7 @@ class ModChannel {
 		channel: TextChannel,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			mod_channel_id: channel.id,
 		});
@@ -62,6 +63,7 @@ class ModChannel {
 		channel: TextChannel,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			log_channel_id: channel.id,
 		});

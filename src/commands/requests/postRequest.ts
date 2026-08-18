@@ -20,11 +20,6 @@ export async function postRequest(
 	const logger = getLogger();
 	const requestId = interaction.id;
 
-	// Ensure deferred
-	if (!interaction.deferred && !interaction.replied) {
-		await interaction.deferReply();
-	}
-
 	const confirm = new ButtonBuilder()
 		.setCustomId(`requestAccept-${requestId}`)
 		.setLabel("Accept")

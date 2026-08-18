@@ -175,6 +175,7 @@ class RequestHandler {
 		id: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return handleAccept(interaction, id);
 	}
 
@@ -191,6 +192,7 @@ class RequestHandler {
 		id: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return handleDeny(interaction, id);
 	}
 }

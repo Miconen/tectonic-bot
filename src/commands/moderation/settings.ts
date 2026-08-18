@@ -35,6 +35,8 @@ class ModerationSettings {
 		count: number,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
+
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			position_count: count,
 		});
