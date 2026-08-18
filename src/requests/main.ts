@@ -18,7 +18,7 @@ import type {
 } from "@typings/api/errors";
 import { HTTPError } from "discord.js";
 
-const API_PROTOCOL = process.env.API_PROTOCOL ?? "https";
+export const API_PROTOCOL = process.env.API_PROTOCOL ?? "https";
 const API_URL = process.env.API_URL
 	? `${API_PROTOCOL}://${process.env.API_URL}/api/v1/`
 	: "http://localhost:8080/api/v1/";
