@@ -18,8 +18,9 @@ import type {
 } from "@typings/api/errors";
 import { HTTPError } from "discord.js";
 
+const API_PROTOCOL = process.env.API_PROTOCOL ?? "https";
 const API_URL = process.env.API_URL
-	? `${process.env.API_PROTOCOL}://${process.env.API_URL}/api/v1/`
+	? `${API_PROTOCOL}://${process.env.API_URL}/api/v1/`
 	: "http://localhost:8080/api/v1/";
 const AUTH_KEY = process.env.AUTH_KEY ?? "";
 
