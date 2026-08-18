@@ -14,21 +14,21 @@ import type {
 	GuildMember,
 } from "discord.js";
 import { Collection } from "discord.js";
-import { inject, injectable, singleton } from "tsyringe";
-import type IRankService from "../rankUtils/IRankService.js";
+import { singleton } from "tsyringe";
 import type IPointService from "./IPointService.js";
 import { getApiErrorMessage } from "@utils/errors/api/resolver.js";
+import { tierForPoints } from "@utils/ranks/tierMath.js";
+import { getRanks } from "@utils/ranks/guildRanks.js";
+import { syncRankRolesIfChanged } from "@utils/ranks/rankRoles.js";
+import type { StrategyResult } from "@commands/requests/strategies/strategies.js";
 
 @singleton()
-@injectable()
 export class PointService implements IPointService {
-	constructor(@inject("RankService") private rankService: IRankService) {}
-
 	async givePoints(
 		value: string | number,
 		target: GuildMember | Collection<string, GuildMember>,
 		interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">,
-	) {
+	): Promise<StrategyResult> {
 		const points =
 			typeof value === "number"
 				? ({ type: "custom" as const, amount: value } as CustomPoints)
@@ -49,10 +49,16 @@ export class PointService implements IPointService {
 			param,
 		);
 		if (res.error) {
-			return getApiErrorMessage(res, { category: "guildErrors" });
+			return {
+				success: false,
+				error: getApiErrorMessage(res, { category: "guildErrors" }),
+			};
 		}
 
-		return this.buildResponses(res.data, members, interaction);
+		return {
+			success: true,
+			message: await this.buildResponses(res.data, members, interaction),
+		};
 	}
 
 	private async buildResponses(
@@ -84,24 +90,20 @@ export class PointService implements IPointService {
 		member: GuildMember,
 		interaction: BaseInteraction<"cached">,
 	): Promise<string> {
+		const ranks = await getRanks(interaction.guild.id);
+
 		const oldPoints = entry.points - entry.given_points;
 		const newPoints = entry.points;
 
-		const oldRank = this.rankService.getRankByPoints(oldPoints);
-		const newRank = this.rankService.getRankByPoints(newPoints);
-		const oldIcon = this.rankService.getIcon(oldRank);
-		const newIcon = this.rankService.getIcon(newRank);
+		const oldRank = tierForPoints(oldPoints, ranks);
+		const newRank = await syncRankRolesIfChanged(
+			member,
+			ranks,
+			oldPoints,
+			newPoints,
+		);
 
-		const rankChanged = oldRank !== newRank;
-
-		if (rankChanged) {
-			await this.rankService.rankUpHandler(
-				interaction,
-				member,
-				oldPoints,
-				newPoints,
-			);
-
+		if (newRank) {
 			const template =
 				entry.given_points >= 0
 					? "pointsGrantedRankUp"
@@ -112,9 +114,9 @@ export class PointService implements IPointService {
 				pointsGiven: entry.given_points,
 				oldPoints,
 				newPoints,
-				oldIcon,
-				newIcon,
-				rankName: formatDisplayName(newRank),
+				oldRank: oldRank?.icon ?? "",
+				newIcon: newRank.icon,
+				rankName: formatDisplayName(newRank.name),
 			});
 		}
 
@@ -123,7 +125,7 @@ export class PointService implements IPointService {
 			pointsGiven: entry.given_points,
 			oldPoints,
 			newPoints,
-			icon: newIcon,
+			icon: oldRank?.icon ?? "",
 		});
 	}
 }

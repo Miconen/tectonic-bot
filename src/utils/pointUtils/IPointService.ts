@@ -1,3 +1,4 @@
+import { StrategyResult } from "@commands/requests/strategies/strategies";
 import type {
 	ButtonInteraction,
 	Collection,
@@ -10,7 +11,7 @@ interface IPointService {
 		addedPoints: number | string,
 		users: GuildMember | Collection<string, GuildMember>,
 		interaction: CommandInteraction<"cached"> | ButtonInteraction<"cached">,
-	) => Promise<string | string[]>;
+	) => Promise<StrategyResult>;
 }
 
 export default IPointService;
