@@ -23,15 +23,7 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 	if (!users || users.length === 0)
 		return replyHandler("No activated users for leaderboard", interaction);
 
-	// Fetch guild rank tiers for icon lookup
-	const ranksRes = await Requests.getGuildRanks(interaction.guild.id);
-
-	if (ranksRes.error) {
-		return await replyApiError(ranksRes, interaction, {
-			category: "rankErrors",
-		});
-	}
-
+	const ranks = await getRanks(interaction.guild.id);
 	const userIds = users.map((user) => user.user_id);
 	const usersData = await interaction.guild.members.fetch({ user: userIds });
 	if (!usersData) return;
@@ -42,8 +34,7 @@ async function leaderboardHelper(interaction: CommandInteraction<"cached">) {
 		const userData = usersData.get(user.user_id);
 		if (!userData) continue;
 
-		const ranks = await getRanks(interaction.guild.id);
-		const rank = await tierForPoints(user.points, ranks);
+		const rank = tierForPoints(user.points, ranks);
 		serverRank++;
 
 		leaderboard.push({
