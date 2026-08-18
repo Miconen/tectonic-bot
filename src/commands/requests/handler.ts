@@ -175,7 +175,7 @@ class RequestHandler {
 		id: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		return handleAccept(interaction, id);
 	}
 
@@ -192,7 +192,7 @@ class RequestHandler {
 		id: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		return handleDeny(interaction, id);
 	}
 }
