@@ -1,10 +1,11 @@
+import { getLogger } from "@logging/context";
 import type {
 	ButtonInteraction,
 	InteractionEditReplyOptions,
 	InteractionReplyOptions,
 	MessageCreateOptions,
 } from "discord.js";
-import { CommandInteraction, TextChannel } from "discord.js";
+import { CommandInteraction, DiscordAPIError, TextChannel } from "discord.js";
 
 type ReplyOptions = Pick<InteractionReplyOptions, "flags">;
 
@@ -36,29 +37,42 @@ async function replyer(
 	split?: boolean,
 	options?: ReplyOptions,
 ) {
-	if (interaction.channel instanceof TextChannel && split) {
-		const payload: MessageCreateOptions = { content: message };
-		return interaction.channel.send(payload);
-	}
+	try {
+		if (interaction.channel instanceof TextChannel && split) {
+			const payload: MessageCreateOptions = { content: message };
+			return await interaction.channel.send(payload);
+		}
 
-	if (interaction.deferred && !interaction.replied) {
-		const payload: InteractionEditReplyOptions = {
+		if (interaction.deferred && !interaction.replied) {
+			const payload: InteractionEditReplyOptions = {
+				content: message,
+			};
+			return await interaction.editReply(payload);
+		}
+
+		const payload: InteractionReplyOptions = {
 			content: message,
+			...options,
 		};
 
-		return interaction.editReply(payload);
+		if (interaction.replied) {
+			return await interaction.followUp(payload);
+		}
+
+		return await interaction.reply(payload);
+	} catch (error) {
+		// Ignore expired interaction token (10062: Unknown interaction)
+		if (error instanceof DiscordAPIError && error.code === 10062) {
+			getLogger().warn(
+				{ interactionId: interaction.id },
+				"Interaction expired before reply could be sent (10062)",
+			);
+			return;
+		}
+
+		// Re-throw unexpected errors
+		throw error;
 	}
-
-	const payload: InteractionReplyOptions = {
-		content: message,
-		...options,
-	};
-
-	if (interaction.replied) {
-		return interaction.followUp(payload);
-	}
-
-	return interaction.reply(payload);
 }
 
 function splitMessage(message: string, CHARACTER_LIMIT: number) {
