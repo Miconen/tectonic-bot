@@ -309,6 +309,8 @@ const strings: StringRepository = {
 			"Cannot reach the application server. Please try again in 30 seconds.",
 		internalError: "An internal error occurred. Please try again.",
 		rateLimitExceeded: "Too many requests. Please slow down.",
+		requestNotFound:
+			"This request has expired or the bot has restarted. Please ask for a new request, or handle points manually.",
 		commandFailed: (args) => `Command failed: ${args.reason}`,
 		rsnNotBound: (args) => `**${args.rsn}** is not bound to a known member.`,
 		fetchFailed: (args) => `Failed to fetch ${args.resource}.`,
