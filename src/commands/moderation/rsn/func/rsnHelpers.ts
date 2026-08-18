@@ -52,8 +52,6 @@ export async function removeRsnHelper(
 	rsn: string,
 	interaction: CommandInteraction<"cached">,
 ) {
-	await interaction.deferReply();
-
 	const res = await Requests.removeRsn(interaction.guild.id, user.id, rsn);
 	if (res.error) {
 		return await replyApiError(res, interaction, {

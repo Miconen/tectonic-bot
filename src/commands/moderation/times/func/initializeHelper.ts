@@ -15,7 +15,6 @@ import {
 } from "discord.js";
 
 async function initializeHelper(interaction: CommandInteraction<"cached">) {
-	await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 	await interaction.editReply({
 		content: getString("times", "fetchingGuildData"),
 	});

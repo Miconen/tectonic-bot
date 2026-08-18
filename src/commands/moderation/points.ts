@@ -159,6 +159,7 @@ class Points {
 		cutoff: number,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		await womHelper(competitionId, interaction, cutoff);
 	}
 }

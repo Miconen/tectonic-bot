@@ -39,6 +39,7 @@ class Activation {
 		rsn: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return activationHelper(user, rsn, interaction);
 	}
 
@@ -58,6 +59,7 @@ class Activation {
 		user: GuildMember,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		return deactivationHelper(user, interaction);
 	}
 }
