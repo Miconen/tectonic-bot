@@ -1,18 +1,16 @@
 import { Requests } from "@requests/main";
-import type IRankService from "@utils/rankUtils/IRankService";
+import { getRanks } from "@utils/ranks/guildRanks";
+import { tierForPoints } from "@utils/ranks/tierMath";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo";
 import type { CommandInteraction, GuildMember } from "discord.js";
-import { container } from "tsyringe";
 
 const activationHelper = async (
 	user: GuildMember,
 	rsn: string,
 	interaction: CommandInteraction<"cached">,
 ) => {
-	const rankService = container.resolve<IRankService>("RankService");
-
 	const res = await Requests.createUser(
 		interaction.guild.id,
 		user.user.id,
@@ -30,7 +28,11 @@ const activationHelper = async (
 	}
 
 	// Set default role
-	await rankService.addRole(interaction, user, "jade");
+	const ranks = await getRanks(interaction.guild.id);
+	const defaultTier = tierForPoints(0, ranks);
+
+	if (defaultTier?.role_id) await user.roles.add(defaultTier.role_id);
+
 	return await replyHandler(
 		getString("accounts", "userActivatedByMember", {
 			user,

@@ -1,20 +1,13 @@
 import type { SplitRequest } from "@typings/requestTypes";
-import type IPointService from "@utils/pointUtils/IPointService";
 import { getString } from "@utils/stringRepo";
-import { container } from "tsyringe";
 import type { RequestStrategy } from "./strategies";
+import { awardPoints } from "@utils/points/awardPoints";
 
 export const splitStrategy: RequestStrategy<SplitRequest> = {
 	async accept(interaction, data) {
-		const pointService = container.resolve<IPointService>("PointService");
-
 		// Only the submitter gets points
 		const submitter = data.members[0];
-		const result = await pointService.givePoints(
-			data.points,
-			submitter,
-			interaction,
-		);
+		const result = await awardPoints(data.points, submitter, interaction);
 
 		if (!result.success) {
 			return result;

@@ -1,6 +1,6 @@
 import { Requests } from "@requests/main";
 import { getRanks } from "@utils/ranks/guildRanks.js";
-import { syncRankRolesIfChanged } from "@utils/ranks/rankRoles.js";
+import { applyRankTransition } from "@utils/ranks/rankRoles";
 import { tierForPoints } from "@utils/ranks/tierMath.js";
 import { replyApiError } from "@utils/replyApiError.js";
 import { replyHandler } from "@utils/replyHandler.js";
@@ -95,20 +95,20 @@ async function womHelper(
 			);
 
 			if (!user) continue;
-			const newRank = await syncRankRolesIfChanged(
+			const transition = await applyRankTransition(
 				user,
 				ranks,
 				oldPoints,
 				newPoints,
 			);
 
-			if (!newRank) continue;
+			if (!transition.rankChanged) continue;
 			// Concatenate level up message to response if user leveled up
 			responseLines.push(
 				getString("ranks", "levelUpMessage", {
 					username: user.displayName,
-					icon: newRank.icon ?? "",
-					rankName: newRank.name.replace("_", " "),
+					icon: transition.newTier?.icon ?? "",
+					rankName: transition.newTier?.name.replace("_", " "),
 				}),
 			);
 		}

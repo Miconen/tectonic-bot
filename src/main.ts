@@ -9,9 +9,6 @@ import { IsHealthy } from "@guards/IsHealthy.js";
 import { LoggingGuard } from "@logging/guard.js";
 import { rootLogger } from "@logging/logger.js";
 import { startStatusRotation } from "@utils/status.js";
-import { container } from "tsyringe";
-import { PointService } from "./utils/pointUtils/PointService.js";
-import { RankService } from "./utils/rankUtils/RankService.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: TEMPORARY FIX TO THIS: https://github.com/oceanroleplay/discord.ts/issues/840
 (BigInt.prototype as any).toJSON = function () {
@@ -64,9 +61,6 @@ bot.on("messageCreate", (message: Message) => {
 });
 
 async function run() {
-	container.registerSingleton("RankService", RankService);
-	container.registerSingleton("PointService", PointService);
-
 	// Import commands
 	await importx(
 		`${dirname(import.meta.url)}/{events,commands}/**/**/*.{ts,js}`,

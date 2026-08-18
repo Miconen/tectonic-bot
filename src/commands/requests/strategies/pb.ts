@@ -8,8 +8,7 @@ import { formatValueLabel } from "@commands/pb/func/valueFormat.js";
 import { getApiErrorMessage } from "@utils/errors/api/resolver.js";
 import { getString } from "@utils/stringRepo.js";
 import { getLogger } from "@logging/context.js";
-import { container } from "tsyringe";
-import type IPointService from "@utils/pointUtils/IPointService";
+import { awardPoints } from "@utils/points/awardPoints";
 
 export const pbStrategy: RequestStrategy<PbRequest> = {
 	async accept(interaction, data) {
@@ -90,12 +89,7 @@ export const pbStrategy: RequestStrategy<PbRequest> = {
 				user: data.team,
 			});
 
-			const pointService = container.resolve<IPointService>("PointService");
-			const pointsResult = await pointService.givePoints(
-				"clan_pb",
-				members,
-				interaction,
-			);
+			const pointsResult = await awardPoints("clan_pb", members, interaction);
 
 			if (!pointsResult.success) {
 				return pointsResult;

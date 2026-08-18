@@ -36,18 +36,35 @@ export async function syncRankRoles(
 	}
 }
 
+export type RankTransition = {
+	oldTier: GuildRankResponse | null;
+	newTier: GuildRankResponse | null;
+	rankChanged: boolean;
+};
+
+export function getRankTransition(
+	ranks: GuildRankResponse[],
+	oldPoints: number,
+	newPoints: number,
+) {
+	const oldTier = tierForPoints(oldPoints, ranks);
+	const newTier = tierForPoints(newPoints, ranks);
+	const rankChanged = oldTier?.name !== newTier?.name;
+
+	return { oldTier, newTier, rankChanged };
+}
+
 /** On points change: only touch roles if tier name changed */
-export async function syncRankRolesIfChanged(
+export async function applyRankTransition(
 	member: GuildMember,
 	ranks: GuildRankResponse[],
 	oldPoints: number,
 	newPoints: number,
-): Promise<GuildRankResponse | null> {
-	const oldTier = tierForPoints(oldPoints, ranks);
-	const newTier = tierForPoints(newPoints, ranks);
+): Promise<RankTransition> {
+	const transition = getRankTransition(ranks, oldPoints, newPoints);
+	if (transition.rankChanged) {
+		await syncRankRoles(member, ranks, transition.newTier);
+	}
 
-	if (oldTier?.name === newTier?.name) return null; // no rank change
-
-	await syncRankRoles(member, ranks, newTier);
-	return newTier; // caller can use for "ranked up to X" messages
+	return transition;
 }
