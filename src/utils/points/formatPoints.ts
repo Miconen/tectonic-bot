@@ -1,7 +1,7 @@
 import type { PointsResponse } from "@typings/api/points";
 import { formatDisplayName } from "@utils/formatDisplayName";
 import { getRanks } from "@utils/ranks/guildRanks";
-import type { RankTransition } from "@utils/ranks/rankRoles";
+import { getRankTransition, type RankTransition } from "@utils/ranks/rankRoles";
 import { getString } from "@utils/stringRepo";
 import type { BaseInteraction, Collection, GuildMember } from "discord.js";
 
@@ -57,8 +57,14 @@ export async function buildResponses(
 			continue;
 		}
 
+		const transition = getRankTransition(
+			ranks,
+			entry.given_points,
+			entry.points,
+		);
+
 		response.push(
-			// await formatPointsAward(member, entry.given_points, entry.points, ranks),
+			formatPointsAward(member, entry.given_points, entry.points, transition),
 		);
 	}
 
