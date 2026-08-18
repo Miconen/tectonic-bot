@@ -17,6 +17,7 @@ class Help {
 		description: "Information about all commands",
 	})
 	async commands(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply();
 		await replyHandler(getString("help", "commandsInfo"), interaction);
 	}
 
@@ -24,7 +25,8 @@ class Help {
 		name: "ranks",
 		description: "Information about all the ranks",
 	})
-	ranks(interaction: CommandInteraction<"cached">) {
+	async ranks(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply();
 		return ranksHelp(interaction);
 	}
 
@@ -32,12 +34,14 @@ class Help {
 		name: "points",
 		description: "Information about points",
 	})
-	points(interaction: CommandInteraction<"cached">) {
+	async points(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply();
 		return pointsHelp(interaction);
 	}
 
 	@Slash({ name: "split", description: "Information about splitting" })
-	split(interaction: CommandInteraction<"cached">) {
+	async split(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply();
 		return splitHelp(interaction);
 	}
 }

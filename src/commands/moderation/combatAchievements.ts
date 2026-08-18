@@ -44,6 +44,7 @@ class ModerationCombatAchievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		const res = await Requests.giveUserCombatAchievement(
 			interaction.guild.id,
 			user.id,
@@ -89,6 +90,7 @@ class ModerationCombatAchievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
 		const res = await Requests.removeUserCombatAchievement(
 			interaction.guild.id,
 			user.id,

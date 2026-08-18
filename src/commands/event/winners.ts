@@ -60,6 +60,7 @@ class EventCreate {
 		interaction: CommandInteraction<"cached">,
 	) {
 		const team_names = [team1, team2, team3].filter(notEmpty);
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		return winnerTeamHelper(interaction, competitionId, team_names);
 	}
 
@@ -82,6 +83,7 @@ class EventCreate {
 		top: number | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		return winnerHelper(interaction, competitionId, top);
 	}
 

@@ -100,6 +100,8 @@ class ModerationRanks {
 		role: { id: string } | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
+
 		const res = await Requests.createGuildRank(interaction.guild.id, {
 			name,
 			min_points: minPoints,
@@ -165,6 +167,8 @@ class ModerationRanks {
 		role: { id: string } | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
+
 		const body: Record<string, unknown> = {};
 		if (minPoints !== undefined) body.min_points = minPoints;
 		if (displayOrder !== undefined) body.display_order = displayOrder;
@@ -203,6 +207,8 @@ class ModerationRanks {
 		name: string,
 		interaction: CommandInteraction<"cached">,
 	) {
+		await interaction.deferReply();
+
 		const res = await Requests.deleteGuildRank(interaction.guild.id, name);
 		if (res.error) {
 			return await replyApiError(res, interaction, {

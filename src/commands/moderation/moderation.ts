@@ -14,6 +14,7 @@ class Moderation {
 		description: "Setup command for the whole guild",
 	})
 	async start(interaction: CommandInteraction<"cached">) {
+		await interaction.deferReply();
 		return startHelper(interaction);
 	}
 }
