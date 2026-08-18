@@ -17,7 +17,10 @@ const giveHelper = async (
 
 	// Handle giving of points, returns a string to be sent as a message.
 	const res = await pointService.givePoints(value, target, interaction);
-	return Array.isArray(res) ? res.join("\n") : res;
+
+	if (!res.success) return res.error;
+
+	return Array.isArray(res.message) ? res.message.join("\n") : res.message;
 };
 
 export default giveHelper;

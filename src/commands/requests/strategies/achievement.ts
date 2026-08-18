@@ -18,26 +18,32 @@ export const achievementStrategy: RequestStrategy<AchievementRequest> = {
 		const res = await Requests.giveAchievement(params);
 
 		if (res.error) {
-			return getApiErrorMessage(res, {
-				category: "achievementErrors",
-				args: {
-					username: data.member.displayName,
-					achievement: data.achievement,
-				},
-			});
+			return {
+				success: false,
+				error: getApiErrorMessage(res, {
+					category: "achievementErrors",
+					args: {
+						username: data.member.displayName,
+						achievement: data.achievement,
+					},
+				}),
+			};
 		}
 
 		invalidateUserCache(interaction.guild.id, data.member.id);
 
-		return [
-			getString("achievements", "approved", {
-				achievement: data.achievement,
-			}),
-			getString("achievements", "granted", {
-				achievement: data.achievement,
-				username: data.member.displayName,
-			}),
-		];
+		return {
+			success: true,
+			message: [
+				getString("achievements", "approved", {
+					achievement: data.achievement,
+				}),
+				getString("achievements", "granted", {
+					achievement: data.achievement,
+					username: data.member.displayName,
+				}),
+			],
+		};
 	},
 	denyMessage(data) {
 		return getString("achievements", "denied", {

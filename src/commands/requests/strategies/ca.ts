@@ -4,7 +4,7 @@ import { formatDisplayName } from "@utils/formatDisplayName";
 import type IRankService from "@utils/rankUtils/IRankService";
 import { getString } from "@utils/stringRepo";
 import { container } from "tsyringe";
-import type { RequestStrategy } from "./strategies";
+import type { RequestStrategy, StrategyResult } from "./strategies";
 import { getApiErrorMessage } from "@utils/errors/api/resolver";
 
 export const caStrategy: RequestStrategy<CaRequest> = {
@@ -18,15 +18,24 @@ export const caStrategy: RequestStrategy<CaRequest> = {
 		);
 
 		if (res.error) {
-			return getApiErrorMessage(res, { category: "combatAchievementErrors" });
+			return {
+				success: false,
+				error: getApiErrorMessage(res, {
+					category: "combatAchievementErrors",
+				}),
+			};
 		}
 
-		const response: string[] = [
+		const msg = [
 			getString("ca", "approved", {
 				sourceName: data.sourceName,
 				points: data.points,
 			}),
 		];
+		const response: StrategyResult = {
+			success: true,
+			message: [],
+		};
 
 		for (const u of res.data) {
 			const member = data.members.find((m) => m.id === u.user_id);
@@ -52,7 +61,7 @@ export const caStrategy: RequestStrategy<CaRequest> = {
 				const template =
 					u.given_points >= 0 ? "pointsGrantedRankUp" : "pointsGrantedRankDown";
 
-				response.push(
+				msg.push(
 					getString("ranks", template, {
 						username: member.displayName,
 						pointsGiven: u.given_points,
@@ -64,7 +73,7 @@ export const caStrategy: RequestStrategy<CaRequest> = {
 					}),
 				);
 			} else {
-				response.push(
+				msg.push(
 					getString("ranks", "pointsGranted", {
 						username: member.displayName,
 						pointsGiven: u.given_points,
@@ -76,6 +85,7 @@ export const caStrategy: RequestStrategy<CaRequest> = {
 			}
 		}
 
+		response.message = msg;
 		return response;
 	},
 	denyMessage(data) {

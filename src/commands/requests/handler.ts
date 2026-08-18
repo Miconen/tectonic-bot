@@ -88,12 +88,22 @@ async function handleAccept(
 
 	// Run strategy
 	const strategy = getStrategy(data);
-	const response = await strategy.accept(interaction, data);
-	const content = Array.isArray(response) ? response.join("\n") : response;
+	const result = await strategy.accept(interaction, data);
+
+	if (!result.success) {
+		// DO NOT delete from pendingRequests so the admin can retry once API/service recovers
+		// Reply to moderator indicating failure
+		return await interaction.editReply({
+			content: `❌ Failed to approve request:\n${result.error}`,
+		});
+	}
+
+	const content = Array.isArray(result.message)
+		? result.message.join("\n")
+		: result.message;
 
 	// Edit user-facing message with result (screenshot already attached)
 	await editUserMessage(interaction, data.channel, data.message, content);
-
 	pendingRequests.delete(requestId);
 
 	// Ephemeral link to result

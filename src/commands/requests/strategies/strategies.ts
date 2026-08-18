@@ -7,8 +7,12 @@ import { splitStrategy } from "./split";
 
 type Interaction = ButtonInteraction<"cached"> | CommandInteraction<"cached">;
 
+export type StrategyResult =
+	| { success: true; message: string | string[] }
+	| { success: false; error: string };
+
 export interface RequestStrategy<T extends BaseRequest> {
-	accept(interaction: Interaction, data: T): Promise<string | string[]>;
+	accept(interaction: Interaction, data: T): Promise<StrategyResult>;
 	denyMessage(data: T): string;
 	label(data: T): string;
 }

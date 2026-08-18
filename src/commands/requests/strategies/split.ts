@@ -15,15 +15,25 @@ export const splitStrategy: RequestStrategy<SplitRequest> = {
 			submitter,
 			interaction,
 		);
-		const pointsResult = Array.isArray(result) ? result.join("\n") : result;
 
-		return [
-			getString("splits", "approved", {
-				sourceName: data.sourceName,
-				points: data.points,
-			}),
-			pointsResult,
-		];
+		if (!result.success) {
+			return result;
+		}
+
+		const pointsResult = Array.isArray(result.message)
+			? result.message.join("\n")
+			: result.message;
+
+		return {
+			success: true,
+			message: [
+				getString("splits", "approved", {
+					sourceName: data.sourceName,
+					points: data.points,
+				}),
+				pointsResult,
+			],
+		};
 	},
 	denyMessage(data) {
 		return getString("splits", "denied", {
