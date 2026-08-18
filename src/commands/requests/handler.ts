@@ -14,6 +14,7 @@ import {
 import { ButtonComponent, Discord, Guard, Slash, SlashOption } from "discordx";
 import { pendingRequests } from "./state.js";
 import { getStrategy } from "./strategies/strategies.js";
+import { getLogger } from "@logging/context.js";
 
 function autocompleter(interaction: AutocompleteInteraction) {
 	const options = Array.from(pendingRequests.entries()).map(([id, data]) => ({
@@ -72,8 +73,14 @@ async function handleAccept(
 ) {
 	const data = pendingRequests.get(requestId);
 	if (!data) {
+		const logger = getLogger();
+		logger.warn(
+			{ requestId, user: interaction.user.tag, guildId: interaction.guildId },
+			"Pending request not found in cache (expired or bot restarted)",
+		);
+
 		return await replyHandler(
-			getString("errors", "internalError"),
+			getString("errors", "requestNotFound"),
 			interaction,
 			{ flags: MessageFlags.Ephemeral },
 		);
@@ -123,8 +130,14 @@ async function handleDeny(
 ) {
 	const data = pendingRequests.get(requestId);
 	if (!data) {
+		const logger = getLogger();
+		logger.warn(
+			{ requestId, user: interaction.user.tag, guildId: interaction.guildId },
+			"Pending request not found in cache (expired or bot restarted)",
+		);
+
 		return await replyHandler(
-			getString("errors", "internalError"),
+			getString("errors", "requestNotFound"),
 			interaction,
 			{ flags: MessageFlags.Ephemeral },
 		);
