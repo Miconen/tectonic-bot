@@ -4,8 +4,8 @@ import { type CommandInteraction, EmbedBuilder } from "discord.js";
 
 import { replyHandler } from "@utils/replyHandler";
 import { replyApiError } from "@utils/replyApiError";
-import { getRanks } from "@utils/ranks/guildRanks";
-import { tierForPoints } from "@utils/ranks/tierMath";
+import { getRanks } from "@ranks/guildRanks";
+import { tierForPoints } from "@ranks/tierMath";
 
 interface LeaderboardUser {
 	name: string;

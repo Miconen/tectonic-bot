@@ -4,7 +4,7 @@ import type { AchievementRequest } from "@typings/requestTypes";
 import { invalidateUserCache } from "@utils/pickers";
 import { getString } from "@utils/stringRepo";
 import type { RequestStrategy } from "./strategies";
-import { getApiErrorMessage } from "@utils/errors/api/resolver";
+import { getApiErrorMessage } from "@errors/api/resolver";
 
 export const achievementStrategy: RequestStrategy<AchievementRequest> = {
 	async accept(interaction, data) {

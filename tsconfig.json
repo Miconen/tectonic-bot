@@ -21,7 +21,10 @@
 			"@requests/*": ["requests/*"],
 			"@typings/*": ["typings/*"],
 			"@logging/*": ["logging/*"],
-			"@pickers/*": ["pickers/*"]
+			"@pickers/*": ["pickers/*"],
+			"@errors/*": ["errors/*"],
+			"@points/*": ["points/*"],
+			"@ranks/*": ["ranks/*"]
 		}
 	},
 	"exclude": ["build", "node_modules"],

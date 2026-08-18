@@ -1,5 +1,5 @@
 import type { ErrorResponse } from "@typings/api/errors";
-import { getApiErrorMessage } from "@utils/errors/api/resolver";
+import { getApiErrorMessage } from "@errors/api/resolver";
 import { replyHandler } from "@utils/replyHandler";
 import {
 	MessageFlags,

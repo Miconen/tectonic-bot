@@ -2,10 +2,10 @@ import { Requests } from "@requests/main";
 import type { CaRequest } from "@typings/requestTypes";
 import { getString } from "@utils/stringRepo";
 import type { RequestStrategy, StrategyResult } from "./strategies";
-import { getApiErrorMessage } from "@utils/errors/api/resolver";
-import { applyRankTransition } from "@utils/ranks/rankRoles";
-import { getRanks } from "@utils/ranks/guildRanks";
-import { formatPointsAward } from "@utils/points/formatPoints";
+import { getApiErrorMessage } from "@errors/api/resolver";
+import { applyRankTransition } from "@ranks/rankRoles";
+import { getRanks } from "@ranks/guildRanks";
+import { formatPointsAward } from "@points/formatPoints";
 
 export const caStrategy: RequestStrategy<CaRequest> = {
 	async accept(interaction, data) {

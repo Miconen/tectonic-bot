@@ -1,7 +1,7 @@
 import type { SplitRequest } from "@typings/requestTypes";
 import { getString } from "@utils/stringRepo";
 import type { RequestStrategy } from "./strategies";
-import { awardPoints } from "@utils/points/awardPoints";
+import { awardPoints } from "@points/awardPoints";
 
 export const splitStrategy: RequestStrategy<SplitRequest> = {
 	async accept(interaction, data) {

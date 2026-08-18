@@ -1,4 +1,4 @@
-import { awardPoints } from "@utils/points/awardPoints";
+import { awardPoints } from "@points/awardPoints";
 import type {
 	ButtonInteraction,
 	Collection,

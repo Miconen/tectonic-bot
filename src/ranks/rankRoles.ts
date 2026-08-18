@@ -1,7 +1,7 @@
 import type { GuildMember } from "discord.js";
 import type { GuildRankResponse } from "@typings/api/guildRank";
 import { getLogger } from "@logging/context";
-import { tierForPoints } from "@utils/ranks/tierMath";
+import { tierForPoints } from "@ranks/tierMath";
 
 /** All Discord role IDs configured on guild ranks */
 export function rankRoleIds(ranks: GuildRankResponse[]): string[] {

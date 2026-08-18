@@ -1,7 +1,7 @@
 import { Requests } from "@requests/main";
-import { getRanks } from "@utils/ranks/guildRanks.js";
-import { applyRankTransition } from "@utils/ranks/rankRoles";
-import { tierForPoints } from "@utils/ranks/tierMath.js";
+import { getRanks } from "@ranks/guildRanks.js";
+import { applyRankTransition } from "@ranks/rankRoles";
+import { tierForPoints } from "@ranks/tierMath.js";
 import { replyApiError } from "@utils/replyApiError.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";

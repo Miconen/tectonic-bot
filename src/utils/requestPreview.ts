@@ -1,8 +1,8 @@
 import { Requests } from "@requests/main.js";
 import type { GuildMember } from "discord.js";
 import { formatDisplayName } from "./formatDisplayName";
-import { getRanks } from "./ranks/guildRanks";
-import { getRankTransition } from "./ranks/rankRoles";
+import { getRanks } from "@ranks/guildRanks";
+import { getRankTransition } from "@ranks/rankRoles";
 
 export async function buildPlayerPreview(
 	guildId: string,

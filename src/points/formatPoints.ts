@@ -1,5 +1,5 @@
 import { formatDisplayName } from "@utils/formatDisplayName";
-import type { RankTransition } from "@utils/ranks/rankRoles";
+import type { RankTransition } from "@ranks/rankRoles";
 import { getString } from "@utils/stringRepo";
 import type { GuildMember } from "discord.js";
 
@@ -23,11 +23,6 @@ export function formatPointsAward(
 	if (transition.rankChanged && transition.newTier) {
 		const template = pointsGiven >= 0 ? "rankUp" : "rankDown";
 		response += `\n${getString("ranks", template, {
-			username: member.displayName,
-			pointsGiven,
-			oldPoints,
-			newPoints,
-			oldIcon: transition.oldTier?.icon ?? "",
 			newIcon: transition.newTier.icon ?? "",
 			rankName: formatDisplayName(transition.newTier.name),
 		})}`;
