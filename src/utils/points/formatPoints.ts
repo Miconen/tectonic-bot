@@ -1,9 +1,7 @@
-import type { PointsResponse } from "@typings/api/points";
 import { formatDisplayName } from "@utils/formatDisplayName";
-import { getRanks } from "@utils/ranks/guildRanks";
-import { getRankTransition, type RankTransition } from "@utils/ranks/rankRoles";
+import type { RankTransition } from "@utils/ranks/rankRoles";
 import { getString } from "@utils/stringRepo";
-import type { BaseInteraction, Collection, GuildMember } from "discord.js";
+import type { GuildMember } from "discord.js";
 
 export function formatPointsAward(
 	member: GuildMember,
@@ -36,37 +34,4 @@ export function formatPointsAward(
 	}
 
 	return response;
-}
-
-export async function buildResponses(
-	data: PointsResponse[],
-	members: Collection<string, GuildMember>,
-	interaction: BaseInteraction<"cached">,
-): Promise<string> {
-	const ranks = await getRanks(interaction.guild.id);
-	const response: string[] = [];
-
-	for (const entry of data) {
-		const member = members.get(entry.user_id);
-		if (!member) {
-			response.push(
-				getString("errors", "couldntGetUser", {
-					userId: entry.user_id,
-				}),
-			);
-			continue;
-		}
-
-		const transition = getRankTransition(
-			ranks,
-			entry.given_points,
-			entry.points,
-		);
-
-		response.push(
-			formatPointsAward(member, entry.given_points, entry.points, transition),
-		);
-	}
-
-	return response.join("\n");
 }

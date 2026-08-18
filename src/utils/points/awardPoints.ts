@@ -11,7 +11,10 @@ import {
 	type CommandInteraction,
 	type GuildMember,
 } from "discord.js";
-import { buildResponses } from "./formatPoints";
+import { formatPointsAward } from "./formatPoints";
+import { getRanks } from "@utils/ranks/guildRanks";
+import { getString } from "@utils/stringRepo";
+import { applyRankTransition } from "@utils/ranks/rankRoles";
 
 export type StringResult =
 	| { success: true; message: string }
@@ -42,8 +45,34 @@ export async function awardPoints(
 		};
 	}
 
+	const ranks = await getRanks(interaction.guild.id);
+	const responseLines: string[] = [];
+
+	for (const entry of res.data) {
+		const member = members.get(entry.user_id);
+		if (!member) {
+			responseLines.push(
+				getString("errors", "couldntGetUser", { userId: entry.user_id }),
+			);
+			continue;
+		}
+
+		const oldPoints = entry.points - entry.given_points;
+
+		const transition = await applyRankTransition(
+			member,
+			ranks,
+			oldPoints,
+			entry.points,
+		);
+
+		responseLines.push(
+			formatPointsAward(member, entry.given_points, entry.points, transition),
+		);
+	}
+
 	return {
 		success: true,
-		message: await buildResponses(res.data, members, interaction),
+		message: responseLines.join("\n"),
 	};
 }
