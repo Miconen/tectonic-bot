@@ -5,9 +5,9 @@ import type { CommandInteraction, GuildMember } from "discord.js";
 import TimeConverter from "@commands/pb/func/TimeConverter";
 import { formatPlacement } from "@utils/formatEventPlacement";
 import { getString } from "@utils/stringRepo";
-import { getApiErrorMessage } from "@utils/errors/api/resolver";
-import { getRanks } from "@utils/ranks/guildRanks";
-import { nextTier, pointsToNext, tierForPoints } from "@utils/ranks/tierMath";
+import { getApiErrorMessage } from "@errors/api/resolver";
+import { getRanks } from "@ranks/guildRanks";
+import { nextTier, pointsToNext, tierForPoints } from "@ranks/tierMath";
 
 const pointsHelper = async (
 	member: GuildMember | null,

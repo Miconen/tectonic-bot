@@ -1,6 +1,6 @@
 import { getContext } from "@logging/context";
 import type { ErrorResponse } from "@typings/api/errors";
-import { apiErrorNames } from "@utils/errors/api/lookup";
+import { apiErrorNames } from "@errors/api/lookup";
 import { getString } from "@utils/stringRepo";
 
 type ErrorContext = {

@@ -4,7 +4,7 @@ import type {
 	PresetPoints,
 	PointsParam,
 } from "@typings/api/points";
-import { getApiErrorMessage } from "@utils/errors/api/resolver";
+import { getApiErrorMessage } from "@errors/api/resolver";
 import {
 	type ButtonInteraction,
 	Collection,
@@ -12,9 +12,9 @@ import {
 	type GuildMember,
 } from "discord.js";
 import { formatPointsAward } from "./formatPoints";
-import { getRanks } from "@utils/ranks/guildRanks";
+import { getRanks } from "@ranks/guildRanks";
 import { getString } from "@utils/stringRepo";
-import { applyRankTransition } from "@utils/ranks/rankRoles";
+import { applyRankTransition } from "@ranks/rankRoles";
 
 export type StringResult =
 	| { success: true; message: string }

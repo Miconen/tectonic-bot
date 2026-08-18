@@ -6,8 +6,8 @@ import { dumpUserData } from "@utils/dumpUserData";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
 import { replyApiError } from "@utils/replyApiError";
-import { syncRankRoles } from "@utils/ranks/rankRoles";
-import { getRanks } from "@utils/ranks/guildRanks";
+import { syncRankRoles } from "@ranks/rankRoles";
+import { getRanks } from "@ranks/guildRanks";
 
 const deactivationHelper = async (
 	user: GuildMember,

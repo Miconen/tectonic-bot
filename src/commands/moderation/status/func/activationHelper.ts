@@ -1,6 +1,6 @@
 import { Requests } from "@requests/main";
-import { getRanks } from "@utils/ranks/guildRanks";
-import { tierForPoints } from "@utils/ranks/tierMath";
+import { getRanks } from "@ranks/guildRanks";
+import { tierForPoints } from "@ranks/tierMath";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo";

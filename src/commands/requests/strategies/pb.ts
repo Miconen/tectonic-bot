@@ -5,10 +5,10 @@ import { Bosses } from "@commands/pb/func/getBosses.js";
 import TimeConverter from "@commands/pb/func/TimeConverter.js";
 import updateEmbed from "@commands/pb/func/updateEmbed.js";
 import { formatValueLabel } from "@commands/pb/func/valueFormat.js";
-import { getApiErrorMessage } from "@utils/errors/api/resolver.js";
+import { getApiErrorMessage } from "@errors/api/resolver.js";
 import { getString } from "@utils/stringRepo.js";
 import { getLogger } from "@logging/context.js";
-import { awardPoints } from "@utils/points/awardPoints";
+import { awardPoints } from "@points/awardPoints";
 
 export const pbStrategy: RequestStrategy<PbRequest> = {
 	async accept(interaction, data) {
