@@ -1,25 +1,19 @@
-import { replyHandler } from "@utils/replyHandler.js";
-import {
-	MessageFlags,
-	type CommandInteraction,
-	type GuildMember,
-} from "discord.js";
-import { container } from "tsyringe";
-
 import { Requests } from "@requests/main";
-import type IRankService from "@utils/rankUtils/IRankService";
-import { getString } from "@utils/stringRepo";
-import { replyApiError } from "@utils/replyApiError";
+import { getRanks } from "@utils/ranks/guildRanks.js";
+import { syncRankRolesIfChanged } from "@utils/ranks/rankRoles.js";
+import { tierForPoints } from "@utils/ranks/tierMath.js";
+import { replyApiError } from "@utils/replyApiError.js";
+import { replyHandler } from "@utils/replyHandler.js";
+import { getString } from "@utils/stringRepo.js";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 
 async function womHelper(
 	competitionId: number,
 	interaction: CommandInteraction<"cached">,
 	cutoff: number,
 ) {
-	const member = interaction.member as GuildMember;
-
 	// Services and data fetching
-	const rankService = container.resolve<IRankService>("RankService");
+	const ranks = await getRanks(interaction.guild.id);
 	const competition = await Requests.eventCompetition(
 		interaction.guild.id,
 		competitionId,
@@ -85,37 +79,41 @@ async function womHelper(
 		responseLines.push(getString("competitions", "pointsHeader"));
 		for (const participant of competition.data.participants) {
 			const user = discordUsers.get(participant.user_id);
+			const newPoints = participant.points;
+			const oldPoints = newPoints - competition.data.points_given;
+			const currentTier = tierForPoints(newPoints, ranks);
+			const icon = currentTier?.icon ?? "";
 
 			responseLines.push(
 				getString("ranks", "pointsGranted", {
 					username: user?.displayName ?? "???",
 					pointsGiven: competition.data.points_given,
-					grantedBy: member.displayName,
-					totalPoints: participant.points,
+					oldPoints,
+					newPoints,
+					icon,
 				}),
 			);
 
 			if (!user) continue;
-
-			const newRank = await rankService.rankUpHandler(
-				interaction,
+			const newRank = await syncRankRolesIfChanged(
 				user,
-				competition.data.points_given,
-				participant.points,
+				ranks,
+				oldPoints,
+				newPoints,
 			);
 
 			if (!newRank) continue;
-
 			// Concatenate level up message to response if user leveled up
 			responseLines.push(
 				getString("ranks", "levelUpMessage", {
 					username: user.displayName,
-					icon: rankService.getIcon(newRank),
-					rankName: newRank.replace("_", " "),
+					icon: newRank.icon ?? "",
+					rankName: newRank.name.replace("_", " "),
 				}),
 			);
 		}
 	}
+
 	if (unlinked.length) {
 		responseLines.push(getString("accounts", "unlinkedHeader"));
 
