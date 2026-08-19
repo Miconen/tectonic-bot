@@ -17,7 +17,8 @@ export function formatPointsAward(
 		pointsGiven,
 		oldPoints,
 		newPoints,
-		icon: transition.newTier?.icon ?? transition.oldTier?.icon ?? "",
+		oldIcon: transition.oldTier?.icon ?? "",
+		newIcon: transition.newTier?.icon ?? transition.oldTier?.icon ?? "",
 	});
 
 	if (transition.rankChanged && transition.newTier) {
