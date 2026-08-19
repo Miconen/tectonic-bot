@@ -79,10 +79,16 @@ async function womHelper(
 		responseLines.push(getString("competitions", "pointsHeader"));
 		for (const participant of competition.data.participants) {
 			const user = discordUsers.get(participant.user_id);
+			if (!user) continue;
+
 			const newPoints = participant.points;
 			const oldPoints = newPoints - competition.data.points_given;
-			const currentTier = tierForPoints(newPoints, ranks);
-			const icon = currentTier?.icon ?? "";
+			const transition = await applyRankTransition(
+				user,
+				ranks,
+				oldPoints,
+				newPoints,
+			);
 
 			responseLines.push(
 				getString("ranks", "pointsGranted", {
@@ -90,16 +96,9 @@ async function womHelper(
 					pointsGiven: competition.data.points_given,
 					oldPoints,
 					newPoints,
-					icon,
+					oldIcon: transition.oldTier?.icon ?? "",
+					newIcon: transition.newTier?.icon ?? transition.oldTier?.icon ?? "",
 				}),
-			);
-
-			if (!user) continue;
-			const transition = await applyRankTransition(
-				user,
-				ranks,
-				oldPoints,
-				newPoints,
 			);
 
 			if (!transition.rankChanged) continue;

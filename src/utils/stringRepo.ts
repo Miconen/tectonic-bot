@@ -28,8 +28,8 @@ const strings: StringRepository = {
 		pointsGranted: (args) =>
 			`√ **${args.username}** ${args.pointsGiven > 0 ? "+" : ""}${
 				args.pointsGiven
-			} points (${args.oldPoints} ${args.icon} → ${args.newPoints} ${
-				args.icon
+			} points (${args.oldPoints} ${args.oldIcon} → ${args.newPoints} ${
+				args.newIcon
 			})`,
 		rankUp: (args) => `Ranked up to ${args.newIcon} ${args.rankName}`,
 		rankDown: (args) => `Ranked down to ${args.newIcon} ${args.rankName}`,
