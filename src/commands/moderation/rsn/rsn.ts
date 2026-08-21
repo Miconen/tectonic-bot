@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { addRsnHelper, removeRsnHelper } from "./func/rsnHelpers";
+import { safeDefer } from "@utils/safeDefer";
 
 @Discord()
 @SlashGroup({
@@ -37,7 +38,7 @@ class RSN {
 		rsn: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return addRsnHelper(user, rsn, interaction);
 	}
 
@@ -62,7 +63,7 @@ class RSN {
 		rsn: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return removeRsnHelper(user, rsn, interaction);
 	}
 }

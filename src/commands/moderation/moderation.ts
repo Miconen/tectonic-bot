@@ -3,6 +3,7 @@ import RequiresGuild from "@guards/RequiresGuild.js";
 import type { CommandInteraction } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup } from "discordx";
 import startHelper from "./func/startHelper.js";
+import { safeDefer } from "@utils/safeDefer.js";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)
@@ -14,7 +15,7 @@ class Moderation {
 		description: "Setup command for the whole guild",
 	})
 	async start(interaction: CommandInteraction<"cached">) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return startHelper(interaction);
 	}
 }

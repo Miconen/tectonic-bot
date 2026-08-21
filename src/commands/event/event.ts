@@ -8,6 +8,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventInfoHelper } from "./func/eventInfoHelper";
 import { eventRemoveHelper } from "./func/eventRemover";
+import { safeDefer } from "@utils/safeDefer";
 
 @Discord()
 @SlashGroup({ description: "Guild event information", name: "event" })
@@ -26,7 +27,7 @@ class EventInfo {
 		event: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return eventInfoHelper(event, interaction);
 	}
 
@@ -42,7 +43,7 @@ class EventInfo {
 		event: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return eventRemoveHelper(event, interaction);
 	}
 }

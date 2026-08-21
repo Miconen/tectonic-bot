@@ -3,6 +3,7 @@ import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
+import { safeDefer } from "@utils/safeDefer";
 import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
@@ -32,7 +33,7 @@ class ModChannel {
 		channel: TextChannel,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			mod_channel_id: channel.id,
 		});
@@ -63,7 +64,7 @@ class ModChannel {
 		channel: TextChannel,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			log_channel_id: channel.id,
 		});

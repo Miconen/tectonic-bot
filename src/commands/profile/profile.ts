@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import profileHelper from "./func/profileHelper.js";
+import { safeDefer } from "@utils/safeDefer.js";
 
 @Discord()
 @Guard(RequiresGuild)
@@ -46,7 +47,7 @@ class Profile {
 			);
 		}
 
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		const response = await profileHelper(user, rsn, interaction);
 		return await replyHandler(response, interaction);
 	}

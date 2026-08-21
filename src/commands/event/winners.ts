@@ -4,7 +4,6 @@ import { teamPicker } from "@pickers/teams";
 import { Requests } from "@requests/main.js";
 import { notEmpty } from "@utils/notEmpty";
 import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
 	MessageFlags,
@@ -14,6 +13,7 @@ import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { winnerHelper } from "./func/winnerHelper";
 import { winnerTeamHelper } from "./func/winnerTeamHelper";
 import { replyApiError } from "@utils/replyApiError";
+import { safeDefer } from "@utils/safeDefer";
 
 @Discord()
 @SlashGroup({
@@ -60,7 +60,7 @@ class EventCreate {
 		interaction: CommandInteraction<"cached">,
 	) {
 		const team_names = [team1, team2, team3].filter(notEmpty);
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return winnerTeamHelper(interaction, competitionId, team_names);
 	}
 
@@ -83,7 +83,7 @@ class EventCreate {
 		top: number | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return winnerHelper(interaction, competitionId, top);
 	}
 
@@ -108,7 +108,7 @@ class EventCreate {
 		winners: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 
 		const userIds = winners
 			.split(",")

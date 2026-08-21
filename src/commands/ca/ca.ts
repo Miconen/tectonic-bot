@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import caHelper from "./func/caHelper.js";
+import { safeDefer } from "@utils/safeDefer.js";
 
 @Discord()
 @Guard(IsActivated(), RequiresGuild)
@@ -95,7 +96,6 @@ class CombatAchievement {
 			return true;
 		});
 
-		await interaction.deferReply();
 		await caHelper(achievement, uniqueMembers, interaction, screenshot.url);
 	}
 }

@@ -4,6 +4,7 @@ import { Requests } from "@requests/main.js";
 import { formatDisplayName } from "@utils/formatDisplayName.js";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
+import { safeDefer } from "@utils/safeDefer";
 import {
 	ApplicationCommandOptionType,
 	MessageFlags,
@@ -26,7 +27,7 @@ class ModerationRanks {
 		description: "List all rank tiers for this guild",
 	})
 	async list(interaction: CommandInteraction<"cached">) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 
 		const res = await Requests.getGuildRanks(interaction.guild.id);
 		if (res.error) {
@@ -100,7 +101,7 @@ class ModerationRanks {
 		role: { id: string } | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 
 		const res = await Requests.createGuildRank(interaction.guild.id, {
 			name,
@@ -167,7 +168,7 @@ class ModerationRanks {
 		role: { id: string } | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 
 		const body: Record<string, unknown> = {};
 		if (minPoints !== undefined) body.min_points = minPoints;
@@ -207,7 +208,7 @@ class ModerationRanks {
 		name: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 
 		const res = await Requests.deleteGuildRank(interaction.guild.id, name);
 		if (res.error) {
