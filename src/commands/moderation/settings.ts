@@ -3,6 +3,7 @@ import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
+import { safeDefer } from "@utils/safeDefer";
 import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
@@ -35,7 +36,7 @@ class ModerationSettings {
 		count: number,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 
 		const res = await Requests.updateGuild(interaction.guild.id, {
 			position_count: count,

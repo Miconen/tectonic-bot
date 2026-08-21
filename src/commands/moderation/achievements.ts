@@ -6,6 +6,7 @@ import {
 	achievementAddPicker,
 	achievementRemovePicker,
 } from "@pickers/achievements";
+import { safeDefer } from "@utils/safeDefer";
 import {
 	ApplicationCommandOptionType,
 	MessageFlags,
@@ -46,7 +47,7 @@ class Achievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		await giveAchievementHelper(user, interaction, achievement);
 	}
 
@@ -73,7 +74,7 @@ class Achievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		await removeAchievementHelper(user, interaction, achievement);
 	}
 }

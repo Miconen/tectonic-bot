@@ -7,6 +7,7 @@ import {
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import activationHelper from "./func/activationHelper.js";
 import deactivationHelper from "./func/deactivationHelper.js";
+import { safeDefer } from "@utils/safeDefer.js";
 
 @Discord()
 @Guard(IsAdmin)
@@ -39,7 +40,7 @@ class Activation {
 		rsn: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return activationHelper(user, rsn, interaction);
 	}
 
@@ -59,7 +60,7 @@ class Activation {
 		user: GuildMember,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return deactivationHelper(user, interaction);
 	}
 }

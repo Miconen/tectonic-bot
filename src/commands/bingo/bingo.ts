@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { setupHelper } from "./func/setupHelper";
+import { safeDefer } from "@utils/safeDefer";
 
 @Discord()
 @SlashGroup({ description: "Guild bingo information", name: "bingo" })
@@ -45,7 +46,7 @@ class Bingo {
 		voiceChannels: number | undefined,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return setupHelper(
 			competitionId,
 			textChannels ?? 1,

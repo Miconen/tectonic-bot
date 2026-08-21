@@ -15,6 +15,7 @@ import { ButtonComponent, Discord, Guard, Slash, SlashOption } from "discordx";
 import { pendingRequests } from "./state.js";
 import { getStrategy } from "./strategies/strategies.js";
 import { getLogger } from "@logging/context.js";
+import { safeDefer } from "@utils/safeDefer.js";
 
 function autocompleter(interaction: AutocompleteInteraction) {
 	const options = Array.from(pendingRequests.entries()).map(([id, data]) => ({
@@ -87,7 +88,7 @@ async function handleAccept(
 	}
 
 	if (!interaction.deferred && !interaction.replied) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 	}
 
 	// Delete mod message if exists
@@ -144,7 +145,7 @@ async function handleDeny(
 	}
 
 	if (!interaction.deferred && !interaction.replied) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 	}
 
 	// Delete mod message if exists
@@ -198,7 +199,7 @@ class RequestHandler {
 		id: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return handleAccept(interaction, id);
 	}
 
@@ -215,7 +216,7 @@ class RequestHandler {
 		id: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return handleDeny(interaction, id);
 	}
 }

@@ -2,13 +2,13 @@ import IsAdmin from "@guards/IsAdmin.js";
 import RequiresGuild from "@guards/RequiresGuild.js";
 import { pointSourcePicker } from "@pickers/pointSources";
 import { replyHandler } from "@utils/replyHandler.js";
-import { getString } from "@utils/stringRepo.js";
 import type { CommandInteraction, GuildMember, Role } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import giveHelper from "./func/giveHelper.js";
 import multiplierHelper from "./func/multiplierHelper.js";
 import womHelper from "./func/womHelper.js";
+import { safeDefer } from "@utils/safeDefer.js";
 
 @Discord()
 @Guard(IsAdmin, RequiresGuild)
@@ -37,7 +37,7 @@ class Points {
 		addedPoints: number,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		const res = await giveHelper(target, addedPoints, interaction);
 		await replyHandler(res, interaction);
 	}
@@ -64,7 +64,7 @@ class Points {
 		source: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		const res = await giveHelper(target, source, interaction);
 		await replyHandler(res, interaction);
 	}
@@ -83,7 +83,7 @@ class Points {
 		multiplier: number,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		return multiplierHelper(multiplier, interaction);
 	}
 
@@ -106,7 +106,7 @@ class Points {
 		source: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		await interaction.guild.members.fetch();
 
 		const res = await giveHelper(role.members, source, interaction);
@@ -134,7 +134,7 @@ class Points {
 		addedPoints: number,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		await interaction.guild.members.fetch();
 
 		const res = await giveHelper(role.members, addedPoints, interaction);
@@ -159,7 +159,7 @@ class Points {
 		cutoff: number,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		await womHelper(competitionId, interaction, cutoff);
 	}
 }

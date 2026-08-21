@@ -13,6 +13,7 @@ import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { addUserToTimeHelper } from "./func/addUserToTimeHelper";
 import { recordRemoveHelper } from "./func/recordRemoveHelper";
 import { removeUserFromTimeHelper } from "./func/removeUserFromTimeHelper";
+import { safeDefer } from "@utils/safeDefer";
 
 @Discord()
 @SlashGroup({
@@ -35,7 +36,7 @@ class Times {
 		recordId: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		await recordRemoveHelper(recordId, interaction);
 	}
 
@@ -58,7 +59,7 @@ class Times {
 		boss: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		await addUserToTimeHelper(user, boss, interaction);
 	}
 
@@ -84,7 +85,7 @@ class Times {
 		boss: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		await removeUserFromTimeHelper(user, boss, interaction);
 	}
 
@@ -94,7 +95,7 @@ class Times {
 	})
 	@Guard(IsAdmin)
 	async initialize(interaction: CommandInteraction<"cached">) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		await initializeHelper(interaction);
 	}
 }

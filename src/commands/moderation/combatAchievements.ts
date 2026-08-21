@@ -3,6 +3,7 @@ import RequiresGuild from "@guards/RequiresGuild";
 import { Requests } from "@requests/main.js";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler.js";
+import { safeDefer } from "@utils/safeDefer";
 import { getString } from "@utils/stringRepo.js";
 import {
 	ApplicationCommandOptionType,
@@ -44,7 +45,7 @@ class ModerationCombatAchievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		const res = await Requests.giveUserCombatAchievement(
 			interaction.guild.id,
 			user.id,
@@ -90,7 +91,7 @@ class ModerationCombatAchievements {
 		achievement: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
+		await safeDefer(interaction);
 		const res = await Requests.removeUserCombatAchievement(
 			interaction.guild.id,
 			user.id,

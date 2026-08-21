@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { eventUpdateHelper } from "./func/eventUpdateHelper";
+import { safeDefer } from "@utils/safeDefer";
 
 @Discord()
 @SlashGroup({
@@ -37,7 +38,7 @@ class EventSettings {
 		name: string,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return eventUpdateHelper(event, { name }, interaction);
 	}
 
@@ -62,7 +63,7 @@ class EventSettings {
 		position_cutoff: number,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return eventUpdateHelper(event, { position_cutoff }, interaction);
 	}
 
@@ -88,7 +89,7 @@ class EventSettings {
 		solo: boolean,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await safeDefer(interaction, { flags: MessageFlags.Ephemeral });
 		return eventUpdateHelper(event, { solo }, interaction);
 	}
 }
