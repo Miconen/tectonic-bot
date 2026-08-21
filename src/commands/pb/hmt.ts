@@ -70,7 +70,6 @@ class HmtPb {
 			player5?.user.id,
 		].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBoss("hmt", team),
 			time,

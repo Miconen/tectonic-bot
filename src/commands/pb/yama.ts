@@ -43,7 +43,6 @@ class YamaPb {
 	) {
 		const team = [interaction.user.id, player2.user.id].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBoss("yama", team),
 			time,

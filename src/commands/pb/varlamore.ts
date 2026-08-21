@@ -74,7 +74,6 @@ class VarlamorePb {
 			}
 		}
 
-		await interaction.deferReply();
 		await pbRequestHelper(boss, value, team, screenshot.url, interaction);
 	}
 }

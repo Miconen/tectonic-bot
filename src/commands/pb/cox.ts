@@ -94,7 +94,6 @@ class CoxPb {
 			player8?.user.id,
 		].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBossCox("cox", team),
 			time,

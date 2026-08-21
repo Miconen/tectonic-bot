@@ -1,5 +1,6 @@
 import { getLogger } from "@logging/context";
 import { Requests } from "@requests/main.js";
+import { safeDefer } from "@utils/safeDefer";
 import { replyApiError } from "@utils/replyApiError";
 import { replyHandler } from "@utils/replyHandler";
 import { getString } from "@utils/stringRepo";
@@ -20,6 +21,8 @@ function IsActivated(target = "player") {
 		logger.info("Checking if all players are activated (IsActivated guard)");
 
 		const players: GuildMember[] = [];
+
+		await safeDefer(interaction);
 
 		// Always include the invoking user
 		if (interaction.member && interaction.member instanceof GuildMember) {

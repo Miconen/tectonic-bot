@@ -43,7 +43,6 @@ class RoyalTitansPb {
 	) {
 		const team = [interaction.user.id, player2.user.id].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBoss("royal_titans", team),
 			time,

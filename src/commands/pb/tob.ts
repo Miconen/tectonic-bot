@@ -70,7 +70,6 @@ class TobPb {
 			player5?.user.id,
 		].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBoss("tob", team),
 			time,

@@ -52,7 +52,6 @@ class Dt2Pb {
 	) {
 		const team = [interaction.user.id];
 
-		await interaction.deferReply();
 		await pbRequestHelper(boss, time, team, screenshot.url, interaction);
 	}
 }
