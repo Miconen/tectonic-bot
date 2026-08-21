@@ -34,7 +34,6 @@ class Achievement {
 		screenshot: Attachment,
 		interaction: CommandInteraction<"cached">,
 	) {
-		await interaction.deferReply();
 		await requestHelper(achievement, screenshot.url, interaction);
 	}
 }

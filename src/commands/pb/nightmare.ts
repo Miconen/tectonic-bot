@@ -91,8 +91,6 @@ class NightmarePb {
 			player5?.user.id,
 		].filter(notEmpty);
 
-		await interaction.deferReply();
-
 		if (team.length > 1 && (boss === "pnm" || boss === "nm_1")) {
 			return await replyHandler(
 				getString("times", "soloOnlyBoss"),

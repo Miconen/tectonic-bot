@@ -101,7 +101,6 @@ class ToaPb {
 			player8?.user.id,
 		].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBossToa("toa", team, raidlevel),
 			time,

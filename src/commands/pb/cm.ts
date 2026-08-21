@@ -94,7 +94,6 @@ class CmPb {
 			player8?.user.id,
 		].filter(notEmpty);
 
-		await interaction.deferReply();
 		await pbRequestHelper(
 			getBossCox("cm", team),
 			time,

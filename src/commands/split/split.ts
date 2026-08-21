@@ -101,7 +101,6 @@ class Split {
 			return true;
 		});
 
-		await interaction.deferReply();
 		await splitHelper(value, uniqueMembers, interaction, screenshot.url);
 	}
 }

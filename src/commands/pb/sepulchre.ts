@@ -52,7 +52,6 @@ class SepulchrePb {
 	) {
 		const team = [interaction.user.id];
 
-		await interaction.deferReply();
 		await pbRequestHelper(floor, time, team, screenshot.url, interaction);
 	}
 }
