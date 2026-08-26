@@ -1,5 +1,10 @@
 import type { PointsParam, PointsResponse } from "@typings/api/points";
-import type { DetailedUser, UserParam, UsersParam } from "@typings/api/user";
+import type {
+	DetailedUser,
+	SimpleUser,
+	UserParam,
+	UsersParam,
+} from "@typings/api/user";
 import { fetchData } from "./main";
 import { rewrapResponse } from "./utils";
 
@@ -13,7 +18,7 @@ function userParamHandler(query: UserParam | UsersParam) {
 }
 
 export async function getBasicUsers(guild_id: string, user_id: string[]) {
-	return await fetchData<DetailedUser[]>(
+	return await fetchData<SimpleUser[]>(
 		`guilds/${guild_id}/users/basic/${userParamHandler({ type: "user_id", user_id })}`,
 	);
 }
