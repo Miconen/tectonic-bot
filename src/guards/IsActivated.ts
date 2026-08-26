@@ -58,10 +58,10 @@ function IsActivated(target = "player") {
 		const playersUserNames = players.map((member) => member.displayName);
 		logger.info({ players: playersUserNames }, "Checking activation statuses");
 
-		const res = await Requests.getUsers(interaction.guild.id, {
-			type: "user_id",
-			user_id: playersUserIds,
-		});
+		const res = await Requests.getBasicUsers(
+			interaction.guild.id,
+			playersUserIds,
+		);
 
 		if (res.error) {
 			return replyApiError(res, interaction, { category: "accountErrors" });
