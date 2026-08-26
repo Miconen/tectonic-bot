@@ -12,6 +12,12 @@ function userParamHandler(query: UserParam | UsersParam) {
 	return handleArray(query.user_id);
 }
 
+export async function getBasicUsers(guild_id: string, user_id: string[]) {
+	return await fetchData<DetailedUser[]>(
+		`guilds/${guild_id}/users/basic/${userParamHandler({ type: "user_id", user_id })}`,
+	);
+}
+
 export async function getUser(guild_id: string, query: UserParam) {
 	const user = await fetchData<DetailedUser[]>(
 		`guilds/${guild_id}/users/${userParamHandler(query)}`,
