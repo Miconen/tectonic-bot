@@ -1,7 +1,6 @@
 import { Requests } from "@requests/main";
 import { getRanks } from "@ranks/guildRanks.js";
 import { applyRankTransition } from "@ranks/rankRoles";
-import { tierForPoints } from "@ranks/tierMath.js";
 import { replyApiError } from "@utils/replyApiError.js";
 import { replyHandler } from "@utils/replyHandler.js";
 import { getString } from "@utils/stringRepo.js";
@@ -14,7 +13,7 @@ async function womHelper(
 ) {
 	// Services and data fetching
 	const ranks = await getRanks(interaction.guild.id);
-	const competition = await Requests.eventCompetition(
+	const competition = await Requests.endEventCompetition(
 		interaction.guild.id,
 		competitionId,
 		cutoff,
