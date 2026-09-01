@@ -253,7 +253,7 @@ describe("API Tests", function () {
 				},
 				{
 					desc: "handle event ending and points",
-					call: () => Requests.eventCompetition(guild, competition, 3),
+					call: () => Requests.endEventCompetition(guild, competition, 3),
 				},
 			];
 

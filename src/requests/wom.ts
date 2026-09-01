@@ -24,12 +24,13 @@ export async function getCompetitionTeams(id: number) {
 	return rewrapResponse<string[], CompetitionDetails>(res, [...teamNames]);
 }
 
-export async function eventCompetition(
+export async function endEventCompetition(
 	guild_id: string,
 	competition_id: number,
 	cutoff: number,
 ) {
 	return await fetchData<CompetitionResponse>(
 		`guilds/${guild_id}/wom/competition/${competition_id}/cutoff/${cutoff}`,
+		{ method: "POST" },
 	);
 }
