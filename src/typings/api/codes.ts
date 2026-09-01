@@ -3,7 +3,8 @@ export const ApiErrorCode = {
 	WrongBody: 1,
 	ValidationFailed: 2,
 	InvalidToken: 3,
-	ApiRateLimited: 4,
+	InsufficientScope: 4,
+	ApiRateLimited: 5,
 
 	GuildNotFound: 1000,
 	GuildExists: 1001,
