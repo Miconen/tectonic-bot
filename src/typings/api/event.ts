@@ -1,4 +1,4 @@
-import type { DetailedUser } from "./user";
+import type { DetailedUser, RSN } from "./user";
 
 export type EventDetails = {
 	name: string;
@@ -36,8 +36,8 @@ export type EventUpdateParam = {
 export type CompetitionResponse = {
 	title: string;
 	participant_count: number;
-	participants: DetailedUser[] | undefined;
-	accounts: string[] | undefined;
+	participants: DetailedUser[];
+	accounts: RSN[];
 	cutoff: number;
 	points_given: number;
 };

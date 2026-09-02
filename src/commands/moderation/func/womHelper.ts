@@ -42,12 +42,14 @@ async function womHelper(
 		return;
 	}
 
-	const rsns = competition.data.participants.flatMap((u) =>
-		u.rsns.map((r) => r.rsn),
+	const linkedWomIds = new Set(
+		competition.data.participants.flatMap((user) =>
+			user.rsns.map((rsn) => rsn.wom_id),
+		),
 	);
-	const participated = new Set(rsns);
+
 	const unlinked = competition.data.accounts.filter(
-		(name) => !participated.has(name),
+		(account) => !linkedWomIds.has(account.wom_id),
 	);
 
 	// Fetch Discord users
@@ -118,7 +120,7 @@ async function womHelper(
 		for (const account of unlinked) {
 			responseLines.push(
 				getString("accounts", "unlinkedAccount", {
-					rsn: account,
+					rsn: account.rsn,
 					pointsGiven: competition.data.points_given,
 				}),
 			);
