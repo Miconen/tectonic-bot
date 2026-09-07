@@ -56,6 +56,14 @@ const caHelper = async (
 
 	const cas = await getGuildCAs(interaction.guild.id);
 	const caEntry = cas?.find((ca) => ca.name === caName);
+
+	if (!caEntry) {
+		return await replyHandler(
+			getString("ca", "nameNotFound", { caName }),
+			interaction,
+		);
+	}
+
 	const sources = await getSources(interaction.guild.id);
 	const pointSource = caEntry?.point_source ?? "";
 	const sourceName = sources?.get(pointSource)?.name ?? pointSource;
