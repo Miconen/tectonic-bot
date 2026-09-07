@@ -506,6 +506,8 @@ const strings: StringRepository = {
 			`√ Granted combat achievement **${args.caName}** to **${args.username}**.`,
 		removed: (args) =>
 			`√ Removed combat achievement **${args.caName}** from **${args.username}**.`,
+		nameNotFound: (args) =>
+			`Couldn't find combat achievement: \`${args.caName}\`\nPlease try submitting again.`,
 	},
 
 	bingo: {
