@@ -66,5 +66,5 @@ export function formatGuildBossesForEmbeds(
 			};
 		})
 		.filter(notEmpty)
-		.sort((a, b) => a.display_name.localeCompare(b.display_name));
+		.sort((a, b) => a.name.localeCompare(b.name));
 }
