@@ -20,6 +20,7 @@ Environment variables (see `.env.example`):
 - `API_PROTOCOL` (optional): `http` or `https`. Defaults to `https`.
 - `TEST_GUILD_ID` (optional): only register commands in this guild. Leave it unset in production so commands register globally.
 - `LOG_LEVEL` (optional): `debug` also logs autocomplete input and every API call.
+- `LOG_FORMAT` (optional): `pretty` prints colored, readable lines instead of JSON. Use it locally; leave it unset on Railway so logs stay filterable.
 
 > **Use a separate test bot token locally.** Command sync replaces a guild's whole command list, so a local run with the production token changes the commands everyone sees.
 
@@ -27,7 +28,7 @@ Locally, with Go 1.24 or newer:
 
 ```sh
 go test ./...
-BOT_TOKEN=... AUTH_KEY=... API_URL=localhost:8080 API_PROTOCOL=http TEST_GUILD_ID=... go run ./cmd/bot
+BOT_TOKEN=... AUTH_KEY=... API_URL=localhost:8080 API_PROTOCOL=http TEST_GUILD_ID=... LOG_FORMAT=pretty go run ./cmd/bot
 ```
 
 Docker: `docker build -t tectonic-bot .` builds a static binary in a `scratch` image (the binary is about 9 MB). Railway uses the same `Dockerfile` from the repo root, so it needs no build or start command, only the variables above.

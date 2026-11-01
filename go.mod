@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/disgoorg/disgo v0.19.6
 	github.com/disgoorg/snowflake/v2 v2.0.3
+	github.com/lmittmann/tint v1.1.2
 )
 
 require (

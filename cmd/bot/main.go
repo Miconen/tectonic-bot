@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
@@ -15,6 +16,7 @@ import (
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/disgo/handler"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/lmittmann/tint"
 
 	"github.com/Miconen/tectonic-bot/internal/catalog"
 	"github.com/Miconen/tectonic-bot/internal/commands"
@@ -32,9 +34,14 @@ import (
 func main() {
 	// JSON so Railway can filter by request_id, user_id, guild_id or command.
 	// LOG_LEVEL=debug adds autocomplete input and every API request.
+	// LOG_FORMAT=pretty prints colored, human-readable lines for local runs.
 	level := slog.LevelInfo
 	_ = level.UnmarshalText([]byte(os.Getenv("LOG_LEVEL")))
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level})))
+	var h slog.Handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level})
+	if os.Getenv("LOG_FORMAT") == "pretty" {
+		h = tint.NewHandler(os.Stdout, &tint.Options{Level: level, TimeFormat: time.TimeOnly})
+	}
+	slog.SetDefault(slog.New(h))
 
 	cfg, err := config.Load()
 	if err != nil {

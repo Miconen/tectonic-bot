@@ -36,7 +36,7 @@ func Context(next handler.Handler) handler.Handler {
 		switch i := e.Interaction.(type) {
 		case discord.ApplicationCommandInteraction:
 			if data, ok := i.Data.(discord.SlashCommandInteractionData); ok {
-				ctx = logging.With(ctx, "command", data.CommandPath())
+				ctx = logging.With(ctx, "command", CommandName(data.CommandPath()))
 				log = func(l *slog.Logger) { l.Info("Command started", "options", OptionValues(data)) }
 			} else {
 				ctx = logging.With(ctx, "command", i.Data.CommandName())
@@ -51,7 +51,7 @@ func Context(next handler.Handler) handler.Handler {
 			// Debug only: free-text input volume and privacy are an open
 			// question in #171.
 			f := i.Data.Focused()
-			ctx = logging.With(ctx, "command", i.Data.CommandPath())
+			ctx = logging.With(ctx, "command", CommandName(i.Data.CommandPath()))
 			log = func(l *slog.Logger) { l.Debug("Autocomplete", "option", f.Name, "value", f.String()) }
 		}
 		e.Ctx = reply.Track(ctx)
@@ -65,6 +65,12 @@ func Context(next handler.Handler) handler.Handler {
 		l.Info("Interaction handled", "duration_ms", time.Since(start).Milliseconds(), "failed", err != nil)
 		return err
 	}
+}
+
+// CommandName turns disgo's route path ("/event/info") into the name members
+// type ("event info"), so logs read and search like the command itself.
+func CommandName(path string) string {
+	return strings.ReplaceAll(strings.TrimPrefix(path, "/"), "/", " ")
 }
 
 // OptionValues renders a slash command's options for logging, with users and
