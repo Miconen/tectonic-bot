@@ -58,8 +58,9 @@ func (c *Client) doJSON(ctx context.Context, method, path string, body, out any)
 }
 
 func (c *Client) send(ctx context.Context, method, base, path string, body []byte, out any) ([]byte, error) {
-	log := logging.Logger(ctx).With("endpoint", base+path, "method", method)
-	log.Info("API request")
+	log := logging.Logger(ctx).With("endpoint", path, "method", method)
+	log.Debug("API request")
+	start := time.Now()
 
 	var reader io.Reader
 	if body != nil {
@@ -75,16 +76,21 @@ func (c *Client) send(ctx context.Context, method, base, path string, body []byt
 	if id := logging.CorrelationID(ctx); id != "" {
 		req.Header.Set("X-Request-ID", id)
 	}
+	// Lets the API log which member the request was for (tectonic-api#99).
+	if actor := logging.Actor(ctx); actor != "" {
+		req.Header.Set("X-Actor-ID", actor)
+	}
+	req.Header.Set("User-Agent", "tectonic-bot")
 
 	res, err := c.http.Do(req)
 	if err != nil {
-		log.Error("API network error", "err", err)
+		log.Error("API network error", "err", err, "duration_ms", time.Since(start).Milliseconds())
 		return nil, &APIError{Status: http.StatusInternalServerError, Code: CodeUnknown, Message: err.Error()}
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNoContent {
-		log.Info("API success (no content)")
+		log.Info("API call", "status", res.StatusCode, "duration_ms", time.Since(start).Milliseconds())
 		return nil, nil
 	}
 
@@ -100,7 +106,12 @@ func (c *Client) send(ctx context.Context, method, base, path string, body []byt
 
 	if res.StatusCode >= 400 {
 		apiErr := decodeError(res.StatusCode, resBody)
-		log.Error("API error", "status", apiErr.Status, "code", apiErr.Code, "message", apiErr.Message)
+		// 4xx is usually an expected answer ("user not found"); 5xx is a fault.
+		level := slog.LevelWarn
+		if apiErr.Status >= 500 {
+			level = slog.LevelError
+		}
+		log.Log(ctx, level, "API call failed", "status", apiErr.Status, "code", apiErr.Code, "message", apiErr.Message, "duration_ms", time.Since(start).Milliseconds())
 		return nil, apiErr
 	}
 
@@ -109,7 +120,7 @@ func (c *Client) send(ctx context.Context, method, base, path string, body []byt
 			return nil, &APIError{Status: res.StatusCode, Code: CodeUnknown, Message: "Failed to parse JSON response"}
 		}
 	}
-	log.Info("API success", "status", res.StatusCode)
+	log.Info("API call", "status", res.StatusCode, "duration_ms", time.Since(start).Milliseconds())
 	return resBody, nil
 }
 

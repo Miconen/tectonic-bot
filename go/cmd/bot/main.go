@@ -30,7 +30,11 @@ import (
 )
 
 func main() {
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+	// JSON so Railway can filter by request_id, user_id, guild_id or command.
+	// LOG_LEVEL=debug adds autocomplete input and every API request.
+	level := slog.LevelInfo
+	_ = level.UnmarshalText([]byte(os.Getenv("LOG_LEVEL")))
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level})))
 
 	cfg, err := config.Load()
 	if err != nil {

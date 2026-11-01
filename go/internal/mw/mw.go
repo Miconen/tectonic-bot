@@ -5,6 +5,7 @@ package mw
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -23,38 +24,45 @@ import (
 // first.
 func Context(next handler.Handler) handler.Handler {
 	return func(e *handler.InteractionEvent) error {
-		e.Ctx = reply.Track(logging.WithID(e.Ctx, e.ID().String()))
-
-		log := logging.Logger(e.Ctx).With("user", e.User().ID, "type", e.Type())
+		ctx := logging.WithActor(logging.WithID(e.Ctx, e.ID().String()), e.User().ID.String())
+		ctx = logging.With(ctx, "username", e.User().Username, "type", typeName(e.Type()))
 		if e.GuildID() != nil {
-			log = log.With("guild", *e.GuildID())
+			ctx = logging.With(ctx, "guild_id", e.GuildID().String())
 		}
 
+		// Name what was used before logging, so every later line (API calls,
+		// warnings, the error) says which command it belongs to.
+		var log func(*slog.Logger)
 		switch i := e.Interaction.(type) {
 		case discord.ApplicationCommandInteraction:
 			if data, ok := i.Data.(discord.SlashCommandInteractionData); ok {
-				log = log.With("command", data.CommandPath())
-				log.Info("Command started", "options", OptionValues(data))
+				ctx = logging.With(ctx, "command", data.CommandPath())
+				log = func(l *slog.Logger) { l.Info("Command started", "options", OptionValues(data)) }
 			} else {
-				log = log.With("command", i.Data.CommandName())
-				log.Info("Command started")
+				ctx = logging.With(ctx, "command", i.Data.CommandName())
+				log = func(l *slog.Logger) { l.Info("Command started") }
 			}
 		case discord.ComponentInteraction:
 			// Button custom IDs are routes like /request/accept/<id>, so the
 			// log says which action it was (#165).
-			log = log.With("component", i.Data.CustomID())
-			log.Info("Component used")
+			ctx = logging.With(ctx, "component", i.Data.CustomID())
+			log = func(l *slog.Logger) { l.Info("Component used") }
 		case discord.AutocompleteInteraction:
 			// Debug only: free-text input volume and privacy are an open
 			// question in #171.
 			f := i.Data.Focused()
-			log = log.With("command", i.Data.CommandPath())
-			log.Debug("Autocomplete", "option", f.Name, "value", f.String())
+			ctx = logging.With(ctx, "command", i.Data.CommandPath())
+			log = func(l *slog.Logger) { l.Debug("Autocomplete", "option", f.Name, "value", f.String()) }
+		}
+		e.Ctx = reply.Track(ctx)
+		l := logging.Logger(e.Ctx)
+		if log != nil {
+			log(l)
 		}
 
 		start := time.Now()
 		err := next(e)
-		log.Info("Interaction handled", "duration", time.Since(start), "failed", err != nil)
+		l.Info("Interaction handled", "duration_ms", time.Since(start).Milliseconds(), "failed", err != nil)
 		return err
 	}
 }
@@ -89,16 +97,21 @@ func ReplyErrors(next handler.Handler) handler.Handler {
 			return nil
 		}
 
+		// Log what the user was told too: "they said the bot refused" is the
+		// usual starting point when diagnosing a report.
+		msg := reply.MessageFor(e.Ctx, err)
 		var userErr reply.UserError
-		if !errors.As(err, &userErr) {
-			logging.Logger(e.Ctx).Error("command failed", "err", err)
+		if errors.As(err, &userErr) {
+			logging.Logger(e.Ctx).Info("Rejected", "reply", msg)
+		} else {
+			logging.Logger(e.Ctx).Error("Command failed", "err", err, "reply", msg)
 		}
 
 		// Autocomplete can't take a message reply.
 		if !canReply(e) {
 			return nil
 		}
-		return reply.Ephemeral(e.Ctx, e, reply.MessageFor(e.Ctx, err))
+		return reply.Ephemeral(e.Ctx, e, msg)
 	}
 }
 
@@ -139,4 +152,18 @@ func RequireAdmin(next handler.Handler) handler.Handler {
 func canReply(e *handler.InteractionEvent) bool {
 	t := e.Type()
 	return t == discord.InteractionTypeApplicationCommand || t == discord.InteractionTypeComponent
+}
+
+func typeName(t discord.InteractionType) string {
+	switch t {
+	case discord.InteractionTypeApplicationCommand:
+		return "command"
+	case discord.InteractionTypeComponent:
+		return "component"
+	case discord.InteractionTypeAutocomplete:
+		return "autocomplete"
+	case discord.InteractionTypeModalSubmit:
+		return "modal"
+	}
+	return fmt.Sprint(int(t))
 }
