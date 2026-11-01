@@ -1,8 +1,8 @@
 import "reflect-metadata";
 
 import { dirname, importx } from "@discordx/importer";
-import type { Interaction, Message } from "discord.js";
-import { IntentsBitField } from "discord.js";
+import type { Interaction } from "discord.js";
+import { IntentsBitField, Options, Partials } from "discord.js";
 import { Client } from "discordx";
 import "dotenv/config";
 import { IsHealthy } from "@guards/IsHealthy.js";
@@ -22,11 +22,31 @@ export const bot = new Client({
 	// Discord intents
 	intents: [
 		IntentsBitField.Flags.Guilds,
+		// Needed for guildMemberRemove and full member fetches
 		IntentsBitField.Flags.GuildMembers,
-		IntentsBitField.Flags.GuildMessages,
-		IntentsBitField.Flags.GuildMessageReactions,
-		IntentsBitField.Flags.GuildPresences,
 	],
+
+	// Emit guildMemberRemove even for members that are not cached
+	partials: [Partials.GuildMember],
+
+	// Keep memory low: the bot only works through slash commands and REST,
+	// so it never needs cached messages, presences or reactions.
+	makeCache: Options.cacheWithLimits({
+		...Options.DefaultMakeCacheSettings,
+		MessageManager: 0,
+		PresenceManager: 0,
+		ReactionManager: 0,
+	}),
+
+	// Full member fetches (e.g. /moderation points role) fill the member
+	// cache; drop those members again every hour, keeping the bot itself.
+	sweepers: {
+		...Options.DefaultSweeperSettings,
+		guildMembers: {
+			interval: 60 * 60,
+			filter: () => (member) => member.id !== member.client.user.id,
+		},
+	},
 
 	// Perform these before each command
 	guards: [LoggingGuard, IsHealthy],
@@ -54,10 +74,6 @@ bot.once("ready", async () => {
 
 bot.on("interactionCreate", (interaction: Interaction) => {
 	bot.executeInteraction(interaction);
-});
-
-bot.on("messageCreate", (message: Message) => {
-	bot.executeCommand(message);
 });
 
 async function run() {

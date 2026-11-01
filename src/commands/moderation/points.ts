@@ -107,9 +107,10 @@ class Points {
 		interaction: CommandInteraction<"cached">,
 	) {
 		await safeDefer(interaction);
-		await interaction.guild.members.fetch();
+		const members = await interaction.guild.members.fetch();
+		const roleMembers = members.filter((m) => m.roles.cache.has(role.id));
 
-		const res = await giveHelper(role.members, source, interaction);
+		const res = await giveHelper(roleMembers, source, interaction);
 		await replyHandler(res, interaction);
 	}
 
@@ -135,9 +136,10 @@ class Points {
 		interaction: CommandInteraction<"cached">,
 	) {
 		await safeDefer(interaction);
-		await interaction.guild.members.fetch();
+		const members = await interaction.guild.members.fetch();
+		const roleMembers = members.filter((m) => m.roles.cache.has(role.id));
 
-		const res = await giveHelper(role.members, addedPoints, interaction);
+		const res = await giveHelper(roleMembers, addedPoints, interaction);
 		await replyHandler(res, interaction);
 	}
 
