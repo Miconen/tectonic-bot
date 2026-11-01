@@ -10,6 +10,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/commands/pb"
 	"github.com/Miconen/tectonic-bot/go/internal/commands/points"
 	"github.com/Miconen/tectonic-bot/go/internal/commands/profile"
+	"github.com/Miconen/tectonic-bot/go/internal/commands/submissions"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
@@ -22,6 +23,7 @@ func Definitions(bosses []tectonic.Boss) []discord.ApplicationCommandCreate {
 		points.Command,
 		pb.Command(bosses),
 	}
+	defs = append(defs, submissions.Commands...)
 	return append(defs, approval.Commands...)
 }
 
@@ -32,5 +34,6 @@ func Register(r handler.Router, d deps.Deps, bosses []tectonic.Boss) {
 	profile.Register(r, d)
 	points.Register(r, d)
 	pb.Register(r, d, pb.NewBosses(bosses), approvals)
+	submissions.Register(r, d, approvals)
 	approvals.Register(r)
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/disgoorg/disgo/handler"
 	"github.com/disgoorg/snowflake/v2"
 
+	"github.com/Miconen/tectonic-bot/go/internal/catalog"
 	"github.com/Miconen/tectonic-bot/go/internal/commands"
 	"github.com/Miconen/tectonic-bot/go/internal/config"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
@@ -36,7 +37,6 @@ func main() {
 	}
 
 	api := tectonic.New(cfg.RootURL, cfg.AuthKey)
-	d := deps.Deps{API: api, Ranks: ranks.NewCache(api), Sources: pointsrc.New(api)}
 
 	// Boss choices are baked into /pb, so the API must be up at startup (the
 	// TS bot also refuses to start without them).
@@ -45,6 +45,13 @@ func main() {
 		slog.Error("fetching bosses", "err", err)
 		os.Exit(1)
 	}
+
+	cat, err := catalog.New(context.Background(), api)
+	if err != nil {
+		slog.Error("fetching achievements", "err", err)
+		os.Exit(1)
+	}
+	d := deps.Deps{API: api, Ranks: ranks.NewCache(api), Sources: pointsrc.New(api), Catalog: cat}
 
 	r := handler.New()
 	r.Use(mw.Context, mw.ReplyErrors, mw.RequireGuild, mw.APIHealthy(api))

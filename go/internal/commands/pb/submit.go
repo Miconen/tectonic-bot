@@ -1,7 +1,6 @@
 package pb
 
 import (
-	"context"
 	"sort"
 	"strconv"
 	"strings"
@@ -11,7 +10,7 @@ import (
 
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
-	"github.com/Miconen/tectonic-bot/go/internal/ranks"
+	"github.com/Miconen/tectonic-bot/go/internal/preview"
 	"github.com/Miconen/tectonic-bot/go/internal/reply"
 	"github.com/Miconen/tectonic-bot/go/internal/str"
 	"github.com/Miconen/tectonic-bot/go/internal/team"
@@ -78,10 +77,7 @@ func (s *submitter) submit(v variant, data discord.SlashCommandInteractionData, 
 		return reply.WithOverrides(err, str.GuildErrors(str.GuildArgs{PointSource: clanPBSource}))
 	}
 
-	preview, err := s.preview(ctx, guildID, players, points.Points)
-	if err != nil {
-		return err
-	}
+	pv := preview.Build(ctx, s.d.API, s.d.Ranks, guildID, team.IDs(players), points.Points)
 
 	req := &request{
 		d:      s.d,
@@ -91,7 +87,7 @@ func (s *submitter) submit(v variant, data discord.SlashCommandInteractionData, 
 		points: points,
 	}
 	return s.approvals.Post(ctx, e, guild.Guild, approval.Submission{
-		Content:    str.PBRequestSubmitted(req.title(), valueLabel(boss), displayWithTicks(boss, value), points.Name, points.Points, preview),
+		Content:    str.PBRequestSubmitted(req.title(), valueLabel(boss), displayWithTicks(boss, value), points.Name, points.Points, pv),
 		Screenshot: data.Attachment("screenshot"),
 		Request:    req,
 	})
@@ -139,39 +135,6 @@ func cutoff(guild tectonic.DetailedGuild, boss tectonic.Boss, value int) (int, b
 		worse = value <= last
 	}
 	return last, worse
-}
-
-// preview shows each player's points and rank if the request is approved.
-func (s *submitter) preview(ctx context.Context, guildID string, players []team.Player, points int) (string, error) {
-	users, err := s.d.API.GetUsers(ctx, guildID, tectonic.ByUserID(team.IDs(players)...))
-	if err != nil {
-		return "", reply.WithOverrides(err, str.AccountErrors(str.AccountArgs{}))
-	}
-	byID := map[string]tectonic.DetailedUser{}
-	for _, u := range users {
-		byID[u.UserID] = u
-	}
-
-	rankList := s.d.Ranks.Get(ctx, guildID)
-	lines := []string{str.PreviewHeader}
-	for _, p := range players {
-		u, ok := byID[p.ID]
-		if !ok {
-			lines = append(lines, str.PreviewUnknown(p.ID))
-			continue
-		}
-		t := ranks.GetTransition(rankList, u.Points, u.Points+points)
-		line := str.PreviewLine(p.ID, u.Points, ranks.Icon(t.Old), u.Points+points, ranks.Icon(t.New))
-		if t.Changed {
-			name := "Unranked"
-			if t.New != nil {
-				name = t.New.Name
-			}
-			line += str.PreviewRankChange(points >= 0, ranks.Icon(t.New), str.DisplayName(name))
-		}
-		lines = append(lines, line)
-	}
-	return strings.Join(lines, "\n"), nil
 }
 
 func valueLabel(b tectonic.Boss) string {
