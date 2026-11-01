@@ -1,6 +1,9 @@
 package str
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // errors.*
 const (
@@ -33,4 +36,25 @@ const NoLinkedAccounts = "`Link your OSRS account to be eligible for event rank 
 
 func NotActivated(username string) string {
 	return fmt.Sprintf(Cross+" **%s** is not an activated user.", username)
+}
+
+// help.*
+const (
+	HelpCommands     = "Information on how to use the bot along with its commands is provided here: https://github.com/Miconen/tectonic-bot/blob/main/README.md#commands"
+	HelpPointsHeader = "**Point sources**:"
+	HelpRanksHeader  = "## Ranks:"
+)
+
+func HelpSection(title string) string { return "**" + title + "**:" }
+
+func HelpPointValue(name string, points int) string {
+	return fmt.Sprintf("%s: %d", name, points)
+}
+
+func HelpRank(icon, name string, minPoints int) string {
+	return strings.TrimSpace(fmt.Sprintf("%s %s - %d points", icon, DisplayName(name), minPoints))
+}
+
+func HelpSplit(low, medium, high int) string {
+	return fmt.Sprintf("Gain points for receiving a drop and splitting with your clan mates, screenshot of loot and teammates names required as proof.\nRequires user to be an activated user\nPoint rewards: %d, %d & %d", low, medium, high)
 }

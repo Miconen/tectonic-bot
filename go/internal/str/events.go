@@ -2,6 +2,7 @@ package str
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
@@ -72,4 +73,26 @@ func UnlinkedAccount(rsn string, points int) string {
 
 func TeamsDesc(n int) string {
 	return []string{"Name of the winning team", "Name of the second team", "Name of the third team"}[n-1]
+}
+
+// bingo.*
+const NotTeamEvent = Cross + " This competition has no teams. Use a team competition."
+
+func BingoSetupComplete(name string) string {
+	return "# \U0001F3C6 Bingo Setup Complete\n**" + name + "**"
+}
+
+func BingoTeam(team, roleID string, matched, unmatched []string) string {
+	lines := []string{fmt.Sprintf("\n**%s** — <@&%s>", team, roleID)}
+	if len(matched) > 0 {
+		lines = append(lines, Check+" Matched: "+strings.Join(matched, ", "))
+	}
+	if len(unmatched) > 0 {
+		lines = append(lines, Cross+" Unmatched: "+strings.Join(unmatched, ", "))
+	}
+	return strings.Join(lines, "\n")
+}
+
+func CompetitionNotFound(id int) string {
+	return fmt.Sprintf("%s Competition **%d** was not found on Wise Old Man.", Cross, id)
 }
