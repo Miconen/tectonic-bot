@@ -24,6 +24,12 @@ Not ported yet: every other command, status rotation, the request approval flow 
 - **Errors are values.** API calls return `error`. Handlers `return err`, optionally wrapped with `reply.WithOverrides(err, str.AccountErrors(...))`. One middleware (`mw.ReplyErrors`) turns any error into the ephemeral reply with the correlation ID. The message lookup order is the same as `getApiErrorMessage`.
 - **Strings are typed.** Templates are functions like `str.RankUp(icon, name)`, so a missing argument fails to compile.
 - **Memory.** It uses only the `Guilds` and `GuildMembers` intents and caches only guilds. Interactions already carry the member and their permissions.
+- **Open issues already handled here:**
+  - #152: network failures, validation errors and unknown error codes show a generic message. The raw text only goes to the logs.
+  - #158: every system failure reply (API down, unexpected errors) ends with the Error ID. Only messages about the user's own input or permissions (`reply.UserError`) leave it out.
+  - #171 (partly): API calls send `X-Request-ID` with the correlation ID, which is the interaction ID like in the TS bot, and "Command started" logs the option values. Users and roles are logged as `id (name)`. Autocomplete input is logged at debug only, since its privacy and volume are still an open question in the issue. The API side (tectonic-api#99) still has to read the header.
+  - #151: symbols such as ✔ and ❌ are written as `\u` escapes in `internal/str`, so an editor can't re-encode them.
+- **CI:** `.github/workflows/go.yml` runs gofmt, vet, tests (with `-race`) and a build on changes under `go/`.
 - **Small improvement:** the point source autocomplete filters by what you type, so sources past the first 25 are reachable.
 
 ## Running it

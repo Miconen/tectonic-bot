@@ -30,6 +30,10 @@ func TestMessageFor(t *testing.T) {
 		{"override wins over standard", WithOverrides(rateLimited, str.Overrides{tectonic.CodeAPIRateLimited: "slow down"}), "slow down"},
 		{"wrapped twice", fmt.Errorf("profile: %w", WithOverrides(userNotFound, str.AccountErrors(str.AccountArgs{Username: "Zezima"}))), "User **Zezima** is not activated in this server."},
 		{"non-api error", fmt.Errorf("boom"), str.InternalError},
+		{"system error keeps message and gets id", SystemError(str.APIHealth), str.APIHealth},
+		{"network error is sanitized", &tectonic.APIError{Status: 500, Code: tectonic.CodeUnknown, Message: "dial tcp 10.0.0.5:8080: connection refused"}, str.UnexpectedAPIError},
+		{"validation error is sanitized", &tectonic.APIError{Status: 422, Code: tectonic.CodeUnknown, Message: "expected string, got number at body.rsn"}, str.UnexpectedAPIError},
+		{"unrecognized code is sanitized", &tectonic.APIError{Status: 400, Code: 4242, Message: "internal detail"}, str.UnexpectedAPIError},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

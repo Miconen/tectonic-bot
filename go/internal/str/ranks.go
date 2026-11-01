@@ -7,7 +7,7 @@ func PointsGranted(username string, given, oldPoints int, oldIcon string, newPoi
 	if given > 0 {
 		sign = "+"
 	}
-	return fmt.Sprintf("√ **%s** %s%d points (%d %s → %d %s)", username, sign, given, oldPoints, oldIcon, newPoints, newIcon)
+	return fmt.Sprintf(Check+" **%s** %s%d points (%d %s → %d %s)", username, sign, given, oldPoints, oldIcon, newPoints, newIcon)
 }
 
 func RankUp(newIcon, rankName string) string {

@@ -4,6 +4,8 @@ package mw
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/disgoorg/disgo/discord"
@@ -15,26 +17,62 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
 
-// Context gives every interaction a correlation ID and reply state, and logs
-// how long it took (LoggingGuard in TS). Register it first.
+// Context gives every interaction a correlation ID (its interaction ID, which
+// is also the Error ID users see) and reply state, logs the command with its
+// option values, and logs how long it took (LoggingGuard in TS). Register it
+// first.
 func Context(next handler.Handler) handler.Handler {
 	return func(e *handler.InteractionEvent) error {
-		ctx, _ := logging.WithCorrelationID(e.Ctx)
-		e.Ctx = reply.Track(ctx)
+		e.Ctx = reply.Track(logging.WithID(e.Ctx, e.ID().String()))
 
 		log := logging.Logger(e.Ctx).With("user", e.User().ID, "type", e.Type())
 		if e.GuildID() != nil {
 			log = log.With("guild", *e.GuildID())
 		}
-		if i, ok := e.Interaction.(discord.ApplicationCommandInteraction); ok {
-			log = log.With("command", i.Data.CommandName())
+
+		switch i := e.Interaction.(type) {
+		case discord.ApplicationCommandInteraction:
+			if data, ok := i.Data.(discord.SlashCommandInteractionData); ok {
+				log = log.With("command", data.CommandPath())
+				log.Info("Command started", "options", OptionValues(data))
+			} else {
+				log = log.With("command", i.Data.CommandName())
+				log.Info("Command started")
+			}
+		case discord.AutocompleteInteraction:
+			// Debug only: free-text input volume and privacy are an open
+			// question in #171.
+			f := i.Data.Focused()
+			log = log.With("command", i.Data.CommandPath())
+			log.Debug("Autocomplete", "option", f.Name, "value", f.String())
 		}
 
 		start := time.Now()
 		err := next(e)
-		log.Info("interaction handled", "duration", time.Since(start), "failed", err != nil)
+		log.Info("Interaction handled", "duration", time.Since(start), "failed", err != nil)
 		return err
 	}
+}
+
+// OptionValues renders a slash command's options for logging, with users and
+// roles shown as "id (name)" so logs can be read without looking IDs up.
+func OptionValues(data discord.SlashCommandInteractionData) map[string]string {
+	out := make(map[string]string, len(data.Options))
+	for name, opt := range data.Options {
+		v := strings.Trim(string(opt.Value), `"`)
+		switch opt.Type {
+		case discord.ApplicationCommandOptionTypeUser:
+			if u, ok := data.OptUser(name); ok {
+				v = fmt.Sprintf("%s (%s)", u.ID, u.Username)
+			}
+		case discord.ApplicationCommandOptionTypeRole:
+			if r, ok := data.OptRole(name); ok {
+				v = fmt.Sprintf("%s (%s)", r.ID, r.Name)
+			}
+		}
+		out[name] = v
+	}
+	return out
 }
 
 // ReplyErrors turns any error a command returns into an ephemeral reply, so
@@ -74,7 +112,7 @@ func APIHealthy(api *tectonic.Client) handler.Middleware {
 	return func(next handler.Handler) handler.Handler {
 		return func(e *handler.InteractionEvent) error {
 			if e.Type() == discord.InteractionTypeApplicationCommand && !api.Healthy(e.Ctx) {
-				return reply.UserError(str.APIHealth)
+				return reply.SystemError(str.APIHealth)
 			}
 			return next(e)
 		}

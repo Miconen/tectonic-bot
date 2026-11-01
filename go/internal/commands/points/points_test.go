@@ -20,11 +20,11 @@ func TestFormatAward(t *testing.T) {
 		t     ranks.Transition
 		want  string
 	}{
-		{"same tier", 10, 30, ranks.Transition{Old: jade, New: jade}, "√ **Zez** +10 points (20 <J> → 30 <J>)"},
-		{"rank up", 30, 60, ranks.Transition{Old: jade, New: redTopaz, Changed: true}, "√ **Zez** +30 points (30 <J> → 60 <R>)\nRanked up to <R> Red topaz"},
-		{"rank down", -30, 40, ranks.Transition{Old: redTopaz, New: jade, Changed: true}, "√ **Zez** -30 points (70 <R> → 40 <J>)\nRanked down to <J> Jade"},
-		{"new tier without icon keeps old icon", 50, 110, ranks.Transition{Old: redTopaz, New: noIcon, Changed: true}, "√ **Zez** +50 points (60 <R> → 110 <R>)\nRanked up to  Sapphire"},
-		{"no ranks", 5, 5, ranks.Transition{}, "√ **Zez** +5 points (0  → 5 )"},
+		{"same tier", 10, 30, ranks.Transition{Old: jade, New: jade}, "\u2714 **Zez** +10 points (20 <J> → 30 <J>)"},
+		{"rank up", 30, 60, ranks.Transition{Old: jade, New: redTopaz, Changed: true}, "\u2714 **Zez** +30 points (30 <J> → 60 <R>)\nRanked up to <R> Red topaz"},
+		{"rank down", -30, 40, ranks.Transition{Old: redTopaz, New: jade, Changed: true}, "\u2714 **Zez** -30 points (70 <R> → 40 <J>)\nRanked down to <J> Jade"},
+		{"new tier without icon keeps old icon", 50, 110, ranks.Transition{Old: redTopaz, New: noIcon, Changed: true}, "\u2714 **Zez** +50 points (60 <R> → 110 <R>)\nRanked up to  Sapphire"},
+		{"no ranks", 5, 5, ranks.Transition{}, "\u2714 **Zez** +5 points (0  → 5 )"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

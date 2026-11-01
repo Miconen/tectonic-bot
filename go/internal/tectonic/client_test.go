@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/Miconen/tectonic-bot/go/internal/logging"
 )
 
 func newTestServer(t *testing.T, h http.HandlerFunc) *Client {
@@ -37,6 +39,26 @@ func TestGetUser(t *testing.T) {
 	}
 	if !strings.Contains(string(u.Raw), `"extra":"kept"`) {
 		t.Errorf("raw payload not kept: %s", u.Raw)
+	}
+}
+
+func TestSendsRequestID(t *testing.T) {
+	var got string
+	c := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		got = r.Header.Get("X-Request-ID")
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`[]`))
+	})
+
+	ctx := logging.WithID(context.Background(), "1234567890")
+	c.GetUser(ctx, "1", ByUserID("42"))
+	if got != "1234567890" {
+		t.Errorf("X-Request-ID = %q", got)
+	}
+
+	c.GetUser(context.Background(), "1", ByUserID("42"))
+	if got != "" {
+		t.Errorf("no ID in context should send no header, got %q", got)
 	}
 }
 

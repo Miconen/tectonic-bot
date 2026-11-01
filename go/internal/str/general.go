@@ -7,6 +7,9 @@ const (
 	NoGuild       = "This command must be used in a server."
 	APIHealth     = "Cannot reach the application server. Please try again in 30 seconds."
 	InternalError = "An internal error occurred. Please try again."
+	// UnexpectedAPIError replaces raw messages from network failures,
+	// validation errors and unknown codes (#152).
+	UnexpectedAPIError = "An unexpected API error occurred. Please try again later."
 )
 
 func CouldntGetUser(userID string) string {
@@ -29,5 +32,5 @@ func ConflictingParams(param1, param2 string) string {
 const NoLinkedAccounts = "`Link your OSRS account to be eligible for event rank points`"
 
 func NotActivated(username string) string {
-	return fmt.Sprintf("❌ **%s** is not an activated user.", username)
+	return fmt.Sprintf(Cross+" **%s** is not an activated user.", username)
 }

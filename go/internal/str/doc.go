@@ -7,6 +7,13 @@ package str
 
 import "strings"
 
+// Symbols are written as escapes so an editor or formatter can't silently
+// re-encode them (#151: ✔ turned into √ in the TS string repo).
+const (
+	Check = "\u2714" // ✔ heavy check mark
+	Cross = "\u274c" // ❌ cross mark
+)
+
 // capitalize upper-cases the first letter (capitalizeFirstLetter in TS).
 func capitalize(s string) string {
 	if s == "" {

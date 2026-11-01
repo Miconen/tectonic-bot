@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ProfileCriticalError      = "❌ Error fetching user data."
+	ProfileCriticalError      = Cross + " Error fetching user data."
 	ProfileAccountsHeader     = "## Accounts"
 	ProfilePBsHeader          = "## Clan PBs"
 	ProfileEventsHeader       = "## Event Placements"

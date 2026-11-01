@@ -9,12 +9,19 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
 
-// UserError is an error whose message is meant for the user as-is (e.g.
-// "you must use this in a server"). The error middleware replies with it
-// ephemerally and doesn't log it as a failure.
+// UserError is a message for the user about their own input or permissions
+// (e.g. "you must use this in a server"). It's replied as-is, without an
+// Error ID, and isn't logged as a failure.
 type UserError string
 
 func (e UserError) Error() string { return string(e) }
+
+// SystemError is an operational failure the user can't fix (API down, missing
+// request state...). It's replied with its message plus the Error ID and is
+// logged as a failure (#158).
+type SystemError string
+
+func (e SystemError) Error() string { return string(e) }
 
 type withOverrides struct {
 	err error
@@ -33,9 +40,10 @@ func WithOverrides(err error, o str.Overrides) error {
 	return withOverrides{err: err, o: o}
 }
 
-// MessageFor builds the user-facing message for any error. The lookup order
-// matches constructMessage in errors/api/resolver.ts: contextual override,
-// then the standard APIErrors entry, then the API's own message.
+// MessageFor builds the user-facing message for any error. For API errors the
+// lookup order matches constructMessage in errors/api/resolver.ts: contextual
+// override, then the standard APIErrors entry, then the API's own message.
+// Every message except a UserError ends with the Error ID.
 func MessageFor(ctx context.Context, err error) string {
 	var userErr UserError
 	if errors.As(err, &userErr) {
@@ -43,8 +51,15 @@ func MessageFor(ctx context.Context, err error) string {
 	}
 
 	msg := str.InternalError
+	var sysErr SystemError
 	var apiErr *tectonic.APIError
-	if errors.As(err, &apiErr) {
+	switch {
+	case errors.As(err, &sysErr):
+		msg = string(sysErr)
+	case errors.As(err, &apiErr) && !apiErr.Code.Known():
+		// Never show raw transport/validation text to users; it's in the logs.
+		msg = str.UnexpectedAPIError
+	case errors.As(err, &apiErr):
 		msg = apiErr.Message
 		if s, ok := str.APIErrors[apiErr.Code]; ok {
 			msg = s

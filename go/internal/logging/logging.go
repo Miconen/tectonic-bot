@@ -20,6 +20,12 @@ func WithCorrelationID(ctx context.Context) (context.Context, string) {
 	return context.WithValue(ctx, ctxKey{}, id), id
 }
 
+// WithID returns a context carrying the given correlation ID. Interactions use
+// their interaction ID, like the TS bot.
+func WithID(ctx context.Context, id string) context.Context {
+	return context.WithValue(ctx, ctxKey{}, id)
+}
+
 // CorrelationID returns the context's correlation ID, or "" if none.
 func CorrelationID(ctx context.Context) string {
 	id, _ := ctx.Value(ctxKey{}).(string)

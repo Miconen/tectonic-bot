@@ -53,6 +53,10 @@ func (c *Client) do(ctx context.Context, method, base, path string, out any) ([]
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", c.authKey)
+	// Lets the API tag its logs with the same ID the user sees (#171).
+	if id := logging.CorrelationID(ctx); id != "" {
+		req.Header.Set("X-Request-ID", id)
+	}
 
 	res, err := c.http.Do(req)
 	if err != nil {

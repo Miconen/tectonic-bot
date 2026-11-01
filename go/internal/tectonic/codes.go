@@ -68,3 +68,16 @@ const (
 )
 
 const CodeUntreated Code = 10000
+
+// Known reports whether c is a code the API defines. Unknown codes (including
+// CodeUnknown) must not have their raw message shown to users.
+func (c Code) Known() bool {
+	switch {
+	case c >= CodeWrongParams && c <= CodeAPIRateLimited,
+		c >= CodeGuildNotFound && c <= CodeWomCompetitionNotFound,
+		c >= CodeAPIUnavailable && c <= CodeWomRateLimited,
+		c == CodeUntreated:
+		return true
+	}
+	return false
+}
