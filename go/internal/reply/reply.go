@@ -32,9 +32,10 @@ type Event interface {
 }
 
 type state struct {
-	mu       sync.Mutex
-	deferred bool
-	replied  bool
+	mu                sync.Mutex
+	deferred          bool
+	deferredEphemeral bool
+	replied           bool
 }
 
 type stateKey struct{}
@@ -64,6 +65,7 @@ func Defer(ctx context.Context, e Event, ephemeral bool) error {
 		return ignoreExpired(ctx, err)
 	}
 	s.deferred = true
+	s.deferredEphemeral = ephemeral
 	return nil
 }
 
@@ -85,6 +87,16 @@ func send(ctx context.Context, e Event, msg string, ephemeral bool) error {
 	var flags discord.MessageFlags
 	if ephemeral {
 		flags = discord.MessageFlagEphemeral
+	}
+
+	// A private message can't replace a public "thinking..." placeholder, so
+	// drop the placeholder and send it as a private follow-up instead. This
+	// keeps validation errors after a public defer out of the channel.
+	if ephemeral && s.deferred && !s.deferredEphemeral && !s.replied {
+		if err := e.Client().Rest.DeleteInteractionResponse(e.ApplicationID(), e.Token()); err != nil {
+			return ignoreExpired(ctx, err)
+		}
+		s.replied = true
 	}
 
 	for _, chunk := range Split(msg, CharacterLimit) {

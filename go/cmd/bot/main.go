@@ -21,6 +21,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
 	botevents "github.com/Miconen/tectonic-bot/go/internal/events"
 	"github.com/Miconen/tectonic-bot/go/internal/mw"
+	"github.com/Miconen/tectonic-bot/go/internal/pointsrc"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
@@ -35,11 +36,19 @@ func main() {
 	}
 
 	api := tectonic.New(cfg.RootURL, cfg.AuthKey)
-	d := deps.Deps{API: api, Ranks: ranks.NewCache(api)}
+	d := deps.Deps{API: api, Ranks: ranks.NewCache(api), Sources: pointsrc.New(api)}
+
+	// Boss choices are baked into /pb, so the API must be up at startup (the
+	// TS bot also refuses to start without them).
+	bosses, err := api.GetBosses(context.Background())
+	if err != nil {
+		slog.Error("fetching bosses", "err", err)
+		os.Exit(1)
+	}
 
 	r := handler.New()
 	r.Use(mw.Context, mw.ReplyErrors, mw.RequireGuild, mw.APIHealthy(api))
-	commands.Register(r, d)
+	commands.Register(r, d, bosses)
 
 	client, err := disgo.New(cfg.Token,
 		// Only what the bot uses: guild info, and member leave events.
@@ -58,7 +67,7 @@ func main() {
 			if cfg.TestGuildID != 0 {
 				ids = []snowflake.ID{cfg.TestGuildID}
 			}
-			if err := handler.SyncCommands(e.Client(), commands.All, ids); err != nil {
+			if err := handler.SyncCommands(e.Client(), commands.Definitions(bosses), ids); err != nil {
 				slog.Error("syncing commands", "err", err)
 				return
 			}

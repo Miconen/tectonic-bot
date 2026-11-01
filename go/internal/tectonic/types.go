@@ -64,9 +64,60 @@ type GuildRank struct {
 }
 
 type Guild struct {
-	GuildID      string  `json:"guild_id"`
-	ModChannelID *string `json:"mod_channel_id"`
-	LogChannelID *string `json:"log_channel_id"`
+	GuildID       string  `json:"guild_id"`
+	Multiplier    int     `json:"multiplier"`
+	PBChannelID   *string `json:"pb_channel_id"`
+	ModChannelID  *string `json:"mod_channel_id"`
+	LogChannelID  *string `json:"log_channel_id"`
+	PositionCount int     `json:"position_count"`
+}
+
+type Boss struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name"`
+	Category    string `json:"category"`
+	Solo        bool   `json:"solo"`
+	ValueType   string `json:"value_type"`
+}
+
+// IsTime reports whether the boss records times (in ticks) rather than a
+// count where higher is better (e.g. depth).
+func (b Boss) IsTime() bool { return b.ValueType == "" || b.ValueType == "time" }
+
+type Category struct {
+	Name      string `json:"name"`
+	Thumbnail string `json:"thumbnail"`
+	Order     int    `json:"order"`
+}
+
+type GuildBoss struct {
+	Boss     string `json:"boss"`
+	Category string `json:"category"`
+}
+
+type GuildCategory struct {
+	Category  string  `json:"category"`
+	MessageID *string `json:"message_id"`
+}
+
+type SimpleUser struct {
+	UserID  string `json:"user_id"`
+	GuildID string `json:"guild_id"`
+	Points  int    `json:"points"`
+}
+
+type NewRecord struct {
+	UserIDs  []string `json:"user_ids"`
+	Value    int      `json:"value"`
+	BossName string   `json:"boss_name"`
+}
+
+type RecordResponse struct {
+	BossName string `json:"boss_name"`
+	Value    int    `json:"value"`
+	OldValue int    `json:"value_old"`
+	RecordID int    `json:"record_id"`
+	Position *int   `json:"position"`
 }
 
 type GuildRecord struct {
@@ -81,7 +132,13 @@ type RecordTeammate struct {
 	UserID   string `json:"user_id"`
 }
 
-type GuildRecords struct {
-	Records   []GuildRecord    `json:"records"`
-	Teammates []RecordTeammate `json:"teammates"`
+// DetailedGuild is the guild config plus all its records (GET .../records).
+type DetailedGuild struct {
+	Guild
+	Bosses          []Boss           `json:"bosses"`
+	Categories      []Category       `json:"categories"`
+	GuildBosses     []GuildBoss      `json:"guild_bosses"`
+	GuildCategories []GuildCategory  `json:"guild_categories"`
+	Records         []GuildRecord    `json:"records"`
+	Teammates       []RecordTeammate `json:"teammates"`
 }

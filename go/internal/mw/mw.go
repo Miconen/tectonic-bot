@@ -39,6 +39,11 @@ func Context(next handler.Handler) handler.Handler {
 				log = log.With("command", i.Data.CommandName())
 				log.Info("Command started")
 			}
+		case discord.ComponentInteraction:
+			// Button custom IDs are routes like /request/accept/<id>, so the
+			// log says which action it was (#165).
+			log = log.With("component", i.Data.CustomID())
+			log.Info("Component used")
 		case discord.AutocompleteInteraction:
 			// Debug only: free-text input volume and privacy are an open
 			// question in #171.
@@ -89,8 +94,8 @@ func ReplyErrors(next handler.Handler) handler.Handler {
 			logging.Logger(e.Ctx).Error("command failed", "err", err)
 		}
 
-		// Autocomplete and other interaction types can't take a message reply.
-		if e.Type() != discord.InteractionTypeApplicationCommand {
+		// Autocomplete can't take a message reply.
+		if !canReply(e) {
 			return nil
 		}
 		return reply.Ephemeral(e.Ctx, e, reply.MessageFor(e.Ctx, err))
@@ -111,7 +116,7 @@ func RequireGuild(next handler.Handler) handler.Handler {
 func APIHealthy(api *tectonic.Client) handler.Middleware {
 	return func(next handler.Handler) handler.Handler {
 		return func(e *handler.InteractionEvent) error {
-			if e.Type() == discord.InteractionTypeApplicationCommand && !api.Healthy(e.Ctx) {
+			if canReply(e) && !api.Healthy(e.Ctx) {
 				return reply.SystemError(str.APIHealth)
 			}
 			return next(e)
@@ -128,4 +133,10 @@ func RequireAdmin(next handler.Handler) handler.Handler {
 		}
 		return next(e)
 	}
+}
+
+// canReply reports whether the interaction can be answered with a message.
+func canReply(e *handler.InteractionEvent) bool {
+	t := e.Type()
+	return t == discord.InteractionTypeApplicationCommand || t == discord.InteractionTypeComponent
 }

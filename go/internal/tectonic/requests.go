@@ -90,8 +90,8 @@ func (c *Client) GetGuildRanks(ctx context.Context, guildID string) ([]GuildRank
 	return call[[]GuildRank](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/ranks", guildID))
 }
 
-func (c *Client) GetGuildRecords(ctx context.Context, guildID string) (GuildRecords, error) {
-	return call[GuildRecords](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/records", guildID))
+func (c *Client) GetDetailedGuild(ctx context.Context, guildID string) (DetailedGuild, error) {
+	return call[DetailedGuild](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/records", guildID))
 }
 
 type PointSource struct {
@@ -102,4 +102,23 @@ type PointSource struct {
 
 func (c *Client) GetGuildPointSources(ctx context.Context, guildID string) ([]PointSource, error) {
 	return call[[]PointSource](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/points", guildID))
+}
+
+func (c *Client) GetBosses(ctx context.Context) ([]Boss, error) {
+	return call[[]Boss](ctx, c, http.MethodGet, "bosses")
+}
+
+// GetBasicUsers returns the activated users among ids (others are left out).
+func (c *Client) GetBasicUsers(ctx context.Context, guildID string, ids []string) ([]SimpleUser, error) {
+	return call[[]SimpleUser](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/users/basic/%s", guildID, ByUserID(ids...).path()))
+}
+
+func (c *Client) GetUsers(ctx context.Context, guildID string, q UserQuery) ([]DetailedUser, error) {
+	return call[[]DetailedUser](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/users/%s", guildID, q.path()))
+}
+
+func (c *Client) NewRecord(ctx context.Context, guildID string, r NewRecord) (RecordResponse, error) {
+	var out RecordResponse
+	_, err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("guilds/%s/records", guildID), r, &out)
+	return out, err
 }
