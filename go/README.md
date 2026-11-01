@@ -14,9 +14,36 @@ A demo port of the bot to Go with [disgo](https://github.com/disgoorg/disgo), to
 | `replyHandler`, `replyApiError`, `errors/api/*` | `internal/reply` |
 | `stringRepo` (only the strings above) | `internal/str` |
 | `requests/*`, `typings/api/*` | `internal/tectonic` |
-| `TimeConverter.ticksToTime` | `internal/timefmt` |
+| `TimeConverter`, `IsValidTime` | `internal/timefmt` |
+| All 15 `/pb` subcommands, `pbRequestHelper`, `updateEmbed`, `getBoss` | `internal/commands/pb` |
+| `commands/requests` (buttons, `/accept`, `/deny`) | `internal/approval` (PB requests so far) |
+| `IsActivated`, the `player2..N` options | `internal/team` |
 
-Not ported yet: every other command, status rotation, the request approval flow and the rest of the string repo.
+Not ported yet: splits, CAs, achievements, events, bingo, the rest of moderation, help, roles, status rotation, and the rest of the string repo.
+
+## Code quality goals
+
+These apply to all porting work:
+
+- **Less duplication.** When commands differ only in data, they become a table plus one handler. The 15 PB subcommands are a single `variants` table in `pb/variants.go`. Each was its own 50 to 115 line file in TS.
+- **Less boilerplate, readable commands.** A handler reads top to bottom: validate locally, defer, call the API, reply. Guards, error replies and logging live in middleware and helpers, not in each command.
+- **Fix bugs and UX while porting**, and list the fixes below so they can be checked against the TS behaviour.
+
+## PB port: what changed compared to TS
+
+About 660 lines of Go replace about 1,980 lines of TS (the pb commands, their helpers and the two guards they used).
+
+- **Duplicate teammates are rejected.** Before, tagging the same player twice (or yourself) counted towards team size and filed the PB under the wrong scale, e.g. `cox_3` for a duo.
+- **Time parsing actually validates.** `IsValidTime` only range-checked hours and fractions inside a branch that never ran.
+- **Validation errors are private.** Bad times, unactivated players and "wouldn't make the board" replies are ephemeral. Before, they replaced the public "thinking..." message.
+- **#155:** a failed point source lookup aborts the request instead of offering 0 points.
+- **#157:** if the guild config can't be loaded, the request is not posted, so there's no fallback to public approval buttons.
+- **#153 follow-up:** if the PB is saved but awarding points fails, the moderator gets a warning to give the points by hand. Previously the request stayed pending, and a retry would submit the record twice. The mod channel message is now only deleted once approval succeeds, so a failed approval can be retried with the button.
+- **Two moderators can't approve the same request at once.** The second gets "already being handled".
+- **`/accept` and `/deny` autocomplete only lists this server's requests**, and filters by what you type.
+- **#165:** buttons use route-style IDs (`/request/accept/<id>`), and approval logs include the request kind and label.
+- **Fewer API calls per submission.** One guild call gives the records, multiplier, mod channel and position count. Leaderboard embeds fetch only the members they show, over REST.
+- **ToA raid level** is a whole number from 0 to 600, enforced by Discord.
 
 ## How it differs from the TS bot
 

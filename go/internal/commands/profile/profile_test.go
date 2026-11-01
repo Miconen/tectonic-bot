@@ -33,7 +33,7 @@ func TestRender(t *testing.T) {
 			{RecordID: 12, BossName: "jad", DisplayName: "Jad", Category: "Solo", Value: 1},
 		},
 	}
-	guild := tectonic.GuildRecords{
+	guild := tectonic.DetailedGuild{
 		Records: []tectonic.GuildRecord{
 			{RecordID: 10, BossName: "zulrah", Position: 1},
 			{RecordID: 11, BossName: "vorkath", Position: 2},
@@ -70,7 +70,7 @@ func TestRender(t *testing.T) {
 }
 
 func TestRenderNoAccounts(t *testing.T) {
-	got := render("Zez", &tectonic.DetailedUser{UserID: "1"}, tectonic.GuildRecords{}, nil)
+	got := render("Zez", &tectonic.DetailedUser{UserID: "1"}, tectonic.DetailedGuild{}, nil)
 	want := "# \x20Zez\n-# Rank: ? | Points: 0\n Points to next level: 0\n``Link your OSRS account to be eligible for event rank points``"
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)

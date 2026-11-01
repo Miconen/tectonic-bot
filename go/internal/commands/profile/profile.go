@@ -91,7 +91,7 @@ func handle(d deps.Deps, data discord.SlashCommandInteractionData, e *handler.Co
 		return fmt.Errorf("fetch member %s: %w", userID, err)
 	}
 
-	guildRecords, err := d.API.GetGuildRecords(ctx, guildID.String())
+	guildRecords, err := d.API.GetDetailedGuild(ctx, guildID.String())
 	if err != nil {
 		return reply.WithOverrides(err, str.RecordErrors())
 	}
@@ -107,7 +107,7 @@ type displayRecord struct {
 
 // render builds the profile text. It's a pure function so it can be tested
 // without Discord.
-func render(displayName string, u *tectonic.DetailedUser, guild tectonic.GuildRecords, rankList []ranks.Rank) string {
+func render(displayName string, u *tectonic.DetailedUser, guild tectonic.DetailedGuild, rankList []ranks.Rank) string {
 	rank := ranks.TierFor(u.Points, rankList)
 	next := ranks.NextTier(u.Points, rankList)
 	toNext := "0"

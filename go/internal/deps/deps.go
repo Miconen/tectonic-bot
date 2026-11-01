@@ -2,11 +2,13 @@
 package deps
 
 import (
+	"github.com/Miconen/tectonic-bot/go/internal/pointsrc"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
 
 type Deps struct {
-	API   *tectonic.Client
-	Ranks *ranks.Cache
+	API     *tectonic.Client
+	Ranks   *ranks.Cache
+	Sources *pointsrc.Cache
 }

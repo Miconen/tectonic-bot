@@ -3,6 +3,7 @@
 package tectonic
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -44,10 +45,27 @@ func New(rootURL, authKey string) *Client {
 // do performs a request against base+path and decodes a JSON response into
 // out (which may be nil). It returns the raw body for callers that need it.
 func (c *Client) do(ctx context.Context, method, base, path string, out any) ([]byte, error) {
+	return c.send(ctx, method, base, path, nil, out)
+}
+
+// doJSON sends body as JSON to the versioned API.
+func (c *Client) doJSON(ctx context.Context, method, path string, body, out any) ([]byte, error) {
+	b, err := json.Marshal(body)
+	if err != nil {
+		return nil, &APIError{Code: CodeUnknown, Message: err.Error()}
+	}
+	return c.send(ctx, method, c.apiURL, path, b, out)
+}
+
+func (c *Client) send(ctx context.Context, method, base, path string, body []byte, out any) ([]byte, error) {
 	log := logging.Logger(ctx).With("endpoint", base+path, "method", method)
 	log.Info("API request")
 
-	req, err := http.NewRequestWithContext(ctx, method, base+path, nil)
+	var reader io.Reader
+	if body != nil {
+		reader = bytes.NewReader(body)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, base+path, reader)
 	if err != nil {
 		return nil, &APIError{Code: CodeUnknown, Message: err.Error()}
 	}
@@ -70,7 +88,7 @@ func (c *Client) do(ctx context.Context, method, base, path string, out any) ([]
 		return nil, nil
 	}
 
-	body, err := io.ReadAll(res.Body)
+	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, &APIError{Status: res.StatusCode, Code: CodeUnknown, Message: err.Error()}
 	}
@@ -81,18 +99,18 @@ func (c *Client) do(ctx context.Context, method, base, path string, out any) ([]
 	}
 
 	if res.StatusCode >= 400 {
-		apiErr := decodeError(res.StatusCode, body)
+		apiErr := decodeError(res.StatusCode, resBody)
 		log.Error("API error", "status", apiErr.Status, "code", apiErr.Code, "message", apiErr.Message)
 		return nil, apiErr
 	}
 
 	if out != nil {
-		if err := json.Unmarshal(body, out); err != nil {
+		if err := json.Unmarshal(resBody, out); err != nil {
 			return nil, &APIError{Status: res.StatusCode, Code: CodeUnknown, Message: "Failed to parse JSON response"}
 		}
 	}
 	log.Info("API success", "status", res.StatusCode)
-	return body, nil
+	return resBody, nil
 }
 
 func call[T any](ctx context.Context, c *Client, method, path string) (T, error) {

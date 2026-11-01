@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/handler"
@@ -50,8 +49,6 @@ var Command = discord.SlashCommandCreate{
 }
 
 func Register(r handler.Router, d deps.Deps) {
-	sources := &sourceCache{api: d.API, byGuild: map[string][]tectonic.PointSource{}}
-
 	r.Route("/moderation", func(r handler.Router) {
 		r.Use(mw.RequireAdmin) // @Guard(IsAdmin)
 
@@ -63,7 +60,13 @@ func Register(r handler.Router, d deps.Deps) {
 				src := data.String("source")
 				return give(d, e, data, tectonic.PresetPoints(src), str.GuildArgs{PointSource: src})
 			})
-			r.Autocomplete("/source", sources.autocomplete)
+			r.Autocomplete("/source", func(e *handler.AutocompleteEvent) error {
+				choices, err := d.Sources.Choices(e.Ctx, e.GuildID().String(), e.Data.Focused().String())
+				if err != nil {
+					return err
+				}
+				return e.AutocompleteResult(choices)
+			})
 		})
 	})
 }
@@ -137,54 +140,4 @@ func FormatAward(displayName string, given, total int, t ranks.Transition) strin
 		}
 	}
 	return out
-}
-
-// sourceCache keeps each guild's point sources for the bot's lifetime, like
-// the PointSources TTLCache(null) in TS.
-type sourceCache struct {
-	api *tectonic.Client
-
-	mu      sync.Mutex
-	byGuild map[string][]tectonic.PointSource
-}
-
-func (c *sourceCache) get(ctx context.Context, guildID string) ([]tectonic.PointSource, error) {
-	c.mu.Lock()
-	s, ok := c.byGuild[guildID]
-	c.mu.Unlock()
-	if ok {
-		return s, nil
-	}
-
-	s, err := c.api.GetGuildPointSources(ctx, guildID)
-	if err != nil {
-		return nil, err
-	}
-	c.mu.Lock()
-	c.byGuild[guildID] = s
-	c.mu.Unlock()
-	return s, nil
-}
-
-func (c *sourceCache) autocomplete(e *handler.AutocompleteEvent) error {
-	sources, err := c.get(e.Ctx, e.GuildID().String())
-	if err != nil {
-		return err
-	}
-
-	// Unlike the TS picker, filter by what the user typed so sources past the
-	// first 25 are reachable.
-	typed := strings.ToLower(e.Data.Focused().String())
-	choices := make([]discord.AutocompleteChoice, 0, 25)
-	for _, s := range sources {
-		name := fmt.Sprintf("%s | %d points", s.Name, s.Points)
-		if typed != "" && !strings.Contains(strings.ToLower(name), typed) {
-			continue
-		}
-		choices = append(choices, discord.AutocompleteChoiceString{Name: name, Value: s.Source})
-		if len(choices) == 25 {
-			break
-		}
-	}
-	return e.AutocompleteResult(choices)
 }
