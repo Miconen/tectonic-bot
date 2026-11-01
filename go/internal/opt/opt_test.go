@@ -7,7 +7,7 @@ import (
 )
 
 func TestOptional(t *testing.T) {
-	for _, o := range []Option{User("a", "a"), Role("a", "a"), String("a", "a"), Int("a", "a"), TextChannel("a", "a"), Attachment("a", "a")} {
+	for _, o := range []Option{User("a", "a"), Role("a", "a"), String("a", "a"), Int("a", "a"), TextChannel("a", "a"), Attachment("a", "a"), Bool("a", "a")} {
 		if required(o) != true {
 			t.Fatalf("%T should be required by default", o)
 		}
@@ -30,6 +30,8 @@ func required(o Option) bool {
 	case discord.ApplicationCommandOptionChannel:
 		return v.Required
 	case discord.ApplicationCommandOptionAttachment:
+		return v.Required
+	case discord.ApplicationCommandOptionBool:
 		return v.Required
 	}
 	panic("unhandled")

@@ -7,7 +7,9 @@ A demo port of the bot to Go with [disgo](https://github.com/disgoorg/disgo), to
 | TS | Go |
 | --- | --- |
 | `/profile` | `internal/commands/profile` |
-| All of `/moderation` except `points wom`: points, status, rsn, achievements, ca, start, settings, ranks | `internal/commands/moderation` |
+| All of `/moderation`: points (including `wom`), status, rsn, achievements, ca, start, settings, ranks | `internal/commands/moderation` |
+| `/event` (info, remove, settings, create team/individual/legacy) | `internal/commands/event` |
+| WOM team lookup for autocomplete (`requests/wom.ts`) | `internal/wom` |
 | `/moderation times` (remove, adduser, removeuser, initialize-pb-channel) | `internal/commands/pb/times.go` |
 | `/split`, `/ca`, `/achievement` | `internal/commands/submissions` |
 | `awardPoints`, `formatPointsAward`, rank role syncing | `award.Give`, `award.Format`, `internal/ranks` |
@@ -22,7 +24,7 @@ A demo port of the bot to Go with [disgo](https://github.com/disgoorg/disgo), to
 | `commands/requests` (buttons, `/accept`, `/deny`) | `internal/approval` |
 | `IsActivated`, the `player2..N` options | `internal/team` |
 
-Not ported yet: `/event`, `/moderation points wom`, `/bingo`, `/help`, `/roles` and the status rotation.
+Not ported yet: `/bingo`, `/help`, `/roles` and the status rotation.
 
 Command definitions use the small helpers in `internal/opt` (`Sub`, `Group`, `User`, `Autocomplete`, `Optional`...), so a command's shape reads like its help text. `internal/commands/routes_test.go` fails if a defined subcommand or autocomplete option has no handler, or a handler has no definition.
 
@@ -64,6 +66,16 @@ About 660 lines of Go replace about 1,980 lines of TS (the pb commands, their he
 - **`/moderation times remove`** redraws the leaderboard when the removed record was #1. TS left the old record in the embed.
 - **`initialize-pb-channel`** deletes old embeds one by one. TS used a bulk delete, which Discord refuses for messages older than two weeks, so old boards were left behind.
 - **Achievement and CA grants clear the cached user**, so autocomplete reflects the change right away.
+
+## Event port: what changed compared to TS
+
+- **`/event remove` needs moderator permissions.** In TS anyone in the server could delete an event.
+- **Event settings reply From → To with the real old value**, read before the update. TS read it from a cache, and setting solo to false never updated that cache.
+- **`/event create` replies with the event's name** instead of "Success".
+- **`/event create legacy` accepts @mentions** as well as IDs, separated by spaces or commas, and drops duplicates.
+- **`/event info` lists winners who left the server** as mentions. TS skipped them.
+- **Team autocomplete hides teams already picked** in the other team options, and WOM lookups are cached for 5 minutes instead of on every keystroke.
+- **`/moderation points wom` options are wired by name.** In TS the two option decorators sat on the same parameter, so the competition ID and the cutoff could be read the wrong way round. A rank role failure for one player no longer stops the rest of the list.
 
 ## How it differs from the TS bot
 

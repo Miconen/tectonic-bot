@@ -25,6 +25,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/pointsrc"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
+	"github.com/Miconen/tectonic-bot/go/internal/wom"
 )
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 		slog.Error("fetching achievements", "err", err)
 		os.Exit(1)
 	}
-	d := deps.Deps{API: api, Ranks: ranks.NewCache(api), Sources: pointsrc.New(api), Catalog: cat}
+	d := deps.Deps{API: api, Ranks: ranks.NewCache(api), Sources: pointsrc.New(api), Catalog: cat, Wom: wom.New()}
 
 	r := handler.New()
 	r.Use(mw.Context, mw.ReplyErrors, mw.RequireGuild, mw.APIHealthy(api))
