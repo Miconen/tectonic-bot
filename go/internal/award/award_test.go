@@ -1,4 +1,4 @@
-package points
+package award
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 func ptr(s string) *string { return &s }
 
-func TestFormatAward(t *testing.T) {
+func TestFormat(t *testing.T) {
 	jade := &ranks.Rank{Name: "jade", Icon: ptr("<J>")}
 	redTopaz := &ranks.Rank{Name: "red_topaz", MinPoints: 50, Icon: ptr("<R>")}
 	noIcon := &ranks.Rank{Name: "sapphire", MinPoints: 100}
@@ -28,7 +28,7 @@ func TestFormatAward(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			if got := FormatAward("Zez", c.given, c.total, c.t); got != c.want {
+			if got := Format("Zez", c.given, c.total, c.t); got != c.want {
 				t.Errorf("got %q, want %q", got, c.want)
 			}
 		})

@@ -9,7 +9,7 @@ import (
 	"github.com/disgoorg/disgo/handler"
 
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
-	"github.com/Miconen/tectonic-bot/go/internal/commands/points"
+	"github.com/Miconen/tectonic-bot/go/internal/award"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
 	"github.com/Miconen/tectonic-bot/go/internal/pointsrc"
 	"github.com/Miconen/tectonic-bot/go/internal/preview"
@@ -90,7 +90,7 @@ func (r *splitRequest) Accept(ctx context.Context, env approval.Env) (approval.R
 	}
 	// The amount was resolved (multiplier included) when the request was made,
 	// so moderators approve exactly what the preview showed.
-	awarded, err := points.Award(ctx, r.d, env.Client.Rest, env.GuildID, ms, tectonic.CustomPoints(float64(r.points.Points)))
+	awarded, err := award.Give(ctx, r.d, env.Client.Rest, env.GuildID, ms, tectonic.CustomPoints(r.points.Points))
 	if err != nil {
 		return approval.Result{}, reply.WithOverrides(err, str.GuildErrors(str.GuildArgs{}))
 	}

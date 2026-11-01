@@ -7,8 +7,8 @@ import (
 	"github.com/disgoorg/disgo/handler"
 
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
+	"github.com/Miconen/tectonic-bot/go/internal/commands/moderation"
 	"github.com/Miconen/tectonic-bot/go/internal/commands/pb"
-	"github.com/Miconen/tectonic-bot/go/internal/commands/points"
 	"github.com/Miconen/tectonic-bot/go/internal/commands/profile"
 	"github.com/Miconen/tectonic-bot/go/internal/commands/submissions"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
@@ -20,7 +20,7 @@ import (
 func Definitions(bosses []tectonic.Boss) []discord.ApplicationCommandCreate {
 	defs := []discord.ApplicationCommandCreate{
 		profile.Command,
-		points.Command,
+		moderation.Command,
 		pb.Command(bosses),
 	}
 	defs = append(defs, submissions.Commands...)
@@ -32,7 +32,7 @@ func Register(r handler.Router, d deps.Deps, bosses []tectonic.Boss) {
 	approvals := approval.New()
 
 	profile.Register(r, d)
-	points.Register(r, d)
+	moderation.Register(r, d)
 	pb.Register(r, d, pb.NewBosses(bosses), approvals)
 	submissions.Register(r, d, approvals)
 	approvals.Register(r)

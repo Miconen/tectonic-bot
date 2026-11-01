@@ -31,8 +31,61 @@ type boardBoss struct {
 	teamIDs []string
 }
 
-// categoryFor finds the board category a boss is shown in (the subset of
-// formatGuildTimesForEmbeds that one embed update needs).
+// boards builds every leaderboard embed the guild has, in category order
+// (formatGuildTimesForEmbeds in TS).
+func boards(g tectonic.DetailedGuild) []boardCategory {
+	cats := map[string]tectonic.Category{}
+	for _, c := range g.Categories {
+		cats[c.Name] = c
+	}
+	bossInfo := map[string]tectonic.Boss{}
+	for _, b := range g.Bosses {
+		bossInfo[b.Name] = b
+	}
+
+	var out []boardCategory
+	for _, gc := range g.GuildCategories {
+		c, ok := cats[gc.Category]
+		if !ok {
+			continue
+		}
+		bc := boardCategory{Category: c}
+		if gc.MessageID != nil {
+			bc.messageID = *gc.MessageID
+		}
+		for _, gb := range g.GuildBosses {
+			info, ok := bossInfo[gb.Boss]
+			if gb.Category != c.Name || !ok {
+				continue
+			}
+			bc.bosses = append(bc.bosses, topRecord(g, info))
+		}
+		sort.Slice(bc.bosses, func(i, j int) bool { return bc.bosses[i].Name < bc.bosses[j].Name })
+		out = append(out, bc)
+	}
+	sort.SliceStable(out, func(i, j int) bool { return out[i].Order < out[j].Order })
+	return out
+}
+
+// topRecord is the boss with its #1 record and team, if any.
+func topRecord(g tectonic.DetailedGuild, boss tectonic.Boss) boardBoss {
+	bb := boardBoss{Boss: boss}
+	for _, rec := range g.Records {
+		if rec.BossName != boss.Name || rec.Position != 1 {
+			continue
+		}
+		v := rec.Value
+		bb.value = &v
+		for _, t := range g.Teammates {
+			if t.RecordID == rec.RecordID {
+				bb.teamIDs = append(bb.teamIDs, t.UserID)
+			}
+		}
+	}
+	return bb
+}
+
+// categoryFor finds the board a boss is shown in.
 func categoryFor(g tectonic.DetailedGuild, bossName string) (boardCategory, bool) {
 	catName := ""
 	for _, gb := range g.GuildBosses {
@@ -40,51 +93,32 @@ func categoryFor(g tectonic.DetailedGuild, bossName string) (boardCategory, bool
 			catName = gb.Category
 		}
 	}
-	if catName == "" {
-		return boardCategory{}, false
+	for _, c := range boards(g) {
+		if catName != "" && c.Name == catName {
+			return c, true
+		}
 	}
+	return boardCategory{}, false
+}
 
-	var out boardCategory
-	found := false
-	for _, c := range g.Categories {
-		if c.Name == catName {
-			out.Category, found = c, true
+// teamNames maps every board player's ID to their display name. Players who
+// left are missing, and renderEmbed shows them as mentions.
+func teamNames(ctx context.Context, r rest.Members, guildID snowflake.ID, cats ...boardCategory) (map[string]string, error) {
+	var ids []string
+	for _, c := range cats {
+		for _, b := range c.bosses {
+			ids = append(ids, b.teamIDs...)
 		}
 	}
-	for _, gc := range g.GuildCategories {
-		if gc.Category == catName && gc.MessageID != nil {
-			out.messageID = *gc.MessageID
-		}
+	found, err := members.Fetch(ctx, r, guildID, ids)
+	if err != nil {
+		return nil, err
 	}
-	if !found {
-		return boardCategory{}, false
+	names := make(map[string]string, len(found))
+	for id, m := range found {
+		names[id] = m.EffectiveName()
 	}
-
-	bossInfo := map[string]tectonic.Boss{}
-	for _, b := range g.Bosses {
-		bossInfo[b.Name] = b
-	}
-	for _, gb := range g.GuildBosses {
-		info, ok := bossInfo[gb.Boss]
-		if gb.Category != catName || !ok {
-			continue
-		}
-		bb := boardBoss{Boss: info}
-		for _, rec := range g.Records {
-			if rec.BossName == gb.Boss && rec.Position == 1 {
-				v := rec.Value
-				bb.value = &v
-				for _, t := range g.Teammates {
-					if t.RecordID == rec.RecordID {
-						bb.teamIDs = append(bb.teamIDs, t.UserID)
-					}
-				}
-			}
-		}
-		out.bosses = append(out.bosses, bb)
-	}
-	sort.Slice(out.bosses, func(i, j int) bool { return out.bosses[i].Name < out.bosses[j].Name })
-	return out, true
+	return names, nil
 }
 
 // renderEmbed builds the category's leaderboard embed. names maps user IDs to
@@ -136,17 +170,9 @@ func updateEmbed(ctx context.Context, api *tectonic.Client, r rest.Rest, guildID
 		return fmt.Errorf("parse embed message: %w", err)
 	}
 
-	var ids []string
-	for _, b := range c.bosses {
-		ids = append(ids, b.teamIDs...)
-	}
-	found, err := members.Fetch(ctx, r, guildID, ids)
+	names, err := teamNames(ctx, r, guildID, c)
 	if err != nil {
 		return err
-	}
-	names := make(map[string]string, len(found))
-	for id, m := range found {
-		names[id] = m.EffectiveName()
 	}
 
 	embeds := []discord.Embed{renderEmbed(c, names)}

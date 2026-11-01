@@ -63,18 +63,19 @@ func (c *Client) RemoveUser(ctx context.Context, guildID string, q UserQuery) er
 
 // Points is either a custom amount or a preset point source.
 type Points struct {
-	amount float64
+	amount int
 	source string
 }
 
-func CustomPoints(amount float64) Points { return Points{amount: amount} }
-func PresetPoints(source string) Points  { return Points{source: source} }
+// CustomPoints is a whole number: the API rejects fractions.
+func CustomPoints(amount int) Points    { return Points{amount: amount} }
+func PresetPoints(source string) Points { return Points{source: source} }
 
 func (p Points) path() string {
 	if p.source != "" {
 		return url.PathEscape(p.source)
 	}
-	return "custom/" + strconv.FormatFloat(p.amount, 'f', -1, 64)
+	return "custom/" + strconv.Itoa(p.amount)
 }
 
 func (c *Client) GivePoints(ctx context.Context, guildID string, userIDs []string, p Points) ([]PointsResponse, error) {

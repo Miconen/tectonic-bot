@@ -7,19 +7,24 @@ A demo port of the bot to Go with [disgo](https://github.com/disgoorg/disgo), to
 | TS | Go |
 | --- | --- |
 | `/profile` | `internal/commands/profile` |
-| `/moderation points give` and `source` (with autocomplete) | `internal/commands/points` |
-| `awardPoints`, `formatPointsAward`, rank role syncing | `points.Award`, `points.FormatAward`, `internal/ranks` |
-| `removeOnLeave` + `dumpUserData` | `internal/events` |
+| All of `/moderation` except `points wom`: points, status, rsn, achievements, ca, start, settings, ranks | `internal/commands/moderation` |
+| `/moderation times` (remove, adduser, removeuser, initialize-pb-channel) | `internal/commands/pb/times.go` |
+| `/split`, `/ca`, `/achievement` | `internal/commands/submissions` |
+| `awardPoints`, `formatPointsAward`, rank role syncing | `award.Give`, `award.Format`, `internal/ranks` |
+| `removeOnLeave` | `internal/events` |
+| `dumpUserData` | `internal/userdump` |
 | `LoggingGuard`, `IsHealthy`, `RequiresGuild`, `IsAdmin` | `internal/mw` |
 | `replyHandler`, `replyApiError`, `errors/api/*` | `internal/reply` |
 | `stringRepo` (only the strings above) | `internal/str` |
 | `requests/*`, `typings/api/*` | `internal/tectonic` |
 | `TimeConverter`, `IsValidTime` | `internal/timefmt` |
 | All 15 `/pb` subcommands, `pbRequestHelper`, `updateEmbed`, `getBoss` | `internal/commands/pb` |
-| `commands/requests` (buttons, `/accept`, `/deny`) | `internal/approval` (PB requests so far) |
+| `commands/requests` (buttons, `/accept`, `/deny`) | `internal/approval` |
 | `IsActivated`, the `player2..N` options | `internal/team` |
 
-Not ported yet: splits, CAs, achievements, events, bingo, the rest of moderation, help, roles, status rotation, and the rest of the string repo.
+Not ported yet: `/event`, `/moderation points wom`, `/bingo`, `/help`, `/roles` and the status rotation.
+
+Command definitions use the small helpers in `internal/opt` (`Sub`, `Group`, `User`, `Autocomplete`, `Optional`...), so a command's shape reads like its help text. `internal/commands/routes_test.go` fails if a defined subcommand or autocomplete option has no handler, or a handler has no definition.
 
 ## Code quality goals
 
@@ -44,6 +49,21 @@ About 660 lines of Go replace about 1,980 lines of TS (the pb commands, their he
 - **#165:** buttons use route-style IDs (`/request/accept/<id>`), and approval logs include the request kind and label.
 - **Fewer API calls per submission.** One guild call gives the records, multiplier, mod channel and position count. Leaderboard embeds fetch only the members they show, over REST.
 - **ToA raid level** is a whole number from 0 to 600, enforced by Discord.
+
+## Moderation port: what changed compared to TS
+
+- **#145: guild settings live under `/moderation settings`** (`modchannel`, `logchannel`, `multiplier`, `positioncount`), and every settings change replies with From → To using one shared helper (`str.Updated`). `/moderation ranks update` does the same for each field it changes. The old `/moderation modchannel`, `/moderation logchannel` and `/moderation points setmultiplier` are gone.
+- **Multiplier is a whole number from 1 to 10**, enforced by Discord. The API only accepts that, but TS offered any decimal and then showed an API error.
+- **Point amounts are whole numbers.** The API's custom points route takes an integer, so `1.5` used to fail with a confusing error.
+- **Giving points to someone who isn't activated says so.** The API answers "point source not found" when no user was updated, which is what TS showed.
+- **Role awards only send activated members**, in chunks of 50 so a large role doesn't overflow the URL. TS sent every member with the role, and the whole award failed if none were activated.
+- **Commands on users who left the server** reply "not a member of this server" instead of failing later.
+- **`/moderation rsn remove` autocompletes** the picked member's linked RSNs. `achievements` and `ca` grant and remove autocomplete only what the picked member doesn't have or does have.
+- **Rank tiers:** names are limited to 32 characters and points and display order can't be negative, matching the API. Rank changes clear the rank cache, so new tiers apply right away instead of after 30 seconds. `update` with no options says there's nothing to update.
+- **Activation and deactivation** keep going if rank roles can't be updated, and say so in the reply. Deactivating someone who isn't activated says that instead of an API error.
+- **`/moderation times remove`** redraws the leaderboard when the removed record was #1. TS left the old record in the embed.
+- **`initialize-pb-channel`** deletes old embeds one by one. TS used a bulk delete, which Discord refuses for messages older than two weeks, so old boards were left behind.
+- **Achievement and CA grants clear the cached user**, so autocomplete reflects the change right away.
 
 ## How it differs from the TS bot
 
