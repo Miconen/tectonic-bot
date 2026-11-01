@@ -43,6 +43,8 @@ type DetailedUser struct {
 	Events       []UserEvent   `json:"events"`
 	Achievements []Achievement `json:"achievements"`
 	Records      []UserRecord  `json:"records"`
+
+	CombatAchievements []NamedItem `json:"combat_achievements"`
 	// Raw keeps the full payload so the leave handler can dump every field,
 	// including ones this struct doesn't declare.
 	Raw []byte `json:"-"`
@@ -141,4 +143,16 @@ type DetailedGuild struct {
 	GuildCategories []GuildCategory  `json:"guild_categories"`
 	Records         []GuildRecord    `json:"records"`
 	Teammates       []RecordTeammate `json:"teammates"`
+}
+
+// NamedItem is a list entry where only the name matters to the bot.
+type NamedItem struct {
+	Name string `json:"name"`
+}
+
+type CombatAchievement struct {
+	Name                   string `json:"name"`
+	PointSource            string `json:"point_source"`
+	Points                 int    `json:"points"`
+	PointSourceDisplayName string `json:"point_source_display_name"`
 }

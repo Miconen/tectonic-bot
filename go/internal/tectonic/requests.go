@@ -122,3 +122,38 @@ func (c *Client) NewRecord(ctx context.Context, guildID string, r NewRecord) (Re
 	_, err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("guilds/%s/records", guildID), r, &out)
 	return out, err
 }
+
+func (c *Client) GetAchievements(ctx context.Context) ([]Achievement, error) {
+	return call[[]Achievement](ctx, c, http.MethodGet, "achievements")
+}
+
+func (c *Client) GiveAchievement(ctx context.Context, guildID string, q UserQuery, achievement string) error {
+	_, err := c.do(ctx, http.MethodPost, c.apiURL, fmt.Sprintf("guilds/%s/users/%s/achievements/%s", guildID, q.path(), url.PathEscape(achievement)), nil)
+	return err
+}
+
+func (c *Client) RemoveAchievement(ctx context.Context, guildID string, q UserQuery, achievement string) error {
+	_, err := c.do(ctx, http.MethodDelete, c.apiURL, fmt.Sprintf("guilds/%s/users/%s/achievements/%s", guildID, q.path(), url.PathEscape(achievement)), nil)
+	return err
+}
+
+func (c *Client) GetGuildCombatAchievements(ctx context.Context, guildID string) ([]CombatAchievement, error) {
+	return call[[]CombatAchievement](ctx, c, http.MethodGet, fmt.Sprintf("guilds/%s/combat-achievements", guildID))
+}
+
+// CompleteCombatAchievement marks a CA done for users and awards its points.
+func (c *Client) CompleteCombatAchievement(ctx context.Context, guildID, ca string, userIDs []string) ([]PointsResponse, error) {
+	var out []PointsResponse
+	_, err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("guilds/%s/combat-achievements/%s/complete", guildID, url.PathEscape(ca)), map[string][]string{"user_ids": userIDs}, &out)
+	return out, err
+}
+
+func (c *Client) GiveUserCombatAchievement(ctx context.Context, guildID, userID, ca string) error {
+	_, err := c.do(ctx, http.MethodPost, c.apiURL, fmt.Sprintf("guilds/%s/users/%s/combat-achievements/%s", guildID, userID, url.PathEscape(ca)), nil)
+	return err
+}
+
+func (c *Client) RemoveUserCombatAchievement(ctx context.Context, guildID, userID, ca string) error {
+	_, err := c.do(ctx, http.MethodDelete, c.apiURL, fmt.Sprintf("guilds/%s/users/%s/combat-achievements/%s", guildID, userID, url.PathEscape(ca)), nil)
+	return err
+}
