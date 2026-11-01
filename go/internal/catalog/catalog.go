@@ -1,5 +1,5 @@
 // Package catalog caches the lists autocomplete and submissions look things up
-// in: achievements, each guild's combat achievements and users.
+// in: achievements, each guild's combat achievements, events and users.
 package catalog
 
 import (
@@ -17,8 +17,9 @@ import (
 type Catalog struct {
 	Achievements []tectonic.Achievement
 
-	cas   *cache.TTL[string, []tectonic.CombatAchievement]
-	users *cache.TTL[userKey, *tectonic.DetailedUser]
+	cas    *cache.TTL[string, []tectonic.CombatAchievement]
+	events *cache.TTL[string, []tectonic.Event]
+	users  *cache.TTL[userKey, *tectonic.DetailedUser]
 }
 
 type userKey struct{ guild, user string }
@@ -35,6 +36,9 @@ func New(ctx context.Context, api *tectonic.Client) (*Catalog, error) {
 		cas: cache.New(30*time.Second, func(ctx context.Context, guildID string) ([]tectonic.CombatAchievement, error) {
 			return api.GetGuildCombatAchievements(ctx, guildID)
 		}),
+		events: cache.New(30*time.Second, func(ctx context.Context, guildID string) ([]tectonic.Event, error) {
+			return api.GetEvents(ctx, guildID)
+		}),
 		users: cache.New(30*time.Second, func(ctx context.Context, k userKey) (*tectonic.DetailedUser, error) {
 			u, err := api.GetUser(ctx, k.guild, tectonic.ByUserID(k.user))
 			if errors.Is(err, tectonic.ErrNotFound) {
@@ -49,6 +53,14 @@ func New(ctx context.Context, api *tectonic.Client) (*Catalog, error) {
 func (c *Catalog) CombatAchievements(ctx context.Context, guildID string) ([]tectonic.CombatAchievement, error) {
 	return c.cas.Get(ctx, guildID)
 }
+
+// Events returns the guild's events (cached for 30s).
+func (c *Catalog) Events(ctx context.Context, guildID string) ([]tectonic.Event, error) {
+	return c.events.Get(ctx, guildID)
+}
+
+// EventsChanged drops the cached events after one was added or changed.
+func (c *Catalog) EventsChanged(guildID string) { c.events.Invalidate(guildID) }
 
 // CombatAchievement finds one CA by name.
 func (c *Catalog) CombatAchievement(ctx context.Context, guildID, name string) (tectonic.CombatAchievement, bool, error) {

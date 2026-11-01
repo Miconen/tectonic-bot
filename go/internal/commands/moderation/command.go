@@ -33,6 +33,9 @@ var Command = discord.SlashCommandCreate{
 			Sub("rolebypoints", "Give everyone with a role an amount of points",
 				Role("role", "Role for which to award points"),
 				Int("amount", "Amount of points to give")),
+			Sub("wom", "Give points to everyone above a cutoff in a Wise Old Man competition",
+				IntRange("competition", "ID of the WOM competition", 1, -1),
+				IntRange("cutoff", "XP or kills needed to get points", 0, -1)),
 		),
 
 		Group("status", "Manage user status",
@@ -118,6 +121,7 @@ func Register(r handler.Router, d deps.Deps) {
 			r.SlashCommand("/source", m.pointsSource)
 			r.SlashCommand("/role", m.pointsRole)
 			r.SlashCommand("/rolebypoints", m.pointsRoleByPoints)
+			r.SlashCommand("/wom", m.pointsWom)
 			r.Autocomplete("/source", m.sourceAutocomplete)
 			r.Autocomplete("/role", m.sourceAutocomplete)
 		})

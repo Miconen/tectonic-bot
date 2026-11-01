@@ -6,6 +6,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/pointsrc"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
+	"github.com/Miconen/tectonic-bot/go/internal/wom"
 )
 
 type Deps struct {
@@ -13,4 +14,5 @@ type Deps struct {
 	Ranks   *ranks.Cache
 	Sources *pointsrc.Cache
 	Catalog *catalog.Catalog
+	Wom     *wom.Client
 }

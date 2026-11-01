@@ -87,6 +87,13 @@ func Optional(o Option) Option {
 	case discord.ApplicationCommandOptionAttachment:
 		v.Required = false
 		return v
+	case discord.ApplicationCommandOptionBool:
+		v.Required = false
+		return v
 	}
 	return o
+}
+
+func Bool(name, desc string) Option {
+	return discord.ApplicationCommandOptionBool{Name: name, Description: desc, Required: true}
 }
