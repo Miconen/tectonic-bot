@@ -11,6 +11,7 @@ import (
 
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
+	"github.com/Miconen/tectonic-bot/go/internal/opt"
 	"github.com/Miconen/tectonic-bot/go/internal/team"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 )
@@ -60,19 +61,11 @@ func options(v variant, bosses []tectonic.Boss) []discord.ApplicationCommandOpti
 		})
 	}
 
-	opts = append(opts, discord.ApplicationCommandOptionString{Name: v.value(), Description: v.timeDesc, Required: true})
-
+	opts = append(opts, opt.String(v.value(), v.timeDesc))
 	if v.raidLevel {
-		minLevel, maxLevel := 0, 600
-		opts = append(opts, discord.ApplicationCommandOptionInt{
-			Name: "raidlevel", Description: "ToA raid level", Required: true,
-			MinValue: &minLevel, MaxValue: &maxLevel,
-		})
+		opts = append(opts, opt.IntRange("raidlevel", "ToA raid level", 0, 600))
 	}
-
-	opts = append(opts, discord.ApplicationCommandOptionAttachment{
-		Name: "screenshot", Description: "Screenshot proof of the time", Required: true,
-	})
+	opts = append(opts, opt.Attachment("screenshot", "Screenshot proof of the time"))
 	return append(opts, team.PlayerOptions(v.players(), v.requiredPlayers)...)
 }
 

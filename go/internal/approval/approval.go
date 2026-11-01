@@ -24,6 +24,7 @@ import (
 
 	"github.com/Miconen/tectonic-bot/go/internal/logging"
 	"github.com/Miconen/tectonic-bot/go/internal/mw"
+	"github.com/Miconen/tectonic-bot/go/internal/opt"
 	"github.com/Miconen/tectonic-bot/go/internal/reply"
 	"github.com/Miconen/tectonic-bot/go/internal/str"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
@@ -226,7 +227,7 @@ func idCommand(name, desc string) discord.SlashCommandCreate {
 		Name:        name,
 		Description: desc,
 		Options: []discord.ApplicationCommandOption{
-			discord.ApplicationCommandOptionString{Name: "id", Description: "Id of the pending request", Required: true, Autocomplete: true},
+			opt.Autocomplete("id", "Id of the pending request"),
 		},
 	}
 }

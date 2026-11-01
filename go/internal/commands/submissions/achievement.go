@@ -10,6 +10,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
 	"github.com/Miconen/tectonic-bot/go/internal/catalog"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
+	"github.com/Miconen/tectonic-bot/go/internal/opt"
 	"github.com/Miconen/tectonic-bot/go/internal/reply"
 	"github.com/Miconen/tectonic-bot/go/internal/str"
 	"github.com/Miconen/tectonic-bot/go/internal/team"
@@ -20,7 +21,7 @@ var achievementCommand = discord.SlashCommandCreate{
 	Name:        "achievement",
 	Description: "Submit an achievement request for admin approval",
 	Options: []discord.ApplicationCommandOption{
-		discord.ApplicationCommandOptionString{Name: "achievement", Description: "Achievement to request", Required: true, Autocomplete: true},
+		opt.Autocomplete("achievement", "Achievement to request"),
 		screenshotOption("Screenshot proof of the achievement"),
 	},
 }

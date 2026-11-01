@@ -12,6 +12,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/award"
 	"github.com/Miconen/tectonic-bot/go/internal/catalog"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
+	"github.com/Miconen/tectonic-bot/go/internal/opt"
 	"github.com/Miconen/tectonic-bot/go/internal/preview"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
 	"github.com/Miconen/tectonic-bot/go/internal/reply"
@@ -26,7 +27,7 @@ var caCommand = discord.SlashCommandCreate{
 	Name:        "ca",
 	Description: "Request points for completing a combat achievement together",
 	Options: append([]discord.ApplicationCommandOption{
-		discord.ApplicationCommandOptionString{Name: "achievement", Description: "The combat achievement completed", Required: true, Autocomplete: true},
+		opt.Autocomplete("achievement", "The combat achievement completed"),
 		screenshotOption("Screenshot proof of the combat achievement"),
 	}, team.PlayerOptions(caMaxPlayers, 1)...),
 }

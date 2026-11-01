@@ -12,6 +12,7 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
+	"github.com/Miconen/tectonic-bot/go/internal/opt"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
 	"github.com/Miconen/tectonic-bot/go/internal/reply"
 	"github.com/Miconen/tectonic-bot/go/internal/str"
@@ -23,14 +24,8 @@ var Command = discord.SlashCommandCreate{
 	Name:        "profile",
 	Description: "Check your or someone elses profile",
 	Options: []discord.ApplicationCommandOption{
-		discord.ApplicationCommandOptionUser{
-			Name:        "username",
-			Description: "Leave blank to check personal profile or supply a name to check another user.",
-		},
-		discord.ApplicationCommandOptionString{
-			Name:        "rsn",
-			Description: "RSN connected to the user profile.",
-		},
+		opt.Optional(opt.User("username", "Leave blank to check personal profile or supply a name to check another user.")),
+		opt.Optional(opt.String("rsn", "RSN connected to the user profile.")),
 	},
 }
 
