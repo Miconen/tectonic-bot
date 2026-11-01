@@ -28,4 +28,7 @@ func TestOptionValues(t *testing.T) {
 	if data.CommandPath() != "/moderation/points/give" {
 		t.Errorf("path %s", data.CommandPath())
 	}
+	if got := CommandName(data.CommandPath()); got != "moderation points give" {
+		t.Errorf("name %s", got)
+	}
 }
