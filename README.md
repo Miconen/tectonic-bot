@@ -2,8 +2,8 @@
 
 ## Branches
 
-- **main**: Deployed version of the bot (Autodeploy)
-- **develop**: Special development branch that gets deleted after merging (Autodeploy)
+- **main**: Development branch. Feature branches merge here.
+- **production**: Deployed version of the bot (Autodeploy). Release by fast-forwarding it to main: `git push origin main:production`
 - **feature/{name}**: Feature branches that do not get autodeployed
 
 **[All planned features and ideas can be found here.](https://github.com/Miconen/tectonic-bot/projects/1)**
