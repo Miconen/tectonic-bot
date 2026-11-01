@@ -1,35 +1,15 @@
-## build runner
-FROM node:20-alpine3.16 as build-runner
+## Go bot (demo) — develop only. main still builds the TypeScript bot.
+FROM golang:1.24-alpine AS build
+WORKDIR /src
 
-# Set temp directory
-WORKDIR /tmp/app
+COPY go/go.mod go/go.sum ./
+RUN go mod download
 
-# Move package.json and package-lock.json
-COPY package.json package-lock.json* ./
-# Install dependencies
-RUN npm ci && npm cache clean --force
+COPY go/ .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /bot ./cmd/bot
 
-# Move source files
-COPY src ./src
-COPY tsconfig.json .
-
-# Build project
-RUN npm run build
-
-## producation runner
-FROM node:20-alpine3.16 as prod-runner
-
-# Set work directory
-WORKDIR /app
-
-# Copy package.json from build-runner
-COPY --from=build-runner /tmp/app/package.json /app/package.json
-
-# Install dependencies
-RUN npm install --omit=dev
-
-# Move build files
-COPY --from=build-runner /tmp/app/build /app/build
-
-# Start bot
-CMD [ "node", "build/main.js" ]
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /bot /bot
+ENV GOMEMLIMIT=48MiB
+ENTRYPOINT ["/bot"]
