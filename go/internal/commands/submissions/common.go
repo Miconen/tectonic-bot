@@ -11,6 +11,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
 	"github.com/Miconen/tectonic-bot/go/internal/members"
+	"github.com/Miconen/tectonic-bot/go/internal/opt"
 	"github.com/Miconen/tectonic-bot/go/internal/reply"
 	"github.com/Miconen/tectonic-bot/go/internal/str"
 	"github.com/Miconen/tectonic-bot/go/internal/team"
@@ -74,6 +75,4 @@ func membersInOrder(ctx context.Context, env approval.Env, ids []string) ([]disc
 	return out, nil
 }
 
-func screenshotOption(desc string) discord.ApplicationCommandOptionAttachment {
-	return discord.ApplicationCommandOptionAttachment{Name: "screenshot", Description: desc, Required: true}
-}
+func screenshotOption(desc string) opt.Option { return opt.Attachment("screenshot", desc) }
