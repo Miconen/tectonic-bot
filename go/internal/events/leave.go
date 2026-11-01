@@ -18,6 +18,7 @@ import (
 func OnMemberLeave(api *tectonic.Client) func(*events.GuildMemberLeave) {
 	return func(e *events.GuildMemberLeave) {
 		ctx, _ := logging.WithCorrelationID(context.Background())
+		ctx = logging.With(logging.WithActor(ctx, e.User.ID.String()), "guild_id", e.GuildID.String(), "event", "member_leave")
 		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 

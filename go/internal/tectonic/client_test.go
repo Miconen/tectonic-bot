@@ -43,17 +43,17 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestSendsRequestID(t *testing.T) {
-	var got string
+	var got, actor string
 	c := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
-		got = r.Header.Get("X-Request-ID")
+		got, actor = r.Header.Get("X-Request-ID"), r.Header.Get("X-Actor-ID")
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`[]`))
 	})
 
-	ctx := logging.WithID(context.Background(), "1234567890")
+	ctx := logging.WithActor(logging.WithID(context.Background(), "1234567890"), "555")
 	c.GetUser(ctx, "1", ByUserID("42"))
-	if got != "1234567890" {
-		t.Errorf("X-Request-ID = %q", got)
+	if got != "1234567890" || actor != "555" {
+		t.Errorf("X-Request-ID = %q, X-Actor-ID = %q", got, actor)
 	}
 
 	c.GetUser(context.Background(), "1", ByUserID("42"))
