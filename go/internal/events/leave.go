@@ -2,21 +2,14 @@
 package events
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"time"
 
-	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
-	"github.com/disgoorg/disgo/rest"
-	"github.com/disgoorg/snowflake/v2"
 
 	"github.com/Miconen/tectonic-bot/go/internal/logging"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
+	"github.com/Miconen/tectonic-bot/go/internal/userdump"
 )
 
 // OnMemberLeave dumps a leaving member's data to the log (or mod) channel and
@@ -37,7 +30,7 @@ func OnMemberLeave(api *tectonic.Client) func(*events.GuildMemberLeave) {
 			return
 		}
 
-		if err := dumpUserData(ctx, e.Client(), api, e.GuildID, u, "Leaving Server"); err != nil {
+		if err := userdump.Post(ctx, e.Client().Rest, api, e.GuildID, u, userdump.ReasonLeft); err != nil {
 			log.Warn("Failed to dump leaving user's data", "err", err)
 		}
 
@@ -45,36 +38,4 @@ func OnMemberLeave(api *tectonic.Client) func(*events.GuildMemberLeave) {
 			log.Error("Failed to remove leaving user", "err", err)
 		}
 	}
-}
-
-// dumpUserData posts the user's full API payload as a JSON file, preferring the
-// log channel over the mod channel (utils/dumpUserData.ts).
-func dumpUserData(ctx context.Context, client *bot.Client, api *tectonic.Client, guildID snowflake.ID, u *tectonic.DetailedUser, reason string) error {
-	guild, err := api.GetGuild(ctx, guildID.String())
-	if err != nil {
-		return fmt.Errorf("fetch guild config: %w", err)
-	}
-
-	channel := guild.LogChannelID
-	if channel == nil {
-		channel = guild.ModChannelID
-	}
-	if channel == nil {
-		return errors.New("no log or mod channel configured for guild")
-	}
-	channelID, err := snowflake.Parse(*channel)
-	if err != nil {
-		return fmt.Errorf("parse channel id %q: %w", *channel, err)
-	}
-
-	var pretty bytes.Buffer
-	if err := json.Indent(&pretty, u.Raw, "", "  "); err != nil {
-		return fmt.Errorf("format user dump: %w", err)
-	}
-
-	_, err = client.Rest.CreateMessage(channelID, discord.MessageCreate{
-		Content: fmt.Sprintf("Dumping data of member before removal.  <@%s> (`%s`) Reason: %s", u.UserID, u.UserID, reason),
-		Files:   []*discord.File{discord.NewFile(fmt.Sprintf("user-%s-%d.json", u.UserID, time.Now().UnixMilli()), "", &pretty)},
-	}, rest.WithCtx(ctx))
-	return err
 }

@@ -39,3 +39,26 @@ func PBNeedsPlayers(n int) string {
 func PBPointsFailed(reason string) string {
 	return "Points could not be awarded, give them with `/moderation points source`: " + reason
 }
+
+// times.*
+const (
+	TimesNoBoards       = "This server has no leaderboard categories to post."
+	TimesBoardsCreated  = Check + " Leaderboard embeds posted in this channel. New PBs will update them."
+	TimesEmbedsNotSaved = "The embeds were posted but couldn't be saved, so they won't update. Try again."
+)
+
+func RecordRemoved(recordID int, label string) string {
+	return fmt.Sprintf("%s Removed record `#%d` (%s).", Check, recordID, label)
+}
+
+func RecordNotFound(recordID string) string {
+	return fmt.Sprintf("%s Record `#%s` was not found.", Cross, recordID)
+}
+
+func TeammateAdded(user, boss string) string {
+	return fmt.Sprintf("%s Added **%s** to the team for the **%s** clan PB.", Check, user, boss)
+}
+
+func TeammateRemoved(user, boss string) string {
+	return fmt.Sprintf("%s Removed **%s** from the team for the **%s** clan PB.", Check, user, boss)
+}

@@ -96,7 +96,7 @@ func TestRFC7807Error(t *testing.T) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		w.Write([]byte(`{"status":422,"title":"Unprocessable Entity","detail":"validation failed","errors":[{"message":"a"},{"message":"b"}]}`))
 	})
-	_, err := c.GivePoints(context.Background(), "1", []string{"2", "3"}, CustomPoints(2.5))
+	_, err := c.GivePoints(context.Background(), "1", []string{"2", "3"}, CustomPoints(2))
 
 	var apiErr *APIError
 	if !errors.As(err, &apiErr) || apiErr.Code != CodeUnknown || apiErr.Message != "a, b" {

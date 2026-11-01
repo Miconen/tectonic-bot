@@ -9,8 +9,8 @@ import (
 	"github.com/disgoorg/disgo/handler"
 
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
+	"github.com/Miconen/tectonic-bot/go/internal/award"
 	"github.com/Miconen/tectonic-bot/go/internal/catalog"
-	"github.com/Miconen/tectonic-bot/go/internal/commands/points"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
 	"github.com/Miconen/tectonic-bot/go/internal/preview"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
@@ -157,7 +157,7 @@ func (r *caRequest) Accept(ctx context.Context, env approval.Env) (approval.Resu
 		if err != nil {
 			warnings = append(warnings, fmt.Sprintf("Couldn't update rank roles for %s: %v", m.EffectiveName(), err))
 		}
-		lines = append(lines, points.FormatAward(m.EffectiveName(), u.GivenPoints, u.Points, t))
+		lines = append(lines, award.Format(m.EffectiveName(), u.GivenPoints, u.Points, t))
 	}
 	return approval.Result{Message: strings.Join(lines, "\n"), Warnings: warnings}, nil
 }

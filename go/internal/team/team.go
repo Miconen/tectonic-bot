@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/disgoorg/disgo/discord"
 
@@ -75,16 +76,9 @@ func IDs(players []Player) []string {
 
 // RequireActivated fails with a list of every player who isn't activated.
 func RequireActivated(ctx context.Context, api *tectonic.Client, guildID string, players []Player) error {
-	users, err := api.GetBasicUsers(ctx, guildID, IDs(players))
-	if errors.Is(err, tectonic.ErrNotFound) {
-		users, err = nil, nil // nobody is activated
-	}
+	active, err := Activated(ctx, api, guildID, IDs(players))
 	if err != nil {
-		return reply.WithOverrides(err, str.AccountErrors(str.AccountArgs{}))
-	}
-	active := map[string]bool{}
-	for _, u := range users {
-		active[u.UserID] = true
+		return err
 	}
 
 	var missing []string
@@ -97,4 +91,23 @@ func RequireActivated(ctx context.Context, api *tectonic.Client, guildID string,
 		return reply.UserError(str.NotActivatedPlayers(missing))
 	}
 	return nil
+}
+
+// Activated returns the set of ids that are activated users. IDs go in the
+// URL, so they're looked up in chunks.
+func Activated(ctx context.Context, api *tectonic.Client, guildID string, ids []string) (map[string]bool, error) {
+	active := map[string]bool{}
+	for chunk := range slices.Chunk(ids, 50) {
+		users, err := api.GetBasicUsers(ctx, guildID, chunk)
+		if errors.Is(err, tectonic.ErrNotFound) {
+			continue // nobody in this chunk is activated
+		}
+		if err != nil {
+			return nil, reply.WithOverrides(err, str.AccountErrors(str.AccountArgs{}))
+		}
+		for _, u := range users {
+			active[u.UserID] = true
+		}
+	}
+	return active, nil
 }

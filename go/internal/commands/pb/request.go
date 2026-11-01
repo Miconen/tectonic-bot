@@ -8,7 +8,7 @@ import (
 	"github.com/disgoorg/disgo/discord"
 
 	"github.com/Miconen/tectonic-bot/go/internal/approval"
-	"github.com/Miconen/tectonic-bot/go/internal/commands/points"
+	"github.com/Miconen/tectonic-bot/go/internal/award"
 	"github.com/Miconen/tectonic-bot/go/internal/deps"
 	"github.com/Miconen/tectonic-bot/go/internal/logging"
 	"github.com/Miconen/tectonic-bot/go/internal/members"
@@ -87,5 +87,5 @@ func (r *request) award(ctx context.Context, env approval.Env) (string, error) {
 			list = append(list, m)
 		}
 	}
-	return points.Award(ctx, r.d, env.Client.Rest, env.GuildID, list, tectonic.PresetPoints(clanPBSource))
+	return award.Give(ctx, r.d, env.Client.Rest, env.GuildID, list, tectonic.PresetPoints(clanPBSource))
 }
