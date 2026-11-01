@@ -24,6 +24,7 @@ import (
 	"github.com/Miconen/tectonic-bot/go/internal/mw"
 	"github.com/Miconen/tectonic-bot/go/internal/pointsrc"
 	"github.com/Miconen/tectonic-bot/go/internal/ranks"
+	"github.com/Miconen/tectonic-bot/go/internal/status"
 	"github.com/Miconen/tectonic-bot/go/internal/tectonic"
 	"github.com/Miconen/tectonic-bot/go/internal/wom"
 )
@@ -67,6 +68,8 @@ func main() {
 		bot.WithEventListeners(r),
 		bot.WithEventListenerFunc(botevents.OnMemberLeave(api)),
 		bot.WithEventListenerFunc(func(e *events.Ready) {
+			status.Start(e.Client())
+
 			// Register commands per guild, like botGuilds in the TS bot.
 			ids := make([]snowflake.ID, len(e.Guilds))
 			for i, g := range e.Guilds {

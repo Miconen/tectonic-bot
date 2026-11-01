@@ -9,7 +9,10 @@ A demo port of the bot to Go with [disgo](https://github.com/disgoorg/disgo), to
 | `/profile` | `internal/commands/profile` |
 | All of `/moderation`: points (including `wom`), status, rsn, achievements, ca, start, settings, ranks | `internal/commands/moderation` |
 | `/event` (info, remove, settings, create team/individual/legacy) | `internal/commands/event` |
-| WOM team lookup for autocomplete (`requests/wom.ts`) | `internal/wom` |
+| `/bingo setup` | `internal/commands/bingo` |
+| `/help` (commands, ranks, points, split) | `internal/commands/help` |
+| Status rotation (`utils/status.ts`) | `internal/status` |
+| WOM competition lookups (`requests/wom.ts`) | `internal/wom` |
 | `/moderation times` (remove, adduser, removeuser, initialize-pb-channel) | `internal/commands/pb/times.go` |
 | `/split`, `/ca`, `/achievement` | `internal/commands/submissions` |
 | `awardPoints`, `formatPointsAward`, rank role syncing | `award.Give`, `award.Format`, `internal/ranks` |
@@ -24,7 +27,7 @@ A demo port of the bot to Go with [disgo](https://github.com/disgoorg/disgo), to
 | `commands/requests` (buttons, `/accept`, `/deny`) | `internal/approval` |
 | `IsActivated`, the `player2..N` options | `internal/team` |
 
-Not ported yet: `/bingo`, `/help`, `/roles` and the status rotation.
+Every TS command is ported except `/leaderboard`, which was dropped on purpose. `/roles` is commented out in TS, so there was nothing to port.
 
 Command definitions use the small helpers in `internal/opt` (`Sub`, `Group`, `User`, `Autocomplete`, `Optional`...), so a command's shape reads like its help text. `internal/commands/routes_test.go` fails if a defined subcommand or autocomplete option has no handler, or a handler has no definition.
 
@@ -76,6 +79,12 @@ About 660 lines of Go replace about 1,980 lines of TS (the pb commands, their he
 - **`/event info` lists winners who left the server** as mentions. TS skipped them.
 - **Team autocomplete hides teams already picked** in the other team options, and WOM lookups are cached for 5 minutes instead of on every keystroke.
 - **`/moderation points wom` options are wired by name.** In TS the two option decorators sat on the same parameter, so the competition ID and the cutoff could be read the wrong way round. A rank role failure for one player no longer stops the rest of the list.
+
+## Bingo, help and status: what changed compared to TS
+
+- **`/bingo setup` looks up every RSN in one API call** (in chunks of 50) instead of one call per player, and matches RSNs without caring about case. A competition ID that doesn't exist on WOM gets a clear message.
+- **`/help points` leaves out point sources the server doesn't have**, and all values include the server multiplier.
+- **The status list drops a duplicate** ("Blast Furnace" was listed twice), and the rotation starts only once even if the bot reconnects.
 
 ## How it differs from the TS bot
 
