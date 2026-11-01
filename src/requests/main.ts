@@ -1,4 +1,4 @@
-import { getChildLogger } from "@logging/context";
+import { getChildLogger, getContext } from "@logging/context";
 import * as Achievement from "@requests/achievement";
 import * as CombatAchievement from "@requests/combatAchievement";
 import * as Event from "@requests/event";
@@ -54,14 +54,24 @@ export async function fetchData<T>(
 
 	logger.info({ endpoint: fullUrl, method, body: options.body }, "API request");
 
+	// Only our own API gets the auth key and tracing headers. This is also
+	// used for Wise Old Man, which must not receive AUTH_KEY.
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
+	if (url === API_URL) {
+		headers.Authorization = AUTH_KEY;
+		// Lets the API tag its logs with the same ID users see as their
+		// Error ID, and with the member behind the request (tectonic-api#99).
+		const context = getContext();
+		if (context?.correlationId) headers["X-Request-ID"] = context.correlationId;
+		if (context?.userId) headers["X-Actor-ID"] = context.userId;
+	}
+
 	try {
 		const response = await fetch(fullUrl, {
 			...options,
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: AUTH_KEY,
-				...options.headers,
-			},
+			headers: { ...headers, ...(options.headers as Record<string, string>) },
 		});
 
 		// 204 No Content — success with no body

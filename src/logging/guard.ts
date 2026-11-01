@@ -3,6 +3,7 @@ import {
 	type ButtonInteraction,
 	ChatInputCommandInteraction,
 	CommandInteraction,
+	type CommandInteractionOption,
 	GuildMember,
 } from "discord.js";
 import type { ArgsOf, GuardFunction } from "discordx";
@@ -37,6 +38,8 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 	let correlationId: string;
 	let command: string;
 	let baseContext: Record<string, unknown>;
+	let userId: string | undefined;
+	let options: Record<string, unknown> | undefined;
 
 	if (isInteraction(param)) {
 		correlationId = param.id;
@@ -49,10 +52,12 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 			command = [param.commandName, subcommandGroup, subcommand]
 				.filter(Boolean)
 				.join(" ");
+			options = commandOptions(param);
 		} else if (param instanceof CommandInteraction) {
 			command = param.commandName;
 		}
 
+		userId = param.user.id;
 		// Extract command info from interaction
 		baseContext = {
 			correlationId,
@@ -65,6 +70,7 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 	} else if (isGuildLeave(param)) {
 		// Handle guild member leave events
 		const [member] = param;
+		userId = member.id;
 		correlationId = `leave-${member.id}-${Date.now()}`;
 		command = "Guild member leave";
 
@@ -90,11 +96,11 @@ export const LoggingGuard: GuardFunction<InteractionType | Leave> = async (
 
 	const logger = rootLogger.child(baseContext);
 
-	return withContext({ logger, correlationId }, async () => {
+	return withContext({ logger, correlationId, userId }, async () => {
 		if (isGuildLeave(param)) {
 			logger.info("Member left guild");
 		} else {
-			logger.info("Command started");
+			logger.info({ options }, "Command started");
 		}
 
 		try {
@@ -147,22 +153,25 @@ export const AutocompleteLoggingGuard: GuardFunction<
 
 	const logger = rootLogger.child(baseContext);
 
-	return withContext({ logger, correlationId }, async () => {
-		logger.debug("Autocomplete started");
+	return withContext(
+		{ logger, correlationId, userId: interaction.user.id },
+		async () => {
+			logger.debug("Autocomplete started");
 
-		try {
-			const result = await next();
+			try {
+				const result = await next();
 
-			const duration = Date.now() - startTime;
-			logger.debug({ duration }, "Autocomplete completed");
+				const duration = Date.now() - startTime;
+				logger.debug({ duration }, "Autocomplete completed");
 
-			return result;
-		} catch (error) {
-			const duration = Date.now() - startTime;
-			logger.error({ err: error, duration }, "Autocomplete failed");
-			throw error;
-		}
-	});
+				return result;
+			} catch (error) {
+				const duration = Date.now() - startTime;
+				logger.error({ err: error, duration }, "Autocomplete failed");
+				throw error;
+			}
+		},
+	);
 };
 
 // Utility for wrapping autocomplete functions with logging
@@ -203,21 +212,43 @@ export const withAutocompleteLogging = <T extends unknown[]>(
 
 		const logger = rootLogger.child(baseContext);
 
-		return withContext({ logger, correlationId }, async () => {
-			logger.debug("Autocomplete started");
+		return withContext(
+			{ logger, correlationId, userId: interaction.user.id },
+			async () => {
+				logger.debug("Autocomplete started");
 
-			try {
-				const result = await autocompleteFunction(interaction, ...args);
+				try {
+					const result = await autocompleteFunction(interaction, ...args);
 
-				const duration = Date.now() - startTime;
-				logger.debug({ duration }, "Autocomplete completed");
+					const duration = Date.now() - startTime;
+					logger.debug({ duration }, "Autocomplete completed");
 
-				return result;
-			} catch (error) {
-				const duration = Date.now() - startTime;
-				logger.error({ err: error, duration }, "Autocomplete failed");
-				throw error;
-			}
-		});
+					return result;
+				} catch (error) {
+					const duration = Date.now() - startTime;
+					logger.error({ err: error, duration }, "Autocomplete failed");
+					throw error;
+				}
+			},
+		);
 	};
 };
+
+// commandOptions flattens a slash command's options for the start log line
+// (#171), with users and roles shown as "id (name)".
+function commandOptions(
+	interaction: ChatInputCommandInteraction,
+): Record<string, unknown> {
+	const out: Record<string, unknown> = {};
+	const walk = (opts: readonly CommandInteractionOption[]) => {
+		for (const o of opts) {
+			if (o.options) walk(o.options);
+			else if (o.user) out[o.name] = `${o.user.id} (${o.user.username})`;
+			else if (o.role) out[o.name] = `${o.role.id} (${o.role.name})`;
+			else if (o.attachment) out[o.name] = o.attachment.url;
+			else out[o.name] = o.value;
+		}
+	};
+	walk(interaction.options.data);
+	return out;
+}

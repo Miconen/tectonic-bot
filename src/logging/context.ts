@@ -5,6 +5,8 @@ import { rootLogger } from "./logger";
 interface LoggingContext {
 	logger: Logger;
 	correlationId: string;
+	// Discord user behind the work, sent to the API as X-Actor-ID.
+	userId?: string;
 	// Room for expansion
 	[key: string]: unknown;
 }
